@@ -1,0 +1,184 @@
+---
+title: Event Ingestion
+description: Ingest events into DebugBundle with POST /v1/events — request format, batch semantics, capture policy, and rate limiting.
+icon: Upload
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The ingestion endpoint accepts events from SDKs, CLIs, and direct API calls. It validates, persists raw events to object storage, and enqueues processing — no heavy synchronous work in the request path.
+
+## Endpoint
+
+```
+POST /v1/events
+```
+
+**Authentication:** Project token via `Authorization` header.
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/events \
+  -H "Authorization: Bearer dbundle_proj_live_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "events": [
+      {
+        "event_type": "backend_exception",
+        "timestamp": "2026-03-24T10:30:00.000Z",
+        "service": { "name": "api-server", "environment": "production" },
+        "payload": {
+          "error_class": "TypeError",
+          "message": "Cannot read properties of undefined",
+          "stacktrace": "TypeError: Cannot read properties of undefined\n    at handler (/app/src/routes.js:42:10)"
+        }
+      }
+    ]
+  }'
+```
+
+## Request Format
+
+```json
+{
+  "events": [
+    {
+      "event_type": "string",
+      "timestamp": "ISO8601",
+      "service": {
+        "name": "string",
+        "environment": "string"
+      },
+      "sdk": {
+        "name": "string",
+        "version": "string"
+      },
+      "context": {},
+      "payload": {}
+    }
+  ]
+}
+```
+
+### Event Types
+
+| Type | Description |
+|------|-------------|
+| `backend_exception` | Server-side exception with stack trace. |
+| `frontend_exception` | Browser JavaScript error with stack trace. |
+| `request_event` | HTTP request/response pair. |
+| `log_event` | Structured log entry. |
+| `frontend_breadcrumb` | User interaction breadcrumb (click, navigation, network). |
+| `deploy_metadata` | Deployment information. |
+| `error_suppressed` | Aggregated duplicate errors from SDK volume control. |
+| `probe_event` | Diagnostic ring buffer snapshot. |
+
+### Batch Size
+
+There is no hard limit on events per batch, but SDKs typically send 25–50 events per request. Extremely large batches may hit request body size limits (default: 1 MB).
+
+## Response Format
+
+**Success (202 Accepted):**
+
+```json
+{
+  "accepted": 5,
+  "rejected": 1,
+  "errors": [
+    {
+      "index": 3,
+      "reason": "Invalid event_type: unknown_type"
+    }
+  ],
+  "probe_directives": {
+    "active_probes": [
+      {
+        "activation_id": "act_01HXYZ...",
+        "label_pattern": "db_*",
+        "service": "api-server",
+        "environment": "production",
+        "expires_at": "2026-03-24T11:30:00.000Z",
+        "trigger_expires_at": "2026-03-25T10:30:00.000Z"
+      }
+    ]
+  }
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `accepted` | `number` | Count of events accepted for processing. |
+| `rejected` | `number` | Count of events rejected (validation or policy). |
+| `errors` | `array` | Per-event error details with `index` and `reason`. |
+| `probe_directives` | `object` | Active probe activations for this project/service. SDKs use this to enable probe data collection. |
+
+<Callout type="info">
+  The response includes `probe_directives` to inform SDKs about active remote probes. SDKs check this on each batch response to activate or deactivate probe data collection.
+</Callout>
+
+### Error Responses
+
+| Status | Description |
+|--------|-------------|
+| `400` | Invalid request body (missing `events` array, malformed JSON). |
+| `401` | Invalid or missing project token. |
+| `429` | Rate limit exceeded. Includes `Retry-After` header. |
+| `503` | Service temporarily unavailable. |
+
+## Rate Limiting
+
+Ingestion rate limits are tier-based:
+
+| Tier | Rate Limit |
+|------|------------|
+| Free | 60 requests/minute |
+| Solo | 300 requests/minute |
+| Team | 1,000 requests/minute |
+
+When exceeded, the API returns `429 Too Many Requests` with a `Retry-After` header (seconds). SDKs automatically respect this header and retry.
+
+## Quota Enforcement
+
+Each plan includes a monthly event allowance. When the quota is exceeded:
+
+- Events are still accepted (not rejected)
+- A quota warning is logged
+- Over-quota events count toward the next billing period
+- The dashboard and API surface quota status
+
+Check your quota via [Billing API](/docs/api/billing) or the web dashboard.
+
+## Capture Policy
+
+Projects can configure a capture policy that filters events at ingestion time:
+
+| Preset | Behavior |
+|--------|----------|
+| `allow_all` | Accept all event types (default). |
+| `exclude_logs_above_warn` | Accept all events except `log_event` with level above `warn`. |
+| `errors_only` | Accept only exception and error events. |
+| `custom` | Custom per-event-type rules. |
+
+Events filtered by capture policy are counted as `rejected` in the response with reason `"filtered_by_capture_policy"`.
+
+Configure capture policies via the [Projects API](/docs/api/projects) or CLI.
+
+## Processing Pipeline
+
+After ingestion, events flow through the asynchronous processing pipeline:
+
+```
+POST /v1/events → validate → persist to S3 → enqueue job → 202 response
+                                                    │
+                                                    ▼ (async worker)
+                                              normalize → fingerprint → group into incidents → generate bundles
+```
+
+The ingestion endpoint returns immediately after persisting and enqueuing. Bundle generation, incident grouping, and webhook delivery happen asynchronously in the worker.
+
+## Next Steps
+
+- [Authentication](/docs/api/authentication) — Token types and auth model
+- [Incidents API](/docs/api/incidents) — Retrieve incidents and bundles
+- [Probes API](/docs/api/probes) — Remote probe activation
+- [SDKs Overview](/docs/sdks) — SDK-based event capture

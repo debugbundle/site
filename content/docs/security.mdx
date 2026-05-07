@@ -1,0 +1,161 @@
+---
+title: "Security"
+description: "How DebugBundle protects your data: token hashing, automatic redaction, webhook signing, transport encryption, and scope separation."
+icon: Shield
+---
+
+## Security Model
+
+DebugBundle is designed with defense-in-depth for sensitive debugging data. Every layer — from the SDK to storage — enforces security defaults.
+
+---
+
+## Token Security
+
+### Hashing at Rest
+
+All tokens (project and member) are hashed with SHA-256 before storage. The API never stores plaintext tokens. When you create a token, the plaintext is shown exactly once.
+
+### Token Previews
+
+Token previews (first and last 4 characters) are stored separately for identification. This allows you to distinguish tokens in listings without exposing them.
+
+### Scope Separation
+
+| Token Type | Can Ingest Events | Can Read Incidents | Can Manage Resources |
+|---|---|---|---|
+| Project token | Yes | No | No |
+| Member token | No | Yes | Yes |
+
+Project tokens are deployed with your application code. If compromised, the attacker can only send noise — they cannot read any incident data, manage webhooks, or access billing.
+
+---
+
+## Automatic Redaction
+
+The SDK and ingestion pipeline automatically redact sensitive fields from captured data:
+
+### Default Redacted Fields
+
+```
+password, secret, token, authorization, cookie, ssn, credit_card
+```
+
+These fields are replaced with `[REDACTED]` before the event ever leaves the SDK.
+
+### Custom Redaction
+
+Add your own fields to the redaction list:
+
+```typescript
+DebugBundle.init({
+  projectToken: 'local',
+  redactFields: [
+    'password', 'secret', 'token', 'authorization',
+    'cookie', 'ssn', 'credit_card',
+    'api_key', 'private_key', 'stripe_token',
+  ],
+});
+```
+
+### Redaction Guarantees
+
+- Redaction happens **in the SDK** before events leave the process
+- Redaction is **recursive** — nested objects are traversed
+- Redaction is **applied to keys** — field names matching the list have their values replaced
+- The ingestion API applies a second pass of server-side redaction as defense-in-depth
+
+---
+
+## Webhook Signing
+
+All webhook payloads are signed with HMAC-SHA256:
+
+1. A unique signing secret is generated when you create a webhook
+2. Every delivery includes an `X-DebugBundle-Signature` header
+3. Your endpoint should verify the signature using timing-safe comparison
+4. See [Webhooks](/docs/webhooks) for verification code examples
+
+The signing secret is shown once at webhook creation and never again. If compromised, delete and recreate the webhook.
+
+---
+
+## Transport Security
+
+| Path | Protocol | Encryption |
+|---|---|---|
+| SDK → API | HTTPS | TLS 1.2+ |
+| SDK → Relay → API | HTTPS | TLS 1.2+ (same-origin relay avoids CORS) |
+| SDK → Local Disk | File I/O | Filesystem permissions |
+| API → Worker | Internal queue | Encrypted at rest (S3 + Postgres) |
+| API → Webhook endpoint | HTTPS | TLS 1.2+ required |
+
+### Browser SDK
+
+The Browser SDK supports relay transport (recommended) to avoid exposing your project token to ad blockers and network interceptors. Events route through your own backend, which forwards them to the DebugBundle API using the project token server-side.
+
+---
+
+## Data Storage
+
+| Data | Storage | Encryption | Retention |
+|---|---|---|---|
+| Raw events | S3 (or compatible) | Encrypted at rest (SSE-S3) | Configurable |
+| Processed incidents | Postgres | Encrypted at rest | Configurable |
+| Tokens | Postgres | SHA-256 hashed | Until revoked |
+| Session data | Redis | In-transit encryption | Session lifetime |
+| Local events | `.debugbundle/local/events/` | Filesystem permissions | Until `clean` |
+
+---
+
+## Input Validation
+
+All external inputs are validated using Zod schemas at the API boundary:
+
+- Request bodies are parsed with strict schemas (unknown fields rejected)
+- Query parameters are coerced and validated
+- Path parameters are validated
+- The ingestion endpoint validates each event individually and returns per-event errors
+
+Invalid inputs receive a `400` response with a machine-readable error code. Internal error details are never exposed to clients.
+
+---
+
+## Rate Limiting
+
+Event ingestion is rate-limited per project token to prevent abuse:
+
+| Tier | Events per Minute |
+|---|---|
+| Free | 60 |
+| Solo | 300 |
+| Team | 1,000 |
+
+Rate-limited events are rejected with `"rate_limited"` in the errors array. The SDK handles backoff automatically.
+
+---
+
+## No Sensitive Data in Logs
+
+The API and worker processes:
+- Never log plaintext tokens
+- Never log raw event payloads
+- Never expose stack traces to API clients
+- Log only structured metadata (event counts, incident IDs, timestamps)
+
+---
+
+## Self-Hosted Security
+
+When self-hosting DebugBundle, your data never touches third-party infrastructure:
+
+- All components (API, Worker, Postgres, Redis, S3) run in your Docker Compose stack
+- No phone-home, no telemetry, no external API calls
+- You control encryption keys, network policies, and access controls
+- See the [Self-Host Guide](/docs/installation) for deployment instructions
+
+## Next Steps
+
+- [Webhooks](/docs/webhooks) — Webhook setup and signature verification
+- [Authentication](/docs/api/authentication) — Token management
+- [Troubleshooting](/docs/troubleshooting) — Common issues and fixes

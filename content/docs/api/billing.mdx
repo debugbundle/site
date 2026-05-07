@@ -1,0 +1,216 @@
+---
+title: Billing API
+description: API endpoints for managing subscriptions, capacity units, and billing state.
+icon: Wallet
+---
+
+The Billing API provides programmatic access to subscription management,
+capacity operations, and billing state queries. All billing endpoints require
+owner-level authorization.
+
+## Authentication
+
+Billing endpoints accept:
+- **Browser session** — Cookie-based auth from the dashboard
+- **Member token** — Bearer token for CLI and automation
+
+```bash
+curl https://api.debugbundle.com/v1/billing \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
+```
+
+Stripe Checkout and Customer Portal routes are browser-session-only.
+
+## Endpoints
+
+### Get Billing Summary
+
+Returns the current billing state for the authenticated member's organization.
+
+```
+GET /v1/billing
+```
+
+**Response:**
+
+```json
+{
+  "billing": {
+    "plan": "solo",
+    "stripe_customer_id": "cus_123",
+    "email_verification_required": false,
+    "active_projects": 4,
+    "capacity_units": {
+      "total": 5,
+      "included": 2,
+      "additional_purchased": 3,
+      "pending_reduction": null
+    },
+    "usage_window": {
+      "starts_at": "2025-01-01T00:00:00Z",
+      "ends_at": "2025-02-01T00:00:00Z"
+    },
+    "allowances": {
+      "monthly_bundle_requests": { "used": 120, "limit": 1250 },
+      "monthly_raw_ingested_events": { "used": 820, "limit": 12500 },
+      "retained_bundle_cap": { "used": 40, "limit": 750 },
+      "monthly_remote_activations": { "used": 4, "limit": 125 },
+      "monthly_alert_deliveries": { "used": 18, "limit": 375 }
+    }
+  }
+}
+```
+
+When a capacity reduction is pending:
+
+```json
+{
+  "billing": {
+    "capacity_units": {
+      "pending_reduction": {
+        "additional_purchased": 1,
+        "total": 3,
+        "effective_at": "2025-02-01T00:00:00Z"
+      }
+    }
+  }
+}
+```
+
+### Start Checkout
+
+Creates a Stripe Checkout Session for upgrading to a paid plan.
+
+```
+POST /v1/billing/checkout
+```
+
+**Request:**
+
+```json
+{ "target_plan": "solo" }
+```
+
+**Response:**
+
+```json
+{ "url": "https://checkout.stripe.com/c/pay/..." }
+```
+
+### Open Customer Portal
+
+Creates a Stripe Customer Portal session for managing payment methods and
+viewing invoices.
+
+```
+POST /v1/billing/portal
+```
+
+**Response:**
+
+```json
+{ "url": "https://billing.stripe.com/p/session/..." }
+```
+
+### Increase Capacity
+
+Adds extra capacity units immediately with prorated billing.
+
+```
+POST /v1/billing/capacity/increase
+```
+
+**Request:**
+
+```json
+{ "target_additional_capacity_units": 5 }
+```
+
+**Response:**
+
+```json
+{
+  "billing": {
+    "active_projects": 4,
+    "capacity_units": {
+      "total": 7,
+      "included": 2,
+      "additional_purchased": 5,
+      "pending_reduction": null
+    }
+  }
+}
+```
+
+### Schedule Capacity Reduction
+
+Schedules a capacity reduction for the next billing-period boundary.
+
+```
+POST /v1/billing/capacity/scheduled-reduction
+```
+
+**Request:**
+
+```json
+{ "target_additional_capacity_units": 1 }
+```
+
+**Response:**
+
+```json
+{
+  "billing": {
+    "capacity_units": {
+      "pending_reduction": {
+        "additional_purchased": 1,
+        "total": 3,
+        "effective_at": "2025-02-01T00:00:00Z"
+      }
+    }
+  }
+}
+```
+
+### Cancel Scheduled Capacity Reduction
+
+Cancels a pending capacity reduction and returns the updated billing summary.
+
+```
+DELETE /v1/billing/capacity/scheduled-reduction
+```
+
+## CLI Usage
+
+```bash
+# View billing summary
+debugbundle billing get
+
+# Add capacity units
+debugbundle billing capacity increase --target-additional-capacity-units 2
+
+# Schedule capacity reduction
+debugbundle billing capacity schedule-reduction --target-additional-capacity-units 3
+
+# Cancel pending reduction
+debugbundle billing capacity cancel-reduction
+```
+
+## MCP Tools
+
+All billing operations are available as MCP tools for AI agent workflows:
+
+| MCP Tool | Description |
+|----------|-------------|
+| `get_billing_summary` | Get plan, active-project counts, capacity units, and scheduled changes |
+| `increase_capacity` | Add capacity units with prorated billing |
+| `schedule_capacity_reduction` | Schedule a capacity reduction for the next billing cycle |
+| `cancel_capacity_reduction` | Cancel a pending capacity reduction |
+
+See [MCP Tools Reference](/docs/mcp/tools#billing) for full parameter details.
+
+## Next Steps
+
+- [Billing](/docs/billing) — How billing works
+- [Pricing](/docs/pricing) — Plan comparison
+- [API Overview](/docs/api) — API authentication and conventions

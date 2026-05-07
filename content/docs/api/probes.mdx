@@ -1,0 +1,173 @@
+---
+title: Probes API
+description: Activate, list, and deactivate debug probes via the DebugBundle REST API.
+icon: Radar
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Debug probes request additional diagnostic data from SDKs without code changes or redeployment.
+When you activate a probe, matching SDK instances begin collecting extra context automatically.
+
+All probe endpoints require member token authentication via the `Authorization` header.
+
+<Callout type="info">
+  All probe operations are also available via the CLI (`debugbundle probe activate/list/deactivate`) and
+  MCP tools (`activate_probe`, `list_active_probes`, `deactivate_probe`). See
+  [CLI Cloud Workflow](/docs/cli/cloud-workflow#probe-management) and [MCP Tools](/docs/mcp/tools#probes).
+</Callout>
+
+## How Probes Work
+
+1. You activate a probe with a label pattern, service filter, and TTL.
+2. The API returns a `trigger_token` — shown once at creation time.
+3. SDKs periodically check for active probes via `probe_directives` in ingestion responses.
+4. Matching SDK instances collect the requested data until the probe expires.
+5. Enriched data arrives with subsequent events and is included in bundles.
+
+## Activate Probe
+
+```
+POST /v1/probes
+```
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/probes \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_id": "proj_01HXYZ...",
+    "label_pattern": "auth.*",
+    "service": "api-gateway",
+    "environment": "production",
+    "ttl_seconds": 3600,
+    "trigger_ttl_seconds": 300
+  }'
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `project_id` | `string` | Yes | Project UUID. |
+| `label_pattern` | `string` | Yes | Glob pattern matching incident labels (e.g., `auth.*`, `payment.checkout`). |
+| `service` | `string` | No | Scope to a specific service name. |
+| `environment` | `string` | No | Scope to a specific environment. |
+| `ttl_seconds` | `number` | No | Probe lifetime in seconds. Default: `3600` (1 hour). Max: `86400` (24 hours). |
+| `trigger_ttl_seconds` | `number` | No | How long the trigger token is valid. Default: `300` (5 minutes). |
+
+**Response (201):**
+
+```json
+{
+  "probe": {
+    "probe_id": "prb_01H9KL...",
+    "project_id": "proj_01HXYZ...",
+    "label_pattern": "auth.*",
+    "service": "api-gateway",
+    "environment": "production",
+    "ttl_seconds": 3600,
+    "trigger_token": "prbt_01H9MNOP...",
+    "expires_at": "2026-03-24T12:00:00Z",
+    "created_at": "2026-03-24T11:00:00Z"
+  }
+}
+```
+
+<Callout type="warn">
+The `trigger_token` is only returned once at creation time. Store it immediately; it cannot be
+retrieved again.
+</Callout>
+
+## List Active Probes
+
+```
+GET /v1/probes?project_id={projectId}
+```
+
+```bash
+curl https://api.debugbundle.com/v1/probes?project_id=proj_01HXYZ... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `project_id` | `string` | — | **Required.** Project UUID. |
+| `service` | `string` | — | Filter by service name. |
+| `environment` | `string` | — | Filter by environment. |
+
+**Response (200):**
+
+```json
+{
+  "probes": [
+    {
+      "probe_id": "prb_01H9KL...",
+      "project_id": "proj_01HXYZ...",
+      "label_pattern": "auth.*",
+      "service": "api-gateway",
+      "environment": "production",
+      "ttl_seconds": 3600,
+      "expires_at": "2026-03-24T12:00:00Z",
+      "created_at": "2026-03-24T11:00:00Z"
+    }
+  ]
+}
+```
+
+Active probes list does _not_ include `trigger_token` — it was only shown at creation time.
+
+## Deactivate Probe
+
+```
+DELETE /v1/probes/{id}
+```
+
+```bash
+curl -X DELETE https://api.debugbundle.com/v1/probes/prb_01H9KL... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Response (204):** No content.
+
+The probe is immediately deactivated. SDKs will stop collecting probe data on their next
+check-in cycle.
+
+## Limits
+
+| Constraint | Limit |
+|------------|-------|
+| Max concurrent probes per project | 10 |
+| Max TTL | 24 hours |
+| Probe directives refresh interval | ~60 seconds (SDK-side) |
+
+## Probe Directives in Ingestion
+
+When SDKs send events to `POST /v1/events`, the response includes a `probe_directives` array
+containing any active probes matching the event's context:
+
+```json
+{
+  "accepted": 1,
+  "rejected": 0,
+  "errors": [],
+  "probe_directives": [
+    {
+      "probe_id": "prb_01H9KL...",
+      "label_pattern": "auth.*",
+      "expires_at": "2026-03-24T12:00:00Z"
+    }
+  ]
+}
+```
+
+SDKs use these directives to collect additional data (heap snapshots, extended stack traces,
+local variable dumps) and include them in subsequent events.
+
+## Next Steps
+
+- [CLI Cloud Workflow](/docs/cli/cloud-workflow) — Manage probes via the CLI
+- [Bundles](/docs/bundles) — How probes enrich bundle data
+- [Universal SDK Interface](/docs/sdks/universal-interface) — SDK probe support

@@ -1,0 +1,2258 @@
+{
+  "apiEntries": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "operationId": "getHealth",
+      "summary": "Get service health",
+      "tags": [
+        "System"
+      ],
+      "auth": [
+        "Public"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/live",
+      "operationId": "getLiveness",
+      "summary": "Get liveness status",
+      "tags": [
+        "System"
+      ],
+      "auth": [
+        "Public"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/ready",
+      "operationId": "getReadiness",
+      "summary": "Get readiness status",
+      "tags": [
+        "System"
+      ],
+      "auth": [
+        "Public"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/account",
+      "operationId": "deleteAccount",
+      "summary": "Delete the current organization account",
+      "tags": [
+        "Account"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/account/export",
+      "operationId": "exportAccount",
+      "summary": "Export retained organization account data",
+      "tags": [
+        "Account"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/alerts",
+      "operationId": "listAlerts",
+      "summary": "List alert rules",
+      "tags": [
+        "Alerts"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/alerts",
+      "operationId": "createAlert",
+      "summary": "Create an alert rule",
+      "tags": [
+        "Alerts"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/alerts/{id}",
+      "operationId": "updateAlert",
+      "summary": "Update an alert rule",
+      "tags": [
+        "Alerts"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/alerts/{id}",
+      "operationId": "deleteAlert",
+      "summary": "Delete an alert rule",
+      "tags": [
+        "Alerts"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/auth/accept-invite",
+      "operationId": "acceptInvite",
+      "summary": "Accept an organization invite",
+      "tags": [
+        "Auth"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/auth/github/callback",
+      "operationId": "completeGithubLogin",
+      "summary": "Complete GitHub OAuth",
+      "tags": [
+        "Auth"
+      ],
+      "auth": [
+        "Public"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/auth/github/start",
+      "operationId": "startGithubLogin",
+      "summary": "Start GitHub OAuth",
+      "tags": [
+        "Auth"
+      ],
+      "auth": [
+        "Public"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/auth/logout",
+      "operationId": "logout",
+      "summary": "Revoke the current browser session",
+      "tags": [
+        "Auth"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/auth/request-code",
+      "operationId": "requestEmailCode",
+      "summary": "Request a one-time email code",
+      "tags": [
+        "Auth"
+      ],
+      "auth": [
+        "Public"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/auth/session",
+      "operationId": "getSession",
+      "summary": "Resolve the current browser session",
+      "tags": [
+        "Auth"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/auth/verify-code",
+      "operationId": "verifyEmailCode",
+      "summary": "Verify a one-time email code and create a browser session",
+      "tags": [
+        "Auth"
+      ],
+      "auth": [
+        "Public"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/billing",
+      "operationId": "getBillingSummary",
+      "summary": "Get the billing summary",
+      "tags": [
+        "Billing"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/billing/capacity/increase",
+      "operationId": "increaseCapacity",
+      "summary": "Increase capacity immediately",
+      "tags": [
+        "Billing"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/billing/capacity/scheduled-reduction",
+      "operationId": "scheduleCapacityReduction",
+      "summary": "Schedule a capacity reduction",
+      "tags": [
+        "Billing"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/billing/capacity/scheduled-reduction",
+      "operationId": "cancelCapacityReduction",
+      "summary": "Cancel a scheduled capacity reduction",
+      "tags": [
+        "Billing"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/billing/checkout",
+      "operationId": "createBillingCheckout",
+      "summary": "Create a Stripe checkout link",
+      "tags": [
+        "Billing"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/billing/portal",
+      "operationId": "createBillingPortal",
+      "summary": "Create a Stripe customer portal link",
+      "tags": [
+        "Billing"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/events",
+      "operationId": "ingestEvents",
+      "summary": "Ingest batched events",
+      "tags": [
+        "Ingestion"
+      ],
+      "auth": [
+        "Project bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/incidents",
+      "operationId": "listIncidents",
+      "summary": "List incidents",
+      "tags": [
+        "Incidents"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/incidents/{id}",
+      "operationId": "getIncident",
+      "summary": "Get a single incident",
+      "tags": [
+        "Incidents"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/incidents/{id}/bundle",
+      "operationId": "getBundle",
+      "summary": "Get the generated bundle for an incident",
+      "tags": [
+        "Incidents"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/incidents/{id}/reopen",
+      "operationId": "reopenIncident",
+      "summary": "Reopen an incident",
+      "tags": [
+        "Incidents"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/incidents/{id}/reproduction",
+      "operationId": "getReproduction",
+      "summary": "Get the reproduction artifact for an incident",
+      "tags": [
+        "Incidents"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/incidents/{id}/resolve",
+      "operationId": "resolveIncident",
+      "summary": "Resolve an incident",
+      "tags": [
+        "Incidents"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/logs",
+      "operationId": "getLogs",
+      "summary": "Query incident logs",
+      "tags": [
+        "Incidents"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/member/tokens",
+      "operationId": "listMemberTokens",
+      "summary": "List member tokens",
+      "tags": [
+        "Tokens"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/member/tokens",
+      "operationId": "createMemberToken",
+      "summary": "Create a member token",
+      "tags": [
+        "Tokens"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/member/tokens/{tokenId}/revoke",
+      "operationId": "revokeMemberToken",
+      "summary": "Revoke a member token",
+      "tags": [
+        "Tokens"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/organization/members",
+      "operationId": "listOrganizationMembers",
+      "summary": "List organization members",
+      "tags": [
+        "Organization"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/organization/members/{userId}",
+      "operationId": "updateOrganizationMemberRole",
+      "summary": "Update an organization member role",
+      "tags": [
+        "Organization"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/organization/members/{userId}",
+      "operationId": "removeOrganizationMember",
+      "summary": "Remove an organization member",
+      "tags": [
+        "Organization"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/organization/members/invite",
+      "operationId": "inviteOrganizationMember",
+      "summary": "Invite an organization member",
+      "tags": [
+        "Organization"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/organization/members/invites",
+      "operationId": "listOrganizationInvites",
+      "summary": "List pending organization invites",
+      "tags": [
+        "Organization"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/organization/members/invites/{inviteId}",
+      "operationId": "cancelOrganizationInvite",
+      "summary": "Cancel an organization invite",
+      "tags": [
+        "Organization"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects",
+      "operationId": "listProjects",
+      "summary": "List projects",
+      "tags": [
+        "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/projects",
+      "operationId": "createProject",
+      "summary": "Create a project",
+      "tags": [
+        "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/projects/{id}",
+      "operationId": "updateProject",
+      "summary": "Update a project",
+      "tags": [
+        "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/projects/{id}",
+      "operationId": "deleteProject",
+      "summary": "Delete a project",
+      "tags": [
+        "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/capture-policy",
+      "operationId": "getCapturePolicy",
+      "summary": "Get the resolved capture policy for a project",
+      "tags": [
+        "Capture Policy"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/projects/{id}/capture-policy",
+      "operationId": "updateCapturePolicy",
+      "summary": "Update the capture policy for a project",
+      "tags": [
+        "Capture Policy"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/probes",
+      "operationId": "listActiveProbes",
+      "summary": "List active remote probes",
+      "tags": [
+        "Probes"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/projects/{id}/probes/activate",
+      "operationId": "activateProbes",
+      "summary": "Activate remote probes",
+      "tags": [
+        "Probes"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/projects/{id}/probes/deactivate",
+      "operationId": "deactivateProbes",
+      "summary": "Deactivate a remote probe",
+      "tags": [
+        "Probes"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/tokens",
+      "operationId": "listProjectTokens",
+      "summary": "List project tokens",
+      "tags": [
+        "Tokens"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/projects/{id}/tokens",
+      "operationId": "createProjectToken",
+      "summary": "Create a project token",
+      "tags": [
+        "Tokens"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/projects/{id}/tokens/{tokenId}/revoke",
+      "operationId": "revokeProjectToken",
+      "summary": "Revoke a project token",
+      "tags": [
+        "Tokens"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/sdk/config",
+      "operationId": "getSdkConfig",
+      "summary": "Get SDK config for a project token",
+      "tags": [
+        "SDK"
+      ],
+      "auth": [
+        "Project bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/services",
+      "operationId": "listServices",
+      "summary": "List services for a project",
+      "tags": [
+        "Services"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/webhooks",
+      "operationId": "listWebhooks",
+      "summary": "List webhooks",
+      "tags": [
+        "Webhooks"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/webhooks",
+      "operationId": "createWebhook",
+      "summary": "Create a webhook",
+      "tags": [
+        "Webhooks"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/webhooks/{id}",
+      "operationId": "getWebhook",
+      "summary": "Get a webhook",
+      "tags": [
+        "Webhooks"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/webhooks/{id}",
+      "operationId": "updateWebhook",
+      "summary": "Update a webhook",
+      "tags": [
+        "Webhooks"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/webhooks/{id}",
+      "operationId": "deleteWebhook",
+      "summary": "Delete a webhook",
+      "tags": [
+        "Webhooks"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/webhooks/{id}/deliveries",
+      "operationId": "listWebhookDeliveries",
+      "summary": "List webhook deliveries",
+      "tags": [
+        "Webhooks"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/webhooks/{id}/deliveries/{deliveryId}/retry",
+      "operationId": "retryWebhookDelivery",
+      "summary": "Retry a webhook delivery",
+      "tags": [
+        "Webhooks"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/webhooks/{id}/test",
+      "operationId": "testWebhook",
+      "summary": "Queue a synthetic webhook delivery",
+      "tags": [
+        "Webhooks"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/weekly-report-channels",
+      "operationId": "listWeeklyReportChannels",
+      "summary": "List weekly report channels",
+      "tags": [
+        "Weekly Reports"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/weekly-report-channels",
+      "operationId": "createWeeklyReportChannel",
+      "summary": "Create a weekly report channel",
+      "tags": [
+        "Weekly Reports"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/weekly-report-channels/{id}",
+      "operationId": "updateWeeklyReportChannel",
+      "summary": "Update a weekly report channel",
+      "tags": [
+        "Weekly Reports"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/weekly-report-channels/{id}",
+      "operationId": "deleteWeeklyReportChannel",
+      "summary": "Delete a weekly report channel",
+      "tags": [
+        "Weekly Reports"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    }
+  ],
+  "cliEntries": [
+    {
+      "commandPath": "analyze",
+      "usage": "debugbundle analyze [--type <improvement|failure|performance>] [--local] [--json]",
+      "group": "analyze"
+    },
+    {
+      "commandPath": "doctor",
+      "usage": "debugbundle doctor [--check-relay] [--json]",
+      "group": "doctor"
+    },
+    {
+      "commandPath": "setup",
+      "usage": "debugbundle setup [--non-interactive] [--json]",
+      "group": "setup"
+    },
+    {
+      "commandPath": "connect",
+      "usage": "debugbundle connect [--auth-file <path>] [--json]",
+      "group": "connect"
+    },
+    {
+      "commandPath": "ingest",
+      "usage": "debugbundle ingest <file> --format <debugbundle-ndjson|php-error|apache-error> [--json]",
+      "group": "ingest"
+    },
+    {
+      "commandPath": "watch",
+      "usage": "debugbundle watch [--cloud] --log <file> --format <debugbundle-ndjson|php-error|apache-error> [--json]",
+      "group": "watch"
+    },
+    {
+      "commandPath": "process",
+      "usage": "debugbundle process [--json]",
+      "group": "process"
+    },
+    {
+      "commandPath": "clean",
+      "usage": "debugbundle clean [--events] [--bundles] [--all] [--older-than <Nd>] [--json]",
+      "group": "clean"
+    },
+    {
+      "commandPath": "validate",
+      "usage": "debugbundle validate [--fix] [--json]",
+      "group": "validate"
+    },
+    {
+      "commandPath": "verify local",
+      "usage": "debugbundle verify local [--json]",
+      "group": "verify"
+    },
+    {
+      "commandPath": "verify cloud",
+      "usage": "debugbundle verify cloud --project-id <id> [--service <name>] [--environment <name>] [--max-age-minutes <n>] [--auth-file <path>] [--json]",
+      "group": "verify"
+    },
+    {
+      "commandPath": "smoke",
+      "usage": "debugbundle smoke --project-id <id> [--service <name>] [--environment <name>] [--max-age-minutes <n>] [--auth-file <path>] [--json]",
+      "group": "smoke"
+    },
+    {
+      "commandPath": "login",
+      "usage": "debugbundle login <member-token> [--base-url <url>] [--auth-file <path>] [--json]",
+      "group": "login"
+    },
+    {
+      "commandPath": "profile validate",
+      "usage": "debugbundle profile validate [--json]",
+      "group": "profile"
+    },
+    {
+      "commandPath": "whoami",
+      "usage": "debugbundle whoami [--auth-file <path>] [--json]",
+      "group": "whoami"
+    },
+    {
+      "commandPath": "incidents",
+      "usage": "debugbundle incidents [--source <local|cloud>] [--project-id <id>] [--environment <name>] [--service <name>] [--status <status>] [--severity <severity>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "incidents"
+    },
+    {
+      "commandPath": "inspect",
+      "usage": "debugbundle inspect <incident-id> [--source <local|cloud>] [--auth-file <path>] [--json]",
+      "group": "inspect"
+    },
+    {
+      "commandPath": "resolve",
+      "usage": "debugbundle resolve <incident-id> [--source <local|cloud>] [--auth-file <path>] [--json]",
+      "group": "resolve"
+    },
+    {
+      "commandPath": "reopen",
+      "usage": "debugbundle reopen <incident-id> [--source <local|cloud>] [--auth-file <path>] [--json]",
+      "group": "reopen"
+    },
+    {
+      "commandPath": "bundle",
+      "usage": "debugbundle bundle <incident-id> [--source <local|cloud>] [--auth-file <path>] [--json]",
+      "group": "bundle"
+    },
+    {
+      "commandPath": "reproduce",
+      "usage": "debugbundle reproduce <incident-id> [--source <local|cloud>] [--auth-file <path>] [--json]",
+      "group": "reproduce"
+    },
+    {
+      "commandPath": "logs",
+      "usage": "debugbundle logs <incident-id> [--level <level>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "logs"
+    },
+    {
+      "commandPath": "services",
+      "usage": "debugbundle services --project-id <id> [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "services"
+    },
+    {
+      "commandPath": "billing get",
+      "usage": "debugbundle billing get [--auth-file <path>] [--json]",
+      "group": "billing"
+    },
+    {
+      "commandPath": "billing capacity increase",
+      "usage": "debugbundle billing capacity increase --target-additional-capacity-units <n> [--auth-file <path>] [--json]",
+      "group": "billing"
+    },
+    {
+      "commandPath": "billing capacity schedule-reduction",
+      "usage": "debugbundle billing capacity schedule-reduction --target-additional-capacity-units <n> [--auth-file <path>] [--json]",
+      "group": "billing"
+    },
+    {
+      "commandPath": "billing capacity cancel-reduction",
+      "usage": "debugbundle billing capacity cancel-reduction [--auth-file <path>] [--json]",
+      "group": "billing"
+    },
+    {
+      "commandPath": "github status",
+      "usage": "debugbundle github status [--project-id <id>] [--auth-file <path>] [--json]",
+      "group": "github"
+    },
+    {
+      "commandPath": "github repos",
+      "usage": "debugbundle github repos [--auth-file <path>] [--json]",
+      "group": "github"
+    },
+    {
+      "commandPath": "github repo set",
+      "usage": "debugbundle github repo set <owner/repo> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "github"
+    },
+    {
+      "commandPath": "github repo remove",
+      "usage": "debugbundle github repo remove --project-id <id> [--auth-file <path>] [--json]",
+      "group": "github"
+    },
+    {
+      "commandPath": "github rules",
+      "usage": "debugbundle github rules --project-id <id> [--auth-file <path>] [--json]",
+      "group": "github"
+    },
+    {
+      "commandPath": "github rules create",
+      "usage": "debugbundle github rules create --project-id <id> --name <name> --event <event[,event]> [--environment <env[,env]>] [--service <svc[,svc]>] --severity-min <level> --bundle-type <type> [--incident-status <status>] [--cooldown <seconds>] [--enabled <true|false>] [--auth-file <path>] [--json]",
+      "group": "github"
+    },
+    {
+      "commandPath": "github rules update",
+      "usage": "debugbundle github rules update <rule-id> --project-id <id> [--name <name>] [--event <event[,event]>] [--environment <env[,env]>] [--service <svc[,svc]>] [--severity-min <level>] [--bundle-type <type>] [--incident-status <status>] [--cooldown <seconds>] [--enabled <true|false>] [--auth-file <path>] [--json]",
+      "group": "github"
+    },
+    {
+      "commandPath": "github rules delete",
+      "usage": "debugbundle github rules delete <rule-id> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "github"
+    },
+    {
+      "commandPath": "github deliveries",
+      "usage": "debugbundle github deliveries --project-id <id> [--status <status>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "github"
+    },
+    {
+      "commandPath": "github deliveries retry",
+      "usage": "debugbundle github deliveries retry <delivery-id> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "github"
+    },
+    {
+      "commandPath": "project list",
+      "usage": "debugbundle project list [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "project"
+    },
+    {
+      "commandPath": "project create",
+      "usage": "debugbundle project create --name <name> --slug <slug> [--environment-default <env>] [--auth-file <path>] [--json]",
+      "group": "project"
+    },
+    {
+      "commandPath": "project update",
+      "usage": "debugbundle project update <project-id> [--name <name>] [--slug <slug>] [--environment-default <env>] [--auth-file <path>] [--json]",
+      "group": "project"
+    },
+    {
+      "commandPath": "project delete",
+      "usage": "debugbundle project delete <project-id> [--auth-file <path>] [--json]",
+      "group": "project"
+    },
+    {
+      "commandPath": "token project list",
+      "usage": "debugbundle token project list <project-id> [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "token"
+    },
+    {
+      "commandPath": "token project create",
+      "usage": "debugbundle token project create <project-id> --label <label> [--auth-file <path>] [--json]",
+      "group": "token"
+    },
+    {
+      "commandPath": "token project revoke",
+      "usage": "debugbundle token project revoke <project-id> <token-id> [--auth-file <path>] [--json]",
+      "group": "token"
+    },
+    {
+      "commandPath": "token member list",
+      "usage": "debugbundle token member list [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "token"
+    },
+    {
+      "commandPath": "token member create",
+      "usage": "debugbundle token member create --label <label> [--auth-file <path>] [--json]",
+      "group": "token"
+    },
+    {
+      "commandPath": "token member revoke",
+      "usage": "debugbundle token member revoke <token-id> [--auth-file <path>] [--json]",
+      "group": "token"
+    },
+    {
+      "commandPath": "alert list",
+      "usage": "debugbundle alert list --project-id <id> [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "alert"
+    },
+    {
+      "commandPath": "alert create",
+      "usage": "debugbundle alert create --project-id <id> --channel <channel> --condition <condition> [--service-id <id>] [--severity-min <level>] [--config-json <json>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "group": "alert"
+    },
+    {
+      "commandPath": "alert update",
+      "usage": "debugbundle alert update <alert-id> [--service-id <id|null>] [--channel <channel>] [--condition <condition>] [--severity-min <level|null>] [--config-json <json|null>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "group": "alert"
+    },
+    {
+      "commandPath": "alert delete",
+      "usage": "debugbundle alert delete <alert-id> [--auth-file <path>] [--json]",
+      "group": "alert"
+    },
+    {
+      "commandPath": "webhook list",
+      "usage": "debugbundle webhook list --project-id <id> [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "webhook"
+    },
+    {
+      "commandPath": "webhook create",
+      "usage": "debugbundle webhook create --project-id <id> --url <url> --event <event[,event]> [--environment <env[,env]>] [--service <svc[,svc]>] [--severity-min <level>] [--bundle-type <type[,type]>] [--verification <true|false>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "group": "webhook"
+    },
+    {
+      "commandPath": "webhook update",
+      "usage": "debugbundle webhook update <webhook-id> [--url <url>] [--event <event[,event]>] [--environment <env[,env]>] [--service <svc[,svc]>] [--severity-min <level>] [--bundle-type <type[,type]>] [--verification <true|false>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "group": "webhook"
+    },
+    {
+      "commandPath": "webhook delete",
+      "usage": "debugbundle webhook delete <webhook-id> [--auth-file <path>] [--json]",
+      "group": "webhook"
+    },
+    {
+      "commandPath": "webhook test",
+      "usage": "debugbundle webhook test <webhook-id> [--event <verification.passed|verification.failed>] [--auth-file <path>] [--json]",
+      "group": "webhook"
+    },
+    {
+      "commandPath": "webhook deliveries",
+      "usage": "debugbundle webhook deliveries <webhook-id> [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "webhook"
+    },
+    {
+      "commandPath": "webhook retry",
+      "usage": "debugbundle webhook retry <webhook-id> <delivery-id> [--auth-file <path>] [--json]",
+      "group": "webhook"
+    },
+    {
+      "commandPath": "weekly-report list",
+      "usage": "debugbundle weekly-report list --project-id <id> [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "weekly-report"
+    },
+    {
+      "commandPath": "weekly-report create",
+      "usage": "debugbundle weekly-report create --project-id <id> --channel <email|slack> --day-of-week <day> --hour-of-day <0-23> --timezone <iana> --config-json <json> [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "group": "weekly-report"
+    },
+    {
+      "commandPath": "weekly-report update",
+      "usage": "debugbundle weekly-report update <channel-id> [--day-of-week <day>] [--hour-of-day <0-23>] [--timezone <iana>] [--config-json <json>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "group": "weekly-report"
+    },
+    {
+      "commandPath": "weekly-report delete",
+      "usage": "debugbundle weekly-report delete <channel-id> [--auth-file <path>] [--json]",
+      "group": "weekly-report"
+    },
+    {
+      "commandPath": "capture-policy get",
+      "usage": "debugbundle capture-policy get --project <id> [--auth-file <path>] [--json]",
+      "group": "capture-policy"
+    },
+    {
+      "commandPath": "capture-policy set",
+      "usage": "debugbundle capture-policy set --project <id> [--preset <minimal|balanced|investigative>] [--override <key=value>] [--auth-file <path>] [--json]",
+      "group": "capture-policy"
+    },
+    {
+      "commandPath": "probe activate",
+      "usage": "debugbundle probe activate <project-id> --label-pattern <pattern> [--service <name>] [--environment <name>] [--ttl-seconds <n>] [--trigger-ttl-seconds <n>] [--auth-file <path>] [--json]",
+      "group": "probe"
+    },
+    {
+      "commandPath": "probe list",
+      "usage": "debugbundle probe list <project-id> [--auth-file <path>] [--json]",
+      "group": "probe"
+    },
+    {
+      "commandPath": "probe deactivate",
+      "usage": "debugbundle probe deactivate <project-id> <activation-id> [--auth-file <path>] [--json]",
+      "group": "probe"
+    },
+    {
+      "commandPath": "member list",
+      "usage": "debugbundle member list [--auth-file <path>] [--json]",
+      "group": "member"
+    },
+    {
+      "commandPath": "member invites",
+      "usage": "debugbundle member invites [--auth-file <path>] [--json]",
+      "group": "member"
+    },
+    {
+      "commandPath": "member invite",
+      "usage": "debugbundle member invite --email <email> --role <owner|admin|member> [--auth-file <path>] [--json]",
+      "group": "member"
+    },
+    {
+      "commandPath": "member cancel-invite",
+      "usage": "debugbundle member cancel-invite <invite-id> [--auth-file <path>] [--json]",
+      "group": "member"
+    },
+    {
+      "commandPath": "member update-role",
+      "usage": "debugbundle member update-role <user-id> --role <owner|admin|member> [--auth-file <path>] [--json]",
+      "group": "member"
+    },
+    {
+      "commandPath": "member remove",
+      "usage": "debugbundle member remove <user-id> [--auth-file <path>] [--json]",
+      "group": "member"
+    }
+  ],
+  "mcpGroups": [
+    {
+      "group": "setup",
+      "label": "Setup",
+      "tools": [
+        {
+          "name": "doctor",
+          "description": "Run local DebugBundle environment diagnostics.",
+          "requiredArguments": [],
+          "optionalArguments": [
+            "authFilePath"
+          ]
+        },
+        {
+          "name": "smoke",
+          "description": "Run the end-to-end smoke flow for a hosted project.",
+          "requiredArguments": [
+            "projectId"
+          ],
+          "optionalArguments": [
+            "authFilePath",
+            "environment",
+            "maxAgeMinutes",
+            "service"
+          ]
+        },
+        {
+          "name": "validate",
+          "description": "Validate local DebugBundle project setup and optionally apply fixes.",
+          "requiredArguments": [],
+          "optionalArguments": [
+            "fix"
+          ]
+        },
+        {
+          "name": "verify_cloud",
+          "description": "Verify that a hosted project is sending data to DebugBundle.",
+          "requiredArguments": [
+            "projectId"
+          ],
+          "optionalArguments": [
+            "authFilePath",
+            "environment",
+            "maxAgeMinutes",
+            "service"
+          ]
+        },
+        {
+          "name": "verify_local",
+          "description": "Run the local verification flow against the current repository.",
+          "requiredArguments": [],
+          "optionalArguments": []
+        }
+      ]
+    },
+    {
+      "group": "analyze",
+      "label": "Analyze",
+      "tools": [
+        {
+          "name": "analyze",
+          "description": "Run local agent-oriented DebugBundle analysis.",
+          "requiredArguments": [],
+          "optionalArguments": [
+            "local",
+            "type"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "retrieval",
+      "label": "Retrieval",
+      "tools": [
+        {
+          "name": "get_bundle",
+          "description": "Fetch the debug bundle for an incident.",
+          "requiredArguments": [
+            "incidentId"
+          ],
+          "optionalArguments": [
+            "bearerToken",
+            "source"
+          ]
+        },
+        {
+          "name": "get_incident",
+          "description": "Fetch a single incident by incident id.",
+          "requiredArguments": [
+            "incidentId"
+          ],
+          "optionalArguments": [
+            "bearerToken",
+            "source"
+          ]
+        },
+        {
+          "name": "get_logs",
+          "description": "Fetch log records for an incident from the hosted API.",
+          "requiredArguments": [
+            "bearerToken",
+            "incidentId"
+          ],
+          "optionalArguments": [
+            "cursor",
+            "level",
+            "limit"
+          ]
+        },
+        {
+          "name": "get_reproduction",
+          "description": "Fetch the reproduction artifact for an incident.",
+          "requiredArguments": [
+            "incidentId"
+          ],
+          "optionalArguments": [
+            "bearerToken",
+            "source"
+          ]
+        },
+        {
+          "name": "list_incidents",
+          "description": "List incidents from local storage, cloud storage, or the combined connected view.",
+          "requiredArguments": [],
+          "optionalArguments": [
+            "bearerToken",
+            "cursor",
+            "environment",
+            "limit",
+            "projectId",
+            "service",
+            "severity",
+            "source",
+            "status"
+          ]
+        },
+        {
+          "name": "reopen_incident",
+          "description": "Reopen a locally stored resolved incident.",
+          "requiredArguments": [
+            "incidentId"
+          ],
+          "optionalArguments": [
+            "bearerToken",
+            "source"
+          ]
+        },
+        {
+          "name": "resolve_incident",
+          "description": "Resolve an incident by incident id.",
+          "requiredArguments": [
+            "incidentId"
+          ],
+          "optionalArguments": [
+            "bearerToken",
+            "source"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "github",
+      "label": "Github",
+      "tools": [
+        {
+          "name": "create_github_dispatch_rule",
+          "description": "Create a GitHub dispatch automation rule for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "bundleType",
+            "cooldownSeconds",
+            "environments",
+            "eventTypes",
+            "incidentStatus",
+            "name",
+            "projectId",
+            "services",
+            "severityMin"
+          ],
+          "optionalArguments": [
+            "enabled"
+          ]
+        },
+        {
+          "name": "delete_github_dispatch_rule",
+          "description": "Delete a GitHub dispatch automation rule.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId",
+            "ruleId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "get_github_status",
+          "description": "Get the organization GitHub App installation status and optional project repo assignment.",
+          "requiredArguments": [
+            "bearerToken"
+          ],
+          "optionalArguments": [
+            "projectId"
+          ]
+        },
+        {
+          "name": "list_github_deliveries",
+          "description": "List GitHub dispatch delivery history for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "limit",
+            "status"
+          ]
+        },
+        {
+          "name": "list_github_dispatch_rules",
+          "description": "List GitHub dispatch automation rules for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_github_repositories",
+          "description": "List repositories available to the organization GitHub App installation.",
+          "requiredArguments": [
+            "bearerToken"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "remove_project_github_repo",
+          "description": "Remove a project GitHub repository assignment.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "retry_github_delivery",
+          "description": "Retry a failed GitHub dispatch delivery.",
+          "requiredArguments": [
+            "bearerToken",
+            "deliveryId",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "set_project_github_repo",
+          "description": "Assign a primary GitHub repository to a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "owner",
+            "projectId",
+            "repo"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "update_github_dispatch_rule",
+          "description": "Update a GitHub dispatch automation rule.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId",
+            "ruleId"
+          ],
+          "optionalArguments": [
+            "bundleType",
+            "cooldownSeconds",
+            "enabled",
+            "environments",
+            "eventTypes",
+            "incidentStatus",
+            "name",
+            "services",
+            "severityMin"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "tokens",
+      "label": "Tokens",
+      "tools": [
+        {
+          "name": "create_member_token",
+          "description": "Create a new member token.",
+          "requiredArguments": [
+            "bearerToken",
+            "label"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "create_project_token",
+          "description": "Create a new project token.",
+          "requiredArguments": [
+            "bearerToken",
+            "label",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_member_tokens",
+          "description": "List member tokens for the authenticated member.",
+          "requiredArguments": [
+            "bearerToken"
+          ],
+          "optionalArguments": [
+            "limit"
+          ]
+        },
+        {
+          "name": "list_project_tokens",
+          "description": "List project tokens for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "limit"
+          ]
+        },
+        {
+          "name": "revoke_member_token",
+          "description": "Revoke a member token.",
+          "requiredArguments": [
+            "bearerToken",
+            "tokenId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "revoke_project_token",
+          "description": "Revoke a project token.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId",
+            "tokenId"
+          ],
+          "optionalArguments": []
+        }
+      ]
+    },
+    {
+      "group": "webhooks",
+      "label": "Webhooks",
+      "tools": [
+        {
+          "name": "create_webhook",
+          "description": "Create a webhook endpoint.",
+          "requiredArguments": [
+            "bearerToken",
+            "events",
+            "projectId",
+            "url"
+          ],
+          "optionalArguments": [
+            "filters",
+            "isEnabled"
+          ]
+        },
+        {
+          "name": "delete_webhook",
+          "description": "Delete a webhook endpoint.",
+          "requiredArguments": [
+            "bearerToken",
+            "webhookId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_webhook_deliveries",
+          "description": "List deliveries for a webhook endpoint.",
+          "requiredArguments": [
+            "bearerToken",
+            "webhookId"
+          ],
+          "optionalArguments": [
+            "limit"
+          ]
+        },
+        {
+          "name": "list_webhooks",
+          "description": "List webhooks for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "limit"
+          ]
+        },
+        {
+          "name": "retry_webhook_delivery",
+          "description": "Retry a webhook delivery.",
+          "requiredArguments": [
+            "bearerToken",
+            "deliveryId",
+            "webhookId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "test_webhook",
+          "description": "Queue a synthetic webhook delivery.",
+          "requiredArguments": [
+            "bearerToken",
+            "webhookId"
+          ],
+          "optionalArguments": [
+            "eventType"
+          ]
+        },
+        {
+          "name": "update_webhook",
+          "description": "Update a webhook endpoint.",
+          "requiredArguments": [
+            "bearerToken",
+            "webhookId"
+          ],
+          "optionalArguments": [
+            "events",
+            "filters",
+            "isEnabled",
+            "url"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "weekly_reports",
+      "label": "Weekly reports",
+      "tools": [
+        {
+          "name": "create_weekly_report_channel",
+          "description": "Create a weekly report delivery channel.",
+          "requiredArguments": [
+            "bearerToken",
+            "channel",
+            "config",
+            "projectId",
+            "schedule"
+          ],
+          "optionalArguments": [
+            "isEnabled"
+          ]
+        },
+        {
+          "name": "delete_weekly_report_channel",
+          "description": "Delete a weekly report delivery channel.",
+          "requiredArguments": [
+            "bearerToken",
+            "channelId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_weekly_report_channels",
+          "description": "List weekly report delivery channels for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "limit"
+          ]
+        },
+        {
+          "name": "update_weekly_report_channel",
+          "description": "Update a weekly report delivery channel.",
+          "requiredArguments": [
+            "bearerToken",
+            "channelId"
+          ],
+          "optionalArguments": [
+            "config",
+            "isEnabled",
+            "schedule"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "alerts",
+      "label": "Alerts",
+      "tools": [
+        {
+          "name": "create_alert",
+          "description": "Create an alert rule.",
+          "requiredArguments": [
+            "bearerToken",
+            "channel",
+            "conditionType",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "config",
+            "isEnabled",
+            "serviceId",
+            "severityMin"
+          ]
+        },
+        {
+          "name": "delete_alert",
+          "description": "Delete an alert rule.",
+          "requiredArguments": [
+            "alertId",
+            "bearerToken"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_alerts",
+          "description": "List alert rules for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "limit"
+          ]
+        },
+        {
+          "name": "update_alert",
+          "description": "Update an alert rule.",
+          "requiredArguments": [
+            "alertId",
+            "bearerToken"
+          ],
+          "optionalArguments": [
+            "channel",
+            "conditionType",
+            "config",
+            "isEnabled",
+            "serviceId",
+            "severityMin"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "projects",
+      "label": "Projects",
+      "tools": [
+        {
+          "name": "create_project",
+          "description": "Create a new project.",
+          "requiredArguments": [
+            "bearerToken",
+            "name",
+            "slug"
+          ],
+          "optionalArguments": [
+            "environmentDefault"
+          ]
+        },
+        {
+          "name": "delete_project",
+          "description": "Delete a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_projects",
+          "description": "List projects in the organization.",
+          "requiredArguments": [
+            "bearerToken"
+          ],
+          "optionalArguments": [
+            "limit"
+          ]
+        },
+        {
+          "name": "update_project",
+          "description": "Update a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "environmentDefault",
+            "name",
+            "slug"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "capture_policy",
+      "label": "Capture Policy",
+      "tools": [
+        {
+          "name": "get_capture_policy",
+          "description": "Get the resolved capture policy for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "update_capture_policy",
+          "description": "Update the capture policy for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId",
+            "update"
+          ],
+          "optionalArguments": []
+        }
+      ]
+    },
+    {
+      "group": "probes",
+      "label": "Probes",
+      "tools": [
+        {
+          "name": "activate_probe",
+          "description": "Activate a remote probe on a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "labelPattern",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "environment",
+            "service",
+            "triggerTtlSeconds",
+            "ttlSeconds"
+          ]
+        },
+        {
+          "name": "deactivate_probe",
+          "description": "Deactivate a probe activation.",
+          "requiredArguments": [
+            "activationId",
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_active_probes",
+          "description": "List active probe activations for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        }
+      ]
+    },
+    {
+      "group": "billing",
+      "label": "Billing",
+      "tools": [
+        {
+          "name": "cancel_capacity_reduction",
+          "description": "Cancel a scheduled capacity reduction.",
+          "requiredArguments": [
+            "bearerToken"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "get_billing_summary",
+          "description": "Get the billing summary for the organization.",
+          "requiredArguments": [
+            "bearerToken"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "increase_capacity",
+          "description": "Increase additional capacity units.",
+          "requiredArguments": [
+            "bearerToken",
+            "targetAdditionalCapacityUnits"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "schedule_capacity_reduction",
+          "description": "Schedule a capacity reduction at end of billing cycle.",
+          "requiredArguments": [
+            "bearerToken",
+            "targetAdditionalCapacityUnits"
+          ],
+          "optionalArguments": []
+        }
+      ]
+    },
+    {
+      "group": "members",
+      "label": "Members",
+      "tools": [
+        {
+          "name": "cancel_member_invite",
+          "description": "Cancel a pending organization invite.",
+          "requiredArguments": [
+            "bearerToken",
+            "inviteId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "invite_member",
+          "description": "Invite a member to the organization.",
+          "requiredArguments": [
+            "bearerToken",
+            "email",
+            "role"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_member_invites",
+          "description": "List pending organization invites.",
+          "requiredArguments": [
+            "bearerToken"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_members",
+          "description": "List organization members.",
+          "requiredArguments": [
+            "bearerToken"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "remove_member",
+          "description": "Remove a member from the organization.",
+          "requiredArguments": [
+            "bearerToken",
+            "userId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "update_member_role",
+          "description": "Update the role of an organization member.",
+          "requiredArguments": [
+            "bearerToken",
+            "role",
+            "userId"
+          ],
+          "optionalArguments": []
+        }
+      ]
+    },
+    {
+      "group": "services",
+      "label": "Services",
+      "tools": [
+        {
+          "name": "list_services",
+          "description": "List services for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "limit"
+          ]
+        }
+      ]
+    }
+  ],
+  "webhookReference": {
+    "eventTypes": [
+      "bundle.created",
+      "bundle.updated",
+      "bundle.reopened",
+      "bundle.resolved",
+      "verification.passed",
+      "verification.failed",
+      "improvement_bundle.created",
+      "incident.spike_detected"
+    ],
+    "schemaPath": "/schemas/webhook-events.json",
+    "overviewPath": "/docs/v1/webhooks/"
+  },
+  "schemaLinks": [
+    {
+      "title": "Bundle schema",
+      "href": "/schemas/bundle.json",
+      "description": "The published JSON Schema for bundle artifacts."
+    },
+    {
+      "title": "Profile schema",
+      "href": "/schemas/profile.json",
+      "description": "The published JSON Schema for repository profile files."
+    },
+    {
+      "title": "Failure bundle example",
+      "href": "/examples/bundle.failure.json",
+      "description": "A schema-valid failure bundle example artifact."
+    },
+    {
+      "title": "Improvement bundle example",
+      "href": "/examples/bundle.improvement.json",
+      "description": "A schema-valid improvement bundle example artifact."
+    }
+  ],
+  "errorReference": {
+    "codes": [
+      {
+        "code": "alert_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "billing_not_available",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "billing_not_configured",
+        "statusCodes": [
+          "503"
+        ]
+      },
+      {
+        "code": "billing_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "delivery_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "email_verification_required",
+        "statusCodes": [
+          "403"
+        ]
+      },
+      {
+        "code": "forbidden",
+        "statusCodes": [
+          "403"
+        ]
+      },
+      {
+        "code": "incident_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "installation_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "installation_removed",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "installation_suspended",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "invalid_alert_id",
+        "statusCodes": [
+          "400"
+        ]
+      },
+      {
+        "code": "invalid_confirmation",
+        "statusCodes": [
+          "400"
+        ]
+      },
+      {
+        "code": "invalid_invite_id",
+        "statusCodes": [
+          "400"
+        ]
+      },
+      {
+        "code": "invalid_member_id",
+        "statusCodes": [
+          "400"
+        ]
+      },
+      {
+        "code": "invalid_member_token",
+        "statusCodes": [
+          "401"
+        ]
+      },
+      {
+        "code": "invalid_payload",
+        "statusCodes": [
+          "400"
+        ]
+      },
+      {
+        "code": "invalid_plan_change",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "invalid_project_id",
+        "statusCodes": [
+          "400"
+        ]
+      },
+      {
+        "code": "invalid_query",
+        "statusCodes": [
+          "400"
+        ]
+      },
+      {
+        "code": "invalid_session",
+        "statusCodes": [
+          "401"
+        ]
+      },
+      {
+        "code": "invalid_token",
+        "statusCodes": [
+          "400"
+        ]
+      },
+      {
+        "code": "invalid_weekly_report_channel_id",
+        "statusCodes": [
+          "400"
+        ]
+      },
+      {
+        "code": "invite_already_exists",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "invite_email_mismatch",
+        "statusCodes": [
+          "403"
+        ]
+      },
+      {
+        "code": "invite_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "member_already_exists",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "member_management_not_available",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "member_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "no_active_subscription",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "other_owned_organizations_exist",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "owner_removal_not_allowed",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "owner_role_change_not_allowed",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "project_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "project_slug_taken",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "projects_not_available",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "repo_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "reproduction_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "rule_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "upgrade_required",
+        "statusCodes": [
+          "403"
+        ]
+      },
+      {
+        "code": "verification_required",
+        "statusCodes": [
+          "403"
+        ]
+      },
+      {
+        "code": "weekly_report_channel_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      }
+    ],
+    "categories": [
+      "auth_error"
+    ]
+  }
+}

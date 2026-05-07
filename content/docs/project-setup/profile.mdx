@@ -1,0 +1,99 @@
+---
+title: Profile Configuration
+description: Configure your project identity, services, and repository metadata in profile.json.
+icon: UserCog
+---
+
+The `profile.json` file lives at `.debugbundle/profile.json` and describes your project's
+identity, services, languages, and deployment targets. It's created automatically by
+`debugbundle setup` and can be edited manually.
+
+## Schema
+
+```json
+{
+  "profile_version": "v1",
+  "project": {
+    "name": "my-app",
+    "repo_url": "https://github.com/myorg/my-app",
+    "primary_languages": ["TypeScript", "Python"],
+    "package_managers": ["pnpm", "pip"],
+    "deployment_targets": ["docker-compose", "kubernetes"]
+  },
+  "services": [
+    {
+      "name": "api",
+      "kind": "backend",
+      "runtime": "Node.js",
+      "framework": "Fastify",
+      "paths": ["apps/api"],
+      "owns_routes": ["/v1/events", "/v1/incidents"],
+      "depends_on": ["postgres", "redis"]
+    },
+    {
+      "name": "web",
+      "kind": "frontend",
+      "runtime": "Browser",
+      "framework": "React",
+      "paths": ["apps/web"],
+      "owns_routes": [],
+      "depends_on": ["api"]
+    }
+  ]
+}
+```
+
+## Project Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `profile_version` | `string` | Schema version. Currently `"v1"`. |
+| `project.name` | `string` | Human-readable project name. Used as the default cloud project name during `debugbundle connect`. |
+| `project.repo_url` | `string` | Repository URL. Optional but useful for linking incidents to source. |
+| `project.primary_languages` | `string[]` | Languages used in the project. |
+| `project.package_managers` | `string[]` | Package managers (`npm`, `pnpm`, `yarn`, `pip`, `composer`). |
+| `project.deployment_targets` | `string[]` | Deployment targets (`docker-compose`, `kubernetes`, `vercel`, `aws`). |
+
+## Service Fields
+
+Each entry in the `services` array describes a service in your project:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | `string` | Service identifier. Must be unique within the project. |
+| `kind` | `string` | Service type: `backend`, `frontend`, `worker`, `cli`. |
+| `runtime` | `string` | Runtime environment: `Node.js`, `Python`, `PHP`, `Browser`. |
+| `framework` | `string` | Framework: `Fastify`, `Express`, `Next.js`, `React`, `Django`, `Laravel`. |
+| `paths` | `string[]` | Relative paths to the service's source code. |
+| `owns_routes` | `string[]` | API routes this service is responsible for. |
+| `depends_on` | `string[]` | Other services this service depends on (for dependency health checks). |
+
+## Auto-Detection
+
+`debugbundle setup` examines your repository to auto-detect:
+
+- **Languages** — from file extensions and config files
+- **Package managers** — from lockfiles (`pnpm-lock.yaml`, `package-lock.json`, `requirements.txt`)
+- **Frameworks** — from dependencies and config files
+- **Services** — from directory structure and build configuration
+
+You can always edit the generated profile to add or correct services.
+
+## Validation
+
+Validate your profile at any time:
+
+```bash
+debugbundle doctor
+```
+
+The doctor command checks that:
+- `profile.json` is valid JSON and conforms to the schema
+- All service paths exist on disk
+- The profile version is supported
+
+## Next Steps
+
+- [Project Setup](/docs/project-setup) — Setup overview
+- [Local-Only Mode](/docs/project-setup/local-only) — Offline development
+- [Connect to Cloud](/docs/project-setup/connect-to-cloud) — Cloud delivery

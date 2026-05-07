@@ -1,0 +1,141 @@
+---
+title: Webhook Events
+description: Complete reference of DebugBundle webhook event types and their payload schemas.
+icon: Zap
+---
+
+DebugBundle sends webhook events to your configured endpoints when important things happen
+in your project. Each delivery includes a JSON payload describing the event and an
+HMAC-SHA256 signature for verification.
+
+## Event Types
+
+| Event | Category | Description |
+|-------|----------|-------------|
+| `bundle.created` | Bundle lifecycle | A new debug bundle was generated. |
+| `bundle.updated` | Bundle lifecycle | An existing bundle was enriched with new data. |
+| `bundle.resolved` | Bundle lifecycle | An incident was resolved and its bundle marked complete. |
+| `bundle.reopened` | Incident lifecycle | A previously resolved incident reopened. |
+| `improvement_bundle.created` | Bundle lifecycle | A new improvement bundle was generated. |
+| `verification.passed` | Verification | The verification step passed on a bundle. |
+| `verification.failed` | Verification | The verification step failed on a bundle. |
+| `incident.spike_detected` | Incident lifecycle | An unusual spike in error occurrences was detected. |
+
+## Payload Schemas
+
+### Bundle Lifecycle Events
+
+Events: `bundle.created`, `bundle.updated`, `bundle.resolved`, `improvement_bundle.created`
+
+```json
+{
+  "event": "bundle.created",
+  "occurred_at": "2026-03-24T10:00:00Z",
+  "project_id": "proj_01HXYZ...",
+  "bundle_id": "bnd_42",
+  "bundle_type": "failure",
+  "severity": "high",
+  "service": "checkout-api",
+  "environment": "production",
+  "verification": false,
+  "summary": "TypeError: Cannot read properties of undefined (reading 'id')",
+  "links": {
+    "bundle": "/v1/incidents/inc_01H.../bundle",
+    "reproduction": "/v1/incidents/inc_01H.../reproduction"
+  }
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `event` | `string` | The event type. |
+| `occurred_at` | `string` | ISO 8601 timestamp of the event. |
+| `project_id` | `string` | Project the bundle belongs to. |
+| `bundle_id` | `string` | Unique bundle identifier. |
+| `bundle_type` | `"failure" \| "improvement"` | Whether this is a failure or improvement bundle. |
+| `severity` | `string` | Severity level: `low`, `medium`, `high`, `critical`. |
+| `service` | `string` | Service name where the event occurred. |
+| `environment` | `string` | Deployment environment. |
+| `verification` | `boolean` | Whether this bundle includes verification data. |
+| `summary` | `string` | Human-readable summary of the error/event. |
+| `links.bundle` | `string` | API path to retrieve the full bundle. |
+| `links.reproduction` | `string` | API path to retrieve reproduction artifacts (if available). |
+
+### Incident Lifecycle Events
+
+Events: `bundle.reopened`, `incident.spike_detected`
+
+```json
+{
+  "event_type": "bundle.reopened",
+  "incident_id": "inc_01H...",
+  "project_id": "proj_01HXYZ...",
+  "occurred_at": "2026-03-24T10:00:00Z",
+  "service_name": "checkout-api",
+  "environment": "production",
+  "severity": "high",
+  "regression_after_deploy": true,
+  "deploy_version": "2026.03.24.1",
+  "deploy_commit_sha": "a1b2c3d4",
+  "deploy_branch": "main",
+  "deploy_deployed_at": "2026-03-24T09:30:00Z",
+  "minutes_since_deploy": 30
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `event_type` | `string` | The event type. |
+| `incident_id` | `string` | Incident that triggered the event. |
+| `project_id` | `string` | Project the incident belongs to. |
+| `occurred_at` | `string` | ISO 8601 timestamp. |
+| `service_name` | `string` | Service name. |
+| `environment` | `string` | Deployment environment. |
+| `severity` | `string` | Severity level. |
+| `regression_after_deploy` | `boolean` | Whether the incident is a post-deploy regression. |
+| `deploy_version` | `string \| null` | Deploy version (if available). |
+| `deploy_commit_sha` | `string \| null` | Commit SHA of the deploy. |
+| `deploy_branch` | `string \| null` | Branch of the deploy. |
+| `deploy_deployed_at` | `string \| null` | When the deploy was created. |
+| `minutes_since_deploy` | `number \| null` | Minutes elapsed since the deploy. |
+
+### Verification Events
+
+Events: `verification.passed`, `verification.failed`
+
+```json
+{
+  "delivery_id": "dlv_01H...",
+  "event": "verification.passed",
+  "event_type": "verification.passed",
+  "occurred_at": "2026-03-24T10:00:00Z",
+  "project_id": "proj_01HXYZ...",
+  "webhook_id": "wh_01H...",
+  "incident_id": "inc_01H...",
+  "test": true,
+  "data": {
+    "message": "Verification passed for incident inc_01H..."
+  }
+}
+```
+
+## Filtering
+
+When configuring webhooks, you can filter which events are delivered based on:
+
+| Filter | Type | Description |
+|--------|------|-------------|
+| `environment` | `string[]` | Only deliver events from these environments. |
+| `service` | `string[]` | Only deliver events from these services. |
+| `severity_min` | `string` | Minimum severity: `low`, `medium`, `high`, `critical`. |
+| `bundle_type` | `string[]` | Filter by bundle type: `failure`, `improvement`. |
+| `verification` | `boolean` | Include or exclude verification events. |
+
+Filters are combined with AND logic — all active filters must match for a delivery
+to be sent.
+
+## Next Steps
+
+- [Webhook Verification](/docs/webhooks/verification) — Verify webhook signatures
+- [Webhooks API](/docs/api/webhooks) — Manage webhook endpoints via API
+- [CLI Webhooks](/docs/cli/webhooks) — Manage webhooks via CLI

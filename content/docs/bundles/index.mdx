@@ -1,0 +1,142 @@
+---
+title: Bundles
+description: Understand the debug bundle — DebugBundle's canonical debugging artifact.
+icon: Package
+---
+
+A debug bundle is a **captured snapshot** of a debugging-relevant failure or improvement
+signal. It is the core artifact in DebugBundle — portable, self-describing, agent-readable,
+and designed for both human and AI consumption.
+
+## Bundle Types
+
+| Type | Description |
+|------|-------------|
+| `failure` | Captures an error, exception, or degraded behavior. |
+| `improvement` | Captures a positive signal — performance improvement, successful fix verification. |
+
+## What's in a Bundle
+
+A bundle aggregates data from multiple events into a single coherent debugging artifact:
+
+```
+Bundle
+├── Metadata (ID, version, timestamps, generator)
+├── SDK info (name, version)
+├── Project (ID, slug, environment)
+├── Service (name, runtime, framework, version, region)
+├── Signal (type, severity, fingerprint, occurrences)
+├── Summary (title, description, likely cause, confidence)
+├── Impact (affected users/requests, business criticality)
+├── Context
+│   ├── Error (name, message, stack, top frames)
+│   ├── Request (method, path, headers, body)
+│   ├── Response (status, duration, headers, body)
+│   ├── Logs (timestamped log entries)
+│   ├── Frontend (route changes, clicks, network, console, DOM)
+│   ├── Environment (OS, host, container)
+│   ├── Deploy (commit, version, branch, regression window)
+│   ├── Runtime (process state, memory, framework)
+│   ├── Git (commit, branch, repo, dirty state)
+│   ├── Dependencies (service health checks)
+│   ├── Probe Data (dynamically collected diagnostic data)
+│   └── Device (browser, OS, screen, viewport)
+├── Reproduction (cURL, HTTPie, JSON spec, confidence)
+└── Verification (test results, verification commands)
+```
+
+All context blocks are optional — bundles work with partial data. Missing blocks are
+simply absent, not null-padded.
+
+## Bundle Generation
+
+Bundles are generated asynchronously by the worker after events are grouped into incidents.
+Generation triggers at specific occurrence thresholds (1, 3, 10 events) and whenever
+significant new data arrives.
+
+### Determinism
+
+Given the same normalized events, the bundle generator produces **byte-identical output**.
+No random IDs or wall-clock timestamps are used in generation — deterministic reproducibility
+is a core invariant.
+
+### Versioning
+
+**Envelope versioning:** `bundle_version: 1` (integer). Bumps only when the overall contract
+changes significantly.
+
+**Context block versioning:** Each context block contains its own `version: 1`. This allows
+individual blocks to evolve independently without forcing a whole-bundle version change.
+
+**Compatibility rules:**
+- Unknown context blocks must be ignored safely by consumers.
+- Missing context blocks are allowed.
+- Additive fields are preferred over breaking changes.
+- A new optional context block does not require a new `bundle_version`.
+
+## Signal Types
+
+The `signal.signal_type` field describes what kind of signal triggered the bundle:
+
+| Signal Type | Description |
+|-------------|-------------|
+| `exception` | An unhandled or handled exception. |
+| `fatal_error` | A fatal/crash-level error. |
+| `request_failure` | An HTTP request that returned an error status. |
+| `frontend_exception` | A browser-side JavaScript exception. |
+| `warning` | A warning-level signal. |
+| `deprecation` | A deprecation notice. |
+| `performance_issue` | A detected performance regression. |
+| `retry_loop` | A detected retry loop pattern. |
+| `slow_query` | A slow database query. |
+
+## Severity Levels
+
+| Severity | Meaning | Automatic Assignment |
+|----------|---------|---------------------|
+| `low` | Minor issue, informational. | Default for most event types. |
+| `medium` | Moderate impact, should be reviewed. | `error_suppressed` events. |
+| `high` | Significant impact, needs attention. | `backend_exception`, `frontend_exception`. |
+| `critical` | Severe impact, immediate action required. | Manually escalated. |
+
+## Summary Section
+
+The summary is **derived at bundle generation time** from existing context — it is not
+stored separately. Key derivations:
+
+| Field | Derived From |
+|-------|-------------|
+| `severity` | `signal.severity` |
+| `error_type` | `context.error.name` |
+| `error_message` | `context.error.message` |
+| `first_application_frame` | Stack parsing — top application frame from `context.error.stack` |
+| `likely_cause` | Analysis engine output |
+| `confidence` | Analysis confidence score (0–1) |
+
+## Reproduction Section
+
+When sufficient request context is available, bundles include reproduction artifacts:
+
+| Artifact | Description |
+|----------|-------------|
+| `curl` | Ready-to-run cURL command. |
+| `httpie` | Ready-to-run HTTPie command. |
+| `json_spec` | Structured JSON with method, URL, headers, query, and body. |
+
+Each reproduction includes a confidence score and feasibility assessment:
+
+| Scenario | Feasibility |
+|----------|-------------|
+| Standard HTTP bugs | High |
+| Frontend interaction + failing request | Medium-high |
+| Background jobs | Medium |
+| External outage timing | Low-medium |
+| Race conditions | Low |
+
+See [Bundle Schema](/docs/bundles/schema) for the complete JSON structure.
+
+## Next Steps
+
+- [Bundle Schema](/docs/bundles/schema) — Complete JSON schema reference
+- [Incidents](/docs/incidents) — How incidents are created from events
+- [Probes](/docs/probes) — Enrich bundles with probe data

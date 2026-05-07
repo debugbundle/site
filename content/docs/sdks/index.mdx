@@ -1,0 +1,75 @@
+---
+title: "SDKs"
+description: "Capture production errors, logs, and context from any runtime. DebugBundle SDKs share a universal interface across all languages."
+icon: Code
+---
+
+DebugBundle SDKs are lightweight, zero-config libraries that capture exceptions, logs, HTTP context, and diagnostic probes at runtime and ship them to DebugBundle for processing into debug bundles.
+
+## Universal Interface
+
+Every SDK implements the same public API, regardless of language:
+
+| Method | Purpose |
+|---|---|
+| `init(config)` | Initialize the SDK with project token, environment, and options |
+| `captureException(error)` | Capture an exception with full stack trace and context |
+| `captureError(error)` | Required convenience alias for `captureException` |
+| `captureLog(message, level)` | Capture a structured log entry |
+| `captureMessage(message)` | Capture a message (delegates to `captureLog` with `"info"` level) |
+| `captureRequest(req, res)` | Capture an HTTP request/response pair |
+| `setContext(key, value)` | Set persistent context that attaches to all future events |
+| `probe(label, data)` | Buffer diagnostic data in an always-on ring buffer |
+| `flush()` | Force-send all buffered events |
+
+## Safety Guarantees
+
+All SDKs follow the same safety contract:
+
+- **Never throw** uncaught exceptions into your code
+- **Never block** the request/response cycle
+- **Never crash** the host process
+- **No side effects** on import — only `init()` activates the SDK
+- **Graceful degradation** — if the buffer fills, events are dropped silently
+- **Redaction before transmission** — sensitive fields are scrubbed before any data leaves the process
+
+## Language Support
+
+| SDK | Package | Status | Frameworks |
+|---|---|---|---|
+| [Node.js](/docs/sdks/node) | `@debugbundle/sdk-node` | Shipped | Express, Fastify, Next.js + pino, winston, bunyan |
+| [Browser](/docs/sdks/browser) | `@debugbundle/sdk-browser` | Shipped | Any SPA/MPA. Ships via relay handler. |
+| [Python](/docs/sdks/python) | `debugbundle` | Coming soon | Django, Flask, FastAPI + structlog, loguru |
+| [PHP](/docs/sdks/php) | `debugbundle/sdk-php` | Coming soon | Laravel, Symfony + Monolog |
+
+## Transport Modes
+
+SDKs automatically select the right transport based on your configuration:
+
+| Mode | Destination | When |
+|---|---|---|
+| **File** | `.debugbundle/local/events/` | Local-only mode, or `development`/`local` environment in connected mode |
+| **HTTP** | `POST /v1/events` | Connected mode in `staging`/`production` |
+| **Relay** | Same-origin `POST /debugbundle/browser` | Browser SDK (always relays through your backend) |
+
+File transport uses atomic temp-file + rename to prevent partial writes.
+
+## Volume Control
+
+All SDKs enforce automatic storm suppression to prevent runaway capture:
+
+| Control | Behavior |
+|---|---|
+| **Duplicate window** | Within 30 seconds, only 3 identical events pass; the rest are suppressed |
+| **Loop detection** | More than 10 events in 2 seconds triggers suppression mode |
+| **Suppression checkpoints** | During suppression, one aggregate checkpoint event every 30 seconds |
+| **Auto-recovery** | 60 seconds of silence resets suppression |
+
+Combined with server-side **capture policy** (configurable presets: `minimal`, `balanced`, `investigative`), you always have full control over what gets captured and shipped.
+
+## Next Steps
+
+- [Node.js SDK](/docs/sdks/node) — Full setup guide with Express, Fastify, Next.js, and logger integrations
+- [Browser SDK](/docs/sdks/browser) — Breadcrumbs, network capture, session controls, relay setup
+- [Universal Interface](/docs/sdks/universal-interface) — Complete interface contract across all languages
+- [Browser Relay Setup](/docs/sdks/browser-relay) — How browser events reach DebugBundle through your backend

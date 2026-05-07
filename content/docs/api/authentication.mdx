@@ -1,0 +1,222 @@
+---
+title: "Authentication"
+description: "Authenticate with the DebugBundle API using project tokens, member tokens, or browser sessions. Learn when to use each and how to create them."
+icon: KeyRound
+---
+
+## Token Types
+
+DebugBundle uses three distinct authentication artifacts:
+
+| Token Type | Prefix | Scope | Created By |
+|---|---|---|---|
+| **Project token** | `dbundle_proj_` | Ingestion only (`POST /v1/events` + probe config) | Member via CLI, API, or dashboard |
+| **Member token** | `dbundle_mem_` | Full read/manage (incidents, webhooks, tokens, billing) | Member via CLI, API, or dashboard |
+| **Browser session** | Cookie-based | Same as member token | Email code or GitHub OAuth |
+
+### Scope Separation
+
+Project tokens and member tokens serve fundamentally different purposes:
+
+- **Project tokens** are deployed with your application. They can only write events. If compromised, the attacker can only send noise — they cannot read any data.
+- **Member tokens** are used by developers and agents. They can read incidents, manage webhooks, create/revoke tokens, and access billing.
+- **Browser sessions** are issued by the web dashboard login flow. They carry the same permissions as member tokens.
+
+Never use a member token as a project token or vice versa. The API rejects the wrong token type at every endpoint.
+
+---
+
+## Using Project Tokens
+
+### In the SDK
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-node';
+
+DebugBundle.init({
+  projectToken: 'dbundle_proj_xxxxxxxxxxxx',
+  environment: 'production',
+  service: 'my-api',
+});
+```
+
+### Direct API Call
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/events \
+  -H "Authorization: Bearer dbundle_proj_xxxxxxxxxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "events": [
+      {
+        "event_id": "evt_001",
+        "event_type": "exception",
+        "occurred_at": "2025-01-15T10:30:00.000Z",
+        "service": { "name": "my-api", "environment": "production" },
+        "payload": {
+          "type": "TypeError",
+          "message": "Cannot read property id of undefined",
+          "stacktrace": "..."
+        }
+      }
+    ]
+  }'
+```
+
+Response:
+
+```json
+{
+  "accepted": 1,
+  "rejected": 0,
+  "errors": []
+}
+```
+
+---
+
+## Using Member Tokens
+
+### In the CLI
+
+```bash
+# Save token to ~/.debugbundle/auth.json
+debugbundle login dbundle_mem_xxxxxxxxxxxx
+
+# All subsequent commands use the saved token
+debugbundle incidents
+debugbundle inspect inc_abc123
+```
+
+### Direct API Call
+
+```bash
+curl -H "Authorization: Bearer dbundle_mem_xxxxxxxxxxxx" \
+  "https://api.debugbundle.com/v1/incidents?limit=10"
+```
+
+### With a Custom Auth File
+
+```bash
+debugbundle incidents --auth-file /path/to/custom/auth.json
+```
+
+---
+
+## Creating Tokens
+
+### Via CLI
+
+```bash
+# Create a project token
+debugbundle token project create proj_xxxx --label "production-sdk"
+
+# Create a member token
+debugbundle token member create --label "ci-pipeline"
+```
+
+The plaintext token is shown once at creation. It is never stored or retrievable again.
+
+### Via API
+
+```bash
+# Create a project token
+curl -X POST https://api.debugbundle.com/v1/tokens/project/proj_xxxx \
+  -H "Authorization: Bearer dbundle_mem_xxxxxxxxxxxx" \
+  -H "Content-Type: application/json" \
+  -d '{ "label": "production-sdk" }'
+```
+
+Response:
+
+```json
+{
+  "token": {
+    "token_id": "tok_xxxx",
+    "label": "production-sdk",
+    "token_preview": "dbundle_proj_xxxx...xxxx",
+    "plaintext": "dbundle_proj_full_token_shown_once",
+    "created_at": "2025-01-15T10:30:00.000Z"
+  }
+}
+```
+
+### Via Dashboard
+
+Navigate to **Project Settings → Tokens** to create and manage tokens through the web interface.
+
+---
+
+## Token Storage
+
+| Context | Storage | Path |
+|---|---|---|
+| SDK (Node.js) | Environment variable | `DEBUGBUNDLE_PROJECT_TOKEN` |
+| CLI | Auth file | `~/.debugbundle/auth.json` |
+| CI/CD | Secret / environment variable | Varies by provider |
+| Dashboard | HTTP-only cookie | Managed by browser |
+
+### Security
+
+- Tokens are **hashed at rest** (SHA-256). The API stores only the hash.
+- The plaintext is shown **once** at creation and never again.
+- Tokens can be revoked immediately via CLI, API, or dashboard.
+- Token previews (first/last 4 characters) are available for identification.
+
+---
+
+## Browser Sessions
+
+Browser sessions are created by the web dashboard's login flow.
+
+### Email Code Login
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/auth/request-code \
+  -H "Content-Type: application/json" \
+  -d '{ "email": "dev@example.com", "accepted_terms": true }'
+```
+
+Then verify the one-time code to create the browser session:
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/auth/verify-code \
+  -H "Content-Type: application/json" \
+  -d '{ "email": "dev@example.com", "code": "123456" }'
+```
+
+### GitHub OAuth
+
+The dashboard redirects to GitHub for authentication and completes via the callback endpoint. No manual API call needed.
+
+### Session Cookie
+
+After login, the API sets an HTTP-only `dbundle_session` cookie. The dashboard sends this cookie with every request. The session payload also includes `auth_methods.email`, `auth_methods.github`, and a `csrf_token` for browser-session mutations. Browser sessions carry the same permissions as a member token.
+
+---
+
+## Verifying Authentication
+
+### CLI
+
+```bash
+debugbundle whoami
+```
+
+Output:
+
+```
+Authenticated: yes
+Base URL: https://api.debugbundle.com
+Auth File: ~/.debugbundle/auth.json
+Token: dbundle_mem_xxxx...xxxx
+```
+
+### API
+
+Every authenticated endpoint returns `401` with `{ "error": "invalid_member_token" }` or `{ "error": "invalid_project_token" }` if authentication fails. There is no separate "whoami" API endpoint — use any list endpoint to verify.
+
+## Next Steps
+
+- [API Overview](/docs/api) — Full endpoint index and response format
+- [Incidents API](/docs/api/incidents) — Query and manage incidents

@@ -1,0 +1,154 @@
+---
+title: "Troubleshooting"
+description: "Solutions for common DebugBundle issues: SDK not capturing events, CLI errors, webhook delivery failures, and more."
+icon: Wrench
+---
+
+## SDK Not Capturing Events
+
+### Events not appearing in `.debugbundle/local/events/`
+
+1. **Check `enabled` is not `false`:**
+   ```typescript
+   DebugBundle.init({
+     projectToken: 'local',
+     enabled: true,  // Default, but verify it's not overridden
+   });
+   ```
+
+2. **Check the project token:** Use `'local'` for local-only mode or a valid `dbundle_proj_*` token for connected mode.
+
+3. **Check the `projectMode`:** In `local-only` mode, events write to disk. In `connected` mode with `development` environment, events also write to disk. In `connected` mode with `production`, events send to the API.
+
+4. **Flush on exit:** The SDK flushes on process shutdown, but if your process is killed with `SIGKILL`, buffered events are lost. Call `DebugBundle.flush()` if you need to force a flush.
+
+5. **Check `sampleRate`:** A value of `0` drops all events.
+
+### Events not showing in the cloud
+
+1. **Verify the project token:** Run `debugbundle verify cloud --project-id proj_xxx`.
+2. **Check the endpoint:** Ensure `endpoint` in SDK config points to the correct API URL.
+3. **Check rate limits:** The API returns `rate_limited` errors in the response. Check your tier's limit.
+4. **Check network:** Ensure your environment can reach `api.debugbundle.com` (or your self-hosted endpoint).
+
+---
+
+## CLI Issues
+
+### `debugbundle setup` fails
+
+1. **Run from project root:** Setup needs to find `package.json` or a recognized project structure.
+2. **Check permissions:** Setup creates directories and writes files. Ensure write access to the project directory.
+3. **Re-run with `--non-interactive`:** If the interactive prompts hang (e.g., in CI), use `debugbundle setup --non-interactive`.
+
+### `debugbundle process` — "No events to process"
+
+Events must exist in `.debugbundle/local/events/`. Verify:
+
+```bash
+ls .debugbundle/local/events/
+```
+
+If empty, your SDK or log ingestion hasn't written events yet. See [Local Workflow](/docs/cli/local-workflow) for capture steps.
+
+### `debugbundle doctor` shows warnings
+
+| Check | Fix |
+|---|---|
+| `profile: missing` | Run `debugbundle setup` |
+| `profile: stale` | Review and update `.debugbundle/profile.json`, update `last_reviewed_at` |
+| `connection: missing` | Run `debugbundle setup` |
+| `auth: missing` | Run `debugbundle login <member-token>` |
+| `skill: missing` | Run `debugbundle validate --fix` |
+
+### Authentication errors (exit code 2)
+
+1. **Check auth file exists:** `ls ~/.debugbundle/auth.json`
+2. **Re-login:** `debugbundle login dbundle_mem_xxxxxxxxxxxx`
+3. **Verify token is valid:** `debugbundle whoami`
+4. **Check token type:** Cloud commands require a member token (`dbundle_mem_*`), not a project token.
+
+### Cleaning up intentional smoke incidents
+
+Treat `open` incidents as actionable work. After a fix is verified, or after an intentional smoke, dogfood, or verification incident has served its purpose, resolve it.
+
+1. **Review the open queue:** `debugbundle incidents --status open --json`
+2. **Resolve the intentional incidents:** `debugbundle resolve <incident-id>`
+3. **Re-check the queue:** `debugbundle incidents --status open --json`
+
+If you use `jq`, you can batch-resolve common synthetic titles:
+
+```bash
+debugbundle incidents --status open --json \
+  | jq -r '.incidents[] | select(.title | test("smoke test|dogfood|verification|synthetic"; "i")) | .incident_id' \
+  | xargs -n1 debugbundle resolve
+```
+
+---
+
+## Webhook Delivery Failures
+
+### Deliveries stuck in `retrying`
+
+1. **Check your endpoint is reachable:** DebugBundle sends POST requests to your URL. Ensure it returns 2xx.
+2. **Check response time:** If your endpoint is too slow, deliveries may time out.
+3. **Verify the URL:** `debugbundle webhook list --project-id proj_xxx` to confirm the URL is correct.
+
+### Signature verification fails
+
+1. **Use the raw request body:** Parse the HMAC from the raw string body, not the parsed JSON. Middleware that modifies the body (e.g., body parsers) can break verification.
+2. **Use timing-safe comparison:** Always use `crypto.timingSafeEqual()` (Node.js) or `hmac.compare_digest()` (Python).
+3. **Check the signing secret:** The secret is shown once at webhook creation. If lost, delete and recreate the webhook.
+
+### Webhook auto-disabled
+
+After repeated delivery failures, webhooks are automatically disabled. To re-enable:
+
+```bash
+debugbundle webhook update whk_xxx --is-enabled true
+```
+
+Fix the underlying delivery issue first, then re-enable.
+
+---
+
+## Browser SDK Issues
+
+### Events not captured
+
+1. **Check `enabled`:** Verify it's not disabled.
+2. **Check `sessionSampleRate`:** A value of `0` drops all sessions.
+3. **Check ad blockers:** Ad blockers may block requests to `api.debugbundle.com`. Use the relay transport to route through your own backend.
+4. **Check CSP headers:** If your Content Security Policy blocks the DebugBundle endpoint, add it to `connect-src`.
+
+### Relay not working
+
+1. **Verify the relay handler is registered:** Check your Express/Fastify/Next.js route handles POST to `/_debugbundle/browser`.
+2. **Check CORS:** The relay should be same-origin, so CORS shouldn't apply. If using a different origin, configure CORS.
+3. **Check the relay spool:** Run `debugbundle doctor --check-relay` to check for stuck spool files.
+
+---
+
+## Self-Hosted Issues
+
+### Containers fail to start
+
+1. **Check Docker is running:** `docker info`
+2. **Check port conflicts:** The API, Postgres, Redis, and LocalStack all bind to ports. Ensure no conflicts.
+3. **Bootstrap S3:** The API requires the `debugbundle-raw-events` bucket. Run `make s3-bootstrap` or `make infra-bootstrap` before starting.
+
+### API returns 500 errors
+
+1. **Check Postgres is healthy:** `docker compose ps` — Postgres should show "healthy".
+2. **Check Redis is running:** Redis is required for rate limiting and sessions.
+3. **Check container logs:** `docker compose logs api` for error details.
+
+---
+
+## Getting Help
+
+If you're stuck:
+
+1. Run `debugbundle doctor --json` and review the full diagnostic output
+2. Check the [FAQ](/docs/faq) for common questions
+3. Open an issue on GitHub with the doctor output and reproduction steps

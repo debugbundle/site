@@ -1,0 +1,191 @@
+---
+title: Tokens
+description: Understand the authentication token types, scopes, and security model.
+icon: KeyRound
+---
+
+DebugBundle uses three types of authentication tokens, each with a distinct scope
+and purpose. Tokens are never stored in plaintext — they are hashed before persistence
+and shown only once at creation time.
+
+## Token Types
+
+| Type | Prefix | Scope | Used By |
+|------|--------|-------|---------|
+| **Project Token** | `dbundle_proj_` | Write-only ingestion | SDKs |
+| **Member Token** | `dbundle_mem_` | Read + manage | CLI, API, MCP |
+| **Probe Trigger Token** | `dbundle_probe_` | Activate probes | Automation, CI/CD |
+
+### Project Tokens
+
+Project tokens are **write-only**. They allow SDKs to send events to a specific
+project but cannot read data, list incidents, or perform any management operations.
+
+```typescript
+import { DebugBundle } from '@debugbundle/sdk-node';
+
+DebugBundle.init({
+  projectToken: 'dbundle_proj_a1b2c3d4e5f6...',
+});
+```
+
+Project tokens are scoped to a single project. You can create multiple tokens per
+project for different environments or services.
+
+### Member Tokens
+
+Member tokens provide **read and manage** access. They are used for:
+
+- CLI commands (`debugbundle` CLI)
+- Direct API calls
+- MCP tool invocations
+
+```bash
+# CLI authentication
+export DEBUGBUNDLE_TOKEN=dbundle_mem_x9y8z7w6v5u4...
+
+# API call
+curl https://api.debugbundle.com/v1/projects \
+  -H "Authorization: Bearer dbundle_mem_x9y8z7w6v5u4..."
+```
+
+Member tokens can access all projects within the member's organization scope.
+
+### Probe Trigger Tokens
+
+Probe trigger tokens are **single-purpose** tokens that can only activate probes.
+They are designed for CI/CD pipelines and automation where you need to trigger
+data collection without granting broader access.
+
+```bash
+# Activate a probe from CI
+curl -X POST https://api.debugbundle.com/v1/probes/activate \
+  -H "Authorization: Bearer dbundle_probe_m3n4o5p6q7r8..." \
+  -H "Content-Type: application/json" \
+  -d '{ "labels": ["service:payments", "env:staging"] }'
+```
+
+## Token Security
+
+### Hashing at Rest
+
+All tokens are hashed with **SHA-256** before storage. The plaintext token is
+returned exactly once — at creation time. DebugBundle cannot recover a lost token;
+you must create a new one.
+
+```
+Creation response:
+{
+  "token": "dbundle_mem_x9y8z7w6v5u4...",    ← shown once
+  "token_id": "tok_01HXYZ...",
+  "created_at": "2025-01-15T10:30:00Z"
+}
+
+Stored in database:
+{
+  "token_id": "tok_01HXYZ...",
+  "token_hash": "a3f2b1c0d9e8f7...",          ← SHA-256 hash
+  "prefix": "dbundle_mem_"
+}
+```
+
+### Password Hashing
+
+User account passwords use **Argon2** (not SHA-256), providing stronger protection
+against brute-force attacks.
+
+## Creating Tokens
+
+### CLI
+
+```bash
+# Create a project token
+debugbundle tokens create --type project --project-id proj_01HXYZ...
+
+# Create a member token
+debugbundle tokens create --type member
+
+# Create a probe trigger token
+debugbundle tokens create --type probe-trigger --project-id proj_01HXYZ...
+```
+
+### API
+
+```bash
+# Create a project token
+curl -X POST https://api.debugbundle.com/v1/tokens \
+  -H "Authorization: Bearer dbundle_mem_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "project",
+    "project_id": "proj_01HXYZ...",
+    "name": "Production SDK"
+  }'
+```
+
+### MCP
+
+```
+Create a project token for project proj_01HXYZ named "Production SDK"
+```
+
+The MCP tools handle token creation conversationally through `create_project_token`
+and `create_member_token` tools.
+
+## Token Rotation
+
+Rotate tokens without downtime by overlapping old and new tokens:
+
+1. **Create new token** — Generate a replacement before revoking the old one.
+2. **Deploy new token** — Update SDKs, CI/CD, and CLI configurations.
+3. **Verify traffic** — Confirm events are arriving with the new token.
+4. **Revoke old token** — Remove the previous token.
+
+```bash
+# List tokens to find the one to rotate
+debugbundle tokens list --project-id proj_01HXYZ...
+
+# Create replacement
+debugbundle tokens create --type project --project-id proj_01HXYZ... --name "Production SDK v2"
+
+# After deploying the new token, revoke the old one
+debugbundle tokens revoke tok_01HOLD...
+```
+
+## Scope Enforcement
+
+Token scopes are enforced at the API gateway level:
+
+| Operation | Project Token | Member Token | Probe Trigger Token |
+|-----------|:------------:|:------------:|:-------------------:|
+| Send events (POST /v1/events) | ✓ | ✗ | ✗ |
+| List incidents | ✗ | ✓ | ✗ |
+| Download bundles | ✗ | ✓ | ✗ |
+| Manage projects | ✗ | ✓ | ✗ |
+| Manage tokens | ✗ | ✓ | ✗ |
+| Manage webhooks | ✗ | ✓ | ✗ |
+| Manage alerts | ✗ | ✓ | ✗ |
+| Activate probes | ✗ | ✓ | ✓ |
+
+## Best Practices
+
+1. **Use the narrowest scope** — Prefer project tokens for SDKs. Never embed member
+   tokens in client-side code.
+
+2. **Name tokens descriptively** — Include the environment and purpose:
+   `"Production API Server"`, `"Staging CI Pipeline"`.
+
+3. **Rotate on team changes** — When a team member leaves, rotate any member tokens
+   they had access to.
+
+4. **One token per context** — Create separate project tokens for each
+   environment/service pair. This lets you revoke access granularly.
+
+5. **Store securely** — Use environment variables or secret managers. Never commit
+   tokens to source control.
+
+## Next Steps
+
+- [Redaction](/docs/security/redaction) — Automatic sensitive data removal
+- [CLI Token Management](/docs/cli/tokens) — Detailed CLI token commands
+- [API Authentication](/docs/api) — API auth headers and patterns

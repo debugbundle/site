@@ -1,0 +1,101 @@
+---
+title: llms.txt
+description: How AI agents discover DebugBundle capabilities through the llms.txt standard.
+icon: Bot
+---
+
+DebugBundle publishes a `llms.txt` file at the site root that helps AI agents
+and large language models discover product capabilities, documentation structure,
+and integration points.
+
+## What is llms.txt?
+
+The [llms.txt specification](https://llmstxt.org/) is a standard for providing
+machine-readable context to AI systems. Similar to how `robots.txt` guides web
+crawlers, `llms.txt` guides AI agents.
+
+The file is a structured markdown document that tells AI agents:
+
+- What the product does
+- Where to find documentation
+- What APIs and tools are available
+- How to integrate
+
+## DebugBundle's llms.txt
+
+DebugBundle's `llms.txt` is available at:
+
+```
+https://debugbundle.com/llms.txt
+```
+
+It includes:
+
+### Product Summary
+
+A concise description of what DebugBundle is and how it's used — enough
+for an agent to understand when to suggest or use DebugBundle.
+
+### Documentation Links
+
+Structured links to key documentation sections:
+
+- Getting Started guides
+- SDK references (Node.js, Browser, Python, PHP)
+- CLI command reference
+- API endpoint documentation
+- MCP tool catalog
+
+### Integration Points
+
+How agents can interact with DebugBundle:
+
+- **CLI** — Command-line interface for local and cloud operations
+- **MCP** — Model Context Protocol tools for direct agent integration
+- **API** — REST API for programmatic access
+- **Webhooks** — Event-driven automation triggers
+- **SDK** — Application instrumentation
+
+### Agent Skill Reference
+
+A pointer to the `.agents/skills/debugbundle/SKILL.md` skill file structure
+that agents can install in projects for deep integration.
+
+## How Agents Use It
+
+### Discovery
+
+When an AI agent encounters a DebugBundle-instrumented project, it can
+fetch `llms.txt` to understand:
+
+1. What capabilities are available
+2. Which documentation to read for specific tasks
+3. How to authenticate and interact with the API
+4. What MCP tools are available
+
+### Example Agent Flow
+
+```
+1. Agent detects .debugbundle/ directory in project
+2. Agent fetches https://debugbundle.com/llms.txt
+3. Agent learns about available CLI commands and MCP tools
+4. Agent uses debugbundle inspect <incident-id> to investigate issues
+```
+
+### MCP Integration
+
+Agents with MCP access can skip `llms.txt` entirely — the MCP tool
+descriptions provide the same information in a structured, tool-native format.
+`llms.txt` is most valuable for agents that discover DebugBundle through
+web browsing or documentation reading.
+
+## Generation
+
+The `llms.txt` file is generated during the static site build and stays
+in sync with the published documentation. It is not manually maintained.
+
+## Next Steps
+
+- [Agent Workflows](/docs/agent-workflows) — How agents use DebugBundle
+- [Agent Skill File](/docs/agent-workflows/skill-file) — Project-level agent integration
+- [MCP Tools](/docs/mcp/tools) — MCP tool catalog

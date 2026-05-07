@@ -1,0 +1,303 @@
+---
+title: "Browser SDK"
+description: "Capture exceptions, breadcrumbs, network activity, and user interactions from front-end applications. Beacon-safe flush, session controls, and storm suppression included."
+icon: Globe
+---
+
+## Installation
+
+```bash
+npm install @debugbundle/sdk-browser
+```
+
+## Quick Setup
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-browser';
+
+DebugBundle.init({
+  projectToken: 'tok_xxxx',   // Your project token (write-only)
+  environment: 'production',
+  service: 'my-spa',
+});
+```
+
+Calling `init()` automatically:
+- Hooks `window.onerror` and `window.onunhandledrejection`
+- Registers `beforeunload` / `visibilitychange` for unload-safe flushing
+- Starts breadcrumb capture (clicks, route changes, console, network)
+- Fetches remote config once from the relay or API
+
+## Configuration
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `projectToken` | `string` | — | **Required.** Project-scoped write-only token. |
+| `environment` | `string` | `"production"` | Environment name. |
+| `service` | `string` | `document.title` or `"browser-app"` | Service identifier. |
+| `endpoint` | `string` | Auto-resolved | Ingestion endpoint. Prefers relay path, falls back to direct API. |
+| `enabled` | `boolean` | `true` | Kill switch. |
+| `sampleRate` | `number` (0–1) | `1.0` | Event-level sampling rate. |
+| `logLevel` | `LogLevel` | `"warning"` | Minimum log level to capture. |
+| `redactFields` | `string[]` | `["password", "secret", "token", "authorization", "cookie", "ssn", "credit_card"]` | Field names to redact from captured data. |
+| `maxBreadcrumbs` | `number` | `50` | Maximum breadcrumbs retained in the ring buffer. |
+| `breadcrumbsOnErrorOnly` | `boolean` | `false` | When `true`, breadcrumbs attach only to error events, not standalone logs. |
+| `captureNetwork` | `boolean` | `true` | Capture `fetch` and `XMLHttpRequest` calls as breadcrumbs. |
+| `captureClicks` | `boolean` | `true` | Capture click events with CSS selector paths. |
+| `captureRouteChanges` | `boolean` | `true` | Capture `popstate` and `pushState`/`replaceState` route changes. |
+| `captureConsole` | `boolean` | `false` | Opt-in: capture `console.error` and `console.warn`. |
+| `networkFilter` | `BrowserNetworkFilterConfig` | — | Filter captured network requests by URL pattern, header, or status code. |
+| `sessionSampleRate` | `number` (0–1) | `1.0` | Session-level sampling. Decided once at session start. |
+| `maxEventsPerSession` | `number` | `100` | Hard cap per session. After this, events are silently dropped. |
+| `batchSize` | `number` | `25` | Events per flush batch. |
+| `flushInterval` | `number` (ms) | `3000` | Auto-flush interval. |
+| `maxBufferedEvents` | `number` | `500` | Max events in buffer before oldest are dropped. |
+| `requestTimeoutMs` | `number` (ms) | `5000` | HTTP transport timeout. |
+| `onDiagnostic` | `(diagnostic) => void` | — | Callback for SDK self-diagnostic events. |
+
+## Transport Resolution
+
+The Browser SDK resolves its transport endpoint in this order:
+
+1. **Explicit `endpoint`** — If you set `endpoint` in config, the SDK uses it directly.
+2. **Same-origin relay** — The SDK probes for a relay handler at `/_debugbundle/browser` on the current origin. If found, all events route through your backend.
+3. **Direct API** — Falls back to `https://api.debugbundle.com/v1/events`.
+
+The relay path is preferred because it avoids CORS, ad-blocker interference, and content security policy issues.
+
+---
+
+## Breadcrumbs
+
+Breadcrumbs are a chronological trail of user actions and system events leading up to an error. They attach automatically to every captured exception.
+
+### Captured Types
+
+| Type | Source | Example |
+|---|---|---|
+| `click` | DOM click listener | `button.submit-btn` clicked |
+| `navigation` | `popstate` / History API | Navigated to `/dashboard` |
+| `network` | `fetch` / `XMLHttpRequest` | `GET /api/users → 200 (142ms)` |
+| `console` | `console.error`, `console.warn` | `console.error("timeout")` |
+| `custom` | `DebugBundle.addBreadcrumb()` | User-defined context events |
+
+### Manual Breadcrumbs
+
+```typescript
+DebugBundle.addBreadcrumb({
+  type: 'custom',
+  category: 'checkout',
+  message: 'Payment form submitted',
+  data: { paymentMethod: 'card' },
+});
+```
+
+### Ring Buffer
+
+The SDK maintains a fixed-size ring buffer (default: 50). When the buffer is full, the oldest breadcrumb is dropped. On exception capture, the entire buffer attaches to the error event.
+
+---
+
+## Network Capture
+
+When `captureNetwork` is enabled, the SDK intercepts `fetch` and `XMLHttpRequest` to log:
+- Method and URL
+- Response status code
+- Duration (ms)
+- Request/response content length
+
+### Network Filtering
+
+Use `networkFilter` to control what gets captured:
+
+```typescript
+DebugBundle.init({
+  projectToken: 'tok_xxxx',
+  captureNetwork: true,
+  networkFilter: {
+    denyUrls: [/analytics\.example\.com/, /\/health$/],
+    allowUrls: [/\/api\//],
+    captureRequestHeaders: ['content-type', 'x-request-id'],
+    captureResponseHeaders: ['x-request-id'],
+    captureRequestBody: false,
+    captureResponseBody: false,
+  },
+});
+```
+
+| Filter Option | Type | Description |
+|---|---|---|
+| `denyUrls` | `(string \| RegExp)[]` | URLs matching any pattern are excluded. |
+| `allowUrls` | `(string \| RegExp)[]` | If set, only matching URLs are captured. |
+| `captureRequestHeaders` | `string[]` | Allowlist of request headers to capture. |
+| `captureResponseHeaders` | `string[]` | Allowlist of response headers to capture. |
+| `captureRequestBody` | `boolean` | Capture request body (default: `false`). |
+| `captureResponseBody` | `boolean` | Capture response body (default: `false`). |
+
+Sensitive headers (`authorization`, `cookie`) are always redacted regardless of allowlist.
+
+---
+
+## Session Controls
+
+### Session Sampling
+
+`sessionSampleRate` determines whether an entire session is captured. The decision is made once when the session starts and persists for that session, so you get either full context or nothing.
+
+```typescript
+DebugBundle.init({
+  projectToken: 'tok_xxxx',
+  sessionSampleRate: 0.1,  // Capture 10% of sessions
+});
+```
+
+### Per-Session Event Cap
+
+`maxEventsPerSession` prevents runaway event volume from a single user session:
+
+```typescript
+DebugBundle.init({
+  projectToken: 'tok_xxxx',
+  maxEventsPerSession: 50,  // Hard cap per session
+});
+```
+
+### Session API
+
+```typescript
+// Get current session ID
+const sessionId = DebugBundle.getSessionId();
+
+// Reset session (e.g., on logout)
+DebugBundle.resetSession();
+```
+
+---
+
+## Trace Correlation
+
+The Browser SDK adds an `X-DebugBundle-Trace-Id` header to outgoing `fetch` requests. Your backend SDK reads this header to correlate frontend and backend events into a single incident timeline.
+
+```typescript
+// Automatic — no setup needed if captureNetwork is enabled
+// The header is added to all fetch requests to same-origin URLs
+
+// To include cross-origin URLs:
+DebugBundle.init({
+  projectToken: 'tok_xxxx',
+  traceOrigins: ['https://api.example.com'],
+});
+```
+
+---
+
+## Device Context
+
+Every event includes automatically collected device context from the browser runtime:
+
+| Field | Example |
+|---|---|
+| `userAgent` | `Mozilla/5.0 ... Chrome/125.0.6422.142 Safari/537.36` |
+| `browser` | `Chrome 125.0.6422.142` |
+| `os` | `macOS 15.1` |
+| `deviceType` | `desktop` |
+| `screen` | `2560x1440` |
+| `viewport` | `1280x720` |
+| `devicePixelRatio` | `2` |
+| `touchCapable` | `false` |
+| `language` | `en-US` |
+| `connectionType` | `4g` |
+| `colorSchemePreference` | `dark` |
+
+This metadata improves incident triage, but it also increases the amount of browser-identifying context attached to each event. In combination, fields such as user agent, screen size, viewport, language, touch capability, connection type, and color-scheme preference can contribute to browser fingerprinting.
+
+If your privacy posture does not allow that level of client metadata, do not deploy the Browser SDK on those surfaces. There is no field-level device-context toggle today; the safe boundary is to keep capture server-side only or avoid browser instrumentation for the affected application.
+
+---
+
+## Manual Capture
+
+### Exceptions
+
+```typescript
+try {
+  await riskyClientOperation();
+} catch (error) {
+  DebugBundle.captureException(error, {
+    tags: { component: 'checkout-form' },
+  });
+}
+```
+
+### Logs
+
+```typescript
+DebugBundle.captureLog('Feature flag loaded', 'info', {
+  tags: { feature: 'new-checkout' },
+});
+```
+
+### Context
+
+```typescript
+DebugBundle.setContext('user', { id: '123', plan: 'team' });
+DebugBundle.setContext('feature-flags', { newCheckout: true });
+```
+
+---
+
+## Unload-Safe Flushing
+
+The SDK ensures events are delivered even when the user navigates away or closes the tab:
+
+1. **`visibilitychange` → hidden**: Triggers immediate flush via `navigator.sendBeacon()`
+2. **`beforeunload`**: Fallback flush via `fetch()` with `keepalive: true`
+3. **Beacon payload limit**: If the payload exceeds the browser's beacon limit (~64 KB), the SDK splits into multiple beacon calls
+
+No events are lost during normal page navigation, tab close, or browser quit.
+
+---
+
+## Volume Control
+
+The Browser SDK enforces the same storm suppression as the Node SDK:
+
+| Control | Threshold | Behavior |
+|---|---|---|
+| **Duplicate dedup** | 3 events in 30s | Identical events beyond the 3rd are suppressed |
+| **Loop detection** | 10+ events in 2s | Enters suppression mode |
+| **Suppression checkpoint** | Every 30s | One aggregate `error_suppressed` event |
+| **Auto-recovery** | 60s silence | Resets to normal capture |
+
+Combined with `sessionSampleRate` and `maxEventsPerSession`, you have three independent layers of volume control.
+
+---
+
+## Trigger Tokens
+
+Trigger tokens let support teams or internal tools force-enable capture for a specific user session, even if that session was excluded by sampling.
+
+```typescript
+// Append ?_dbtoken=<trigger-token> to any page URL
+// or programmatically:
+DebugBundle.activateTriggerToken('trg_xxxx');
+```
+
+When activated, the SDK overrides `sessionSampleRate` and enables full capture for the remainder of that session.
+
+---
+
+## Safety Guarantees
+
+The Browser SDK is designed to be invisible to your application:
+
+- **Never throws** — All SDK code runs inside `try/catch`. Failures are swallowed silently.
+- **Never blocks rendering** — Event capture and flush are asynchronous.
+- **Never mutates user data** — Events are serialized from copies, never references.
+- **Minimal bundle size** — Tree-shakeable, no heavy dependencies.
+- **CSP-friendly** — No `eval()`, no inline scripts, no dynamic code generation.
+
+## Next Steps
+
+- [Node.js SDK](/docs/sdks/node) — Server-side capture with framework and logger integrations
+- [SDKs Overview](/docs/sdks) — Universal interface and language support matrix

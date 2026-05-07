@@ -1,0 +1,156 @@
+---
+title: Pricing
+description: Free, Solo, and Team tiers — what's included, unlimited projects, and allowance capacity.
+icon: CreditCard
+---
+
+DebugBundle offers three tiers designed for different stages of adoption.
+Every tier includes the core debugging experience. Paid tiers add
+collaboration, cloud automation, and higher operational limits.
+
+## Tier Comparison
+
+| | Free | Solo | Team |
+|---|---|---|---|
+| **Price** | $0 | $2.99/mo | $49/mo |
+| **Projects** | Unlimited | Unlimited | Unlimited |
+| **Included capacity** | Get-started capacity | 2 included capacity units | 10 included capacity units |
+| **Extra capacity units** | — | +$1.99/unit/mo | +$4.99/unit/mo |
+| **Members** | 1 | 1 | 5 |
+| **Bundle retention** | 7 days | 30 days | 90 days |
+| **Raw event retention** | 7 days | 14 days | 30 days |
+| **Webhooks** | Yes | Yes | Yes |
+| **GitHub automation** | No | Yes | Yes |
+| **Email alerts** | Basic | Configurable | Advanced |
+| **Slack integration** | — | — | Yes |
+| **Remote probes** | — | Yes | Yes |
+| **Improvement bundles** | Local only | Local only | Cloud-automated |
+| **Shared dashboards** | — | — | Yes |
+| **Priority support** | — | — | Yes |
+
+## Free
+
+Best-effort trial tier. Enough to instrument multiple projects and see
+the full capture → bundle → investigation workflow.
+
+**Includes:**
+- Unlimited projects
+- Get-started capacity
+- 1 member (owner)
+- Webhooks and basic email alerts
+- No GitHub automation
+- Always-on probes (local only)
+- 7-day bundle and event retention
+- Full self-hosted option (unlimited)
+
+**Limitations:**
+- No extra capacity units
+- No remote probe activation
+- No Slack integration
+- No shared dashboards
+- Lower ingestion and retrieval rate limits
+
+## Solo — $2.99/month
+
+For independent developers and agent-driven projects. Paid plans support
+unlimited projects, and Solo starts with a small base of shared allowance
+capacity that you can expand cheaply.
+
+**Includes everything in Free, plus:**
+- Unlimited projects
+- 2 included capacity units
+- Extra capacity units at $1.99/unit/month
+- 30-day bundle retention
+- 14-day raw event retention
+- Remote probe activation
+- GitHub automation with dispatch rules and delivery history
+- Configurable alerts
+- Higher rate limits
+
+**Solo is designed for:**
+- Independent developers with multiple small projects
+- Agent-driven development workflows
+- Side projects that need real debugging
+
+## Team — $49/month
+
+Collaboration tier for teams that need shared visibility, automation,
+and higher operational limits.
+
+**Includes everything in Solo, plus:**
+- Unlimited projects
+- 10 included capacity units
+- Extra capacity units at $4.99/unit/month
+- 5 team members
+- 90-day bundle retention
+- 30-day raw event retention
+- Cloud-automated improvement bundles
+- Slack integration
+- Shared dashboards and team views
+- GitHub automation with longer delivery history windows
+- Member invite flow
+- Priority support
+- Higher rate limits
+
+## Allowance Capacity
+
+Paid plans support unlimited projects. Included and purchased capacity
+units determine how much shared hosted allowance your account gets.
+
+Capacity units expand shared allowance capacity while project creation stays
+unlimited.
+
+```
+Solo plan + 3 extra units = 5 total allowance units
+You can still create unlimited projects
+All projects share the combined allowance pool
+```
+
+### Adding Capacity
+
+Extra capacity units are added instantly and prorated to your billing cycle:
+
+```bash
+debugbundle billing capacity increase --target-additional-capacity-units 2
+```
+
+### Reducing Capacity
+
+Capacity reductions are scheduled for the next billing period boundary — they
+don't take effect immediately to prevent mid-cycle disruption:
+
+```bash
+# Schedule a reduction for next billing period
+debugbundle billing capacity schedule-reduction --target-additional-capacity-units 3
+
+# Cancel a pending reduction
+debugbundle billing capacity cancel-reduction
+```
+
+## Self-Hosting
+
+Self-hosting is always free with unlimited projects. Run the full stack
+on your own infrastructure using Docker Compose.
+
+Self-hosted deployments don't require a paid tier. You get the complete
+DebugBundle experience with no restrictions.
+
+[Self-Hosting Guide →](/docs/self-hosting)
+
+## When to Upgrade
+
+| Situation | Recommended Tier |
+|-----------|-----------------|
+| Trying DebugBundle for the first time | Free |
+| Solo developer who wants hosted debugging without team features | Solo |
+| Need more shared allowance capacity on a paid plan | Solo + extra units |
+| Small team needing shared incident visibility | Team |
+| Team using Slack for incident alerts | Team |
+| Want cloud-automated improvement bundles | Team |
+| Want full control over infrastructure | Free (self-hosted) |
+
+## Next Steps
+
+- [Billing](/docs/billing) — How billing works (Stripe, metering, lifecycle)
+- [Self-Hosting](/docs/self-hosting) — Run DebugBundle on your infrastructure
+- [Capture Policy](/docs/capture-policy) — Control what events your SDKs capture

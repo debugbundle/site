@@ -1,0 +1,80 @@
+---
+title: Project Setup
+description: Configure your DebugBundle project with profiles, connection modes, and environment settings.
+icon: Settings
+---
+
+Every DebugBundle project lives in a `.debugbundle/` directory at your repository root.
+This directory contains all configuration, local event storage, and generated bundles.
+
+## Directory Structure
+
+```
+.debugbundle/
+├── profile.json          # Project identity and service map
+├── local/
+│   ├── connection.json   # Cloud connection and delivery settings
+│   ├── events/           # Raw local event files
+│   ├── state.json        # Grouped local incident state
+│   └── browser-relay-spool/
+└── bundles/
+  ├── local/           # Generated local bundles
+  │   └── reproductions/
+  └── cloud/           # Downloaded cloud bundles
+```
+
+## Getting Started
+
+Initialize a project with the CLI:
+
+```bash
+debugbundle setup
+```
+
+This creates the local scaffold with a `profile.json` based on your repository
+structure and a `.debugbundle/local/connection.json` file defaulting to local-only mode.
+
+## Configuration Files
+
+| File | Purpose | Reference |
+|------|---------|-----------|
+| `profile.json` | Project identity, services, languages, deployment | [Profile](/docs/project-setup/profile) |
+| `local/connection.json` | Cloud mode, delivery settings, environment config | [Connect to Cloud](/docs/project-setup/connect-to-cloud) |
+
+## Operating Modes
+
+DebugBundle supports two operating modes:
+
+| Mode | Description | Best For |
+|------|-------------|----------|
+| **Local-only** | All processing happens on your machine. No cloud, no network. | Solo development, air-gapped environments |
+| **Connected** | Events can be sent to DebugBundle Cloud for team-wide visibility. | Teams, CI/CD, production monitoring |
+
+See [Local-Only Mode](/docs/project-setup/local-only) and
+[Connect to Cloud](/docs/project-setup/connect-to-cloud) for detailed guides.
+
+## Environment Delivery
+
+In connected mode, you control which environments send events to the cloud and which
+stay local:
+
+```json
+{
+  "environments": {
+    "local": { "delivery": "local-only" },
+    "development": { "delivery": "local-only" },
+    "staging": { "delivery": "local-only" },
+    "production": { "delivery": "cloud-enabled" }
+  }
+}
+```
+
+This lets you keep local and pre-production investigation fully offline while sending
+production events to the cloud for team visibility.
+
+## Next Steps
+
+- [Profile Configuration](/docs/project-setup/profile) — Service map and project identity
+- [Local-Only Mode](/docs/project-setup/local-only) — Offline-first development
+- [Connect to Cloud](/docs/project-setup/connect-to-cloud) — Enable cloud delivery
+- [Capture Policy](/docs/capture-policy) — Control what events are captured

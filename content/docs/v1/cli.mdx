@@ -1,0 +1,37 @@
+---
+title: "CLI reference"
+description: "The CLI reference is grounded in the shipped command surface, with the complete command index published under the generated reference subtree."
+---
+
+<TerminalExample
+  title="Representative commands"
+  lines={[
+    'debugbundle setup --non-interactive',
+    'debugbundle incidents --json',
+    'debugbundle doctor --check-relay',
+  ]}
+/>
+
+## Incident hygiene
+
+Treat `open` incidents as actionable work. Once a fix is verified, or once a smoke, dogfood, or verification incident has served its purpose, resolve it so the open queue stays meaningful.
+
+### Smoke-test cleanup recipe
+
+Review open incidents and resolve the intentionally generated ones:
+
+```bash
+debugbundle incidents --status open --json
+debugbundle resolve <incident-id>
+debugbundle incidents --status open --json
+```
+
+If you want a title-based batch cleanup and already have `jq` available:
+
+```bash
+debugbundle incidents --status open --json \
+  | jq -r '.incidents[] | select(.title | test("smoke test|dogfood|verification|synthetic"; "i")) | .incident_id' \
+  | xargs -n1 debugbundle resolve
+```
+
+[Open the generated CLI command reference](/docs/v1/reference/cli-commands/).

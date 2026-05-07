@@ -1,0 +1,166 @@
+---
+title: Webhook Verification
+description: Verify the authenticity and integrity of DebugBundle webhook deliveries using HMAC-SHA256 signatures.
+icon: ShieldCheck
+---
+
+Every webhook delivery from DebugBundle includes an HMAC-SHA256 signature so you can verify
+that the payload is authentic and hasn't been tampered with.
+
+## Signature Header
+
+Each delivery includes the signature in the `X-DebugBundle-Signature` header:
+
+```
+X-DebugBundle-Signature: sha256=a1b2c3d4e5f6...
+```
+
+The value is the hex-encoded HMAC-SHA256 digest of the raw request body, computed
+using your webhook's signing secret as the key.
+
+## Verification Algorithm
+
+1. Read the raw request body as a UTF-8 string (before any JSON parsing).
+2. Compute the HMAC-SHA256 of the body using your webhook signing secret.
+3. Compare the computed digest with the value in `X-DebugBundle-Signature` (minus the `sha256=` prefix).
+4. Use constant-time comparison to prevent timing attacks.
+
+## Implementation Examples
+
+### Node.js
+
+```js
+import { createHmac, timingSafeEqual } from "node:crypto";
+
+function verifyWebhookSignature(rawBody, signatureHeader, secret) {
+  const expected = createHmac("sha256", secret)
+    .update(rawBody, "utf8")
+    .digest("hex");
+
+  const received = signatureHeader.replace("sha256=", "");
+
+  if (expected.length !== received.length) {
+    return false;
+  }
+
+  return timingSafeEqual(
+    Buffer.from(expected, "hex"),
+    Buffer.from(received, "hex")
+  );
+}
+```
+
+### Python
+
+```python
+import hashlib
+import hmac
+
+def verify_webhook_signature(raw_body: bytes, signature_header: str, secret: str) -> bool:
+    expected = hmac.new(
+        secret.encode("utf-8"),
+        raw_body,
+        hashlib.sha256
+    ).hexdigest()
+
+    received = signature_header.removeprefix("sha256=")
+
+    return hmac.compare_digest(expected, received)
+```
+
+### PHP
+
+```php
+function verifyWebhookSignature(
+    string $rawBody,
+    string $signatureHeader,
+    string $secret
+): bool {
+    $expected = hash_hmac('sha256', $rawBody, $secret);
+    $received = str_replace('sha256=', '', $signatureHeader);
+
+    return hash_equals($expected, $received);
+}
+```
+
+## Express.js Middleware
+
+A complete middleware that verifies webhook signatures before processing:
+
+```js
+import { createHmac, timingSafeEqual } from "node:crypto";
+import express from "express";
+
+const WEBHOOK_SECRET = process.env.DEBUGBUNDLE_WEBHOOK_SECRET;
+
+function webhookVerification(req, res, next) {
+  const signature = req.headers["x-debugbundle-signature"];
+  if (!signature) {
+    return res.status(401).json({ error: "missing_signature" });
+  }
+
+  const expected = createHmac("sha256", WEBHOOK_SECRET)
+    .update(req.body, "utf8")
+    .digest("hex");
+
+  const received = signature.replace("sha256=", "");
+
+  if (
+    expected.length !== received.length ||
+    !timingSafeEqual(Buffer.from(expected, "hex"), Buffer.from(received, "hex"))
+  ) {
+    return res.status(401).json({ error: "invalid_signature" });
+  }
+
+  next();
+}
+
+const app = express();
+
+// Use raw body for signature verification
+app.post(
+  "/webhooks/debugbundle",
+  express.raw({ type: "application/json" }),
+  webhookVerification,
+  (req, res) => {
+    const event = JSON.parse(req.body.toString());
+    console.log("Verified webhook event:", event.event || event.event_type);
+    res.status(200).json({ received: true });
+  }
+);
+```
+
+## Security Best Practices
+
+- **Always verify signatures** in production. Never skip verification.
+- **Use raw request body** for computing the signature — parse JSON only after verification.
+- **Use constant-time comparison** (`timingSafeEqual`, `hmac.compare_digest`, `hash_equals`)
+  to prevent timing side-channel attacks.
+- **Store secrets securely** — use environment variables or a secret manager, never hard-code.
+- **Rotate secrets periodically** — create a new webhook with a new secret, verify it works,
+  then delete the old webhook.
+- **Reject unsigned requests** — return 401 if the signature header is missing.
+- **Log verification failures** — monitor for unexpected failures that could indicate
+  misconfiguration or attack attempts.
+
+## Testing Webhooks
+
+Use the webhook test endpoint to send a test delivery:
+
+```bash
+# CLI
+debugbundle webhooks test --webhook-id wh_01H...
+
+# API
+curl -X POST https://api.debugbundle.com/v1/webhooks/wh_01H.../test \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+Test deliveries use the same signing mechanism as real deliveries — your verification
+code will work identically for both.
+
+## Next Steps
+
+- [Webhook Events](/docs/webhooks/events) — Event types and payload schemas
+- [Webhooks API](/docs/api/webhooks) — Manage webhook endpoints
+- [Security](/docs/security) — DebugBundle security overview

@@ -1,0 +1,197 @@
+---
+title: Alert Management
+description: Configure alert channels and conditions with the DebugBundle CLI.
+icon: Bell
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The CLI provides CRUD operations for alert rules. Alerts notify your team through various channels when incident conditions are met.
+
+## Channels
+
+| Channel | Description | Config Required |
+|---------|-------------|-----------------|
+| `email` | Email notification | `recipient_email` |
+| `slack` | Slack webhook message | `webhook_url`, optional `channel` |
+| `pagerduty` | PagerDuty incident trigger | `routing_key` |
+| `opsgenie` | Opsgenie alert | `api_key` |
+
+## Condition Types
+
+| Condition | Trigger |
+|-----------|---------|
+| `incident_opened` | A new incident is created. |
+| `incident_spike` | An unusual spike in incident occurrences is detected. |
+| `severity_threshold` | An incident's severity exceeds the configured minimum. |
+
+## List Alerts
+
+```bash
+debugbundle alert list --project-id proj_01HXYZ...
+```
+
+Output:
+
+```json
+{
+  "alerts": [
+    {
+      "alert_id": "alt_01HABC...",
+      "project_id": "proj_01HXYZ...",
+      "channel": "slack",
+      "condition_type": "incident_opened",
+      "service_id": null,
+      "severity_min": "high",
+      "is_enabled": true,
+      "config": {
+        "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx",
+        "channel": "#incidents"
+      }
+    }
+  ]
+}
+```
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--project-id` | `string` | — | **Required.** Project to list alerts for. |
+| `--limit` | `number` | `50` | Maximum number of alerts to return. |
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+## Create Alert
+
+### Email Alert
+
+```bash
+debugbundle alert create \
+  --project-id proj_01HXYZ... \
+  --channel email \
+  --condition incident_opened \
+  --severity-min high \
+  --config-json '{"recipient_email": "oncall@mycompany.com"}'
+```
+
+### Slack Alert
+
+```bash
+debugbundle alert create \
+  --project-id proj_01HXYZ... \
+  --channel slack \
+  --condition incident_spike \
+  --config-json '{"webhook_url": "https://hooks.slack.com/services/T.../B.../xxx", "channel": "#incidents"}'
+```
+
+### PagerDuty Alert
+
+```bash
+debugbundle alert create \
+  --project-id proj_01HXYZ... \
+  --channel pagerduty \
+  --condition severity_threshold \
+  --severity-min critical \
+  --config-json '{"routing_key": "your-pagerduty-routing-key"}'
+```
+
+### Opsgenie Alert
+
+```bash
+debugbundle alert create \
+  --project-id proj_01HXYZ... \
+  --channel opsgenie \
+  --condition incident_opened \
+  --severity-min high \
+  --config-json '{"api_key": "your-opsgenie-api-key"}'
+```
+
+### Create Options
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--project-id` | `string` | — | **Required.** Project to create the alert for. |
+| `--channel` | `string` | — | **Required.** Alert channel: `email`, `slack`, `pagerduty`, `opsgenie`. |
+| `--condition` | `string` | — | **Required.** Condition type: `incident_opened`, `incident_spike`, `severity_threshold`. |
+| `--service-id` | `string` | — | Scope alert to a specific service. |
+| `--severity-min` | `string` | — | Minimum severity to trigger: `low`, `medium`, `high`, `critical`. |
+| `--config-json` | `string` | — | Channel-specific configuration as JSON string. |
+| `--is-enabled` | `boolean` | `true` | Whether the alert is active. |
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+## Update Alert
+
+```bash
+debugbundle alert update alt_01HABC... \
+  --severity-min critical \
+  --is-enabled true
+```
+
+Partial update — only the specified fields are changed.
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `--channel` | `string` | Update channel type. |
+| `--condition` | `string` | Update condition type. |
+| `--service-id` | `string` | Update service scope (use `null` to clear). |
+| `--severity-min` | `string` | Update minimum severity (use `null` to clear). |
+| `--config-json` | `string` | Update channel configuration (use `null` to clear). |
+| `--is-enabled` | `boolean` | Enable or disable the alert. |
+| `--auth-file` | `string` | Path to auth state file. |
+| `--json` | `boolean` | Output as JSON. |
+
+## Delete Alert
+
+```bash
+debugbundle alert delete alt_01HABC...
+```
+
+Permanently removes the alert rule. No further notifications are sent.
+
+## Channel Configuration Reference
+
+### Email
+
+```json
+{
+  "recipient_email": "oncall@mycompany.com"
+}
+```
+
+### Slack
+
+```json
+{
+  "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx",
+  "channel": "#incidents"
+}
+```
+
+<Callout type="info">
+  Create a Slack Incoming Webhook at [api.slack.com/messaging/webhooks](https://api.slack.com/messaging/webhooks) and use the webhook URL in your alert configuration.
+</Callout>
+
+### PagerDuty
+
+```json
+{
+  "routing_key": "your-integration-routing-key"
+}
+```
+
+The routing key comes from a PagerDuty Events API v2 integration.
+
+### Opsgenie
+
+```json
+{
+  "api_key": "your-opsgenie-api-key"
+}
+```
+
+## Next Steps
+
+- [Webhook Management](/docs/cli/webhooks) — Manage webhook subscriptions
+- [Alerts](/docs/alerts) — Alert system concepts and architecture
+- [Cloud Workflow](/docs/cli/cloud-workflow) — Full cloud workflow overview
+- [API Alerts](/docs/api/alerts) — Alert API endpoints

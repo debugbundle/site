@@ -1,0 +1,264 @@
+---
+title: "Webhooks"
+description: "Receive real-time notifications when incidents are created, updated, resolved, or reopened. HMAC-SHA256 signed, with automatic retry and delivery tracking."
+icon: Webhook
+---
+
+## Overview
+
+DebugBundle webhooks deliver real-time HTTP POST notifications to your endpoints when incidents and bundles change. Use webhooks to:
+
+- Alert your team in Slack, Discord, or PagerDuty
+- Trigger CI/CD pipelines on incident creation
+- Sync incident state to external issue trackers
+- Build custom dashboards and monitoring
+
+## Event Types
+
+| Event | Trigger |
+|---|---|
+| `bundle.created` | A new debug bundle is generated for an incident |
+| `bundle.updated` | An existing bundle receives additional events |
+| `bundle.resolved` | An incident is marked resolved |
+| `bundle.reopened` | A previously resolved incident receives new events |
+| `improvement_bundle.created` | An improvement analysis bundle is generated |
+| `incident.spike_detected` | An incident's occurrence rate spikes |
+| `verification.passed` | Webhook verification test succeeded |
+| `verification.failed` | Webhook verification test failed |
+
+## Creating a Webhook
+
+### Via CLI
+
+```bash
+debugbundle webhook create \
+  --project-id proj_xxx \
+  --url https://example.com/webhooks/debugbundle \
+  --event bundle.created,bundle.resolved,bundle.reopened
+```
+
+### Via API
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/webhooks \
+  -H "Authorization: Bearer dbundle_mem_xxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_id": "proj_xxx",
+    "url": "https://example.com/webhooks/debugbundle",
+    "events": ["bundle.created", "bundle.resolved", "bundle.reopened"]
+  }'
+```
+
+Response includes a `signing_secret` — save it immediately. It is shown once and never again.
+
+## Filters
+
+Webhooks support optional filters to narrow which events trigger delivery:
+
+| Filter | Type | Description |
+|---|---|---|
+| `environment` | `string[]` | Only deliver for these environments |
+| `service` | `string[]` | Only deliver for these services |
+| `severity_min` | `string` | Minimum severity: `low`, `medium`, `high`, `critical` |
+| `bundle_type` | `string[]` | Filter by bundle type: `failure`, `improvement` |
+| `verification` | `boolean` | Include or exclude verification events |
+
+```bash
+debugbundle webhook create \
+  --project-id proj_xxx \
+  --url https://example.com/webhooks/critical \
+  --event bundle.created \
+  --environment production \
+  --severity-min high
+```
+
+---
+
+## Payload Structure
+
+### Bundle Lifecycle Events
+
+`bundle.created`, `bundle.updated`, `bundle.resolved`, `improvement_bundle.created`:
+
+```json
+{
+  "event": "bundle.created",
+  "occurred_at": "2025-01-15T10:30:00.000Z",
+  "project_id": "proj_xxx",
+  "bundle_id": "bun_xxx",
+  "bundle_type": "failure",
+  "severity": "high",
+  "service": "api",
+  "environment": "production",
+  "verification": false,
+  "summary": "TypeError: Cannot read property 'id' of undefined",
+  "links": {
+    "bundle": "https://app.debugbundle.com/bundles/bun_xxx",
+    "reproduction": "https://app.debugbundle.com/bundles/bun_xxx/reproduction"
+  }
+}
+```
+
+### Incident Lifecycle Events
+
+`bundle.reopened`, `incident.spike_detected`:
+
+```json
+{
+  "event_type": "bundle.reopened",
+  "incident_id": "inc_xxx",
+  "project_id": "proj_xxx",
+  "occurred_at": "2025-01-15T10:30:00.000Z",
+  "service_name": "api",
+  "environment": "production",
+  "severity": "high",
+  "regression_after_deploy": true,
+  "deploy_version": "1.2.3",
+  "deploy_commit_sha": "abc123",
+  "deploy_branch": "main",
+  "deploy_deployed_at": "2025-01-15T09:00:00.000Z",
+  "minutes_since_deploy": 90
+}
+```
+
+### Verification Events
+
+`verification.passed`, `verification.failed`:
+
+```json
+{
+  "delivery_id": "del_xxx",
+  "event": "verification.passed",
+  "event_type": "verification.passed",
+  "occurred_at": "2025-01-15T10:30:00.000Z",
+  "project_id": "proj_xxx",
+  "webhook_id": "whk_xxx",
+  "incident_id": "inc_xxx",
+  "test": true,
+  "data": {
+    "message": "Webhook verification passed."
+  }
+}
+```
+
+---
+
+## Signature Verification
+
+Every webhook delivery includes an HMAC-SHA256 signature in the `X-DebugBundle-Signature` header. Always verify this signature before processing the payload.
+
+### Node.js
+
+```typescript
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
+function verifyWebhook(
+  body: string,
+  signature: string,
+  signingSecret: string
+): boolean {
+  const expected = createHmac('sha256', signingSecret)
+    .update(body)
+    .digest('hex');
+
+  return timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected)
+  );
+}
+
+// In your Express handler:
+app.post('/webhooks/debugbundle', (req, res) => {
+  const signature = req.headers['x-debugbundle-signature'];
+  const rawBody = req.body; // Ensure raw string, not parsed JSON
+
+  if (!verifyWebhook(rawBody, signature, process.env.WEBHOOK_SECRET)) {
+    return res.status(401).send('Invalid signature');
+  }
+
+  const event = JSON.parse(rawBody);
+  // Process the event...
+  res.status(200).send('OK');
+});
+```
+
+### Python
+
+```python
+import hashlib
+import hmac
+
+def verify_webhook(body: bytes, signature: str, signing_secret: str) -> bool:
+    expected = hmac.new(
+        signing_secret.encode(),
+        body,
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(signature, expected)
+```
+
+---
+
+## Delivery Lifecycle
+
+| Status | Description |
+|---|---|
+| `pending` | Queued for delivery |
+| `delivered` | 2xx response received |
+| `retrying` | Failed, scheduled for retry |
+| `failed` | All retry attempts exhausted |
+| `disabled` | Webhook auto-disabled after repeated failures |
+
+### Retry Behavior
+
+Failed deliveries retry with exponential backoff. After sustained failures, the webhook is automatically disabled. You can re-enable and retry manually.
+
+### Viewing Deliveries
+
+```bash
+debugbundle webhook deliveries whk_xxx --limit 20
+```
+
+### Retrying a Delivery
+
+```bash
+debugbundle webhook retry whk_xxx del_xxx
+```
+
+---
+
+## Testing
+
+Send a test delivery to verify your endpoint:
+
+```bash
+debugbundle webhook test whk_xxx
+```
+
+By default this sends a `verification.passed` event. To test failure:
+
+```bash
+debugbundle webhook test whk_xxx --event verification.failed
+```
+
+## Managing Webhooks
+
+```bash
+# List webhooks
+debugbundle webhook list --project-id proj_xxx
+
+# Update a webhook
+debugbundle webhook update whk_xxx --url https://new-endpoint.example.com
+
+# Disable a webhook
+debugbundle webhook update whk_xxx --is-enabled false
+
+# Delete a webhook
+debugbundle webhook delete whk_xxx
+```
+
+## Next Steps
+
+- [API Webhooks Endpoints](/docs/api) — Full API reference for webhook CRUD
+- [Security](/docs/security) — DebugBundle's security model

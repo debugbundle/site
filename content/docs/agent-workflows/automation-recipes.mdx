@@ -1,0 +1,161 @@
+---
+title: Automation Recipes
+description: End-to-end GitHub automation recipes using DebugBundle repository dispatch, the reference fetch action, and repository-owned follow-up logic.
+icon: BookOpen
+---
+
+These recipes are the supported GitHub automation path for DebugBundle.
+
+Before you start:
+
+1. Open the `Project GitHub` tab in the DebugBundle web app.
+2. Connect the GitHub App installation and assign a primary repository.
+3. Create at least one GitHub automation rule, either in the web app or with `debugbundle github rules create`.
+4. Add a `DEBUGBUNDLE_TOKEN` secret to the repository so workflows can fetch the full bundle and reproduction.
+
+DebugBundle emits `repository_dispatch` with `event_type: debugbundle.incident`. The workflow then fetches the full context with `debugbundle/action@v1`.
+
+## Recipe 1: Basic GitHub triage workflow
+
+Use this when the repository only needs to print or route incident information.
+
+```yaml
+name: DebugBundle Basic Triage
+
+on:
+  repository_dispatch:
+    types: [debugbundle.incident]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch DebugBundle context
+        uses: debugbundle/action@v1
+        with:
+          incident-id: ${{ github.event.client_payload.incident_id }}
+          debugbundle-token: ${{ secrets.DEBUGBUNDLE_TOKEN }}
+
+      - name: Print the dispatch summary
+        run: |
+          echo "Title: ${{ github.event.client_payload.title }}"
+          echo "Severity: ${{ github.event.client_payload.severity }}"
+          echo "Bundle path: .debugbundle/bundles/cloud/${{ github.event.client_payload.incident_id }}.bundle.json"
+```
+
+Use the checked-in example at `examples/github-actions/basic.yml` if you want a ready-made starting point.
+
+## Recipe 2: Agent-capable workflow
+
+Use this when the repository will hand the fetched bundle to a coding agent, internal script, or reusable workflow.
+
+```yaml
+name: DebugBundle Agent-Capable Workflow
+
+on:
+  repository_dispatch:
+    types: [debugbundle.incident]
+
+jobs:
+  investigate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch DebugBundle context
+        id: debugbundle
+        uses: debugbundle/action@v1
+        with:
+          incident-id: ${{ github.event.client_payload.incident_id }}
+          debugbundle-token: ${{ secrets.DEBUGBUNDLE_TOKEN }}
+
+      - name: Invoke repository-owned automation
+        run: |
+          echo "Bundle path: ${{ steps.debugbundle.outputs.bundle-path }}"
+          echo "Reproduction path: ${{ steps.debugbundle.outputs.reproduction-path }}"
+          echo "Run your coding agent or reusable workflow here."
+```
+
+Use the checked-in example at `examples/github-actions/agent-capable.yml` when you want the workflow skeleton without coupling DebugBundle to a specific agent runtime.
+
+## Recipe 3: Issue creation workflow
+
+Use this when the repository wants a low-friction first automation outcome: create a tracking issue from the dispatch payload and bundle links.
+
+```yaml
+name: DebugBundle Issue Creation Workflow
+
+on:
+  repository_dispatch:
+    types: [debugbundle.incident]
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch DebugBundle context
+        uses: debugbundle/action@v1
+        with:
+          incident-id: ${{ github.event.client_payload.incident_id }}
+          debugbundle-token: ${{ secrets.DEBUGBUNDLE_TOKEN }}
+
+      - name: Open a tracking issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const payload = context.payload.client_payload;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[debugbundle] ${payload.severity}: ${payload.title}`,
+              body: [
+                `Incident: ${payload.incident_id}`,
+                `Bundle: ${payload.links.bundle}`,
+                `Reproduction: ${payload.links.reproduction}`,
+              ].join('\n'),
+            });
+```
+
+Use the checked-in example at `examples/github-actions/issue-creation.yml` if you want a minimal repository-owned follow-up policy.
+
+## Operational notes
+
+- `repository_dispatch` is the only supported GitHub trigger for this integration.
+- DebugBundle owns repo connection, rule evaluation, delivery history, and retry.
+- Your repository owns everything after the workflow starts: issue creation, agent invocation, PR creation, and triage policy.
+- Full bundle JSON is not embedded in the dispatch payload. The workflow fetches it on demand with the DebugBundle member token.
+- The fetch step uses the separately published `debugbundle/action@v1`; the core repo only keeps the example workflow YAML files.
+
+## CLI parity
+
+```bash
+# Inspect the connected repository and installation state
+debugbundle github status --project-id proj_123
+
+# Review existing automation rules
+debugbundle github rules --project-id proj_123
+
+# Review recent deliveries and retry failures when needed
+debugbundle github deliveries --project-id proj_123
+debugbundle github deliveries retry del_123 --project-id proj_123
+```
+
+## Next Steps
+
+- [Agent Skill File](/docs/agent-workflows/skill-file) — How agents discover DebugBundle
+- [MCP Workflows](/docs/mcp/workflows) — MCP-specific agent patterns
+- [Webhook Events](/docs/webhooks/events) — Lifecycle events that feed GitHub automation rules
+- [Pricing](/docs/pricing) — GitHub automation is available on Solo and Team

@@ -1,0 +1,197 @@
+---
+title: MCP Workflows
+description: Practical AI agent workflow patterns using DebugBundle MCP tools.
+icon: Workflow
+---
+
+This page walks through common workflow patterns that AI agents follow when using DebugBundle
+MCP tools. These patterns work with any MCP-compatible agent — GitHub Copilot, Cursor, Cline,
+or custom agents.
+
+## Triage Workflow
+
+The most common workflow: an agent investigates a failing test or user-reported error.
+
+```
+1. list_incidents       → Find matching incidents
+2. get_incident         → Read incident details and severity
+3. get_bundle           → Retrieve the full debug bundle
+4. get_reproduction     → Get reproduction commands
+5. get_logs             → Review raw log context
+6. analyze              → Run deep analysis for root cause
+```
+
+**Example conversation:**
+
+> **User:** "The auth service started throwing 500 errors after yesterday's deploy."
+>
+> The agent calls `list_incidents` filtered by `service: "auth"` and `severity: "high"`.
+> It finds the relevant incident and calls `get_bundle` to retrieve the stack trace,
+> request context, and environment details. Then calls `get_reproduction` to get a
+> cURL command that reproduces the error. Finally, `analyze` produces a root cause
+> hypothesis pointing to a missing environment variable.
+
+## Setup Verification
+
+When starting work on a project, verify that DebugBundle is configured correctly.
+
+```
+1. doctor               → Full connectivity check
+2. verify_local         → Confirm local mode works
+3. verify_cloud         → Confirm cloud mode works (if connected)
+4. smoke                → End-to-end test event
+```
+
+This pattern is useful as a first step when a user says "set up DebugBundle" or when
+debugging connectivity issues.
+
+## Token Rotation
+
+Rotate tokens for security or after a team member leaves.
+
+```
+1. list_project_tokens  → See existing tokens
+2. create_project_token → Create new token with descriptive label
+3. revoke_project_token → Revoke the old token
+```
+
+For member tokens, the pattern is identical using `list_member_tokens`,
+`create_member_token`, and `revoke_member_token`.
+
+**Important:** Update SDK configuration and CI/CD secrets with the new token _before_
+revoking the old one to avoid ingestion downtime.
+
+## Webhook Setup
+
+Configure webhooks for an external notification system.
+
+```
+1. create_webhook       → Create endpoint with URL, events, and signing secret
+2. test_webhook         → Verify delivery reaches the endpoint
+3. list_webhook_deliveries → Confirm successful delivery
+```
+
+If the test delivery fails:
+
+```
+4. list_webhook_deliveries → Check delivery status and response code
+5. update_webhook          → Fix the URL or configuration
+6. test_webhook            → Re-test
+```
+
+## Alert Configuration
+
+Set up alert rules for a newly deployed service.
+
+```
+1. create_alert         → Slack alert for new_incident, severity >= high
+2. create_alert         → Email alert for incident_regressed
+3. create_alert         → Webhook alert for error_spike (to PagerDuty)
+```
+
+## Incident Resolution
+
+After fixing a bug, close out the incident chain.
+
+```
+1. get_incident         → Confirm fix addresses root cause
+2. resolve_incident     → Mark as resolved with a note
+3. list_incidents       → Verify no related open incidents remain
+```
+
+If the incident regresses later:
+
+```
+1. get_incident         → Review the reopened incident
+2. get_bundle           → Compare new bundle with the previous one
+3. analyze              → Check if same root cause or new issue
+```
+
+## Weekly Report Review
+
+Pull weekly reports for a project standup or retrospective.
+
+```
+1. list_weekly_reports  → See available reports
+2. get_weekly_report    → Read the latest analysis
+```
+
+To enable reports for a new project:
+
+```
+1. configure_weekly_reports → Enable and set recipients
+2. generate_weekly_report   → Generate the first report immediately
+```
+
+## Probe-Driven Investigation
+
+When an incident lacks sufficient diagnostic data, activate a probe to collect more.
+
+```
+1. get_incident         → Review what data is available
+2. get_bundle           → Check if bundle has enough context
+3. activate_probe       → Activate probe for the matching label pattern
+4. list_active_probes   → Confirm the probe is active
+5. get_bundle           → Pull updated bundle with probe-enriched data
+6. analyze              → Re-run analysis with richer data
+7. deactivate_probe     → Clean up when done
+```
+
+## Project Management
+
+Create and configure projects directly from the agent conversation.
+
+```
+1. list_projects        → See existing projects
+2. create_project       → Create a new project with name and slug
+3. get_capture_policy   → Check the default capture policy
+4. update_capture_policy → Tune capture settings for the workload
+```
+
+## Member Management
+
+Manage team access and invitations without leaving the agent session.
+
+```
+1. list_members         → See current organization members
+2. invite_member        → Invite a new team member by email and role
+3. list_member_invites  → Track pending invitations
+4. cancel_member_invite → Revoke an invitation if needed
+5. update_member_role   → Change a member's role
+6. remove_member        → Remove a member who has left the team
+```
+
+## Billing Management
+
+Check billing state and manage project capacity.
+
+```
+1. get_billing_summary        → View plan, capacity usage, and scheduled changes
+2. increase_capacity          → Add capacity when the team needs more allowance
+3. schedule_capacity_reduction → Schedule a reduction for the next billing cycle
+4. cancel_capacity_reduction  → Cancel a pending reduction
+```
+
+## Combining Patterns
+
+Real agent sessions often chain multiple patterns. For example, after triaging an incident
+and finding insufficient data:
+
+```
+Triage → Probe-Driven Investigation → Analysis → Resolution
+```
+
+Or when onboarding a new project:
+
+```
+Setup Verification → Token Rotation → Webhook Setup → Alert Configuration
+```
+
+The MCP server is stateless: each tool call is independent. Agents can interleave tools
+from different patterns freely.
+
+## Next Steps
+
+- [MCP Tools Reference](/docs/mcp/tools) — Complete tool catalog
+- [MCP Server](/docs/mcp) — Authentication and configuration
+- [CLI Cloud Workflow](/docs/cli/cloud-workflow) — CLI operations that complement MCP

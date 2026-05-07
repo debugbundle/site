@@ -1,0 +1,204 @@
+---
+title: Browser Relay Setup
+description: Route browser SDK events through your backend for credential isolation and origin validation.
+icon: ArrowLeftRight
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The browser relay lets your Browser SDK send events through your own backend instead of directly to the DebugBundle ingestion API. This keeps your project token on the server and adds origin validation.
+
+## Why Use a Relay?
+
+| Concern | Direct Transport | Relay Transport |
+|---------|-----------------|-----------------|
+| Project token exposure | Token in client-side code | Token stays on server |
+| Origin validation | None | Server validates request origin |
+| Rate limiting | Per-client IP | Centralized per-IP limiting |
+| Durable writes | Browser-only (beacon) | Server-side spool to disk |
+| Works without backend | ✅ | ❌ Requires your backend |
+
+<Callout type="info">
+  If your app has no backend (static site, SPA hosted on CDN), use direct transport instead. The Browser SDK uses beacon/keepalive for reliable delivery on page unload.
+</Callout>
+
+## Architecture
+
+```
+┌──────────────────────────────────────────────────┐
+│  Browser                                         │
+│  ┌─────────────────┐                             │
+│  │  Browser SDK     │──── POST /debugbundle/browser ──┐
+│  │  (relay mode)    │                             │   │
+│  └─────────────────┘                             │   │
+└──────────────────────────────────────────────────┘   │
+                                                       ▼
+┌──────────────────────────────────────────────────┐
+│  Your Backend                                    │
+│  ┌─────────────────┐                             │
+│  │  Relay Handler   │──  validates origin        │
+│  │                  │──  rate limits per-IP      │
+│  │                  │──  attaches project token  │
+│  └────────┬────────┘                             │
+│           │                                      │
+└───────────┼──────────────────────────────────────┘
+            │
+            ▼  POST /v1/events (with project token)
+┌──────────────────────────────────────────────────┐
+│  DebugBundle Ingestion API                       │
+└──────────────────────────────────────────────────┘
+```
+
+## Relay Configuration
+
+The relay handler accepts these options:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `projectToken` | `string` | — | Project token for ingestion auth. |
+| `allowedOrigins` | `string[]` | Auto from Host | Origins permitted to send events. If empty, validates against `Host`/`X-Forwarded-Host`. |
+| `rateLimitPerMinute` | `number` | `60` | Max requests per IP per minute. |
+| `maxBodyBytes` | `number` | `262144` (256 KB) | Max request body size. Requests exceeding this are rejected. |
+| `durableWrite` | `boolean` | `false` | Persist events to disk spool before uploading. Survives server restarts. |
+| `spoolDir` | `string` | — | Directory for durable write spool files. |
+| `endpoint` | `string` | `https://api.debugbundle.com/v1/events` | Override ingestion endpoint (for self-hosted). |
+| `environment` | `string` | — | Override `service.environment` on relayed events. |
+| `service` | `string` | — | Override `service.name` on relayed events. |
+
+### Accepted Event Types
+
+The relay only accepts browser-origin event types:
+
+- `frontend_exception`
+- `error_suppressed`
+- `frontend_breadcrumb`
+- `probe_event`
+
+Server-side event types (`backend_exception`, `request_event`, `log_event`) are rejected with `400 Bad Request`.
+
+## Express
+
+```javascript
+const express = require('express');
+const { debugBundleRelay } = require('@debugbundle/sdk-node');
+
+const app = express();
+
+app.post('/debugbundle/browser', debugBundleRelay({
+  projectToken: process.env.DEBUGBUNDLE_PROJECT_TOKEN,
+  allowedOrigins: ['https://myapp.com', 'https://staging.myapp.com'],
+}));
+
+app.listen(3000);
+```
+
+The Express relay handler parses the request body, validates the origin, applies rate limiting, and forwards accepted events to the ingestion API.
+
+## Fastify
+
+```javascript
+const fastify = require('fastify')();
+const { debugBundleRelayPlugin } = require('@debugbundle/sdk-node');
+
+await fastify.register(debugBundleRelayPlugin, {
+  projectToken: process.env.DEBUGBUNDLE_PROJECT_TOKEN,
+  routePath: '/debugbundle/browser',
+  allowedOrigins: ['https://myapp.com'],
+});
+
+await fastify.listen({ port: 3000 });
+```
+
+The Fastify plugin registers as a standard route plugin. Pass `routePath` to customize the endpoint path (default: `/debugbundle/browser`).
+
+## Next.js (App Router)
+
+```typescript
+// app/api/debugbundle/browser/route.ts
+import { createNextjsRelayHandler } from '@debugbundle/sdk-node';
+
+const handler = createNextjsRelayHandler({
+  projectToken: process.env.DEBUGBUNDLE_PROJECT_TOKEN,
+  allowedOrigins: ['https://myapp.com'],
+});
+
+export async function POST(request: Request): Promise<Response> {
+  return handler(request);
+}
+```
+
+The Next.js handler uses the Web `Request`/`Response` APIs. It extracts the client IP from `X-Forwarded-For` or `X-Real-IP` headers.
+
+## Browser SDK Configuration
+
+Point the Browser SDK at your relay endpoint:
+
+```javascript
+import debugbundle from '@debugbundle/sdk-browser';
+
+debugbundle.init({
+  // No projectToken needed on the client — the relay adds it
+  endpoint: '/debugbundle/browser',
+  transport: 'relay',
+});
+```
+
+<Callout type="warn">
+  When using relay transport, do **not** set `projectToken` in the Browser SDK config. The relay handler adds the token server-side.
+</Callout>
+
+## Origin Validation
+
+The relay validates the request origin to prevent unauthorized event submission:
+
+1. **With `allowedOrigins`:** The relay extracts the origin from the `Origin` header (or falls back to `Referer`). The origin is normalized and compared against the allowlist.
+
+2. **Without `allowedOrigins`:** The relay checks that the request origin matches the `Host` or `X-Forwarded-Host` header (same-origin validation).
+
+Requests that fail origin validation receive `403 Forbidden`.
+
+## Rate Limiting
+
+The relay includes per-IP rate limiting:
+
+- **Default:** 60 requests per minute per IP address
+- **Tracking:** In-memory sliding window
+- **Exceeded:** `429 Too Many Requests` response
+- **Header:** `Retry-After` header included in 429 responses
+
+Configure with `rateLimitPerMinute`:
+
+```javascript
+debugBundleRelay({
+  projectToken: process.env.DEBUGBUNDLE_PROJECT_TOKEN,
+  rateLimitPerMinute: 120, // 2 requests per second
+});
+```
+
+## Durable Writes
+
+For critical applications, enable durable writes to persist events to disk before uploading:
+
+```javascript
+debugBundleRelay({
+  projectToken: process.env.DEBUGBUNDLE_PROJECT_TOKEN,
+  durableWrite: true,
+  spoolDir: '/var/spool/debugbundle',
+});
+```
+
+With durable writes enabled:
+1. Events are written to the spool directory immediately
+2. A background process uploads spooled events to the ingestion API
+3. If the server restarts, unuploaded events are retried on next startup
+
+## Trace Correlation
+
+When using relay transport, the Browser SDK still injects `X-DebugBundle-Trace-Id` headers into all outgoing `fetch()` and `XMLHttpRequest` calls. Your backend SDK middleware reads this header and attaches the trace ID to server-side events, linking frontend breadcrumbs to backend exceptions in the same bundle.
+
+## Next Steps
+
+- [Browser SDK](/docs/sdks/browser) — Full Browser SDK configuration
+- [Node.js SDK](/docs/sdks/node) — Backend SDK with framework integrations
+- [API Authentication](/docs/api/authentication) — Token types and scope separation
+- [Security](/docs/security) — Token security and redaction

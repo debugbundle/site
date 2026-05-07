@@ -1,0 +1,180 @@
+---
+title: Log Ingestion
+description: Ingest log files and watch live logs with debugbundle ingest and debugbundle watch.
+icon: FileInput
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The CLI provides two commands for log-based event capture: `debugbundle ingest` for one-shot file processing and `debugbundle watch` for continuous log tailing.
+
+## Supported Formats
+
+| Format | Flag Value | Description |
+|--------|------------|-------------|
+| **DebugBundle NDJSON** | `debugbundle-ndjson` | Native newline-delimited JSON format. Each line is a complete event envelope. |
+| **PHP error_log** | `php-error` | Standard PHP `error_log()` output format. |
+| **Apache error.log** | `apache-error` | Apache HTTP Server error log format. |
+
+## Ingest a Log File
+
+Process a log file into DebugBundle events in a single pass:
+
+```bash
+debugbundle ingest /var/log/myapp/error.log --format php-error
+```
+
+### How It Works
+
+1. The file is read and parsed using the format-specific parser
+2. Parsed entries are converted to `EventEnvelope[]` using your project profile (service name, environment)
+3. Events are written as an atomic batch file to `.debugbundle/local/events/`
+4. The local processing pipeline runs automatically
+
+### Output
+
+```json
+{
+  "status": "ok",
+  "source_file": "/var/log/myapp/error.log",
+  "format": "php-error",
+  "event_file": "1711234567890-a1b2c3d4-api.events.json",
+  "events_ingested": 42,
+  "process": {
+    "incidents_created": 3,
+    "incidents_updated": 8,
+    "bundles_generated": 3
+  }
+}
+```
+
+### Options
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--format` | `string` | — | **Required.** Log format: `debugbundle-ndjson`, `php-error`, or `apache-error`. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+### Batch File Naming
+
+Event batch files follow this naming convention:
+
+```
+<timestamp>-<digest>-<service>.events.json
+```
+
+| Part | Description |
+|------|-------------|
+| `timestamp` | Last event occurrence timestamp (milliseconds since epoch). |
+| `digest` | `SHA256(filePath + event_ids).slice(0, 8)` — deterministic deduplication key. |
+| `service` | Slugified service name from your project profile. |
+
+## Watch a Log File
+
+Continuously tail a log file and ingest new events as they appear:
+
+```bash
+debugbundle watch --log /var/log/myapp/error.log --format php-error
+```
+
+The watch command:
+
+1. Tracks the current file size and read position
+2. Polls for new content (default: every 1000ms)
+3. Parses new lines using the format parser
+4. Writes event batches to `.debugbundle/local/events/`
+5. Continues until interrupted (Ctrl+C)
+
+### Cloud Mode
+
+Send watched events directly to the ingestion API instead of writing locally:
+
+```bash
+debugbundle watch --cloud \
+  --log /var/log/myapp/error.log \
+  --format php-error
+```
+
+<Callout type="warn">
+  Cloud mode requires a connected project (`connection.json` with `mode: "connected"`) and the `DEBUGBUNDLE_PROJECT_TOKEN` environment variable set.
+</Callout>
+
+### Options
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--log` | `string` | — | **Required.** Path to the log file to watch. |
+| `--format` | `string` | — | **Required.** Log format: `debugbundle-ndjson`, `php-error`, or `apache-error`. |
+| `--cloud` | `boolean` | `false` | Send events to the cloud ingestion API instead of writing locally. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+## DebugBundle NDJSON Format
+
+The native `debugbundle-ndjson` format is a newline-delimited JSON format where each line is a complete event envelope:
+
+```json
+{"event_type":"backend_exception","timestamp":"2026-03-24T10:30:00Z","service":{"name":"api","environment":"production"},"payload":{"error_class":"TypeError","message":"Cannot read properties of undefined","stacktrace":"..."}}
+{"event_type":"log_event","timestamp":"2026-03-24T10:30:01Z","service":{"name":"api","environment":"production"},"payload":{"level":"error","message":"Database connection timeout","fields":{"host":"db-primary","timeout_ms":5000}}}
+```
+
+Each line must be a valid JSON object conforming to the DebugBundle event envelope schema. Fields:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `event_type` | `string` | Yes | One of the 8 canonical event types. |
+| `timestamp` | `string` | Yes | ISO 8601 timestamp. |
+| `service` | `object` | No | `{ name, environment }` — defaults to profile values. |
+| `payload` | `object` | Yes | Event-type-specific payload. |
+| `context` | `object` | No | Arbitrary key-value context. |
+
+## PHP Error Format
+
+The `php-error` parser handles standard PHP `error_log()` output:
+
+```
+[24-Mar-2026 10:30:00 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array in /var/www/app/src/UserService.php:42
+Stack trace:
+#0 /var/www/app/src/Controller.php(18): UserService->getCount()
+#1 {main}
+  thrown in /var/www/app/src/UserService.php on line 42
+[24-Mar-2026 10:30:01 UTC] PHP Warning:  file_get_contents(/tmp/cache.json): Failed to open stream in /var/www/app/src/Cache.php:15
+```
+
+The parser extracts:
+- Error level (Fatal, Warning, Notice, etc.)
+- Error message and class
+- File path and line number
+- Stack trace (when available)
+
+## Apache Error Format
+
+The `apache-error` parser handles Apache HTTP Server error logs:
+
+```
+[Mon Mar 24 10:30:00.123456 2026] [php:error] [pid 1234] [client 192.168.1.1:54321] PHP Fatal error:  Uncaught Exception in /var/www/app/index.php:10
+[Mon Mar 24 10:30:01.654321 2026] [core:error] [pid 1234] [client 192.168.1.1:54322] AH00124: Request exceeded the limit of 10 internal redirects
+```
+
+The parser extracts:
+- Timestamp
+- Module and error level
+- Process ID
+- Client IP
+- Error message
+
+## Pipeline Integration
+
+Ingested events flow through the same pipeline as SDK-captured events:
+
+```
+Log File → Parser → EventEnvelope[] → .debugbundle/local/events/ → process → incidents → bundles
+```
+
+Run `debugbundle process` to trigger processing manually, or rely on the automatic processing that runs after `debugbundle ingest`.
+
+## Next Steps
+
+- [Local Workflow](/docs/cli/local-workflow) — Full local capture-to-inspect flow
+- [Cloud Workflow](/docs/cli/cloud-workflow) — Send events to the cloud with `--cloud`
+- [CLI Setup](/docs/cli/setup) — Project setup and configuration
+- [API Ingestion](/docs/api/ingestion) — Direct event ingestion via API

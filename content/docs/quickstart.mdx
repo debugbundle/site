@@ -1,0 +1,152 @@
+---
+title: "Quickstart"
+description: "Go from zero to your first debug bundle in under 5 minutes. Choose the agent-driven or manual path."
+icon: Rocket
+---
+
+Pick your path:
+
+- **Agent-driven** — Copy a prompt into your AI coding agent and let it handle setup.
+- **Manual** — Run the commands yourself, step by step.
+
+Both paths end with you capturing your first production error and inspecting the resulting debug bundle.
+
+---
+
+## Agent-Driven Path
+
+Copy this prompt into your AI coding agent (Copilot, Cursor, Cline, etc.):
+
+```text
+Install the DebugBundle Node.js SDK in this project and set it up to
+capture unhandled exceptions. Use local-only mode (file transport, no
+cloud account needed). Then trigger a test error and run
+`debugbundle process` to generate a bundle. Show me the resulting
+bundle with `debugbundle inspect`.
+```
+
+The agent will:
+1. Install `@debugbundle/sdk-node`
+2. Run `debugbundle setup` to scaffold the project
+3. Add the SDK initialization to your entry point
+4. Trigger a test error
+5. Process events into a bundle
+6. Show you the result
+
+Skip to [What You'll See](#what-youll-see) below.
+
+---
+
+## Manual Path
+
+### 1. Install the CLI and SDK
+
+```bash
+npm install -g @debugbundle/cli
+npm install @debugbundle/sdk-node
+```
+
+### 2. Scaffold Your Project
+
+```bash
+debugbundle setup
+```
+
+This creates a `.debugbundle/` directory with your project profile and event storage. Add `.debugbundle/local/` to your `.gitignore`.
+
+### 3. Initialize the SDK
+
+Add DebugBundle to your application entry point. This example uses Express, but the SDK works with any Node.js application.
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-node';
+import express from 'express';
+
+DebugBundle.init({
+  projectToken: 'local',       // local-only mode, no cloud account needed
+  environment: 'development',
+  service: 'my-api',
+});
+
+const app = express();
+
+app.get('/test-error', (req, res) => {
+  throw new Error('Test error for DebugBundle quickstart');
+});
+
+// DebugBundle automatically captures unhandled exceptions
+app.use((err, req, res, next) => {
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
+```
+
+### 4. Trigger an Error
+
+```bash
+curl http://localhost:3000/test-error
+```
+
+The SDK captures the exception along with its full context (request, environment, runtime, git info) and writes it to `.debugbundle/local/events/`.
+
+### 5. Process Events into a Bundle
+
+```bash
+debugbundle process
+```
+
+This reads raw events, normalizes them, groups them into incidents, and generates a debug bundle with reproduction artifacts.
+
+### 6. Inspect the Bundle
+
+```bash
+debugbundle inspect
+```
+
+This displays the most recent incident's debug bundle in your terminal.
+
+---
+
+## What You'll See
+
+The bundle contains structured context blocks for the error:
+
+```json
+{
+  "bundle_version": 1,
+  "bundle_type": "failure",
+  "summary": {
+    "title": "Error: Test error for DebugBundle quickstart",
+    "incident_id": "inc_abc123",
+    "severity": "error",
+    "first_seen": "2026-03-24T12:00:00Z",
+    "occurrence_count": 1,
+    "service": "my-api",
+    "environment": "development"
+  },
+  "context": {
+    "error": { "class": "Error", "message": "Test error for DebugBundle quickstart", "stack_trace": "..." },
+    "request": { "method": "GET", "url": "/test-error", "headers": { "..." : "..." } },
+    "runtime": { "language": "node", "version": "22.x", "os": "linux", "arch": "x64" },
+    "git": { "commit": "abc1234", "branch": "main", "dirty": false },
+    "environment": { "name": "development" },
+    "logs": [],
+    "dependencies": { "@debugbundle/sdk-node": "0.x.x", "express": "4.x.x" }
+  },
+  "reproduction": {
+    "curl": "curl -X GET http://localhost:3000/test-error",
+    "httpie": "http GET http://localhost:3000/test-error",
+    "confidence": "high"
+  }
+}
+```
+
+Every field is populated automatically. No manual tagging, no dashboard configuration.
+
+## Next Steps
+
+- [How It Works](/docs/how-it-works) — Understand the full Capture → Ship → Process → Retrieve lifecycle
+- [Installation](/docs/installation) — All installation methods for every SDK and platform
+- [Core Concepts](/docs/core-concepts) — Bundles, incidents, profiles, and event types explained
+- [CLI Local Workflow](/docs/cli/local-workflow) — The complete local-only development flow

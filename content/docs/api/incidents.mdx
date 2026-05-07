@@ -1,0 +1,349 @@
+---
+title: "Incidents API"
+description: "List, inspect, resolve, and retrieve debug bundles and reproduction artifacts for incidents via the REST API."
+icon: Bug
+---
+
+## List Incidents
+
+```
+GET /v1/incidents
+```
+
+**Auth:** Member token or browser session.
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `project_id` | `uuid` | — | Filter by project |
+| `environment` | `string` | — | Filter by environment name |
+| `service` | `string` | — | Filter by service name |
+| `status` | `string` | — | `open`, `resolved`, or `regressed` |
+| `severity` | `string` | — | `low`, `medium`, `high`, or `critical` |
+| `limit` | `integer` | `20` | Page size (1–100) |
+| `cursor` | `string` | — | Opaque cursor from previous response |
+
+### Example
+
+```bash
+curl -H "Authorization: Bearer dbundle_mem_xxx" \
+  "https://api.debugbundle.com/v1/incidents?project_id=proj_xxx&status=open&severity=high&limit=10"
+```
+
+### Response
+
+```json
+{
+  "incidents": [
+    {
+      "incident_id": "inc_abc123",
+      "project_id": "proj_xxx",
+      "service_id": "svc_xxx",
+      "service_name": "api",
+      "environment": "production",
+      "title": "TypeError: Cannot read property 'id' of undefined",
+      "severity": "high",
+      "status": "open",
+      "occurrence_count": 12,
+      "first_seen_at": "2025-01-14T08:00:00.000Z",
+      "last_seen_at": "2025-01-15T10:30:00.000Z",
+      "fingerprint": "fp_xxxx",
+      "bundle_type": "failure"
+    }
+  ],
+  "next_cursor": "2025-01-15T10:30:00.000Z|inc_abc123"
+}
+```
+
+When no more results exist, `next_cursor` is `null`.
+
+---
+
+## Get Incident
+
+```
+GET /v1/incidents/:id
+```
+
+**Auth:** Member token or browser session.
+
+### Example
+
+```bash
+curl -H "Authorization: Bearer dbundle_mem_xxx" \
+  "https://api.debugbundle.com/v1/incidents/inc_abc123"
+```
+
+### Response
+
+```json
+{
+  "incident": {
+    "incident_id": "inc_abc123",
+    "project_id": "proj_xxx",
+    "service_id": "svc_xxx",
+    "service_name": "api",
+    "environment": "production",
+    "title": "TypeError: Cannot read property 'id' of undefined",
+    "severity": "high",
+    "status": "open",
+    "occurrence_count": 12,
+    "first_seen_at": "2025-01-14T08:00:00.000Z",
+    "last_seen_at": "2025-01-15T10:30:00.000Z",
+    "fingerprint": "fp_xxxx",
+    "fingerprint_version": "v1",
+    "matched_fields": ["exception.type", "exception.message", "stacktrace.top_frame"],
+    "bundle_type": "failure",
+    "resolved_at": null
+  }
+}
+```
+
+### Errors
+
+| Status | Error Code | Condition |
+|---|---|---|
+| `401` | `invalid_member_token` | Missing or invalid auth |
+| `404` | `incident_not_found` | Incident does not exist or belongs to another organization |
+
+---
+
+## Resolve Incident
+
+```
+POST /v1/incidents/:id/resolve
+```
+
+**Auth:** Member token or browser session.
+
+### Example
+
+```bash
+curl -X POST -H "Authorization: Bearer dbundle_mem_xxx" \
+  "https://api.debugbundle.com/v1/incidents/inc_abc123/resolve"
+```
+
+### Response
+
+```json
+{
+  "incident": {
+    "incident_id": "inc_abc123",
+    "status": "resolved",
+    "resolved_at": "2025-01-15T11:00:00.000Z"
+  }
+}
+```
+
+If new events arrive matching the fingerprint of a resolved incident, the incident automatically reopens with status `regressed`.
+
+---
+
+## Get Debug Bundle
+
+```
+GET /v1/incidents/:id/bundle
+```
+
+**Auth:** Member token or browser session.
+
+Returns the full debug bundle — a comprehensive context snapshot for the incident.
+
+### Example
+
+```bash
+curl -H "Authorization: Bearer dbundle_mem_xxx" \
+  "https://api.debugbundle.com/v1/incidents/inc_abc123/bundle"
+```
+
+### Response
+
+```json
+{
+  "bundle": {
+    "schema_version": "1.0.0",
+    "bundle_type": "failure",
+    "incident": {
+      "incident_id": "inc_abc123",
+      "title": "TypeError: Cannot read property 'id' of undefined",
+      "severity": "high",
+      "service": "api",
+      "environment": "production",
+      "occurrence_count": 12
+    },
+    "events": [
+      {
+        "event_id": "evt_001",
+        "event_type": "exception",
+        "occurred_at": "2025-01-15T10:30:00.000Z",
+        "payload": {
+          "type": "TypeError",
+          "message": "Cannot read property 'id' of undefined",
+          "stacktrace": "at getUser (/app/src/users.ts:42:15)\n..."
+        }
+      }
+    ],
+    "context": {
+      "request": {
+        "method": "GET",
+        "url": "/api/users/123",
+        "headers": { "content-type": "application/json" }
+      },
+      "response": {
+        "status_code": 500
+      },
+      "probe_data": {},
+      "breadcrumbs": []
+    },
+    "reproduction": {
+      "curl": "curl -X GET http://localhost:3000/api/users/123",
+      "httpie": "http GET http://localhost:3000/api/users/123",
+      "json_spec": {
+        "method": "GET",
+        "url": "/api/users/123",
+        "headers": {},
+        "body": null
+      }
+    }
+  }
+}
+```
+
+---
+
+## Get Reproduction
+
+```
+GET /v1/incidents/:id/reproduction
+```
+
+**Auth:** Member token or browser session.
+
+Returns only the reproduction artifacts (without the full bundle context).
+
+### Example
+
+```bash
+curl -H "Authorization: Bearer dbundle_mem_xxx" \
+  "https://api.debugbundle.com/v1/incidents/inc_abc123/reproduction"
+```
+
+### Response
+
+```json
+{
+  "reproduction": {
+    "curl": "curl -X GET http://localhost:3000/api/users/123",
+    "httpie": "http GET http://localhost:3000/api/users/123",
+    "json_spec": {
+      "method": "GET",
+      "url": "/api/users/123",
+      "headers": {},
+      "body": null
+    }
+  }
+}
+```
+
+---
+
+## List Event Logs
+
+```
+GET /v1/incidents/:id/logs
+```
+
+**Auth:** Member token or browser session.
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `level` | `string` | — | Filter by log level: `debug`, `info`, `warning`, `error`, `critical` |
+| `limit` | `integer` | `20` | Page size (1–100) |
+| `cursor` | `string` | — | Opaque cursor for pagination |
+
+### Example
+
+```bash
+curl -H "Authorization: Bearer dbundle_mem_xxx" \
+  "https://api.debugbundle.com/v1/incidents/inc_abc123/logs?level=error&limit=50"
+```
+
+### Response
+
+```json
+{
+  "logs": [
+    {
+      "event_id": "evt_001",
+      "event_type": "exception",
+      "occurred_at": "2025-01-15T10:30:00.000Z",
+      "is_sampled": false,
+      "level": "error"
+    },
+    {
+      "event_id": "evt_002",
+      "event_type": "log",
+      "occurred_at": "2025-01-15T10:29:58.000Z",
+      "is_sampled": false,
+      "level": "warning"
+    }
+  ],
+  "next_cursor": null
+}
+```
+
+---
+
+## List Services
+
+```
+GET /v1/services
+```
+
+**Auth:** Member token or browser session.
+
+### Query Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `project_id` | `uuid` | **Required** | Project to list services for |
+| `limit` | `integer` | `20` | Page size (1–100) |
+
+### Example
+
+```bash
+curl -H "Authorization: Bearer dbundle_mem_xxx" \
+  "https://api.debugbundle.com/v1/services?project_id=proj_xxx"
+```
+
+### Response
+
+```json
+{
+  "services": [
+    {
+      "service_id": "svc_001",
+      "name": "api",
+      "runtime": "node",
+      "framework": "express",
+      "last_seen_at": "2025-01-15T10:30:00.000Z"
+    },
+    {
+      "service_id": "svc_002",
+      "name": "worker",
+      "runtime": "node",
+      "framework": null,
+      "last_seen_at": "2025-01-14T22:00:00.000Z"
+    }
+  ]
+}
+```
+
+## Next Steps
+
+- [API Overview](/docs/api) — Full endpoint index, pagination, and error format
+- [Authentication](/docs/api/authentication) — Token types and creation
+- [CLI Overview](/docs/cli) — Manage incidents from the terminal

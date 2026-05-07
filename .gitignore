@@ -1,0 +1,12 @@
+node_modules/
+.pnpm-store/
+.next/
+.source/
+out/
+.DS_Store
+.env
+.env.*
+*.tsbuildinfo
+public/examples/
+public/schemas/
+public/search-index.json

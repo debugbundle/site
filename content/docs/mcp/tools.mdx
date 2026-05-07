@@ -1,0 +1,549 @@
+---
+title: MCP Tools Reference
+description: Complete catalog of DebugBundle MCP tools with parameters and examples.
+icon: Wrench
+---
+
+This page documents every tool the DebugBundle MCP server exposes. All tools accept an
+optional `bearerToken` parameter for remote authentication — omitted from parameter tables
+below for brevity.
+
+## Setup & Diagnostics
+
+### doctor
+
+Run a full connectivity and configuration check.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| _(none)_ | — | Validates local setup, checks API reachability, verifies auth state. |
+
+Returns a diagnostic report with pass/fail status for each check.
+
+### validate
+
+Validate your local DebugBundle configuration files.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `fix` | `boolean` | Optional. Recreate missing generated setup files when `true`. |
+
+### verify_local
+
+Verify local-mode setup (CLI installed, log directory writable, parser available).
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| _(none)_ | — | Checks local-only prerequisites. |
+
+### verify_cloud
+
+Verify cloud connectivity (API reachable, token valid, project accessible).
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| _(none)_ | — | Checks cloud prerequisites and token validity. |
+
+### smoke
+
+Run a quick smoke test that sends a test event and verifies end-to-end processing.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Target project for the test event. |
+
+---
+
+## Incident Retrieval
+
+### list_incidents
+
+List incidents for the active project.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Defaults to active project. |
+| `source` | `string` | Filter by source: `local`, `cloud`, or `all`. Default: `all`. |
+| `status` | `string` | Filter: `open`, `resolved`, `all`. Default: `open`. |
+| `service` | `string` | Filter by service name. |
+| `severity` | `string` | Minimum severity: `low`, `medium`, `high`, `critical`. |
+| `limit` | `number` | Max results. Default: `20`. |
+| `offset` | `number` | Pagination offset. |
+
+### get_incident
+
+Get full details of a specific incident.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incident_id` | `string` | **Required.** The incident ID. |
+
+### resolve_incident
+
+Mark an incident as resolved.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incident_id` | `string` | **Required.** The incident ID. |
+| `resolution_note` | `string` | Optional note describing the resolution. |
+
+### reopen_incident
+
+Reopen a previously resolved incident.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incident_id` | `string` | **Required.** The incident ID. |
+
+### get_bundle
+
+Retrieve the debug bundle for an incident.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incident_id` | `string` | **Required.** The incident ID. |
+| `format` | `string` | Output format: `json` (default) or `summary`. |
+
+### get_reproduction
+
+Get the reproduction artifact for an incident.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incident_id` | `string` | **Required.** The incident ID. |
+
+Returns reproduction commands (cURL, HTTPie) and JSON specifications when available.
+
+### get_logs
+
+Retrieve raw log entries associated with an incident.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incident_id` | `string` | **Required.** The incident ID. |
+| `limit` | `number` | Max log entries. Default: `100`. |
+
+---
+
+## Token Management
+
+### list_project_tokens
+
+List project tokens (SDK/ingestion tokens).
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Defaults to active project. |
+
+### create_project_token
+
+Create a new project token for SDK ingestion.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Defaults to active project. |
+| `label` | `string` | **Required.** Human-readable token label. |
+
+Returns the token plaintext once — store it immediately.
+
+### revoke_project_token
+
+Revoke a project token.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `token_id` | `string` | **Required.** The token ID to revoke. |
+
+### list_member_tokens
+
+List member tokens (CLI/API/MCP tokens).
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+
+### create_member_token
+
+Create a new member token.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `label` | `string` | **Required.** Human-readable token label. |
+
+Returns the token plaintext once — store it immediately.
+
+### revoke_member_token
+
+Revoke a member token.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `token_id` | `string` | **Required.** The token ID to revoke. |
+
+---
+
+## Webhook Management
+
+### list_webhooks
+
+List configured webhook endpoints.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Defaults to active project. |
+
+### create_webhook
+
+Create a new webhook endpoint.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Defaults to active project. |
+| `url` | `string` | **Required.** The webhook delivery URL. |
+| `events` | `string[]` | Event types to subscribe to. Default: all events. |
+| `secret` | `string` | Optional signing secret for HMAC verification. |
+
+### update_webhook
+
+Update an existing webhook.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `webhook_id` | `string` | **Required.** The webhook ID. |
+| `url` | `string` | New delivery URL. |
+| `events` | `string[]` | Updated event subscriptions. |
+| `is_active` | `boolean` | Enable or disable the webhook. |
+
+### delete_webhook
+
+Delete a webhook endpoint.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `webhook_id` | `string` | **Required.** The webhook ID. |
+
+### test_webhook
+
+Send a test delivery to a webhook endpoint.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `webhook_id` | `string` | **Required.** The webhook ID. |
+
+### list_webhook_deliveries
+
+List recent deliveries for a webhook.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `webhook_id` | `string` | **Required.** The webhook ID. |
+| `limit` | `number` | Max results. Default: `20`. |
+
+### retry_webhook_delivery
+
+Retry a failed webhook delivery.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `delivery_id` | `string` | **Required.** The delivery ID. |
+
+---
+
+## Alert Management
+
+### list_alerts
+
+List configured alert rules.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Defaults to active project. |
+
+### create_alert
+
+Create a new alert rule.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Defaults to active project. |
+| `channel` | `string` | **Required.** Alert channel: `email`, `slack`, `discord`, `webhook`. |
+| `condition_type` | `string` | **Required.** Trigger: `new_incident`, `incident_regressed`, `error_spike`, `severity_threshold`, `regression_after_deploy`. |
+| `severity_min` | `string` | Minimum severity filter. |
+| `config` | `object` | **Required.** Channel-specific configuration. |
+
+### update_alert
+
+Update an existing alert rule.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `alert_id` | `string` | **Required.** The alert ID. |
+| `severity_min` | `string` | Updated severity filter. |
+| `is_enabled` | `boolean` | Enable or disable the alert. |
+| `config` | `object` | Updated channel configuration. |
+
+### delete_alert
+
+Delete an alert rule.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `alert_id` | `string` | **Required.** The alert ID. |
+
+---
+
+## Weekly Reports
+
+### list_weekly_reports
+
+List available weekly reports.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Defaults to active project. |
+| `limit` | `number` | Max results. Default: `10`. |
+
+### get_weekly_report
+
+Get a specific weekly report with full analysis.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `report_id` | `string` | **Required.** The report ID. |
+
+### generate_weekly_report
+
+Trigger generation of a new weekly report.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Defaults to active project. |
+
+### configure_weekly_reports
+
+Configure weekly report settings.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Defaults to active project. |
+| `is_enabled` | `boolean` | Enable or disable weekly reports. |
+| `recipients` | `string[]` | Email addresses to receive reports. |
+
+---
+
+## Services
+
+### list_services
+
+List all services discovered from ingested events.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `project_id` | `string` | Optional. Defaults to active project. |
+
+---
+
+## Projects
+
+### list_projects
+
+List projects in the organization.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `limit` | `number` | Max results to return. |
+
+### create_project
+
+Create a new project.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `name` | `string` | **Required.** Human-readable project name. |
+| `slug` | `string` | **Required.** URL-friendly identifier (lowercase, hyphens). |
+| `environmentDefault` | `string` | Editable project default environment used in setup snippets and project metadata (for example `production`). |
+
+### update_project
+
+Update an existing project.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+| `name` | `string` | New project name. |
+| `slug` | `string` | New URL-friendly identifier. |
+| `environmentDefault` | `string` | New editable project default environment. |
+
+### delete_project
+
+Delete a project and all associated data.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+
+---
+
+## Probes
+
+### activate_probe
+
+Activate a remote debug probe on a project.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+| `labelPattern` | `string` | **Required.** Glob pattern matching incident labels (e.g., `auth.*`). |
+| `service` | `string` | Scope to a specific service name. |
+| `environment` | `string` | Scope to a specific environment. |
+| `ttlSeconds` | `number` | Probe lifetime in seconds. Default: `3600`. Max: `86400`. |
+| `triggerTtlSeconds` | `number` | Trigger token validity in seconds. Default: `300`. |
+
+Returns the probe object including a one-time `trigger_token`.
+
+### list_active_probes
+
+List active probes for a project.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+
+### deactivate_probe
+
+Deactivate a probe.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+| `activationId` | `string` | **Required.** The probe activation ID. |
+
+---
+
+## Capture Policy
+
+### get_capture_policy
+
+Get the resolved capture policy for a project.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+
+### update_capture_policy
+
+Update the capture policy for a project.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+| `update` | `object` | **Required.** Policy update with optional fields: `preset`, `capture_logs`, `capture_request_events`, `capture_breadcrumbs`, `capture_probe_events`. |
+
+---
+
+## Billing
+
+### get_billing_summary
+
+Get the billing summary for the organization.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| _(none beyond auth)_ | — | Returns plan, active-project counts, capacity units, and scheduled reduction info. |
+
+### increase_capacity
+
+Add extra capacity units with prorated billing.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `targetAdditionalCapacityUnits` | `number` | **Required.** Target number of additional capacity units. |
+
+### schedule_capacity_reduction
+
+Schedule a capacity reduction at the end of the billing cycle.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `targetAdditionalCapacityUnits` | `number` | **Required.** Target number of additional capacity units after reduction. |
+
+### cancel_capacity_reduction
+
+Cancel a scheduled capacity reduction.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| _(none beyond auth)_ | — | Cancels the pending reduction, keeping current capacity count. |
+
+---
+
+## Members
+
+### list_members
+
+List organization members.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| _(none beyond auth)_ | — | Returns all members of the organization. |
+
+### list_member_invites
+
+List pending organization invites.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| _(none beyond auth)_ | — | Returns all pending invitations. |
+
+### invite_member
+
+Invite a new member to the organization.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `email` | `string` | **Required.** Email address for the invitation. |
+| `role` | `string` | **Required.** Member role (e.g., `admin`, `member`). |
+
+### cancel_member_invite
+
+Cancel a pending invitation.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `inviteId` | `string` | **Required.** The invite ID to cancel. |
+
+### update_member_role
+
+Update the role of an organization member.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `userId` | `string` | **Required.** The user ID. |
+| `role` | `string` | **Required.** The new role. |
+
+### remove_member
+
+Remove a member from the organization.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `userId` | `string` | **Required.** The user ID to remove. |
+
+---
+
+## Analysis
+
+### analyze
+
+Run deep analysis on an incident, combining bundle data, logs, and reproduction artifacts.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incident_id` | `string` | **Required.** The incident ID. |
+
+Returns a structured analysis including root cause hypothesis, affected components,
+severity assessment, and suggested fixes.
+
+## Next Steps
+
+- [MCP Server](/docs/mcp) — Overview and authentication
+- [MCP Workflows](/docs/mcp/workflows) — Practical agent patterns

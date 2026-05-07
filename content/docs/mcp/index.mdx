@@ -1,0 +1,115 @@
+---
+title: MCP Server
+description: Connect AI coding agents to DebugBundle via the Model Context Protocol.
+icon: Bot
+---
+
+The DebugBundle MCP server exposes debugging tools that AI agents (GitHub Copilot, Cursor,
+Cline, and others) can call directly. Instead of switching between your IDE and a dashboard,
+your agent can query incidents, retrieve bundles, manage tokens, and run reproductions inline.
+
+## What is MCP?
+
+The [Model Context Protocol](https://modelcontextprotocol.io/) is an open standard for
+connecting AI assistants to external tools. MCP servers expose typed tool definitions that
+agents discover and invoke during conversations.
+
+DebugBundle implements an MCP server that wraps the same domain services used by the API and
+CLI, ensuring consistent behavior across all interfaces.
+
+## Authentication
+
+The MCP server supports two authentication modes:
+
+| Mode | How it Works | Use Case |
+|------|-------------|----------|
+| **Local** | Uses CLI auth state from `~/.debugbundle/auth.json` | Default for local development |
+| **Bearer Token** | Pass `bearerToken` parameter on tool calls | CI/CD, remote agents, headless environments |
+
+When running locally alongside the CLI, the MCP server automatically picks up your
+authenticated session. No additional configuration is required.
+
+For remote or headless environments, pass a member token as the `bearerToken`:
+
+```json
+{
+  "tool": "list_incidents",
+  "arguments": {
+    "bearerToken": "dbundle_member_a1b2c3d4...",
+    "limit": 5
+  }
+}
+```
+
+## Configuration
+
+### VS Code (GitHub Copilot)
+
+Add to your VS Code settings or `.vscode/mcp.json`:
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "debugbundle": {
+        "command": "npx",
+        "args": ["@debugbundle/mcp"]
+      }
+    }
+  }
+}
+```
+
+### Cursor
+
+Add to your Cursor MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "debugbundle": {
+      "command": "npx",
+      "args": ["@debugbundle/mcp"]
+    }
+  }
+}
+```
+
+### Generic MCP Client
+
+Any MCP-compatible client can connect using stdio transport:
+
+```bash
+npx @debugbundle/mcp
+```
+
+The server communicates over stdin/stdout using the MCP JSON-RPC protocol.
+
+## Tool Categories
+
+The MCP server provides approximately 55 tools organized into these categories:
+
+| Category | Tools | Description |
+|----------|-------|-------------|
+| [Setup & Diagnostics](#setup--diagnostics) | 5 | Validate connectivity and local setup |
+| [Incident Retrieval](#incident-retrieval) | 7 | Query, inspect, and manage incidents |
+| [Token Management](#token-management) | 6 | Create and manage project/member tokens |
+| [Webhook Management](#webhook-management) | 7 | Configure webhook endpoints and deliveries |
+| [Alert Management](#alert-management) | 4 | Create and manage alert rules |
+| [Weekly Reports](#weekly-reports) | 4 | Generate and retrieve analysis reports |
+| [Services](#services) | 1 | List discovered services |
+| [Projects](#projects) | 4 | Create, list, update, and delete projects |
+| [Probes](#probes) | 3 | Activate, list, and deactivate debug probes |
+| [Capture Policy](#capture-policy) | 2 | Get and update capture policies |
+| [Billing](#billing) | 4 | Manage subscriptions and capacity |
+| [Members](#members) | 6 | Manage organization members and invitations |
+| [Analysis](#analysis) | 1 | Deep incident analysis |
+
+See the [MCP Tools Reference](/docs/mcp/tools) for the complete tool catalog with parameters,
+and [MCP Workflows](/docs/mcp/workflows) for practical agent workflow patterns.
+
+## Next Steps
+
+- [MCP Tools Reference](/docs/mcp/tools) — Complete tool catalog
+- [MCP Workflows](/docs/mcp/workflows) — Agent workflow patterns
+- [CLI Cloud Workflow](/docs/cli/cloud-workflow) — CLI authentication (shared with MCP)

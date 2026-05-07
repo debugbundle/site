@@ -1,0 +1,179 @@
+---
+title: Alerts API
+description: Create, update, and delete alert rules via the DebugBundle REST API.
+icon: Bell
+---
+
+All alert endpoints require member token authentication via the `Authorization` header.
+
+## List Alerts
+
+```
+GET /v1/alerts?project_id={projectId}
+```
+
+```bash
+curl https://api.debugbundle.com/v1/alerts?project_id=proj_01HXYZ... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `project_id` | `string` | — | **Required.** Project UUID. |
+| `limit` | `number` | `50` | Max results (1–100). |
+
+**Response (200):**
+
+```json
+{
+  "alerts": [
+    {
+      "alert_id": "alt_01HABC...",
+      "project_id": "proj_01HXYZ...",
+      "channel": "slack",
+      "condition_type": "new_incident",
+      "service_id": null,
+      "severity_min": "high",
+      "config": {
+        "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx",
+        "channel": "#incidents"
+      },
+      "is_enabled": true,
+      "created_at": "2026-03-20T10:00:00Z",
+      "updated_at": "2026-03-20T10:00:00Z"
+    }
+  ]
+}
+```
+
+## Create Alert
+
+```
+POST /v1/alerts
+```
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/alerts \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_id": "proj_01HXYZ...",
+    "channel": "slack",
+    "condition_type": "new_incident",
+    "severity_min": "high",
+    "config": {
+      "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx",
+      "channel": "#incidents"
+    },
+    "is_enabled": true
+  }'
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `project_id` | `string` | Yes | Project UUID. |
+| `channel` | `string` | Yes | Alert channel: `email`, `slack`, `discord`, `webhook`. |
+| `condition_type` | `string` | Yes | Trigger condition (see below). |
+| `service_id` | `string` | No | Scope to a specific service. |
+| `severity_min` | `string` | No | Minimum severity: `low`, `medium`, `high`, `critical`. |
+| `config` | `object` | Yes | Channel-specific configuration. |
+| `is_enabled` | `boolean` | No | Default: `true`. |
+
+### Condition Types
+
+| Condition | Trigger |
+|-----------|---------|
+| `new_incident` | A new incident is created. |
+| `incident_regressed` | A previously resolved incident regressed. |
+| `error_spike` | An unusual spike in error occurrences. |
+| `severity_threshold` | An incident's severity exceeds `severity_min`. |
+| `regression_after_deploy` | A regression detected after a deployment. |
+
+### Channel Configuration
+
+**Email:**
+
+```json
+{ "recipient_email": "oncall@mycompany.com" }
+```
+
+**Slack:**
+
+```json
+{
+  "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx",
+  "channel": "#incidents"
+}
+```
+
+**Discord:**
+
+```json
+{ "webhook_url": "https://discord.com/api/webhooks/..." }
+```
+
+**Webhook:**
+
+```json
+{ "url": "https://myapp.com/alerts", "secret": "optional-signing-secret" }
+```
+
+**Response (201):**
+
+```json
+{
+  "alert": {
+    "alert_id": "alt_01HDEF...",
+    "project_id": "proj_01HXYZ...",
+    "channel": "slack",
+    "condition_type": "new_incident",
+    "severity_min": "high",
+    "config": { "webhook_url": "https://hooks.slack.com/...", "channel": "#incidents" },
+    "is_enabled": true,
+    "created_at": "2026-03-24T10:30:00Z"
+  }
+}
+```
+
+## Update Alert
+
+```
+PATCH /v1/alerts/{id}
+```
+
+```bash
+curl -X PATCH https://api.debugbundle.com/v1/alerts/alt_01HDEF... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "severity_min": "critical",
+    "is_enabled": true
+  }'
+```
+
+Partial update — only the specified fields are changed. Set a field to `null` to clear it.
+
+**Response (200):** Updated alert object.
+
+## Delete Alert
+
+```
+DELETE /v1/alerts/{id}
+```
+
+```bash
+curl -X DELETE https://api.debugbundle.com/v1/alerts/alt_01HDEF... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Response (204):** No content.
+
+## Next Steps
+
+- [Alerts](/docs/alerts) — Alert system concepts and architecture
+- [CLI Alert Management](/docs/cli/alerts) — Manage alerts via CLI
+- [Webhooks API](/docs/api/webhooks) — Webhook endpoint management

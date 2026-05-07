@@ -1,0 +1,153 @@
+---
+title: "FAQ"
+description: "Frequently asked questions about DebugBundle: pricing, data handling, SDK compatibility, self-hosting, and more."
+icon: LifeBuoy
+---
+
+## General
+
+### What is DebugBundle?
+
+DebugBundle is a debugging platform that captures exceptions, logs, HTTP context, and diagnostic data from your applications, processes them into structured debug bundles, and provides reproduction artifacts. It works locally without any cloud account, and optionally connects to a hosted service for team collaboration.
+
+### How is DebugBundle different from error tracking tools like Sentry?
+
+DebugBundle focuses on **actionable debugging context**, not just error alerts. Every incident includes a full debug bundle with reproduction commands (curl, httpie), probe data, breadcrumbs, and request/response context. It's also local-first — you get the full experience without creating an account or sending data anywhere.
+
+### Do I need a cloud account to use DebugBundle?
+
+No. DebugBundle is fully functional in local-only mode. Run `debugbundle setup`, capture events with the SDK, run `debugbundle process`, and inspect incidents — all on your local machine. A cloud account adds team collaboration, hosted retention, and cloud ingestion from production environments.
+
+---
+
+## SDKs
+
+### Which languages are supported?
+
+| Language | Status |
+|---|---|
+| Node.js | Shipped |
+| Browser (JavaScript) | Shipped |
+| Python | Coming soon |
+| PHP | Coming soon |
+
+### Does the SDK affect my application's performance?
+
+No. The SDK is designed to be invisible:
+- Capture is asynchronous and non-blocking
+- Events are batched and flushed on a timer (not per-event)
+- Storm suppression prevents runaway event volume
+- The SDK never throws exceptions into your code
+- If the SDK fails internally, it silently swallows the error
+
+### Can I use DebugBundle with Express, Fastify, or Next.js?
+
+Yes. The Node.js SDK includes first-class integrations for all three:
+
+```typescript
+app.use(DebugBundle.express());                     // Express
+app.register(DebugBundle.fastify());                // Fastify
+export default DebugBundle.nextjs(handler);          // Next.js
+```
+
+### Does the SDK support my logger (pino, winston, bunyan)?
+
+Yes. The Node.js SDK auto-detects and attaches to pino, winston, and bunyan. You can also pass a logger instance explicitly. See [Node.js SDK — Logger Integrations](/docs/sdks/node#logger-integrations).
+
+---
+
+## Data & Privacy
+
+### What data does the SDK capture?
+
+The SDK captures:
+- Exceptions (type, message, stack trace)
+- Logs (level, message, structured data)
+- HTTP requests and responses (method, URL, status, headers, body)
+- Breadcrumbs (clicks, route changes, network calls)
+- Device context (browser, OS, viewport — Browser SDK only)
+- Probe data (custom diagnostic ring buffers)
+
+### Is sensitive data redacted?
+
+Yes. By default, the SDK redacts values for fields named: `password`, `secret`, `token`, `authorization`, `cookie`, `ssn`, `credit_card`. Redaction happens **in the SDK** before data leaves the process. You can add custom field names to the redaction list.
+
+### Where is my data stored?
+
+| Mode | Storage |
+|---|---|
+| Local-only | `.debugbundle/local/events/` on your machine |
+| Connected (cloud) | DebugBundle cloud (S3 + Postgres, encrypted at rest) |
+| Self-hosted | Your own infrastructure (Docker Compose) |
+
+### Can I self-host DebugBundle?
+
+Yes. DebugBundle ships a Docker Compose stack that runs all components (API, Worker, Postgres, Redis, S3-compatible storage) on your infrastructure. Your data never touches third-party services. See [Installation](/docs/installation) for deployment instructions.
+
+---
+
+## CLI
+
+### How do I install the CLI?
+
+```bash
+npm install -g @debugbundle/cli
+```
+
+### What does `debugbundle setup` create?
+
+It generates the local scaffold including:
+- `.debugbundle/profile.json` — Project profile
+- `.debugbundle/local/connection.json` — Connection mode config
+- `.agents/skills/debugbundle/` — AI agent skill and references
+- Directory structure for events, bundles, and reproductions
+
+See [Setup & Configuration](/docs/cli/setup) for the full scaffold layout.
+
+### Can I use the CLI in CI/CD pipelines?
+
+Yes. All commands support `--json` output for machine parsing. Use `--non-interactive` for setup and `--auth-file` to point to a custom auth file location.
+
+---
+
+## Webhooks
+
+### Which events can I subscribe to?
+
+`bundle.created`, `bundle.updated`, `bundle.resolved`, `bundle.reopened`, `improvement_bundle.created`, `incident.spike_detected`, `verification.passed`, `verification.failed`.
+
+### How do I verify webhook signatures?
+
+Every delivery includes an `X-DebugBundle-Signature` header containing an HMAC-SHA256 hex digest. Verify it using the signing secret provided at webhook creation. See [Webhooks — Signature Verification](/docs/webhooks#signature-verification) for code examples.
+
+### What happens if my endpoint is down?
+
+Deliveries retry with exponential backoff. After sustained failures, the webhook is automatically disabled. You can re-enable it and retry individual deliveries. See [Webhooks — Delivery Lifecycle](/docs/webhooks#delivery-lifecycle).
+
+---
+
+## Pricing & Billing
+
+### Is there a free tier?
+
+Yes. The free tier includes unlimited projects, get-started capacity, 60 events/minute, and all core features. No credit card required.
+
+### What happens when I exceed the rate limit?
+
+Events beyond the rate limit are rejected with `rate_limited` in the ingestion response. The SDK handles backoff automatically. No data corruption occurs — events are simply dropped at the boundary.
+
+### What is a capacity unit?
+
+`Capacity unit` is the billing unit for hosted allowance on paid plans. These units expand your shared hosted allowance; they do not cap how many projects you can create.
+
+---
+
+## MCP (Model Context Protocol)
+
+### What is MCP?
+
+MCP is a protocol for AI agents to interact with tools. DebugBundle exposes its full capabilities as MCP tools, allowing AI agents in IDEs (Cursor, VS Code Copilot, etc.) to investigate incidents, retrieve bundles, manage webhooks, and run diagnostics.
+
+### How do I set up MCP?
+
+The MCP server reuses your CLI auth state. After running `debugbundle login`, configure your IDE's MCP settings to point to the DebugBundle MCP server. See the MCP documentation for details.

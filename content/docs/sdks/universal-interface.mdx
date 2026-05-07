@@ -1,0 +1,209 @@
+---
+title: Universal SDK Interface
+description: The complete interface contract shared by every DebugBundle SDK — methods, config fields, behavior guarantees, and volume controls.
+icon: FileCode
+---
+
+Every DebugBundle SDK implements this universal interface contract. Language-specific naming conventions differ (camelCase for JavaScript/PHP, snake_case for Python), but the semantics, behavior guarantees, and volume control rules are identical.
+
+## Core Methods
+
+Every SDK exposes these methods:
+
+| Method | Purpose | Returns |
+|--------|---------|---------|
+| `init(config)` | Initialize the SDK with configuration. Must be called once before any capture. | `void` |
+| `captureException(error, context?)` | Capture an error/exception with optional context. | `void` |
+| `captureLog(message, level, context?)` | Capture a structured log event. | `void` |
+| `captureRequest(request, response, context?)` | Capture an HTTP request/response pair. | `void` |
+| `captureMessage(message, level?, context?)` | Capture a diagnostic message. | `void` |
+| `setContext(key, value)` | Attach persistent context to all future events. | `void` |
+| `probe(label, data, opts?)` | Buffer diagnostic data in a ring buffer. | `void` |
+| `flush()` | Force-send all buffered events. | `Promise<void>` |
+
+## Language Naming Conventions
+
+| Language | Style | Example |
+|----------|-------|---------|
+| Node.js | camelCase | `debugbundle.captureException(err)` |
+| Browser | camelCase | `debugbundle.captureException(err)` |
+| Python | snake_case | `debugbundle.capture_exception(err)` |
+| PHP | camelCase (PSR) | `DebugBundle::captureException($e)` |
+
+## Configuration Fields
+
+All SDKs accept these common configuration fields:
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `projectToken` | `string` | — | **Required.** Project token for ingestion auth (`dbundle_proj_...`). |
+| `environment` | `string` | auto-detect | Deployment environment: `production`, `staging`, `development`, etc. |
+| `service` | `string` | auto-detect | Service name for multi-service projects. |
+| `enabled` | `boolean` | `true` | Kill switch — set to `false` to disable all capture. |
+| `redactFields` | `string[]` | Default set | Additional field names to redact before transmission. |
+| `sampleRate` | `number` | `1.0` | Event sampling rate (0.0–1.0). Applied per-event. |
+| `batchSize` | `number` | SDK-specific | Max events per batch (Node: 50, Browser: 25). |
+| `flushInterval` | `number` (ms) | SDK-specific | Max time before batch send (Node: 2000, Browser: 5000). |
+| `endpoint` | `string` | `https://api.debugbundle.com/v1/events` | Ingestion endpoint URL. |
+| `transport` | `string` | auto-detect | `http`, `file`, or `relay` (browser only). |
+| `localEventsDir` | `string` | `.debugbundle/local/events` | Directory for file transport output. |
+
+### Browser-Specific Fields
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `maxBreadcrumbs` | `number` | `10` | Ring buffer size for breadcrumbs. |
+| `breadcrumbsOnErrorOnly` | `boolean` | `true` | Only ship breadcrumbs alongside exceptions. |
+| `captureNetwork` | `boolean` | `true` | Capture network request breadcrumbs. |
+| `captureClicks` | `boolean` | `true` | Capture click event breadcrumbs. |
+| `captureRouteChanges` | `boolean` | `true` | Capture navigation breadcrumbs. |
+| `captureConsole` | `boolean` | `false` | Capture `console.error`/`console.warn` breadcrumbs. |
+| `networkFilter` | `object` | — | Filter network breadcrumbs by URL, status code, response time. |
+| `sessionSampleRate` | `number` | `1.0` | Session-level sampling (all-or-nothing per session). |
+| `maxEventsPerSession` | `number` | `100` | Hard cap per session; only exceptions permitted after cap. |
+
+## Transport Modes
+
+| Mode | SDK | Description |
+|------|-----|-------------|
+| `http` | All | Direct HTTPS to ingestion API. Default for connected projects. |
+| `file` | Node, Python, PHP | Write events to local filesystem for CLI processing. Default for local-only projects. |
+| `relay` | Browser | Send events through your backend relay endpoint instead of directly to DebugBundle. |
+
+Transport is automatically selected based on your `.debugbundle/local/connection.json` mode:
+- **Local-only** → `file` transport (server SDKs), `relay` or `http` (browser)
+- **Connected** → `http` transport
+
+## Event Envelope
+
+Every captured event is wrapped in a standard envelope:
+
+```json
+{
+  "event_id": "evt_01HXYZ...",
+  "event_type": "backend_exception",
+  "timestamp": "2026-03-24T10:30:00.000Z",
+  "service": { "name": "api-server", "environment": "production" },
+  "sdk": { "name": "@debugbundle/sdk-node", "version": "1.0.0" },
+  "context": { "user_id": "usr_123" },
+  "payload": { /* event-type-specific data */ }
+}
+```
+
+### Event Types
+
+| Type | Source | Description |
+|------|--------|-------------|
+| `backend_exception` | Server SDKs | Unhandled or manually captured exceptions. |
+| `frontend_exception` | Browser SDK | JavaScript errors and promise rejections. |
+| `request_event` | Server SDKs | HTTP request/response pairs. |
+| `log_event` | All SDKs | Structured log entries. |
+| `frontend_breadcrumb` | Browser SDK | User interaction breadcrumbs (clicks, navigation, network). |
+| `deploy_metadata` | CLI / API | Deployment information. |
+| `error_suppressed` | All SDKs | Aggregated duplicate errors from volume control. |
+| `probe_event` | All SDKs | Diagnostic ring buffer snapshots. |
+
+## Volume Control
+
+All SDKs implement mandatory volume control to prevent event storms:
+
+### Duplicate Suppression
+
+When the SDK captures the same error repeatedly:
+
+1. **First 3 occurrences** in a 30-second window → sent normally
+2. **Subsequent duplicates** → aggregated into a single `error_suppressed` event with occurrence count
+3. Window resets after 30 seconds of silence
+
+"Same error" is determined by fingerprinting: error class + message + top stack frame.
+
+### Loop Protection
+
+Prevents runaway error loops from flooding the ingestion API:
+
+1. **Trigger:** More than 10 identical errors in 2 seconds
+2. **Action:** Force suppression — all events for that fingerprint held in buffer
+3. **Checkpoint:** Every 30 seconds, one event released to check if the loop has stopped
+4. **Reset:** After 60 seconds with no new occurrences, normal capture resumes
+
+### Buffer Retention
+
+- Events are **never dropped** on transport failure
+- SDK respects `Retry-After` headers from the ingestion API
+- Buffer has a hard size limit (configurable per SDK) to prevent memory exhaustion
+- On buffer overflow, oldest non-exception events are evicted first
+
+## Probes
+
+Probes are diagnostic ring buffers that capture application state over time:
+
+```javascript
+// Node.js
+debugbundle.probe('db_pool', () => ({
+  active: pool.activeCount,
+  idle: pool.idleCount,
+  waiting: pool.waitingCount,
+}));
+```
+
+### Probe Types
+
+| Type | Description | Trigger |
+|------|-------------|---------|
+| **Always-on** | Captures data at every probe call. | Automatic, based on interval. |
+| **Lazy** | Captures only when an incident is being processed. | On-demand during bundle generation. |
+| **Heavy** | Captures detailed/expensive data. Remote-activation only (paid tiers). | Activated via API/CLI/MCP. |
+
+### Ring Buffer
+
+Probe data is stored in a fixed-size ring buffer (default 10 entries). When the buffer is full, the oldest entry is overwritten. This keeps memory usage constant regardless of probe frequency.
+
+## Safety Guarantees
+
+Every SDK enforces these guarantees:
+
+1. **Never throw** — SDK methods never throw uncaught exceptions into user code
+2. **Never block** — SDK methods never block the request/response cycle
+3. **Never crash** — SDK failures are caught internally and swallowed silently
+4. **Graceful degradation** — If the ingestion API is unreachable, events are buffered and retried
+5. **Memory bounded** — Buffers have hard limits to prevent memory exhaustion
+
+## Redaction
+
+All SDKs apply automatic redaction before events leave the process:
+
+### Default Redacted Fields
+
+`password`, `secret`, `token`, `authorization`, `cookie`, `set-cookie`, `x-api-key`, `credit_card`, `card_number`, `cvv`, `ssn`, `social_security`
+
+### Custom Redaction
+
+```javascript
+debugbundle.init({
+  projectToken: process.env.DEBUGBUNDLE_PROJECT_TOKEN,
+  redactFields: ['x-custom-secret', 'internal_id'],
+});
+```
+
+Custom fields are merged with defaults — you cannot disable default redaction.
+
+## SDK Comparison Matrix
+
+| Feature | Node.js | Browser | Python | PHP |
+|---------|---------|---------|--------|-----|
+| Status | ✅ Shipped | ✅ Shipped | 🔜 Coming Soon | 🔜 Coming Soon |
+| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` |
+| Framework integrations | Express, Fastify, Next.js | — | Django, Flask, FastAPI | Laravel, Symfony |
+| Logger integrations | pino, winston, bunyan | — | logging, structlog, loguru | Monolog |
+| Breadcrumbs | — | ✅ | — | — |
+| Relay handler | ✅ (exports) | — | — | — |
+| Probes | ✅ | ✅ | ✅ | ✅ |
+| File transport | ✅ | — | ✅ | ✅ |
+
+## Next Steps
+
+- [Node.js SDK](/docs/sdks/node) — Full Node.js setup and framework integrations
+- [Browser SDK](/docs/sdks/browser) — Full Browser SDK setup with breadcrumbs and relay
+- [Python SDK](/docs/sdks/python) — Python SDK (coming soon)
+- [PHP SDK](/docs/sdks/php) — PHP SDK (coming soon)
+- [Browser Relay Setup](/docs/sdks/browser-relay) — Relay architecture and backend setup

@@ -1,0 +1,50 @@
+name: Bug Report
+description: Report a reproducible defect in the DebugBundle public site.
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report.
+        Please include a minimal reproduction, expected behavior, and actual behavior.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+      placeholder: A clear and concise description of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: How can we reproduce the problem?
+      placeholder: |
+        1. Open ...
+        2. Navigate to ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, OS, page URL, and any other useful context.
+      placeholder: macOS 15, Safari 18, https://debugbundle.com/docs/...
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or logs
+      description: Paste screenshots, console errors, or logs if available.

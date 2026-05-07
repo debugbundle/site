@@ -1,0 +1,211 @@
+---
+title: "Setup & Configuration"
+description: "Initialize DebugBundle in your project with the setup command. Understand the scaffold, profile, connection config, and diagnostic tools."
+icon: Settings
+---
+
+## Quick Setup
+
+Run setup from your project root:
+
+```bash
+debugbundle setup
+```
+
+For CI or agent-driven environments:
+
+```bash
+debugbundle setup --non-interactive --json
+```
+
+The setup command:
+1. Detects your project name, services, frameworks, and runtimes from `package.json`, lockfiles, and source files
+2. Generates the local scaffold (profile, connection config, agent skill, references)
+3. Updates `.gitignore` to exclude local runtime data
+4. Scaffolds a relay route if a supported framework is detected (Express, Fastify, Next.js)
+
+## The `.debugbundle/` Directory
+
+After setup, your project contains:
+
+```
+.debugbundle/
+├── profile.json              # Project profile (services, frameworks, workflows)
+├── local/
+│   ├── connection.json       # Connection mode (local-only or connected)
+│   ├── events/               # Raw event files from SDK / CLI ingestion
+│   └── browser-relay-spool/  # Browser relay event spool
+└── bundles/
+    ├── local/
+    │   └── reproductions/    # Generated repro artifacts
+    └── cloud/                # Cached cloud bundles
+
+.agents/
+└── skills/
+    └── debugbundle/
+        ├── SKILL.md                  # Agent skill definition
+        ├── evals/
+        │   └── evals.json            # Evaluation fixtures
+        └── references/
+            ├── cli.md                # CLI command reference
+            ├── mcp.md                # MCP tool reference
+            ├── bundle-schema.md      # Bundle JSON schema
+            └── profile-enrichment.md # Profile guide
+```
+
+**Git tracking:**
+- `.debugbundle/profile.json` and `.debugbundle/local/connection.json` are tracked (committed)
+- `.debugbundle/local/*` (events, spool), `.debugbundle/bundles/` are gitignored
+- `.agents/skills/debugbundle/` is tracked — agents read these references at session start
+
+## Profile
+
+The profile (`profile.json`) describes your project to DebugBundle:
+
+```json
+{
+  "project": {
+    "name": "my-api",
+    "repo_url": "https://github.com/org/my-api"
+  },
+  "services": [
+    {
+      "name": "api",
+      "kind": "backend",
+      "runtime": "node",
+      "framework": "express"
+    },
+    {
+      "name": "worker",
+      "kind": "worker",
+      "runtime": "node",
+      "framework": "none"
+    }
+  ],
+  "debugbundle": {
+    "last_reviewed_at": "2025-01-15T00:00:00.000Z",
+    "validation_status": "static-analysis-only"
+  }
+}
+```
+
+Setup generates the profile from static analysis. You should review and correct it:
+
+1. Verify service names, kinds, runtimes, and frameworks
+2. Add missing critical paths or ownership details
+3. Validate with `debugbundle profile validate`
+4. Update `validation_status` to `agent-validated` when the profile is accurate
+
+## Connection Config
+
+The connection file (`.debugbundle/local/connection.json`) controls transport behavior:
+
+```json
+{
+  "mode": "local-only"
+}
+```
+
+| Mode | Behavior |
+|---|---|
+| `local-only` | All events stay on disk. No cloud communication. Default after `setup`. |
+| `connected` | Local events for dev/local environments. HTTP transport for staging/production. Set after `connect`. |
+
+## Doctor
+
+Run diagnostic checks on your DebugBundle installation:
+
+```bash
+debugbundle doctor
+```
+
+Output:
+
+```
+DebugBundle doctor report.
+Status: healthy
+Checks:
+- profile: ok - .debugbundle/profile.json exists and is valid.
+- connection: ok - .debugbundle/local/connection.json exists and is valid.
+- skill: ok - .agents/skills/debugbundle/SKILL.md exists.
+- auth: ok - ~/.debugbundle/auth.json exists and contains a valid token.
+```
+
+### Checks Performed
+
+| Check | What It Verifies |
+|---|---|
+| `profile` | Profile file exists, parses as valid JSON, matches expected schema |
+| `connection` | Connection config exists with valid `mode` value |
+| `skill` | Agent skill file exists |
+| `auth` | CLI auth state file exists with a valid member token |
+| `connected_api` | For connected projects, the configured API base URL responds to `/health` and accepts the stored member token on a retrieval route |
+| `profile_staleness` | Profile was reviewed within the last 30 days |
+| `relay_spool` | Browser relay spool directory has no stuck undelivered events |
+
+### Relay Check
+
+Check the browser relay health:
+
+```bash
+debugbundle doctor --check-relay
+```
+
+This additionally verifies relay spool event delivery.
+
+### JSON Output
+
+```bash
+debugbundle doctor --json
+```
+
+Returns structured JSON with `status`, `checks`, `warnings`, `errors`, and `suggested_actions`.
+
+For connected projects, `debugbundle doctor` also validates the configured cloud or self-host API base URL. It checks `GET /health`, then verifies member-token auth against a lightweight retrieval request so misconfigured self-host endpoints fail early.
+
+## Validate
+
+Verify scaffold files exist and are structurally correct:
+
+```bash
+debugbundle validate
+```
+
+### Auto-Fix Mode
+
+Regenerate missing scaffold files without overwriting your profile:
+
+```bash
+debugbundle validate --fix
+```
+
+This recreates missing reference files, skill definitions, and directory structures while preserving your manually-reviewed `profile.json`.
+
+## Verify
+
+### Local Verification
+
+Confirm the local scaffold is healthy and events can be processed:
+
+```bash
+debugbundle verify local
+```
+
+### Cloud Verification
+
+Confirm cloud ingestion is working for a specific project:
+
+```bash
+debugbundle verify cloud \
+  --project-id proj_xxxx \
+  --service api \
+  --environment production \
+  --max-age-minutes 60
+```
+
+This checks that events from the specified service and environment have been received within the lookback window.
+
+## Next Steps
+
+- [Local Workflow](/docs/cli/local-workflow) — Processing events and inspecting incidents
+- [CLI Overview](/docs/cli) — Full command index and authentication

@@ -1,0 +1,135 @@
+---
+title: Local-Only Mode
+description: Run DebugBundle entirely on your machine with no cloud dependency.
+icon: HardDrive
+---
+
+Local-only mode processes all events, generates incidents, and builds debug bundles
+entirely on your machine. No data leaves your system, no network calls are made,
+and no account is required.
+
+## When to Use Local-Only
+
+- **Solo development** — you're the only developer on the project
+- **Air-gapped environments** — network access is restricted
+- **Evaluation** — trying DebugBundle before connecting to cloud
+- **Privacy-sensitive projects** — data must not leave the machine
+- **Offline work** — no internet available
+
+## Setup
+
+Initialize your project in local-only mode (the default):
+
+```bash
+debugbundle setup
+```
+
+This creates `.debugbundle/local/connection.json` with:
+
+```json
+{
+  "mode": "local-only",
+  "cloud_project_id": null,
+  "cloud_base_url": null,
+  "environments": {
+    "local": { "delivery": "local-only" },
+    "development": { "delivery": "local-only" },
+    "staging": { "delivery": "local-only" },
+    "production": { "delivery": "local-only" }
+  }
+}
+```
+
+## Workflow
+
+### 1. Capture Events
+
+Run your application with an SDK configured. Events are written as NDJSON files to
+`.debugbundle/local/events/`:
+
+```bash
+# Or ingest log files directly
+debugbundle ingest ./logs/app.log --format debugbundle-ndjson
+```
+
+### 2. Process Events
+
+Process captured events into incidents and bundles:
+
+```bash
+debugbundle process
+```
+
+This runs the full pipeline locally: normalize, fingerprint, group into incidents,
+and generate debug bundles.
+
+### 3. View Incidents
+
+```bash
+debugbundle incidents --source local
+```
+
+### 4. Inspect Bundles
+
+```bash
+debugbundle inspect inc_local_01H...
+```
+
+### 5. Watch for New Events
+
+Monitor a log file and process events as they arrive:
+
+```bash
+debugbundle watch ./logs/app.log --format debugbundle-ndjson
+```
+
+## Local Storage Layout
+
+```
+.debugbundle/local/
+├── events/           # Raw event NDJSON files
+│   ├── 2026-03-24T10-00-00-000Z_batch_001.ndjson
+│   └── ...
+├── incidents/        # Grouped incident state
+│   ├── inc_local_01H.../
+│   │   ├── incident.json
+│   │   └── events/
+│   └── ...
+└── bundles/
+    └── local/        # Generated debug bundles
+        ├── bnd_local_42.json
+        └── reproductions/
+            └── bnd_local_42_repro.json
+```
+
+## Limitations
+
+| Capability | Local-Only | Connected |
+|------------|-----------|-----------|
+| Event capture | Yes | Yes |
+| Incident grouping | Yes | Yes |
+| Bundle generation | Yes | Yes |
+| Reproduction artifacts | Yes | Yes |
+| Team visibility | No | Yes |
+| Dashboard | No | Yes |
+| Webhooks | No | Yes |
+| Alerts | No | Yes |
+| Probes | No | Yes |
+| Weekly reports | No | Yes |
+
+## Upgrading to Connected Mode
+
+When you're ready for team features, run:
+
+```bash
+debugbundle connect
+```
+
+See [Connect to Cloud](/docs/project-setup/connect-to-cloud) for the full flow.
+Your local investigation artifacts remain available under `.debugbundle/local/`.
+
+## Next Steps
+
+- [Project Setup](/docs/project-setup) — Setup overview
+- [Connect to Cloud](/docs/project-setup/connect-to-cloud) — Enable cloud features
+- [CLI Local Workflow](/docs/cli/local-workflow) — Full local CLI workflow

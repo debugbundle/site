@@ -1,0 +1,258 @@
+---
+title: Webhooks API
+description: Create, update, delete, and test webhooks via the DebugBundle REST API.
+icon: Webhook
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+All webhook endpoints require member token authentication via the `Authorization` header.
+
+## List Webhooks
+
+```
+GET /v1/webhooks?project_id={projectId}
+```
+
+```bash
+curl https://api.debugbundle.com/v1/webhooks?project_id=proj_01HXYZ... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `project_id` | `string` | — | **Required.** Project UUID. |
+| `limit` | `number` | `50` | Max results (1–100). |
+
+**Response (200):**
+
+```json
+{
+  "webhooks": [
+    {
+      "webhook_id": "wh_01HABC...",
+      "project_id": "proj_01HXYZ...",
+      "url": "https://myapp.com/webhooks/debugbundle",
+      "events": ["bundle.created", "bundle.resolved"],
+      "filters": {
+        "environment": ["production"],
+        "service": [],
+        "severity_min": null,
+        "bundle_type": []
+      },
+      "is_enabled": true,
+      "created_at": "2026-03-20T10:00:00Z",
+      "updated_at": "2026-03-20T10:00:00Z"
+    }
+  ]
+}
+```
+
+## Create Webhook
+
+```
+POST /v1/webhooks
+```
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/webhooks \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_id": "proj_01HXYZ...",
+    "url": "https://myapp.com/webhooks/debugbundle",
+    "events": ["bundle.created", "bundle.resolved", "incident.spike_detected"],
+    "filters": {
+      "environment": ["production"],
+      "severity_min": "high"
+    },
+    "is_enabled": true
+  }'
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `project_id` | `string` | Yes | Project UUID. |
+| `url` | `string` | Yes | HTTPS endpoint URL. |
+| `events` | `string[]` | Yes | Event types to subscribe to. |
+| `filters` | `object` | No | Delivery filters (see below). |
+| `is_enabled` | `boolean` | No | Default: `true`. |
+
+**Response (201):**
+
+```json
+{
+  "webhook": {
+    "webhook_id": "wh_01HDEF...",
+    "project_id": "proj_01HXYZ...",
+    "url": "https://myapp.com/webhooks/debugbundle",
+    "signing_secret": "whsec_a1b2c3d4e5f6...",
+    "events": ["bundle.created", "bundle.resolved", "incident.spike_detected"],
+    "filters": {
+      "environment": ["production"],
+      "severity_min": "high"
+    },
+    "is_enabled": true
+  }
+}
+```
+
+<Callout type="warn">
+  The `signing_secret` is returned **only once** at creation. Copy it immediately for HMAC-SHA256 signature verification. See [Webhooks](/docs/webhooks) for verification code examples.
+</Callout>
+
+## Get Webhook
+
+```
+GET /v1/webhooks/{id}
+```
+
+```bash
+curl https://api.debugbundle.com/v1/webhooks/wh_01HDEF... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Response (200):** Single webhook object (same structure as list items).
+
+## Update Webhook
+
+```
+PATCH /v1/webhooks/{id}
+```
+
+```bash
+curl -X PATCH https://api.debugbundle.com/v1/webhooks/wh_01HDEF... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "events": ["bundle.created", "bundle.resolved", "bundle.reopened"],
+    "filters": {
+      "severity_min": "medium"
+    }
+  }'
+```
+
+Partial update — only the specified fields are changed. Omitted fields remain unchanged.
+
+**Response (200):** Updated webhook object.
+
+## Delete Webhook
+
+```
+DELETE /v1/webhooks/{id}
+```
+
+```bash
+curl -X DELETE https://api.debugbundle.com/v1/webhooks/wh_01HDEF... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Response (204):** No content.
+
+## Test Webhook
+
+Send a synthetic signed delivery to verify your endpoint:
+
+```
+POST /v1/webhooks/{id}/test
+```
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/webhooks/wh_01HDEF.../test \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{ "event_type": "verification.passed" }'
+```
+
+**Request Body:**
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `event_type` | `string` | `verification.passed` | `verification.passed` or `verification.failed`. |
+
+**Response (202):** Delivery queued.
+
+## List Deliveries
+
+```
+GET /v1/webhooks/{id}/deliveries
+```
+
+```bash
+curl https://api.debugbundle.com/v1/webhooks/wh_01HDEF.../deliveries?limit=10 \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `limit` | `number` | `20` | Max results (1–100). |
+
+**Response (200):**
+
+```json
+{
+  "deliveries": [
+    {
+      "delivery_id": "del_01HGHI...",
+      "webhook_id": "wh_01HDEF...",
+      "event_type": "bundle.created",
+      "status": "delivered",
+      "attempt_count": 1,
+      "created_at": "2026-03-24T10:30:00Z",
+      "delivered_at": "2026-03-24T10:30:01Z"
+    }
+  ]
+}
+```
+
+## Retry Delivery
+
+```
+POST /v1/webhooks/{id}/deliveries/{deliveryId}/retry
+```
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/webhooks/wh_01HDEF.../deliveries/del_01HJKL.../retry \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+Resets a `failed` or `disabled` delivery to `retrying` status.
+
+**Response (200):** Updated delivery object.
+
+## Webhook Filters
+
+Filters narrow which events trigger deliveries:
+
+| Filter | Type | Description |
+|--------|------|-------------|
+| `environment` | `string[]` | Only deliver for these environments. |
+| `service` | `string[]` | Only deliver for these services. |
+| `severity_min` | `string` | Minimum severity: `low`, `medium`, `high`, `critical`. |
+| `bundle_type` | `string[]` | Only deliver for these bundle types: `failure`, `improvement`. |
+| `verification` | `boolean` | Whether signature verification is required. |
+
+## Event Types
+
+| Event | Trigger |
+|-------|---------|
+| `bundle.created` | New debug bundle generated. |
+| `bundle.updated` | Existing bundle updated with new data. |
+| `bundle.resolved` | Incident marked as resolved. |
+| `bundle.reopened` | Previously resolved incident regressed. |
+| `improvement_bundle.created` | Improvement bundle generated. |
+| `incident.spike_detected` | Unusual spike in incident occurrences. |
+| `verification.passed` | Webhook verification test succeeded. |
+| `verification.failed` | Webhook verification test failed. |
+
+## Next Steps
+
+- [Webhooks](/docs/webhooks) — Webhook concepts, payload structure, and signature verification
+- [CLI Webhook Management](/docs/cli/webhooks) — Manage webhooks via CLI
+- [Alerts API](/docs/api/alerts) — Alert channel management

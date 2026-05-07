@@ -1,0 +1,239 @@
+---
+title: "API"
+description: "RESTful API for event ingestion, incident retrieval, webhook management, token management, and more. Authenticated via project tokens, member tokens, or browser sessions."
+icon: Plug
+---
+
+## Base URL
+
+```
+https://api.debugbundle.com
+```
+
+Self-hosted deployments use your custom domain.
+
+## Authentication
+
+The API uses three authentication methods, each scoped differently:
+
+| Method | Header / Mechanism | Scope | Use Case |
+|---|---|---|---|
+| **Project token** | `Authorization: Bearer dbundle_proj_*` | Write-only ingestion | SDKs sending events via `POST /v1/events` |
+| **Member token** | `Authorization: Bearer dbundle_mem_*` | Full read/manage | CLI, API clients, MCP — incidents, webhooks, tokens, billing |
+| **Browser session** | `Cookie: debugbundle_session=*` | Full read/manage | Web dashboard (same permissions as member token) |
+
+Project tokens can only ingest events. They cannot read incidents, manage webhooks, or perform any other operation.
+
+See [Authentication](/docs/api/authentication) for details.
+
+## Request Format
+
+- **Content-Type:** `application/json`
+- **Character encoding:** UTF-8
+- All request bodies are JSON objects validated with Zod at the boundary
+- Unknown fields are rejected (strict schemas)
+
+## Response Format
+
+### Success
+
+```json
+{
+  "incidents": [...],
+  "next_cursor": "2025-01-15T10:30:00.000Z|inc_abc123"
+}
+```
+
+### Error
+
+```json
+{
+  "error": "invalid_member_token"
+}
+```
+
+Error codes are machine-readable string identifiers, not numeric codes.
+
+### Ingestion Response
+
+`POST /v1/events` returns a different shape:
+
+```json
+{
+  "accepted": 8,
+  "rejected": 2,
+  "errors": [
+    { "index": 3, "reason": "invalid_event" },
+    { "index": 7, "reason": "rate_limited" }
+  ]
+}
+```
+
+## Pagination
+
+List endpoints use cursor-based pagination:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `limit` | `integer` | `20` | Page size (1–100) |
+| `cursor` | `string` | — | Opaque cursor from `next_cursor` in previous response |
+
+When more results exist, the response includes `next_cursor`. When no more results exist, `next_cursor` is `null`.
+
+```bash
+# First page
+curl -H "Authorization: Bearer dbundle_mem_xxx" \
+  "https://api.debugbundle.com/v1/incidents?limit=10"
+
+# Next page
+curl -H "Authorization: Bearer dbundle_mem_xxx" \
+  "https://api.debugbundle.com/v1/incidents?limit=10&cursor=2025-01-15T10:30:00.000Z|inc_abc123"
+```
+
+## Rate Limiting
+
+Event ingestion is rate-limited per project token. The limit depends on your plan tier:
+
+| Tier | Rate Limit |
+|---|---|
+| Free | 60 events/min |
+| Solo | 300 events/min |
+| Team | 1,000 events/min |
+
+When rate-limited, events are rejected with reason `"rate_limited"` in the errors array. The SDK automatically handles backoff.
+
+Management endpoints (incidents, webhooks, tokens) are not rate-limited in the current version.
+
+## HTTP Status Codes
+
+| Code | Meaning |
+|---|---|
+| `200` | Success |
+| `201` | Resource created |
+| `204` | Success, no content |
+| `400` | Invalid request (malformed body, invalid query parameters) |
+| `401` | Authentication failed (missing, invalid, or wrong token type) |
+| `403` | Insufficient permissions (e.g., member trying owner-only operation) |
+| `404` | Resource not found |
+| `409` | Conflict (e.g., duplicate email at signup) |
+| `429` | Rate limited |
+| `500` | Internal server error |
+
+## Endpoint Index
+
+### Ingestion
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `POST` | `/v1/events` | Project token | Ingest event batch |
+
+### Incidents
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/incidents` | Member token | List incidents |
+| `GET` | `/v1/incidents/:id` | Member token | Get incident detail |
+| `POST` | `/v1/incidents/:id/resolve` | Member token | Resolve an incident |
+| `GET` | `/v1/incidents/:id/bundle` | Member token | Retrieve debug bundle |
+| `GET` | `/v1/incidents/:id/reproduction` | Member token | Retrieve reproduction artifacts |
+| `GET` | `/v1/incidents/:id/logs` | Member token | List event logs |
+
+### Services
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/services` | Member token | List services for a project |
+
+### Webhooks
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/webhooks` | Member token | List webhooks |
+| `POST` | `/v1/webhooks` | Member token | Create webhook |
+| `GET` | `/v1/webhooks/:id` | Member token | Get webhook |
+| `PATCH` | `/v1/webhooks/:id` | Member token | Update webhook |
+| `DELETE` | `/v1/webhooks/:id` | Member token | Delete webhook |
+| `POST` | `/v1/webhooks/:id/test` | Member token | Send test delivery |
+| `GET` | `/v1/webhooks/:id/deliveries` | Member token | List deliveries |
+| `POST` | `/v1/webhooks/:id/deliveries/:did/retry` | Member token | Retry delivery |
+
+### Alerts
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/alerts` | Member token | List alert rules |
+| `POST` | `/v1/alerts` | Member token | Create alert rule |
+| `PATCH` | `/v1/alerts/:id` | Member token | Update alert rule |
+| `DELETE` | `/v1/alerts/:id` | Member token | Delete alert rule |
+
+### Tokens
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/tokens/project/:id` | Member token | List project tokens |
+| `POST` | `/v1/tokens/project/:id` | Member token | Create project token |
+| `DELETE` | `/v1/tokens/project/:id/:tokenId` | Member token | Revoke project token |
+| `GET` | `/v1/tokens/member` | Member token | List member tokens |
+| `POST` | `/v1/tokens/member` | Member token | Create member token |
+| `DELETE` | `/v1/tokens/member/:tokenId` | Member token | Revoke member token |
+
+### Projects
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/projects` | Member token | List projects |
+| `POST` | `/v1/projects` | Member token | Create project |
+| `GET` | `/v1/projects/:id` | Member token | Get project |
+| `PATCH` | `/v1/projects/:id` | Member token | Update project |
+| `DELETE` | `/v1/projects/:id` | Member token | Delete project |
+
+### Members
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/organization/members` | Member token | List members |
+| `GET` | `/v1/organization/members/invites` | Member token | List pending invites |
+| `POST` | `/v1/organization/members/invite` | Member token | Invite a member |
+| `DELETE` | `/v1/organization/members/invites/:inviteId` | Member token | Cancel an invite |
+| `PATCH` | `/v1/organization/members/:userId` | Member token | Update member role |
+| `DELETE` | `/v1/organization/members/:userId` | Member token | Remove a member |
+
+### Billing
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/billing` | Member token (owner) | Get billing summary |
+| `POST` | `/v1/billing/capacity/increase` | Member token (owner) | Add capacity units |
+| `POST` | `/v1/billing/capacity/scheduled-reduction` | Member token (owner) | Schedule capacity reduction |
+| `DELETE` | `/v1/billing/capacity/scheduled-reduction` | Member token (owner) | Cancel pending reduction |
+
+### Probes
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/probes/config` | Project token | Get probe config (SDK polls this) |
+| `POST` | `/v1/probes/activate` | Member token | Activate a remote probe |
+| `POST` | `/v1/probes/deactivate` | Member token | Deactivate a remote probe |
+
+### Capture Policy
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/capture-policy` | Member token | Get current capture policy |
+| `PUT` | `/v1/capture-policy` | Member token | Set capture policy |
+
+### Authentication
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `POST` | `/v1/auth/request-code` | None | Request a one-time email code |
+| `POST` | `/v1/auth/verify-code` | None | Verify a one-time email code and create a browser session |
+| `GET` | `/v1/auth/session` | Session | Resolve current browser session |
+| `POST` | `/v1/auth/logout` | Session | End session |
+| `GET` | `/v1/auth/github/start` | None | Start GitHub OAuth |
+| `GET` | `/v1/auth/github/callback` | None | Complete GitHub OAuth |
+
+## Next Steps
+
+- [Authentication](/docs/api/authentication) — Token types, creation, and usage in detail
+- [Incidents API](/docs/api/incidents) — List, inspect, resolve, and retrieve bundles

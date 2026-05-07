@@ -1,0 +1,334 @@
+---
+title: "Local Workflow"
+description: "The complete offline debugging flow: capture events, process them into incidents and bundles, inspect, resolve, and clean up — no cloud account needed."
+icon: HardDrive
+---
+
+## Overview
+
+DebugBundle's local workflow gives you the full debugging experience on your machine:
+
+```
+Capture → Process → Inspect → Resolve
+```
+
+No cloud account, no network, no signup. Everything runs on disk.
+
+---
+
+## 1. Setup
+
+If you haven't already:
+
+```bash
+debugbundle setup
+```
+
+This creates the `.debugbundle/` scaffold. See [Setup & Configuration](/docs/cli/setup) for details.
+
+## 2. Capture Events
+
+Events land in `.debugbundle/local/events/` through three paths:
+
+### SDK Capture (Automatic)
+
+When your SDK's `projectToken` is `'local'` or `projectMode` is `'local-only'`, events write to disk automatically:
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-node';
+
+DebugBundle.init({
+  projectToken: 'local',
+  service: 'my-api',
+});
+
+// Exceptions, logs, and HTTP context now capture to local files
+```
+
+### Log Ingestion (One-Shot)
+
+Ingest an existing log file:
+
+```bash
+debugbundle ingest ./logs/error.log --format php-error
+```
+
+Supported formats:
+
+| Format | Description |
+|---|---|
+| `debugbundle-ndjson` | Native DebugBundle NDJSON format |
+| `php-error` | PHP error log format |
+| `apache-error` | Apache error log format |
+
+### Log Watch (Continuous)
+
+Tail-watch a log file and ingest new entries as they appear:
+
+```bash
+debugbundle watch --log ./logs/error.log --format apache-error
+```
+
+Watch mode polls the log file for new content and processes new events through the full pipeline (ingest → process → bundle).
+
+To stream watched events to the cloud simultaneously:
+
+```bash
+debugbundle watch --log ./logs/error.log --format php-error --cloud
+```
+
+## 3. Process Events
+
+Process raw events into incidents, bundles, and reproduction artifacts:
+
+```bash
+debugbundle process
+```
+
+Processing does the following for each batch of events:
+
+1. **Normalize** — Standardize event format, extract structured fields
+2. **Classify** — Determine event type (exception, log, HTTP, metric)
+3. **Fingerprint** — Generate a stable fingerprint for incident grouping
+4. **Aggregate** — Group events into incidents by fingerprint
+5. **Build bundles** — Generate debug bundles with full context
+6. **Build reproductions** — Create reproduction artifacts (curl, httpie, JSON spec)
+
+Output:
+
+```
+Processed 12 events into 3 incidents.
+- api: 2 incidents
+- worker: 1 incident
+```
+
+### Processing State
+
+Processing is **incremental and idempotent**. The processor tracks the last processed event file and only processes new files on subsequent runs. Re-running `process` on already-processed events is safe.
+
+## 4. List Incidents
+
+```bash
+debugbundle incidents
+```
+
+Output:
+
+```
+inc_a1b2c3 | high     | open     | TypeError: Cannot read property 'id' of undefined
+inc_d4e5f6 | medium   | open     | POST /api/charge → 500 (timeout)
+inc_g7h8i9 | low      | resolved | Warning: deprecated API version
+```
+
+### Filtering
+
+```bash
+# By source
+debugbundle incidents --source local
+debugbundle incidents --source cloud
+
+# By status and severity
+debugbundle incidents --status open --severity high
+
+# By environment and service
+debugbundle incidents --environment production --service api
+
+# Pagination
+debugbundle incidents --limit 20 --cursor <cursor>
+```
+
+### JSON Output
+
+```bash
+debugbundle incidents --json
+```
+
+Returns a JSON object with `incidents`, `cursor`, and `total` fields.
+
+## 5. Inspect an Incident
+
+```bash
+debugbundle inspect inc_a1b2c3
+```
+
+Output:
+
+```
+Incident: inc_a1b2c3
+Source: local
+Title: TypeError: Cannot read property 'id' of undefined
+Severity: high
+Status: open
+Environment: development
+Occurrences: 5
+```
+
+### JSON Output
+
+```bash
+debugbundle inspect inc_a1b2c3 --json
+```
+
+Returns the full incident object including event history, fingerprint details, and matched fields.
+
+## 6. Retrieve the Bundle
+
+```bash
+debugbundle bundle inc_a1b2c3
+```
+
+Returns the full debug bundle as JSON — the complete context snapshot for the incident:
+
+```json
+{
+  "schema_version": "1.0.0",
+  "bundle_type": "failure",
+  "incident": { "..." },
+  "events": [ "..." ],
+  "context": {
+    "request": { "..." },
+    "response": { "..." },
+    "probe_data": { "..." },
+    "breadcrumbs": [ "..." ]
+  },
+  "reproduction": {
+    "curl": "curl -X POST ...",
+    "httpie": "http POST ...",
+    "json_spec": { "..." }
+  }
+}
+```
+
+## 7. Retrieve Reproduction Artifacts
+
+```bash
+debugbundle reproduce inc_a1b2c3
+```
+
+Returns ready-to-run reproduction commands:
+
+```json
+{
+  "curl": "curl -X POST http://localhost:3000/api/charge -H 'Content-Type: application/json' -d '{\"amount\":100}'",
+  "httpie": "http POST http://localhost:3000/api/charge amount:=100",
+  "json_spec": {
+    "method": "POST",
+    "url": "/api/charge",
+    "headers": { "content-type": "application/json" },
+    "body": { "amount": 100 }
+  }
+}
+```
+
+## 8. View Event Logs
+
+```bash
+debugbundle logs inc_a1b2c3
+```
+
+Output:
+
+```
+2025-01-15T10:30:00Z | error   | exception | evt_001
+2025-01-15T10:30:00Z | warning | log       | evt_002
+2025-01-15T10:29:58Z | info    | http      | evt_003
+```
+
+### Filtering
+
+```bash
+debugbundle logs inc_a1b2c3 --level error --limit 50
+```
+
+## 9. Resolve and Reopen
+
+Mark an incident as resolved:
+
+```bash
+debugbundle resolve inc_a1b2c3
+```
+
+Reopen if it recurs:
+
+```bash
+debugbundle reopen inc_a1b2c3
+```
+
+## 10. Run Analysis
+
+Run improvement analysis on local incidents:
+
+```bash
+debugbundle analyze --type improvement --local --json
+```
+
+Analysis types:
+
+| Type | Purpose |
+|---|---|
+| `improvement` | Suggests code changes to prevent the incident |
+| `failure` | Root cause analysis for failures |
+| `performance` | Performance regression analysis |
+
+## 11. Clean Up
+
+Remove local events:
+
+```bash
+debugbundle clean --events
+```
+
+Remove local bundles:
+
+```bash
+debugbundle clean --bundles
+```
+
+Remove everything:
+
+```bash
+debugbundle clean --all
+```
+
+Remove data older than N days:
+
+```bash
+debugbundle clean --all --older-than 30d
+```
+
+## Complete Example
+
+A full local workflow session:
+
+```bash
+# 1. Initialize
+debugbundle setup
+
+# 2. Start your app with the SDK
+#    (events capture to .debugbundle/local/events/)
+
+# 3. Process captured events
+debugbundle process
+
+# 4. Check what happened
+debugbundle incidents
+
+# 5. Investigate
+debugbundle inspect inc_a1b2c3
+debugbundle bundle inc_a1b2c3
+
+# 6. Get reproduction command
+debugbundle reproduce inc_a1b2c3
+
+# 7. Fix and resolve
+debugbundle resolve inc_a1b2c3
+
+# 8. Verify health
+debugbundle doctor
+```
+
+## Next Steps
+
+- [CLI Overview](/docs/cli) — Full command index and authentication
+- [Setup & Configuration](/docs/cli/setup) — Profile, connection, and scaffold details
+- [Node.js SDK](/docs/sdks/node) — Capture events from your backend

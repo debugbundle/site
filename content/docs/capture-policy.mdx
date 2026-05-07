@@ -1,0 +1,138 @@
+---
+title: Capture Policy
+description: Control what events your SDKs capture and send using presets and fine-grained controls.
+icon: SlidersHorizontal
+---
+
+The capture policy controls how your SDKs behave — what types of events they capture,
+at what verbosity level, and how breadcrumbs and probes are handled. Each project has
+one capture policy that applies to all SDKs connecting to it.
+
+## Presets
+
+Presets provide sensible defaults for common scenarios. Choose a preset, then optionally
+override individual controls.
+
+| Preset | Logs | Request Events | Breadcrumbs | Probe Events | Best For |
+|--------|------|---------------|-------------|-------------|----------|
+| `minimal` | `error` | `off` | `local_only` | `buffer_only` | Free tier, low-traffic apps |
+| `balanced` | `warning` | `failures_only` | `exception_only` | `buffer_only` | Most projects (default for Solo/Team) |
+| `investigative` | `info` | `all` | `standalone` | `standalone_when_activated` | Active debugging, full visibility |
+
+### Default Preset by Tier
+
+| Tier | Default Preset |
+|------|---------------|
+| Free | `minimal` |
+| Solo | `balanced` |
+| Team | `balanced` |
+
+## Controls
+
+### Capture Logs
+
+Controls which log levels are captured and sent as events.
+
+| Value | Behavior |
+|-------|----------|
+| `off` | No log events captured. |
+| `error` | Only `error` and `fatal` log events. |
+| `warning` | `warning`, `error`, and `fatal` log events. |
+| `info` | All log events including `info`, `warning`, `error`, `fatal`. |
+
+### Capture Request Events
+
+Controls which HTTP request/response pairs are captured.
+
+| Value | Behavior |
+|-------|----------|
+| `off` | No request events captured. |
+| `failures_only` | Only requests with 4xx/5xx responses. |
+| `filtered` | Requests matching configured filters (routes, status codes). |
+| `all` | All requests captured. |
+
+### Capture Breadcrumbs
+
+Controls how frontend breadcrumbs (clicks, route changes, console logs) are handled.
+
+| Value | Behavior |
+|-------|----------|
+| `local_only` | Breadcrumbs buffered locally, attached only to exception events. |
+| `exception_only` | Breadcrumbs sent only when an exception is captured. |
+| `standalone` | Breadcrumbs sent as independent events (highest volume). |
+
+### Capture Probe Events
+
+Controls how probe-collected data is handled.
+
+| Value | Behavior |
+|-------|----------|
+| `buffer_only` | Probe data buffered locally, attached to the next exception event. |
+| `standalone_when_activated` | Probe data sent as independent events when a probe is active. |
+
+## Managing the Policy
+
+### API
+
+```bash
+# Get current policy
+curl https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+
+# Update policy
+curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{ "preset": "investigative" }'
+```
+
+### CLI
+
+```bash
+# View current policy
+debugbundle capture-policy get --project-id proj_01HXYZ...
+
+# Switch to investigative mode
+debugbundle capture-policy set --project-id proj_01HXYZ... --preset investigative
+
+# Override a specific control
+debugbundle capture-policy set --project-id proj_01HXYZ... --capture-logs info
+```
+
+## Override Behavior
+
+When you set a preset, all controls reset to the preset defaults. You can then
+override individual controls:
+
+```bash
+# Start with balanced preset, but capture all request events
+curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "preset": "balanced",
+    "capture_request_events": "all"
+  }'
+```
+
+Result: all controls use `balanced` defaults except `capture_request_events` which is `all`.
+
+To clear an override and revert to the preset default, set the field to `null`:
+
+```json
+{ "capture_request_events": null }
+```
+
+## SDK Behavior
+
+SDKs fetch the capture policy from the server during initialization and periodically
+refresh it. When the policy changes, SDKs adjust their capture behavior without
+requiring a restart or redeploy.
+
+In local-only mode, SDKs use built-in defaults (equivalent to the `balanced` preset).
+
+## Next Steps
+
+- [Projects API](/docs/api/projects) — Capture policy API endpoints
+- [Project Setup](/docs/project-setup) — Project configuration overview
+- [Universal SDK Interface](/docs/sdks/universal-interface) — SDK capture behavior

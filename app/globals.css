@@ -1,0 +1,140 @@
+@import 'fumadocs-ui/css/style.css';
+
+/* ── Fumadocs docs-area theme: deep green to match site palette ── */
+
+:root {
+  color-scheme: light;
+
+  /* Fumadocs overrides — light mode (warm green-grey) */
+  --color-fd-background: hsl(80, 10%, 96%);
+  --color-fd-foreground: hsl(90, 10%, 10%);
+  --color-fd-primary: hsl(152, 50%, 28%);
+  --color-fd-primary-foreground: hsl(0, 0%, 98%);
+  --color-fd-border: hsla(100, 12%, 72%, 0.5);
+  --color-fd-ring: hsl(152, 50%, 28%);
+  --color-fd-accent: hsla(100, 15%, 80%, 0.5);
+  --color-fd-accent-foreground: hsl(90, 10%, 10%);
+  --color-fd-muted: hsl(80, 10%, 94%);
+  --color-fd-muted-foreground: hsl(90, 8%, 42%);
+  --color-fd-secondary: hsl(80, 12%, 90%);
+  --color-fd-secondary-foreground: hsl(90, 10%, 10%);
+  --color-fd-card: hsl(80, 10%, 95%);
+  --color-fd-card-foreground: hsl(90, 10%, 10%);
+  --color-fd-popover: hsl(80, 10%, 97%);
+  --color-fd-popover-foreground: hsl(90, 10%, 10%);
+
+  /* Site marketing palette */
+  --site-bg: #f7f7f3;
+  --site-surface: #ffffff;
+  --site-surface-muted: #f1f1eb;
+  --site-border: #dddcd2;
+  --site-border-strong: #bcb9ab;
+  --site-text: #171714;
+  --site-text-muted: #4f5047;
+  --site-text-subtle: #747569;
+  --site-accent: #171714;
+  --site-accent-foreground: #f8f8f4;
+  --site-focus: #4d6aff;
+  --site-success: #1f7a48;
+  --site-warning: #9a6200;
+  --site-danger: #a23535;
+  --site-info: #275fad;
+  --site-code-bg: #141411;
+  --site-code-border: #2a2a24;
+  --site-code-text: #ecece5;
+}
+
+html.dark {
+  color-scheme: dark;
+
+  /* Fumadocs overrides — dark mode (deep forest green) */
+  --color-fd-background: hsl(150, 12%, 6%);
+  --color-fd-foreground: hsl(100, 15%, 90%);
+  --color-fd-primary: hsl(152, 55%, 52%);
+  --color-fd-primary-foreground: hsl(150, 20%, 6%);
+  --color-fd-border: hsla(140, 18%, 28%, 0.4);
+  --color-fd-ring: hsl(152, 55%, 52%);
+  --color-fd-accent: hsla(140, 15%, 22%, 0.5);
+  --color-fd-accent-foreground: hsl(100, 20%, 85%);
+  --color-fd-muted: hsl(150, 12%, 11%);
+  --color-fd-muted-foreground: hsl(100, 10%, 60%);
+  --color-fd-secondary: hsl(150, 12%, 14%);
+  --color-fd-secondary-foreground: hsl(100, 15%, 90%);
+  --color-fd-card: hsl(150, 12%, 8%);
+  --color-fd-card-foreground: hsl(100, 15%, 90%);
+  --color-fd-popover: hsl(150, 12%, 7%);
+  --color-fd-popover-foreground: hsl(100, 15%, 90%);
+
+  /* Site marketing palette */
+  --site-bg: #0e100f;
+  --site-surface: #151816;
+  --site-surface-muted: #1d211e;
+  --site-border: #2c322d;
+  --site-border-strong: #485046;
+  --site-text: #eceee7;
+  --site-text-muted: #b5bbaf;
+  --site-text-subtle: #899084;
+  --site-accent: #f0f2ea;
+  --site-accent-foreground: #121412;
+  --site-focus: #7b98ff;
+  --site-success: #61b982;
+  --site-warning: #e2aa52;
+  --site-danger: #e18787;
+  --site-info: #7ea8ff;
+  --site-code-bg: #0a0b0a;
+  --site-code-border: #202420;
+  --site-code-text: #f3f5ef;
+}
+
+/* Sidebar contrast tweak for dark mode (mirrors neutral.css pattern) */
+.dark #nd-sidebar {
+  --color-fd-muted: hsl(150, 10%, 13%);
+  --color-fd-secondary: hsl(150, 10%, 15%);
+  --color-fd-muted-foreground: hsl(100, 8%, 65%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--site-bg);
+  color: var(--site-text);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+pre,
+code {
+  font-family: var(--font-jetbrains-mono), monospace;
+}
+
+.site-prose {
+  max-width: 72ch;
+}
+
+.site-prose h1,
+.site-prose h2,
+.site-prose h3 {
+  color: var(--site-text);
+  letter-spacing: -0.02em;
+}
+
+.site-prose p,
+.site-prose li {
+  color: var(--site-text-muted);
+  line-height: 1.8;
+}
+
+.site-prose ul {
+  padding-left: 1.2rem;
+}

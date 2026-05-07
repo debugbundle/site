@@ -1,0 +1,171 @@
+---
+title: Redaction
+description: Automatically strip sensitive data from events before they're stored or transmitted.
+icon: EyeOff
+---
+
+DebugBundle automatically redacts sensitive data from captured events to prevent
+accidental leakage of credentials, tokens, and personal information. Redaction runs
+at multiple stages to ensure sensitive data never reaches persistent storage.
+
+## How It Works
+
+The redaction engine walks every key-value pair in captured event data recursively.
+When a key matches a sensitive pattern, the value is replaced with `[REDACTED]`.
+
+```json
+// Before redaction
+{
+  "headers": {
+    "authorization": "Bearer sk_live_a1b2c3d4...",
+    "content-type": "application/json"
+  },
+  "body": {
+    "email": "user@example.com",
+    "password": "hunter2"
+  }
+}
+
+// After redaction
+{
+  "headers": {
+    "authorization": "[REDACTED]",
+    "content-type": "application/json"
+  },
+  "body": {
+    "email": "user@example.com",
+    "password": "[REDACTED]"
+  }
+}
+```
+
+## Default Sensitive Keys
+
+The following keys are redacted by default (case-insensitive matching):
+
+| Key | Typical Content |
+|-----|----------------|
+| `password` | User passwords, database credentials |
+| `secret` | API secrets, signing secrets |
+| `token` | Authentication tokens, API keys |
+| `authorization` | Auth headers (Bearer, Basic, etc.) |
+| `cookie` | Session cookies, auth cookies |
+| `ssn` | Social security numbers |
+| `credit_card` | Credit card numbers |
+
+## Redaction Stages
+
+### Client-Side (SDK)
+
+SDKs redact event data **before** it leaves the application process. This is the
+first line of defense — sensitive values never reach the network.
+
+```typescript
+import { DebugBundle } from '@debugbundle/sdk-node';
+
+const db = DebugBundle.init({
+  projectToken: 'dbundle_proj_...',
+  // Additional keys to redact beyond defaults
+  sensitiveKeys: ['api_key', 'x-api-secret', 'stripe_key'],
+});
+```
+
+### Server-Side (Ingestion)
+
+The API applies redaction again during ingestion as a safety net. Even if an SDK
+misconfigures client-side redaction, the server catches sensitive data before
+it reaches storage.
+
+### Storage (Domain Invariant)
+
+Per **INV-3** (domain invariants): sensitive fields must be redacted before
+any event data is written to S3 or PostgreSQL. This is enforced at the
+storage boundary regardless of what happened upstream.
+
+## Custom Sensitive Keys
+
+Add project-specific keys that should be redacted:
+
+### SDK Configuration
+
+```typescript
+DebugBundle.init({
+  projectToken: 'dbundle_proj_...',
+  sensitiveKeys: [
+    'x-api-key',
+    'stripe_secret',
+    'internal_token',
+    'db_connection_string',
+  ],
+});
+```
+
+### Browser SDK
+
+```typescript
+DebugBundle.init({
+  projectToken: 'dbundle_proj_...',
+  sensitiveKeys: ['csrf_token', 'session_id'],
+});
+```
+
+Custom keys are merged with the default sensitive keys — you cannot disable
+default redaction rules.
+
+## Key Matching
+
+Key matching is **case-insensitive** and applied recursively through nested objects
+and arrays:
+
+```json
+{
+  "config": {
+    "database": {
+      "PASSWORD": "[REDACTED]",
+      "host": "db.example.com"
+    }
+  },
+  "nested": [
+    { "Secret": "[REDACTED]" },
+    { "name": "safe-value" }
+  ]
+}
+```
+
+The redaction engine matches on the exact key name. For example, the default
+key `token` matches `token`, `Token`, `TOKEN`, etc., but does **not** match
+`tokenized` or `my_token_name` — the matching is on the full key, not substrings.
+
+## Tracking Redacted Fields
+
+Every redacted event includes a `redacted_fields` array listing which keys were
+redacted, so you can audit what was removed:
+
+```json
+{
+  "event_data": { "...": "..." },
+  "redacted_fields": ["authorization", "password", "cookie"]
+}
+```
+
+This lets you understand what context was removed without exposing the actual values.
+
+## Best Practices
+
+1. **Add all custom keys upfront** — Configure `sensitiveKeys` during SDK initialization.
+   Adding keys later won't retroactively redact previously ingested events.
+
+2. **Use descriptive key names** — Name internal fields clearly (`api_secret` rather
+   than `s`) so the redaction engine can match them.
+
+3. **Audit redacted fields regularly** — Check the `redacted_fields` array in your
+   bundles to ensure nothing unexpected is being captured.
+
+4. **Don't rely on client-side only** — Server-side redaction exists as a safety net.
+   Always configure both layers.
+
+## Next Steps
+
+- [Tokens](/docs/security/tokens) — Authentication token management and security
+- [Project Setup](/docs/project-setup) — Configure your project
+- [SDK Node.js](/docs/sdks/node) — Node.js SDK configuration options

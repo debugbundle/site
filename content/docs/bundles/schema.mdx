@@ -1,0 +1,438 @@
+---
+title: Bundle Schema
+description: Complete JSON schema reference for DebugBundle debug bundles.
+icon: FileText
+---
+
+This page documents the full JSON structure of a DebugBundle debug bundle. The schema
+is versioned — see [Bundles](/docs/bundles) for versioning rules.
+
+## Top-Level Structure
+
+```json
+{
+  "bundle_version": 1,
+  "bundle_id": "bnd_42",
+  "bundle_type": "failure",
+  "captured_at": "2026-03-24T10:00:00Z",
+  "sdk": { },
+  "project": { },
+  "service": { },
+  "signal": { },
+  "summary": { },
+  "impact": { },
+  "context": { },
+  "reproduction": { },
+  "verification": { },
+  "metadata": { }
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `bundle_version` | `number` | Schema version (currently `1`). |
+| `bundle_id` | `string` | Unique bundle identifier. |
+| `bundle_type` | `string` | `"failure"` or `"improvement"`. |
+| `captured_at` | `string` | ISO 8601 timestamp of the primary signal event. |
+
+## SDK
+
+```json
+{
+  "sdk": {
+    "name": "debugbundle-node",
+    "version": "0.1.0"
+  }
+}
+```
+
+## Project
+
+```json
+{
+  "project": {
+    "id": "proj_123",
+    "slug": "main-app",
+    "environment": "production"
+  }
+}
+```
+
+## Service
+
+```json
+{
+  "service": {
+    "id": "svc_1",
+    "name": "checkout-api",
+    "runtime": "node",
+    "framework": "nextjs",
+    "version": "2026.03.09.1",
+    "region": "eu-west-1"
+  }
+}
+```
+
+## Signal
+
+```json
+{
+  "signal": {
+    "signal_id": "sig_123",
+    "signal_type": "exception",
+    "severity": "high",
+    "fingerprint": "a1b2c3d4e5f6",
+    "first_seen_at": "2026-03-20T08:00:00Z",
+    "last_seen_at": "2026-03-24T10:00:00Z",
+    "occurrence_count": 238,
+    "source_event_types": ["backend_exception", "request_event", "log_event"]
+  }
+}
+```
+
+## Summary
+
+All summary fields are derived at bundle generation time from existing context.
+
+```json
+{
+  "summary": {
+    "title": "TypeError: Cannot read properties of undefined",
+    "description": "Unhandled exception in checkout flow",
+    "likely_cause": "Missing null check on user.preferences",
+    "confidence": 0.87,
+    "recommended_action": "Add null guard before accessing user.preferences.theme",
+    "severity": "high",
+    "error_type": "TypeError",
+    "error_message": "Cannot read properties of undefined (reading 'theme')",
+    "first_application_frame": {
+      "file": "checkout.ts",
+      "line": 42,
+      "function": "processCheckout"
+    },
+    "primary_signal": "exception",
+    "signals": {
+      "new_deploy": false,
+      "regression_suspected": true,
+      "customer_visible": true
+    }
+  }
+}
+```
+
+## Impact
+
+```json
+{
+  "impact": {
+    "affected_users_estimate": 73,
+    "affected_requests_estimate": 238,
+    "business_criticality": "high",
+    "customer_visible": true,
+    "regression_suspected": true
+  }
+}
+```
+
+## Context Blocks
+
+Each context block has its own `version` field for independent evolution. All blocks
+are optional.
+
+### Error
+
+```json
+{
+  "context": {
+    "error": {
+      "version": 1,
+      "name": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'theme')",
+      "stack": "TypeError: Cannot read properties of undefined...\n    at processCheckout (checkout.ts:42)",
+      "handled": false,
+      "top_frames": ["checkout.ts:42", "router.ts:19"]
+    }
+  }
+}
+```
+
+### Request
+
+```json
+{
+  "context": {
+    "request": {
+      "version": 1,
+      "method": "POST",
+      "path": "/api/checkout",
+      "route_template": "/api/checkout",
+      "query": { "step": "payment" },
+      "headers": { "content-type": "application/json", "authorization": "[REDACTED]" },
+      "body": { "cart_id": "cart_01H..." },
+      "request_id": "req_01H..."
+    }
+  }
+}
+```
+
+### Response
+
+```json
+{
+  "context": {
+    "response": {
+      "version": 1,
+      "status_code": 500,
+      "duration_ms": 122,
+      "headers": { "content-type": "application/json" },
+      "body": { "error": "internal_server_error" }
+    }
+  }
+}
+```
+
+### Logs
+
+```json
+{
+  "context": {
+    "logs": {
+      "version": 1,
+      "items": [
+        {
+          "level": "error",
+          "message": "Failed to process checkout: user.preferences is undefined",
+          "timestamp": "2026-03-24T10:00:00.123Z",
+          "attributes": { "cart_id": "cart_01H...", "user_id_hash": "a1b2c3" }
+        }
+      ]
+    }
+  }
+}
+```
+
+### Frontend
+
+```json
+{
+  "context": {
+    "frontend": {
+      "version": 1,
+      "route_changes": [
+        { "from": "/cart", "to": "/checkout", "ts": "2026-03-24T09:59:50Z" }
+      ],
+      "clicks": [
+        { "selector": "button.checkout-submit", "label": "Place Order", "ts": "2026-03-24T09:59:55Z" }
+      ],
+      "form_submissions": [],
+      "console_logs": [],
+      "network_requests": [
+        {
+          "method": "POST",
+          "url": "/api/checkout",
+          "status": 500,
+          "ts": "2026-03-24T10:00:00Z",
+          "duration_ms": 122,
+          "caller_trace": ["handleCheckout (checkout.tsx:18)"],
+          "response_body": { "error": "internal_server_error" },
+          "request_body": {},
+          "response_headers": { "content-type": "application/json" },
+          "response_content_length": 42
+        }
+      ],
+      "exceptions": [],
+      "dom_context": { "mode": "lightweight", "html_excerpt": "<main>...</main>" }
+    }
+  }
+}
+```
+
+### Environment
+
+```json
+{
+  "context": {
+    "environment": {
+      "version": 1,
+      "os": "linux",
+      "host": "checkout-api-7d8f9c6b4-x2k9p",
+      "container_id": "abc123def456"
+    }
+  }
+}
+```
+
+### Deploy
+
+```json
+{
+  "context": {
+    "deploy": {
+      "version": 1,
+      "commit_sha": "a1b2c3d4e5f6",
+      "deploy_version": "2026.03.24.1",
+      "branch": "main",
+      "deployed_at": "2026-03-24T09:30:00Z",
+      "regression_window": true
+    }
+  }
+}
+```
+
+### Runtime
+
+```json
+{
+  "context": {
+    "runtime": {
+      "version": 1,
+      "name": "node",
+      "runtime_version": "22.2.0",
+      "platform": "linux",
+      "arch": "x64",
+      "pid": 1,
+      "cwd": "/app",
+      "uptime_sec": 3601.2,
+      "hostname": "checkout-api-7d8f9c6b4-x2k9p",
+      "thread_id": null,
+      "framework": "nextjs",
+      "framework_version": "15.2.0",
+      "memory": {
+        "rss": 134217728,
+        "heap_total": 67108864,
+        "heap_used": 45088768,
+        "external": 4194304,
+        "peak": 150994944
+      },
+      "framework_extras": {}
+    }
+  }
+}
+```
+
+### Git
+
+```json
+{
+  "context": {
+    "git": {
+      "version": 1,
+      "commit": "a1b2c3d4e5f6",
+      "commit_short": "a1b2c3d",
+      "branch": "main",
+      "repo": "myorg/backend-api",
+      "dirty": false,
+      "source": "env"
+    }
+  }
+}
+```
+
+### Dependencies
+
+```json
+{
+  "context": {
+    "dependencies": {
+      "version": 1,
+      "items": [
+        { "name": "postgres", "status": "ok", "notes": null },
+        { "name": "redis", "status": "degraded", "notes": "high latency" },
+        { "name": "stripe-api", "status": "ok", "notes": null }
+      ]
+    }
+  }
+}
+```
+
+### Probe Data
+
+```json
+{
+  "context": {
+    "probe_data": {
+      "version": 1,
+      "items": [
+        {
+          "label": "auth.token.expired",
+          "data": { "local_variables": { "userId": "usr_01H..." } },
+          "timestamp": "2026-03-24T11:05:00Z",
+          "activation_id": "prb_01H9KL..."
+        }
+      ]
+    }
+  }
+}
+```
+
+### Device
+
+```json
+{
+  "context": {
+    "device": {
+      "version": 1,
+      "user_agent": "Mozilla/5.0 ...",
+      "browser": { "name": "Chrome", "version": "130.0" },
+      "os": { "name": "macOS", "version": "15.2" },
+      "device_type": "desktop",
+      "screen": { "width": 2560, "height": 1440 },
+      "viewport": { "width": 1280, "height": 720 },
+      "device_pixel_ratio": 2.0,
+      "touch_capable": false,
+      "language": "en-US",
+      "connection_type": "wifi",
+      "color_scheme_preference": "dark"
+    }
+  }
+}
+```
+
+## Reproduction
+
+```json
+{
+  "reproduction": {
+    "possible": true,
+    "confidence": 0.87,
+    "reason": "request_context_available",
+    "artifacts": {
+      "curl": "curl -X POST 'https://api.example.com/checkout' -H 'Content-Type: application/json' --data-raw '{\"cart_id\":\"cart_01H...\"}'",
+      "httpie": "http POST 'https://api.example.com/checkout' 'Content-Type:application/json'",
+      "json_spec": {
+        "method": "POST",
+        "url": "https://api.example.com/checkout",
+        "headers": { "Content-Type": "application/json" },
+        "query": {},
+        "body": { "cart_id": "cart_01H..." }
+      }
+    },
+    "feasibility_reference": {
+      "standard_http_bugs": "high",
+      "frontend_interaction_plus_failing_request": "medium-high",
+      "background_jobs": "medium",
+      "race_conditions": "low",
+      "external_outage_timing": "low-medium"
+    }
+  }
+}
+```
+
+## Metadata
+
+```json
+{
+  "metadata": {
+    "created_at": "2026-03-24T10:01:00Z",
+    "updated_at": "2026-03-24T10:01:00Z",
+    "generator_version": "1.0.0",
+    "generation_number": 1
+  }
+}
+```
+
+## Next Steps
+
+- [Bundles](/docs/bundles) — Bundle concepts and generation
+- [Incidents](/docs/incidents) — How events become incidents
+- [Reproduction](/docs/incidents/reproduction) — Reproduction artifact details

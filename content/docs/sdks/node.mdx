@@ -1,0 +1,351 @@
+---
+title: "Node.js SDK"
+description: "Capture exceptions, logs, HTTP context, and probes from Node.js applications. Express, Fastify, and Next.js integrations included."
+icon: Hexagon
+---
+
+## Installation
+
+```bash
+npm install @debugbundle/sdk-node
+```
+
+## Quick Setup
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-node';
+
+DebugBundle.init({
+  projectToken: 'local',       // 'local' for local-only, or your project token
+  environment: 'production',
+  service: 'my-api',
+});
+```
+
+Calling `init()` automatically:
+- Hooks `process.on('uncaughtException')` and `process.on('unhandledRejection')`
+- Registers `SIGINT`/`SIGTERM`/`beforeExit` handlers for graceful flush
+- Auto-detects and attaches logger integrations (pino, winston, bunyan)
+- Starts remote probe config polling (connected mode, paid tiers)
+
+## Configuration
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `projectToken` | `string` | — | **Required.** Use `'local'` for local-only mode, or your project token for connected mode. If empty, SDK is disabled. |
+| `environment` | `string` | `process.env.NODE_ENV ?? "development"` | Environment name. Controls transport selection. |
+| `service` | `string` | Auto-detected from `package.json` name | Service identifier. Falls back to `"node-service"`. |
+| `framework` | `string \| null` | Auto-detected | `"express"`, `"fastify"`, or `"nextjs"`. Auto-detected from dependencies. |
+| `projectMode` | `"connected" \| "local-only"` | `"connected"` | `"local-only"` uses file transport exclusively. |
+| `localEventsDir` | `string` | `.debugbundle/local/events` | File transport destination directory. |
+| `enabled` | `boolean` | `true` | Kill switch. Set `false` to fully disable capture. |
+| `redactFields` | `string[]` | `["password", "secret", "token", "authorization", "cookie", "ssn", "credit_card"]` | Field names to redact from captured data. |
+| `sampleRate` | `number` (0–1) | `1.0` | Event-level sampling rate. `0.5` = capture 50% of events. |
+| `logLevel` | `LogLevel` | `"warning"` | Minimum log level to capture: `"debug"`, `"info"`, `"warning"`, `"error"`, `"critical"`. |
+| `batchSize` | `number` | `50` | Maximum events per flush batch. |
+| `flushInterval` | `number` (ms) | `2000` | Auto-flush interval. |
+| `maxBufferedEvents` | `number` | `1000` | Maximum events in buffer. Oldest dropped when full. |
+| `endpoint` | `string` | `"https://api.debugbundle.com/v1/events"` | Ingestion API endpoint. |
+| `requestTimeoutMs` | `number` (ms) | `5000` | HTTP transport timeout. |
+| `captureConsole` | `boolean` | `false` | Opt-in: capture `console.error` and `console.warn`. |
+| `autoDetectLoggers` | `boolean` | `true` | Auto-detect and attach pino/winston/bunyan on init. |
+| `logger` | `unknown` | — | Pass an existing logger instance to attach on init. |
+| `probesPollInterval` | `number` (ms) | `60000` | Remote probe config poll interval. |
+| `maxProbeLabels` | `number` | `50` | Maximum distinct probe labels. |
+| `maxProbeEntriesPerLabel` | `number` | `10` | Ring buffer size per probe label. |
+| `probeFlushOnError` | `boolean` | `true` | Flush probe buffers alongside exceptions. |
+| `transport` | `DebugBundleTransport` | Auto-selected | Custom transport override. |
+| `fetchImpl` | `typeof fetch` | `globalThis.fetch` | Custom fetch implementation for HTTP transport. |
+| `onDiagnostic` | `(diagnostic) => void` | — | Callback for SDK self-diagnostic events. |
+
+## Transport Selection
+
+The SDK automatically picks the right transport:
+
+| `projectMode` | Environment | Transport | Destination |
+|---|---|---|---|
+| `connected` | `local`, `development` | File | `.debugbundle/local/events/` |
+| `connected` | `staging`, `production` | HTTP | `POST /v1/events` |
+| `local-only` | Any | File | `.debugbundle/local/events/` |
+
+File transport writes atomic files: `<timestamp>-<sequence>-<service>.events.json`.
+
+---
+
+## Framework Integrations
+
+### Express
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-node';
+import express from 'express';
+
+DebugBundle.init({
+  projectToken: 'local',
+  environment: 'production',
+  service: 'my-api',
+});
+
+const app = express();
+
+// Add DebugBundle middleware — captures request/response context
+app.use(DebugBundle.express());
+
+app.get('/api/users', (req, res) => {
+  res.json({ users: [] });
+});
+
+// Error handler — DebugBundle captures the error with full request context
+app.use((err, req, res, next) => {
+  res.status(500).json({ error: 'Internal server error' });
+});
+
+app.listen(3000);
+```
+
+The Express middleware:
+- Hooks `res.end()` to capture request/response pairs
+- Uses `runWithRequestContext()` for async correlation
+- Auto-detects loggers from `req.app.locals.logger`, `req.logger`, or `req.log`
+- Captures exceptions passed to `next(error)`
+
+### Fastify
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-node';
+import Fastify from 'fastify';
+
+DebugBundle.init({
+  projectToken: 'local',
+  environment: 'production',
+  service: 'my-api',
+});
+
+const app = Fastify({ logger: true });
+
+// Register DebugBundle plugin — auto-hooks pino logger
+app.register(DebugBundle.fastify());
+
+app.get('/api/users', async (request, reply) => {
+  return { users: [] };
+});
+
+app.listen({ port: 3000 });
+```
+
+The Fastify plugin:
+- Uses `onRequest`, `onResponse`, and `onError` hooks
+- Automatically hooks Fastify's built-in pino logger
+- Correlates requests via `runWithRequestContext()`
+
+### Next.js
+
+```typescript
+// pages/api/users.ts (or app route handler)
+import DebugBundle from '@debugbundle/sdk-node';
+
+DebugBundle.init({
+  projectToken: 'local',
+  environment: 'production',
+  service: 'my-frontend-api',
+});
+
+export default DebugBundle.nextjs(async (req, res) => {
+  res.json({ users: [] });
+});
+```
+
+The Next.js wrapper catches thrown errors and calls `captureException` with the full request context.
+
+---
+
+## Logger Integrations
+
+The SDK auto-detects and patches your existing logger on `init()`. Detection priority: **pino → bunyan → winston**.
+
+### pino
+
+```typescript
+import pino from 'pino';
+import DebugBundle from '@debugbundle/sdk-node';
+
+const logger = pino();
+
+DebugBundle.init({
+  projectToken: 'local',
+  environment: 'production',
+  service: 'my-api',
+  logger: logger,  // or let autoDetectLoggers find it
+});
+
+// These log calls are now captured by DebugBundle
+logger.info('Server started');
+logger.error({ err: new Error('fail') }, 'Request failed');
+```
+
+### winston
+
+```typescript
+import winston from 'winston';
+import DebugBundle from '@debugbundle/sdk-node';
+
+const logger = winston.createLogger({
+  transports: [new winston.transports.Console()],
+});
+
+DebugBundle.init({
+  projectToken: 'local',
+  environment: 'production',
+  service: 'my-api',
+  logger: logger,
+});
+
+logger.error('Something went wrong', { userId: '123' });
+```
+
+### bunyan
+
+```typescript
+import bunyan from 'bunyan';
+import DebugBundle from '@debugbundle/sdk-node';
+
+const logger = bunyan.createLogger({ name: 'my-api' });
+
+DebugBundle.init({
+  projectToken: 'local',
+  environment: 'production',
+  service: 'my-api',
+  logger: logger,
+});
+
+logger.error(new Error('fail'), 'Request failed');
+```
+
+**Level mapping** for all loggers:
+
+| Logger level | DebugBundle level |
+|---|---|
+| `trace` | `debug` |
+| `debug` | `debug` |
+| `info` | `info` |
+| `warn` / `warning` | `warning` |
+| `error` | `error` |
+| `fatal` | `critical` |
+
+The original logger behavior is preserved — DebugBundle patches call the original method first, then capture.
+
+---
+
+## Manual Capture
+
+### Exceptions
+
+```typescript
+try {
+  await riskyOperation();
+} catch (error) {
+  DebugBundle.captureException(error, {
+    request: req,
+    response: res,
+    tags: { component: 'payment' },
+  });
+}
+```
+
+### Logs
+
+```typescript
+DebugBundle.captureLog('User signup completed', 'info', {
+  tags: { flow: 'onboarding' },
+});
+```
+
+### HTTP Requests
+
+```typescript
+DebugBundle.captureRequest(
+  { method: 'POST', url: '/api/charge', headers: req.headers, body: req.body },
+  { statusCode: 500, headers: res.getHeaders(), body: responseBody },
+);
+```
+
+### Context
+
+```typescript
+// This context attaches to all future events
+DebugBundle.setContext('user', { id: '123', plan: 'team' });
+DebugBundle.setContext('deploy', { version: '1.2.3', region: 'us-east-1' });
+```
+
+---
+
+## Probes
+
+Probes are always-on diagnostic ring buffers. Data is captured locally and flushes alongside exceptions.
+
+```typescript
+// Always-on probe — runs on every request (all tiers)
+DebugBundle.probe('db-query-timing', {
+  query: 'SELECT * FROM users',
+  duration: 142,
+  rows: 50,
+});
+
+// Lazy probe — callback only invoked when needed
+DebugBundle.probe('memory-snapshot', () => ({
+  heapUsed: process.memoryUsage().heapUsed,
+  rss: process.memoryUsage().rss,
+}));
+
+// Heavy probe — only runs when remotely activated (paid tiers)
+DebugBundle.probe('full-request-dump', () => ({
+  headers: req.headers,
+  body: req.body,
+  timing: performanceTiming,
+}), { heavy: true });
+```
+
+Each probe label maintains a ring buffer of the last 10 entries (configurable via `maxProbeEntriesPerLabel`). When an exception fires, all probe buffers are flushed alongside the error event and attach to the resulting debug bundle as `context.probe_data`.
+
+---
+
+## Volume Control
+
+The SDK enforces automatic storm suppression:
+
+| Control | Threshold | Behavior |
+|---|---|---|
+| **Duplicate dedup** | 3 events in 30s | Identical events beyond the 3rd are suppressed |
+| **Loop detection** | 10+ events in 2s | Enters suppression mode |
+| **Suppression checkpoint** | Every 30s | One aggregate `error_suppressed` event |
+| **Auto-recovery** | 60s silence | Resets to normal capture |
+
+Combined with the server-side `sampleRate` and `logLevel` configuration, you always have layered control over event volume.
+
+---
+
+## Browser Relay
+
+The Node.js SDK includes relay handlers that proxy browser events from your frontend. See [Browser Relay Setup](/docs/sdks/browser-relay) for details.
+
+Available as subpath exports:
+
+```typescript
+// Express
+import { debugBundleRelay } from '@debugbundle/sdk-node/relay/express';
+app.use('/debugbundle/browser', debugBundleRelay());
+
+// Fastify
+import { debugBundleRelayPlugin } from '@debugbundle/sdk-node/relay/fastify';
+app.register(debugBundleRelayPlugin);
+
+// Next.js
+import { debugBundleRelay } from '@debugbundle/sdk-node/relay/nextjs';
+export const POST = debugBundleRelay;
+```
+
+## Next Steps
+
+- [Browser SDK](/docs/sdks/browser) — Client-side capture with breadcrumbs, network, and session controls
+- [Browser Relay Setup](/docs/sdks/browser-relay) — Configure the relay handler connecting browser → backend
+- [SDKs Overview](/docs/sdks) — Universal interface and language support matrix

@@ -1,0 +1,149 @@
+---
+title: "Installation"
+description: "Install DebugBundle SDKs, CLI, or self-host with Docker Compose."
+icon: Download
+---
+
+## CLI
+
+The CLI is the primary tool for local workflows, project setup, and cloud management.
+
+```bash
+npm install -g @debugbundle/cli
+```
+
+Verify the installation:
+
+```bash
+debugbundle --version
+```
+
+---
+
+## Node.js SDK
+
+```bash
+npm install @debugbundle/sdk-node
+```
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-node';
+
+DebugBundle.init({
+  projectToken: 'local',    // or your project token for connected mode
+  environment: 'production',
+  service: 'my-api',
+});
+```
+
+The Node.js SDK includes subpath exports for framework integrations and browser relay handlers:
+
+| Import | Purpose |
+|---|---|
+| `@debugbundle/sdk-node` | Core SDK |
+| `@debugbundle/sdk-node/relay` | Generic relay handler |
+| `@debugbundle/sdk-node/relay/express` | Express relay middleware |
+| `@debugbundle/sdk-node/relay/fastify` | Fastify relay plugin |
+| `@debugbundle/sdk-node/relay/nextjs` | Next.js API route relay |
+
+---
+
+## Browser SDK
+
+**Via npm:**
+
+```bash
+npm install @debugbundle/sdk-browser
+```
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-browser';
+
+DebugBundle.init({
+  projectToken: 'dbundle_proj_...',
+  environment: 'production',
+  service: 'my-frontend',
+  relayUrl: '/debugbundle/browser',  // same-origin relay endpoint
+});
+```
+
+Browser events are shipped through a same-origin relay handler on your backend — not directly to the DebugBundle API. See [Browser Relay Setup](/docs/sdks/browser-relay) for configuration.
+
+---
+
+## Python SDK
+
+```bash
+pip install debugbundle
+```
+
+```python
+import debugbundle
+
+debugbundle.init(
+    project_token="local",
+    environment="production",
+    service="my-api",
+)
+```
+
+Framework integrations for Django, Flask, and FastAPI are included. See the [Python SDK guide](/docs/sdks/python).
+
+---
+
+## PHP SDK
+
+```bash
+composer require debugbundle/sdk-php
+```
+
+```php
+\DebugBundle\SDK::init([
+    'projectToken' => 'local',
+    'environment' => 'production',
+    'service' => 'my-api',
+]);
+```
+
+Framework integrations for Laravel and Symfony are included. See the [PHP SDK guide](/docs/sdks/php).
+
+---
+
+## Self-Hosting
+
+DebugBundle can be self-hosted with Docker Compose. This gives you a fully functional instance with no external dependencies and no usage limits.
+
+### Prerequisites
+
+- Docker and Docker Compose
+- 2 GB RAM minimum
+- Ports 5291 (web), 3004 (API), 5434 (PostgreSQL), 6380 (Redis), and 4567 (LocalStack) available
+
+### Quick Start
+
+```bash
+git clone https://github.com/debugbundle/debugbundle.git
+cd debugbundle/deploy/selfhost
+cp .env.example .env  # edit with your settings
+docker compose up -d
+```
+
+The self-host stack includes:
+
+| Service | Port | Purpose |
+|---|---|---|
+| Web | 5291 | Dashboard SPA |
+| API | 3004 | HTTP API |
+| Worker | — | Background processing |
+| PostgreSQL | 5434 | Metadata storage |
+| Redis | 6380 | Job queue |
+| LocalStack S3 | 4567 | Object storage |
+
+See the [Self-Hosting Guide](/docs/self-hosting) for environment variables, health checks, backups, and upgrade procedures.
+
+## Next Steps
+
+- [Quickstart](/docs/quickstart) — Your first debug bundle in under 5 minutes
+- [Node.js SDK](/docs/sdks/node) — Full configuration and framework integration guide
+- [Browser SDK](/docs/sdks/browser) — Breadcrumbs, network capture, session controls
+- [CLI Setup](/docs/cli/setup) — Project scaffolding and configuration

@@ -1,0 +1,117 @@
+---
+title: Probes
+description: Request additional diagnostic data from SDKs without code changes or redeployment.
+icon: Radar
+---
+
+Debug probes let you dynamically request richer diagnostic data from running applications
+without changing code or redeploying. When a probe is active, matching SDK instances
+collect extra context and include it in subsequent events.
+
+## When to Use Probes
+
+- An incident exists but the bundle lacks sufficient diagnostic data.
+- You need heap snapshots, extended stack traces, or local variable dumps.
+- You want to capture richer data temporarily without a code change.
+- You need data from a specific service/environment combination.
+
+## How Probes Work
+
+```
+┌──────────┐    ┌────────────┐    ┌─────────┐    ┌──────────┐
+│  You      │───▶│  Activate  │───▶│  API    │───▶│  Probe   │
+│ (API/CLI) │    │  Probe     │    │  Store  │    │  Active  │
+└──────────┘    └────────────┘    └─────────┘    └──────────┘
+                                                       │
+                     ┌─────────────────────────────────┘
+                     ▼
+              ┌────────────┐    ┌──────────────┐    ┌───────────┐
+              │  SDK Polls │───▶│  Probe       │───▶│  Enriched │
+              │  /v1/events│    │  Directives  │    │  Events   │
+              └────────────┘    └──────────────┘    └───────────┘
+```
+
+1. **Activate** — You create a probe via API, CLI, or MCP with a label pattern, service
+   filter, and TTL.
+2. **Distribute** — The API returns probe directives in `POST /v1/events` responses.
+   SDKs poll these directives approximately every 60 seconds.
+3. **Collect** — Matching SDK instances begin collecting the requested extra data
+   (extended stack traces, heap snapshots, local variables).
+4. **Enrich** — Enriched data arrives with subsequent events and is included in the
+   `context.probe_data` section of bundles.
+5. **Expire** — The probe automatically deactivates after its TTL expires.
+
+## Probe Configuration
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `label_pattern` | Glob pattern matching incident labels (e.g., `auth.*`, `payment.checkout`) | — (required) |
+| `service` | Scope to a specific service name | All services |
+| `environment` | Scope to a specific environment | All environments |
+| `ttl_seconds` | Probe lifetime | 3600 (1 hour) |
+| `trigger_ttl_seconds` | Trigger token validity window | 300 (5 minutes) |
+
+### Label Pattern Matching
+
+| Pattern | Matches |
+|---------|---------|
+| `*` | All incidents |
+| `auth.*` | `auth`, `auth.login`, `auth.token.expired`, etc. |
+| `payment.checkout` | Exactly `payment.checkout` |
+
+## Probe Data in Bundles
+
+Probe-collected data appears in the `context.probe_data` section of the bundle:
+
+```json
+{
+  "context": {
+    "probe_data": {
+      "version": 1,
+      "items": [
+        {
+          "label": "auth.token.expired",
+          "data": {
+            "heap_snapshot": "...",
+            "local_variables": { "userId": "usr_01H...", "tokenAge": 86401 },
+            "extended_stack": "..."
+          },
+          "timestamp": "2026-03-24T11:05:00Z",
+          "activation_id": "prb_01H9KL..."
+        }
+      ]
+    }
+  }
+}
+```
+
+## Limits
+
+| Constraint | Limit |
+|------------|-------|
+| Max concurrent probes per project | 10 |
+| Max TTL | 24 hours (86,400 seconds) |
+| Probe directive refresh interval | ~60 seconds (SDK-side) |
+| Trigger token validity | Configurable (default: 300 seconds) |
+
+## Trigger Token
+
+When you activate a probe, the API returns a `trigger_token`. This token is shown
+**exactly once** at creation time — store it immediately.
+
+The trigger token allows SDKs to authenticate their probe data collection. It expires
+after `trigger_ttl_seconds`.
+
+## Managing Probes
+
+| Interface | Reference |
+|-----------|-----------|
+| **API** | [Probes API](/docs/api/probes) |
+| **CLI** | [CLI Cloud Workflow](/docs/cli/cloud-workflow) |
+| **MCP** | [MCP Workflows](/docs/mcp/workflows#probe-driven-investigation) |
+
+## Next Steps
+
+- [Probes API](/docs/api/probes) — Activate, list, and deactivate probes
+- [Bundles](/docs/bundles) — How probe data enriches bundles
+- [Universal SDK Interface](/docs/sdks/universal-interface) — SDK probe support

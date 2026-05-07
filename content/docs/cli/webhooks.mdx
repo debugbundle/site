@@ -1,0 +1,212 @@
+---
+title: Webhook Management
+description: Create, test, and manage webhooks with the DebugBundle CLI.
+icon: Webhook
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The CLI provides full CRUD operations for webhooks, plus delivery management and testing.
+
+## List Webhooks
+
+```bash
+debugbundle webhook list --project-id proj_01HXYZ...
+```
+
+Output:
+
+```json
+{
+  "webhooks": [
+    {
+      "webhook_id": "wh_01HABC...",
+      "url": "https://myapp.com/webhooks/debugbundle",
+      "events": ["bundle.created", "bundle.resolved"],
+      "is_enabled": true,
+      "filters": {
+        "environments": ["production"],
+        "services": [],
+        "severity_min": null,
+        "bundle_types": []
+      }
+    }
+  ]
+}
+```
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--project-id` | `string` | — | **Required.** Project to list webhooks for. |
+| `--limit` | `number` | `50` | Maximum number of webhooks to return. |
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+## Create Webhook
+
+```bash
+debugbundle webhook create \
+  --project-id proj_01HXYZ... \
+  --url https://myapp.com/webhooks/debugbundle \
+  --event bundle.created,bundle.resolved \
+  --environment production \
+  --severity-min high
+```
+
+Output:
+
+```json
+{
+  "webhook": {
+    "webhook_id": "wh_01HDEF...",
+    "url": "https://myapp.com/webhooks/debugbundle",
+    "signing_secret": "whsec_a1b2c3d4e5f6...",
+    "events": ["bundle.created", "bundle.resolved"],
+    "is_enabled": true
+  }
+}
+```
+
+<Callout type="warn">
+  The `signing_secret` is shown **only once at creation**. Copy it immediately to verify webhook signatures. See [Webhooks](/docs/webhooks) for HMAC-SHA256 verification.
+</Callout>
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--project-id` | `string` | — | **Required.** Project to create the webhook for. |
+| `--url` | `string` | — | **Required.** HTTPS endpoint URL to receive deliveries. |
+| `--event` | `string` | — | **Required.** Comma-separated event types to subscribe to. |
+| `--environment` | `string` | — | Filter: only deliver for these environments (comma-separated). |
+| `--service` | `string` | — | Filter: only deliver for these services (comma-separated). |
+| `--severity-min` | `string` | — | Filter: minimum severity (`low`, `medium`, `high`, `critical`). |
+| `--bundle-type` | `string` | — | Filter: only deliver for these bundle types (comma-separated). |
+| `--verification` | `boolean` | `true` | Whether signature verification is required. |
+| `--is-enabled` | `boolean` | `true` | Whether the webhook is active. |
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+### Available Event Types
+
+| Event | Trigger |
+|-------|---------|
+| `bundle.created` | New debug bundle generated. |
+| `bundle.updated` | Existing bundle updated with new data. |
+| `bundle.resolved` | Incident marked as resolved. |
+| `bundle.reopened` | Previously resolved incident regressed. |
+| `improvement_bundle.created` | Improvement bundle generated. |
+| `incident.spike_detected` | Unusual spike in incident occurrences. |
+| `verification.passed` | Webhook verification test succeeded. |
+| `verification.failed` | Webhook verification test failed. |
+
+## Update Webhook
+
+```bash
+debugbundle webhook update wh_01HDEF... \
+  --event bundle.created,bundle.resolved,incident.spike_detected \
+  --severity-min medium
+```
+
+Partial update — only the specified fields are changed. Omitted fields remain unchanged.
+
+| Flag | Type | Description |
+|------|------|-------------|
+| `--url` | `string` | New endpoint URL. |
+| `--event` | `string` | Replace subscribed event types (comma-separated). |
+| `--environment` | `string` | Replace environment filter (comma-separated). |
+| `--service` | `string` | Replace service filter (comma-separated). |
+| `--severity-min` | `string` | Update minimum severity filter. |
+| `--bundle-type` | `string` | Replace bundle type filter (comma-separated). |
+| `--verification` | `boolean` | Update verification requirement. |
+| `--is-enabled` | `boolean` | Enable or disable the webhook. |
+| `--auth-file` | `string` | Path to auth state file. |
+| `--json` | `boolean` | Output as JSON. |
+
+## Delete Webhook
+
+```bash
+debugbundle webhook delete wh_01HDEF...
+```
+
+Permanently removes the webhook. Pending deliveries are cancelled.
+
+## Test Webhook
+
+Send a synthetic signed delivery to verify your endpoint:
+
+```bash
+debugbundle webhook test wh_01HDEF...
+```
+
+The test command sends a `verification.passed` event by default. Specify a different event:
+
+```bash
+debugbundle webhook test wh_01HDEF... --event verification.failed
+```
+
+Use this to verify that your webhook endpoint correctly validates HMAC-SHA256 signatures and processes payloads.
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--event` | `string` | `verification.passed` | Event type to send (`verification.passed` or `verification.failed`). |
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+## View Deliveries
+
+List recent deliveries for a webhook:
+
+```bash
+debugbundle webhook deliveries wh_01HDEF...
+```
+
+Output:
+
+```json
+{
+  "deliveries": [
+    {
+      "delivery_id": "del_01HGHI...",
+      "status": "delivered",
+      "event_type": "bundle.created",
+      "attempt_count": 1,
+      "created_at": "2026-03-24T10:30:00Z",
+      "delivered_at": "2026-03-24T10:30:01Z"
+    },
+    {
+      "delivery_id": "del_01HJKL...",
+      "status": "failed",
+      "event_type": "bundle.resolved",
+      "attempt_count": 5,
+      "created_at": "2026-03-24T09:00:00Z",
+      "last_attempt_at": "2026-03-24T10:00:00Z"
+    }
+  ]
+}
+```
+
+### Delivery Statuses
+
+| Status | Description |
+|--------|-------------|
+| `pending` | Delivery queued, not yet attempted. |
+| `delivered` | Successfully delivered (2xx response). |
+| `retrying` | Delivery failed, retrying with exponential backoff. |
+| `failed` | All retry attempts exhausted. |
+| `disabled` | Webhook auto-disabled after 50 consecutive failures. |
+
+## Retry a Delivery
+
+Retry a specific failed delivery:
+
+```bash
+debugbundle webhook retry wh_01HDEF... del_01HJKL...
+```
+
+This resets the delivery to `retrying` status and re-queues it for delivery. Useful for manual recovery of failed or disabled deliveries.
+
+## Next Steps
+
+- [Webhooks](/docs/webhooks) — Webhook event types, payloads, and signature verification
+- [Alert Management](/docs/cli/alerts) — Set up alert channels for notifications
+- [Cloud Workflow](/docs/cli/cloud-workflow) — Full cloud workflow overview
+- [API Webhooks](/docs/api/webhooks) — Webhook API endpoints

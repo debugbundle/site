@@ -1,0 +1,79 @@
+---
+title: "Local-first development with DebugBundle"
+description: "How DebugBundle's local-first architecture lets you capture, process, and inspect incidents without any cloud dependency."
+date: "24 March 2026"
+---
+
+## Why local-first?
+
+Most debugging tools require you to sign up for a hosted service before you can do anything useful. DebugBundle takes a different approach: the entire capture-process-inspect loop works locally, on your machine, with zero cloud dependency.
+
+This is not a limited trial. It is the full debugging workflow:
+
+- **Capture** — SDKs write events to `.debugbundle/local/events/`
+- **Process** — `debugbundle process` groups events into incidents and generates bundles
+- **Inspect** — `debugbundle incidents` and `debugbundle bundle` read from local state
+
+No API keys. No cloud accounts. No network requests.
+
+## How it works
+
+When you run `debugbundle setup`, the CLI creates a `.debugbundle/` directory in your project root with a profile, connection config, and the local event/state directories that the SDK and CLI use.
+
+The Node SDK detects the local project mode and writes event batches as atomic JSON files:
+
+```
+.debugbundle/
+  profile.json
+  local/
+    connection.json
+    events/
+      1711234567890-001-my-service.events.json
+    state.json
+  bundles/
+    local/
+      incident-abc123.bundle.json
+      reproductions/
+        incident-abc123.reproduction.json
+```
+
+When you run `debugbundle process`, the CLI reads unprocessed event files, normalizes and fingerprints them, groups them into incidents, generates bundles and reproductions, and writes everything back to the local store.
+
+## Log-based capture
+
+Not every project uses a supported SDK. DebugBundle also supports log-based capture for existing applications:
+
+```bash
+# One-shot ingestion from a log file
+debugbundle ingest server.log --format apache-error
+
+# Continuous tailing
+debugbundle watch --log server.log --format php-error
+```
+
+The CLI parses supported log formats (`debugbundle-ndjson`, `php-error`, `apache-error`), converts them to DebugBundle event envelopes, and feeds them into the same local processing pipeline.
+
+## When to connect
+
+The local workflow is complete on its own. But there are real reasons to connect to hosted DebugBundle:
+
+- **Production environments** — You want incidents from live deployments to flow to a central system
+- **Team collaboration** — Multiple developers need visibility into the same incidents
+- **Remote probes** — You want to activate diagnostic probes on running applications remotely
+- **Retention** — You need longer bundle and event retention than local storage provides
+
+Connecting is a single command:
+
+```bash
+debugbundle connect
+```
+
+This creates a cloud project, generates a project token, and configures your local setup to forward production events to hosted DebugBundle — while keeping development and staging local-only by default.
+
+## The best of both
+
+Local-first is not anti-cloud. It is a design principle that says: the core debugging workflow should never depend on network availability, cloud accounts, or hosted services.
+
+You own your data. You choose when to share it. And the same tools work identically whether you are debugging locally or investigating a production incident on the hosted platform.
+
+Read the [local workflow guide](/docs/cli/local-workflow/) for step-by-step instructions.

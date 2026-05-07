@@ -1,0 +1,151 @@
+---
+title: Connect to Cloud
+description: Connect your local DebugBundle project to DebugBundle Cloud for team-wide visibility.
+icon: Cloud
+---
+
+The `debugbundle connect` command links your local project to DebugBundle Cloud, enabling
+team-wide incident visibility, webhooks, alerts, probes, and the web dashboard.
+
+## Prerequisites
+
+- A DebugBundle account (sign up at `app.debugbundle.com`)
+- CLI authenticated: `debugbundle login`
+- An initialized local project: `debugbundle setup`
+
+## Connect Flow
+
+```bash
+debugbundle connect
+```
+
+The connect command performs these steps automatically:
+
+1. **Reads your profile** — extracts the project name from `.debugbundle/profile.json`
+2. **Creates or selects a cloud project** — uses the profile name to find an existing
+   project or create a new one with a slugified name
+3. **Generates a project token** — creates a write-only SDK token for event ingestion
+4. **Updates connection.json** — switches mode to `"connected"` and enables cloud
+  delivery for the production environment
+
+### Output
+
+```
+Connected DebugBundle project to cloud.
+Created cloud project: my-app (proj_01HXYZ...)
+Updated .debugbundle/local/connection.json with production cloud delivery defaults.
+Local investigation artifacts remain available under .debugbundle/local/.
+Project token:
+dbundle_proj_a1b2c3d4...
+Next steps:
+- Set DEBUGBUNDLE_PROJECT_TOKEN=dbundle_proj_a1b2c3d4... in your production environment.
+- Redeploy connected environments after updating their DebugBundle configuration.
+- Use debugbundle incidents --source cloud after deployment to confirm hosted ingestion.
+```
+
+## Connection Configuration
+
+After connecting, your `.debugbundle/local/connection.json` looks like:
+
+```json
+{
+  "mode": "connected",
+  "cloud_project_id": "proj_01HXYZ...",
+  "cloud_base_url": "https://api.debugbundle.com",
+  "environments": {
+    "local": { "delivery": "local-only" },
+    "development": { "delivery": "local-only" },
+    "staging": { "delivery": "local-only" },
+    "production": { "delivery": "cloud-enabled" }
+  }
+}
+```
+
+### Configuration Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `mode` | `string` | `"local-only"` or `"connected"`. |
+| `cloud_project_id` | `string \| null` | Cloud project ID. Set during connect. |
+| `cloud_base_url` | `string \| null` | API base URL. Default: `https://api.debugbundle.com`. |
+| `environments` | `object` | Per-environment delivery settings. |
+
+### Environment Delivery
+
+Each environment independently controls whether events are delivered locally or to the cloud:
+
+| Delivery Mode | Behavior |
+|---------------|----------|
+| `local-only` | Events processed locally. No network calls. |
+| `cloud-enabled` | Events sent to DebugBundle Cloud via `POST /v1/events`. |
+
+**Default after connect:**
+- `local`, `development`, and `staging` → `local-only` (keep pre-production investigation local by default)
+- `production` → `cloud-enabled` (team visibility where it matters)
+
+You can change any environment's delivery mode by editing `connection.json`.
+
+## Verify Cloud Connection
+
+After deploying with the project token, verify the connection:
+
+```bash
+debugbundle verify cloud
+```
+
+This checks:
+- API is reachable
+- Your member token is valid
+- The cloud project exists and is accessible
+- Recent events have been received within the verification window
+
+### JSON Output
+
+```bash
+debugbundle verify cloud --json
+```
+
+```json
+{
+  "status": "healthy",
+  "checks": [
+    { "name": "api_reachable", "status": "ok", "message": "API responded in 42ms" },
+    { "name": "auth_valid", "status": "ok", "message": "Member token is valid" },
+    { "name": "project_accessible", "status": "ok", "message": "Project proj_01HXYZ... is accessible" },
+    { "name": "recent_events", "status": "ok", "message": "Last event received 3 minutes ago" }
+  ],
+  "warnings": [],
+  "errors": [],
+  "suggested_actions": [],
+  "auto_fix_available": false
+}
+```
+
+## Merged Incident View
+
+After connecting, you can view both local and cloud incidents together:
+
+```bash
+# All incidents (both sources)
+debugbundle incidents list --source all
+
+# Cloud only
+debugbundle incidents list --source cloud
+
+# Local only
+debugbundle incidents list --source local
+```
+
+## Security
+
+- **Project tokens** are write-only — they can only ingest events, not read data.
+- **Member tokens** are used for CLI/API/MCP operations (read + manage).
+- Tokens are hashed (SHA-256) before storage. Plaintext is shown once at creation.
+- Cloud delivery uses HTTPS with TLS 1.2+.
+
+## Next Steps
+
+- [Project Setup](/docs/project-setup) — Setup overview
+- [Local-Only Mode](/docs/project-setup/local-only) — Return to local-only mode
+- [Capture Policy](/docs/capture-policy) — Control event capture behavior
+- [CLI Cloud Workflow](/docs/cli/cloud-workflow) — Full cloud CLI workflow

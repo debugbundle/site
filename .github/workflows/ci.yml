@@ -1,0 +1,51 @@
+name: Site CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate release files
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'EOF'
+          const { existsSync, readFileSync } = require('node:fs');
+
+          const manifest = JSON.parse(readFileSync('release-manifest.json', 'utf8'));
+          if (manifest.distributionRef !== 'debugbundle/site') {
+            throw new Error(`Unexpected distribution ref: ${manifest.distributionRef}`);
+          }
+
+          for (const fileName of manifest.requiredReleaseFiles) {
+            if (!existsSync(fileName)) {
+              throw new Error(`Missing required release file: ${fileName}`);
+            }
+          }
+          EOF
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type-check
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build

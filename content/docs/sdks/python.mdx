@@ -1,0 +1,210 @@
+---
+title: Python SDK
+description: DebugBundle Python SDK for Django, Flask, FastAPI, and stdlib — coming soon.
+icon: Hexagon
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+<Callout type="info">
+  The Python SDK is currently in development and will be available on PyPI as `debugbundle-python`. The interface below reflects the planned contract from the [Universal SDK Interface](/docs/sdks/universal-interface).
+</Callout>
+
+## Installation
+
+```bash
+pip install debugbundle-python
+```
+
+## Initialize
+
+```python
+import os
+import debugbundle
+
+debugbundle.init(project_token=os.environ["DEBUGBUNDLE_TOKEN"])
+```
+
+## Configuration
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `project_token` | `str` | — | **Required.** Project token for ingestion auth (`dbundle_proj_...`). |
+| `environment` | `str` | auto-detect | `production`, `staging`, `development`, etc. |
+| `service` | `str` | auto-detect | Service name for multi-service projects. |
+| `enabled` | `bool` | `True` | Kill switch — set to `False` to disable all capture. |
+| `redact_fields` | `list[str]` | Default set | Additional field names to redact before transmission. |
+| `sample_rate` | `float` | `1.0` | Event sampling rate (0.0–1.0). |
+| `batch_size` | `int` | `50` | Max events per batch. |
+| `flush_interval` | `int` | `2000` | Max milliseconds before batch send. |
+| `endpoint` | `str` | `https://api.debugbundle.com/v1/events` | Ingestion endpoint URL. |
+| `transport` | `str` | `http` | `http` or `file` (local-only mode). |
+| `local_events_dir` | `str` | `.debugbundle/local/events` | Directory for file transport output. |
+
+## Vanilla Hooks
+
+The Python SDK provides opt-in hooks for automatic capture:
+
+```python
+import debugbundle
+
+debugbundle.init(project_token=os.environ["DEBUGBUNDLE_TOKEN"])
+
+# Capture unhandled exceptions via sys.excepthook
+debugbundle.capture_exceptions()
+
+# Capture Python logging → DebugBundle events
+debugbundle.capture_logging()
+
+# Capture asyncio loop exception handler
+debugbundle.capture_async()
+```
+
+Each hook is independently enabled. All three can run together.
+
+## Framework Integrations
+
+### Django
+
+```python
+# settings.py
+MIDDLEWARE = [
+    "debugbundle.integrations.django.DebugBundleMiddleware",
+    # ... other middleware
+]
+
+DEBUGBUNDLE = {
+    "project_token": os.environ["DEBUGBUNDLE_TOKEN"],
+    "service": "django-api",
+}
+```
+
+The middleware captures unhandled exceptions and attaches request context (method, path, status code, headers) automatically.
+
+### Flask
+
+```python
+from flask import Flask
+import debugbundle
+from debugbundle.integrations.flask import init_flask
+
+app = Flask(__name__)
+
+debugbundle.init(project_token=os.environ["DEBUGBUNDLE_TOKEN"])
+init_flask(app)
+```
+
+`init_flask` registers an `errorhandler(Exception)` and a `before_request` hook for request context capture.
+
+### FastAPI
+
+```python
+from fastapi import FastAPI
+import debugbundle
+from debugbundle.integrations.fastapi import DebugBundleMiddleware
+
+app = FastAPI()
+
+debugbundle.init(project_token=os.environ["DEBUGBUNDLE_TOKEN"])
+app.add_middleware(DebugBundleMiddleware)
+```
+
+The ASGI middleware captures exceptions and request/response data. Works with Starlette-based frameworks.
+
+## Logger Integrations
+
+### stdlib logging
+
+```python
+import logging
+import debugbundle
+
+debugbundle.init(project_token=os.environ["DEBUGBUNDLE_TOKEN"])
+
+handler = debugbundle.LoggingHandler(level=logging.ERROR)
+logging.getLogger().addHandler(handler)
+```
+
+### structlog
+
+```python
+import structlog
+import debugbundle
+
+debugbundle.init(project_token=os.environ["DEBUGBUNDLE_TOKEN"])
+
+structlog.configure(
+    processors=[
+        # ... other processors
+        debugbundle.integrations.structlog.debugbundle_processor,
+        structlog.dev.ConsoleRenderer(),
+    ]
+)
+```
+
+### loguru
+
+```python
+from loguru import logger
+import debugbundle
+
+debugbundle.init(project_token=os.environ["DEBUGBUNDLE_TOKEN"])
+
+logger.add(debugbundle.integrations.loguru.debugbundle_sink, level="ERROR")
+```
+
+## Capture Methods
+
+```python
+import debugbundle
+
+# Capture an exception with optional context
+try:
+    riskyOperation()
+except Exception as e:
+    debugbundle.capture_exception(e, {"user_id": "usr_123"})
+
+# Capture a structured log event
+debugbundle.capture_log("Payment processing failed", "error", {
+    "order_id": "ord_456",
+    "amount": 99.99,
+})
+
+# Capture HTTP request/response pair
+debugbundle.capture_request(request, response, {"route": "/api/orders"})
+
+# Capture a diagnostic message
+debugbundle.capture_message("Deployment started", "info")
+
+# Set persistent context for all future events
+debugbundle.set_context("deployment", {"version": "1.4.2"})
+
+# Probe — diagnostic ring buffer
+debugbundle.probe("db_pool", lambda: {"active": pool.active, "idle": pool.idle})
+
+# Flush all buffered events
+await debugbundle.flush()
+```
+
+## Transport
+
+| Mode | When Used | Description |
+|------|-----------|-------------|
+| `http` | Default | Sends events to the ingestion API via HTTPS. |
+| `file` | Local-only | Writes events to `.debugbundle/local/events/` for CLI processing. |
+
+The transport is selected automatically based on your `connection.json` mode, or can be overridden with the `transport` config option.
+
+## Volume Control
+
+The Python SDK implements the same volume controls as all DebugBundle SDKs:
+
+- **Duplicate suppression** — First 3 identical events in a 30-second window sent normally; subsequent duplicates aggregated into a single `error_suppressed` event.
+- **Loop protection** — More than 10 identical errors in 2 seconds forces suppression. Checkpoint every 30 seconds. Resets after 60 seconds of silence.
+- **Buffer retention** — Events are never dropped on transport failure. Respects `Retry-After` headers from the ingestion API.
+
+## Next Steps
+
+- [Universal SDK Interface](/docs/sdks/universal-interface) — Full interface contract across all SDKs
+- [CLI Local Workflow](/docs/cli/local-workflow) — Process captured events locally
+- [API Ingestion](/docs/api/ingestion) — Direct event ingestion API

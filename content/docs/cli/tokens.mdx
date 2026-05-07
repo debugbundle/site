@@ -1,0 +1,225 @@
+---
+title: Token Management
+description: Create, list, and revoke project and member tokens with the DebugBundle CLI.
+icon: Key
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The CLI provides commands for managing both project tokens (SDK ingestion) and member tokens (CLI/API/MCP authentication).
+
+## Token Types
+
+| Token Type | Prefix | Purpose | Scope |
+|------------|--------|---------|-------|
+| **Project token** | `dbundle_proj_...` | SDK event ingestion | Write-only to ingestion API |
+| **Member token** | `dbundle_member_...` | CLI, API, MCP operations | Read/manage all project resources |
+
+<Callout type="warn">
+  Token plaintext is shown **only once at creation**. Copy it immediately — it cannot be retrieved later. Tokens are stored as SHA-256 hashes at rest.
+</Callout>
+
+## Project Tokens
+
+Project tokens authenticate SDK event ingestion. Each project can have multiple active tokens.
+
+### List Project Tokens
+
+```bash
+debugbundle token project list proj_01HXYZ...
+```
+
+Output:
+
+```json
+{
+  "tokens": [
+    {
+      "token_id": "tok_01HABC...",
+      "label": "production-sdk",
+      "revoked_at": null
+    },
+    {
+      "token_id": "tok_01HDEF...",
+      "label": "staging-sdk",
+      "revoked_at": "2026-03-20T10:00:00Z"
+    }
+  ]
+}
+```
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--limit` | `number` | `50` | Maximum number of tokens to return. |
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+### Create Project Token
+
+```bash
+debugbundle token project create proj_01HXYZ... --label "production-sdk"
+```
+
+Output:
+
+```json
+{
+  "token": {
+    "token_id": "tok_01HGHI...",
+    "label": "production-sdk",
+    "plaintext": "dbundle_proj_live_a1b2c3d4e5f6...",
+    "revoked_at": null
+  }
+}
+```
+
+Copy the `plaintext` value — this is the only time it will be shown.
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--label` | `string` | — | **Required.** Human-readable label for the token. |
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+### Revoke Project Token
+
+```bash
+debugbundle token project revoke proj_01HXYZ... tok_01HGHI...
+```
+
+Output:
+
+```json
+{
+  "token": {
+    "token_id": "tok_01HGHI...",
+    "label": "production-sdk",
+    "revoked_at": "2026-03-24T10:30:00Z"
+  }
+}
+```
+
+Revoked tokens are immediately rejected by the ingestion API. SDKs using revoked tokens will fail silently (per SDK safety guarantees).
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+## Member Tokens
+
+Member tokens authenticate CLI, API, and MCP operations. They are tied to your user account.
+
+### List Member Tokens
+
+```bash
+debugbundle token member list
+```
+
+Output:
+
+```json
+{
+  "tokens": [
+    {
+      "token_id": "tok_01HJKL...",
+      "label": "laptop-cli",
+      "revoked_at": null
+    }
+  ]
+}
+```
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--limit` | `number` | `50` | Maximum number of tokens to return. |
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+### Create Member Token
+
+```bash
+debugbundle token member create --label "ci-pipeline"
+```
+
+Output:
+
+```json
+{
+  "token": {
+    "token_id": "tok_01HMNO...",
+    "label": "ci-pipeline",
+    "plaintext": "dbundle_member_a1b2c3d4e5f6...",
+    "revoked_at": null
+  }
+}
+```
+
+Use member tokens for CI/CD pipelines, automated scripts, and MCP server authentication.
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--label` | `string` | — | **Required.** Human-readable label for the token. |
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+### Revoke Member Token
+
+```bash
+debugbundle token member revoke tok_01HMNO...
+```
+
+Output:
+
+```json
+{
+  "token": {
+    "token_id": "tok_01HMNO...",
+    "label": "ci-pipeline",
+    "revoked_at": "2026-03-24T10:30:00Z"
+  }
+}
+```
+
+Revoked member tokens are immediately rejected by the API.
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+## Token Security
+
+- **Hashed at rest** — All tokens are stored as SHA-256 hashes in the database. The plaintext is never persisted.
+- **Plaintext once** — Token plaintext is returned only at creation. If lost, revoke and create a new token.
+- **Scope separation** — Project tokens can only write events. Member tokens can only manage resources. Never conflate.
+- **Revocation** — Revoked tokens are rejected immediately. No grace period.
+
+## Common Patterns
+
+### Rotate a Project Token
+
+```bash
+# Create a new token
+debugbundle token project create proj_01HXYZ... --label "production-sdk-v2"
+# → Copy the new plaintext token
+
+# Update your application's DEBUGBUNDLE_PROJECT_TOKEN environment variable
+
+# Revoke the old token after deployment
+debugbundle token project revoke proj_01HXYZ... tok_OLD...
+```
+
+### Create a CI/CD Token
+
+```bash
+# Create a member token for your CI pipeline
+debugbundle token member create --label "github-actions"
+# → Copy the plaintext token to your CI secrets
+```
+
+## Next Steps
+
+- [Authentication](/docs/api/authentication) — Full auth model with all three token types
+- [Security](/docs/security) — Token hashing and redaction details
+- [Cloud Workflow](/docs/cli/cloud-workflow) — Using tokens with cloud operations

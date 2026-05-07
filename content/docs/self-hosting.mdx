@@ -1,0 +1,220 @@
+---
+title: Self-Hosting
+description: Run the full DebugBundle stack on your own infrastructure with Docker Compose.
+icon: Server
+---
+
+DebugBundle can be self-hosted using Docker Compose. The self-host topology mirrors the
+hosted production model — each core component runs as its own service, keeping boundaries
+clean and behavior predictable.
+
+## Architecture
+
+The self-hosted stack consists of six core services plus two one-shot bootstrap helpers:
+
+| Service | Runtime | Purpose |
+|---------|---------|---------|
+| **Web** | `node:24-alpine` + `pnpm --filter @debugbundle/web build && preview` | Single-page dashboard application |
+| **API** | `node:24-alpine` + `pnpm api:start` | REST API for CLI, MCP, SDK ingestion |
+| **Worker** | `node:24-alpine` + `pnpm worker:start` | Background processing (bundles, incidents) |
+| **PostgreSQL** | `postgres:17` | Metadata, projects, incidents, tokens |
+| **Redis** | `redis:7` | Job queue, caching |
+| **LocalStack** | `localstack/localstack` | S3-compatible object storage (raw events, bundles) |
+
+`workspace-init` runs once per `docker compose up` to install the monorepo dependencies inside the checked-out repo before the long-running services start. `db-bootstrap` then bootstraps an empty database using the repository's authoritative schema before the API starts.
+
+## Quick Start
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/debugbundle/debugbundle.git
+cd debugbundle/deploy/selfhost
+```
+
+### 2. Configure Environment
+
+Copy the defaults and customize:
+
+```bash
+cp .env.example .env
+```
+
+### 3. Start Services
+
+```bash
+docker compose up -d
+```
+
+All services include health checks. Wait for readiness:
+
+```bash
+docker compose ps
+```
+
+Run the shipped smoke path after bootstrap:
+
+```bash
+make selfhost-smoke
+```
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SELFHOST_MODE` | `true` | Set to `true` on **API** and **Worker** services to bypass all tier, quota, and rate-limit enforcement. Auth and security remain fully enforced. |
+| `APP_BASE_URL` | `http://localhost:5291` | Browser-facing base URL for the authenticated app |
+| `API_PORT` | `3004` | Exposed host port for the API service |
+| `WEB_PORT` | `5291` | Exposed host port for the SPA service |
+| `POSTGRES_USER` | `debugbundle` | PostgreSQL username |
+| `POSTGRES_PASSWORD` | `debugbundle` | PostgreSQL password |
+| `POSTGRES_DB` | `debugbundle` | PostgreSQL database name |
+| `POSTGRES_PORT` | `5434` | Host port for PostgreSQL |
+| `REDIS_PORT` | `6380` | Host port for Redis |
+| `S3_REGION` | `us-east-1` | AWS region for S3 (LocalStack) |
+| `S3_BUCKET` | `debugbundle-raw-events` | Raw-event and bundle bucket bootstrapped inside LocalStack |
+| `LOCALSTACK_PORT` | `4567` | Host port for LocalStack |
+| `DEBUGBUNDLE_PROBE_TRIGGER_SECRET` | none | Required API secret for signed probe-trigger tokens |
+| `AUTH_COOKIE_SECURE` | `false` | Set to `true` when terminating HTTPS in front of the stack |
+| `WORKER_HEALTH_PORT` | `3001` | Internal worker readiness port used by Compose health checks |
+| `CONTAINER_PREFIX` | `debugbundle-selfhost` | Container name prefix |
+
+## Health Checks
+
+Every service includes a health check so orchestration tools can verify readiness:
+
+- **PostgreSQL** — `pg_isready` with configured user/database (10s interval, 5 retries)
+- **Redis** — `redis-cli ping` (10s interval, 5 retries)
+- **LocalStack** — verifies the configured bucket exists after bootstrap
+- **API** — `GET /ready`, which re-checks database schema, Redis reachability, and S3 bucket access
+- **Worker** — internal `GET /ready`, which re-checks worker tables, Redis reachability, and S3 bucket access
+- **Web** — HTTP check against the SPA root
+
+The compose stack also bootstraps required runtime state automatically:
+
+- `workspace-init` installs the pnpm workspace before API, worker, or web starts
+- `db-bootstrap` applies the clean-slate schema before the API starts
+- LocalStack runs a ready-hook script that creates the configured `S3_BUCKET`
+
+Pre-production note: in-place upgrades from older pre-release database shapes are intentionally unsupported. If `db-bootstrap` reports a legacy or partial schema, recreate the database volume instead of attempting schema evolution.
+
+## Startup Validation
+
+The self-host stack now fails loudly when required runtime dependencies are misconfigured or unavailable:
+
+- API startup validates required tables, Redis connectivity, and S3 bucket access before it binds `API_PORT`
+- worker startup validates required worker tables, Redis connectivity, and S3 bucket access before it enters the processing loop
+- both readiness probes continue checking those dependencies after startup, so Compose health reflects real dependency loss rather than only a running process
+
+Typical readiness failure reasons surface directly in container logs and readiness responses, such as `db_schema_missing_tables`, `api_redis_unreachable`, or `worker_s3_bucket_unreachable`.
+
+## Smoke Verification
+
+`make selfhost-smoke` brings the self-host stack up under an isolated Compose project and runs the checked-in smoke runner at `scripts/selfhost-smoke.ts`.
+
+The smoke flow proves the core self-host path end to end:
+
+- API and web readiness checks succeed
+- browser-session signup/login creates a real first-party session cookie
+- the session-authenticated management API creates a project and project token
+- the minted project token ingests a real event through `POST /v1/events`
+- the worker processes the event into an incident and bundle
+- the session-authenticated retrieval API returns the incident and generated bundle
+
+Use it after changing Docker Compose wiring, auth configuration, startup ordering, or worker/object-store behavior.
+
+## Data Persistence
+
+Data is persisted through Docker volumes:
+
+| Volume | Service | Contents |
+|--------|---------|----------|
+| `postgres-data` | PostgreSQL | All database tables and indexes |
+| `localstack-data` | LocalStack | Raw events, generated bundles |
+
+### Backup
+
+```bash
+# PostgreSQL
+docker compose exec postgres pg_dump -U debugbundle debugbundle > backup.sql
+
+# Restore
+docker compose exec -T postgres psql -U debugbundle debugbundle < backup.sql
+```
+
+## Auth Parity
+
+Self-hosted auth matches the hosted platform exactly:
+
+- **Dashboard** — First-party cookie-backed sessions
+- **CLI and MCP** — Member token authentication through the API
+- **SDK Ingestion** — Project tokens only (write-only)
+
+No separate auth model is introduced for self-hosting.
+
+## CLI Validation
+
+Once the CLI has been pointed at your self-hosted API with `debugbundle login --base-url <your-api-url>`, run:
+
+```bash
+debugbundle doctor --json
+```
+
+For connected projects, the doctor command now validates both:
+
+- the configured API base URL via `GET /health`
+- member-token auth via a lightweight authenticated incident-list request
+
+That makes self-host endpoint drift visible immediately when the stored CLI auth base URL or the project connection config stops matching the running API.
+
+## Service Boundaries
+
+Each component runs as its own service, even on a single machine:
+
+```
+┌─────────┐    ┌─────────┐    ┌──────────┐
+│   Web   │───▶│   API   │───▶│  Worker  │
+│  (SPA)  │    │  (REST) │    │  (Jobs)  │
+└─────────┘    └────┬────┘    └────┬─────┘
+                    │              │
+              ┌─────┴─────┐  ┌────┴─────┐
+              │ PostgreSQL │  │  Redis   │
+              └───────────┘  └──────────┘
+                    │
+              ┌─────┴─────┐
+              │ LocalStack │
+              │    (S3)    │
+              └───────────┘
+```
+
+## Scaling
+
+For higher throughput, scale the stateless runtime services horizontally:
+
+```bash
+# Run multiple API instances
+docker compose up -d --scale api=3
+
+# Run multiple workers
+docker compose up -d --scale worker=2
+```
+
+PostgreSQL and Redis remain single-instance in the default topology.
+
+## Updating
+
+```bash
+# Update the checked-out repo
+git pull
+
+# Re-run workspace bootstrap and recreate the app services
+docker compose up -d --force-recreate workspace-init api worker web
+```
+
+The API service runs database migrations on startup, so no separate migration command is required.
+
+## Next Steps
+
+- [Project Setup](/docs/project-setup) — Configure your project
+- [Tokens](/docs/security/tokens) — Create and manage authentication tokens
+- [CLI Cloud Workflow](/docs/cli/cloud-workflow) — Connect the CLI to your self-hosted API base URL

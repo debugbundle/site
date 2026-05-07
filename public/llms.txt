@@ -1,0 +1,25 @@
+# DebugBundle
+
+Production debugging bundles for AI agents.
+
+Primary docs: https://debugbundle.com/docs/
+App: https://app.debugbundle.com
+
+Documentation
+- Core concepts: https://debugbundle.com/docs/v1/overview/
+- API reference: https://debugbundle.com/docs/v1/api/
+- CLI reference: https://debugbundle.com/docs/v1/cli/
+- MCP reference: https://debugbundle.com/docs/v1/mcp/
+- Webhook events: https://debugbundle.com/docs/v1/webhooks/
+- Agent workflows: https://debugbundle.com/docs/agent-workflows/
+
+Machine-readable artifacts
+- OpenAPI: https://debugbundle.com/openapi.json
+- Bundle schema: https://debugbundle.com/schemas/bundle.json
+- Webhook events schema: https://debugbundle.com/schemas/webhook-events.json
+- Profile schema: https://debugbundle.com/schemas/profile.json
+- MCP tools schema: https://debugbundle.com/schemas/mcp-tools.json
+
+Examples
+- Failure bundle example: https://debugbundle.com/examples/bundle.failure.json
+- Improvement bundle example: https://debugbundle.com/examples/bundle.improvement.json

@@ -1,0 +1,63 @@
+---
+title: "What is DebugBundle?"
+description: "Understand the core product, the debug bundle artifact, and who DebugBundle is built for."
+icon: Lightbulb
+---
+
+## The Problem
+
+When a production error occurs, the initial signal is rarely enough to explain the failure. You may have a stack trace or a log entry, but not the surrounding request data, runtime state, deploy context, recent activity, or client-side evidence needed to understand it with confidence.
+
+The result is a slow and unreliable workflow: engineers assemble context manually, work through competing hypotheses, attempt multiple reproductions, and often discover issues later than they should.
+
+## The Solution
+
+DebugBundle captures that context at the moment of failure and packages it into a single structured artifact: the **debug bundle**.
+
+A debug bundle is a deterministic, versioned JSON document that contains everything needed to understand and reproduce a production incident:
+
+| Context block | What it captures |
+|---|---|
+| `error` | Exception class, message, stack trace, raw and parsed frames |
+| `request` | HTTP method, URL, headers, query, body (redacted) |
+| `response` | Status code, headers, body (redacted) |
+| `logs` | Structured log entries captured around the time of the error |
+| `frontend` | Breadcrumbs, console entries, navigation events, network requests |
+| `environment` | Environment name, variables (redacted), feature flags |
+| `deploy` | Deploy ID, git ref, timestamp, deployer |
+| `runtime` | Language, version, OS, architecture, memory, uptime |
+| `git` | Commit SHA, branch, remote URL, dirty flag |
+| `dependencies` | Package names and versions at deploy time |
+| `probe_data` | Always-on diagnostic ring buffer data attached on failure |
+| `device` | Browser, OS, screen, viewport, language, touch/network/display preferences (browser only; may contribute to browser fingerprinting) |
+
+Every bundle also includes a machine-generated **reproduction artifact** — a set of curl/HTTPie commands and a JSON spec that can reproduce the request that caused the failure.
+
+## Who It's For
+
+**Developers** who want to skip the context-gathering phase and jump straight to root-cause analysis.
+
+**AI coding agents** that can receive a webhook when an incident fires, fetch the bundle, analyze it, and open a pull request — all without human intervention. DebugBundle is designed for agent-first consumption. Every capability is available through three equal interfaces: API, CLI, and MCP.
+
+**Teams** that want shared visibility into production failures with automatic alerting, spike detection, and regression tracking.
+
+## Two Modes
+
+DebugBundle works in two modes:
+
+- **Local-only** — No cloud account needed. The SDK writes events to disk, the CLI processes them into bundles locally, and you inspect everything on your machine. This is the default starting point.
+- **Connected** — Events ship to the cloud ingestion API for team-wide visibility, alerting, webhooks, and agent automation. An upgrade path from local-only.
+
+## What Makes It Different
+
+1. **The bundle is the artifact.** Not a dashboard page, not a log search — a single structured document that can be passed to any tool, agent, or human.
+2. **Agent-first design.** CLI, API, and MCP have full parity. No capability is dashboard-only.
+3. **Local-first by default.** Start capturing and debugging without creating an account or connecting to any service.
+4. **Deterministic output.** Given the same normalized events, the bundle generator produces byte-identical output. No random IDs, no wall-clock timestamps in generation.
+5. **Privacy-aware.** Sensitive data is redacted at capture, ingestion, and storage. Tokens are hashed at rest. Webhook payloads are HMAC-signed.
+
+## Next Steps
+
+- [Quickstart](/docs/quickstart) — Go from zero to your first debug bundle in under 5 minutes
+- [How It Works](/docs/how-it-works) — Understand the 4-stage lifecycle
+- [Core Concepts](/docs/core-concepts) — Learn the three primitives: bundles, incidents, and profiles

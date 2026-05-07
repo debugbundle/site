@@ -1,0 +1,137 @@
+---
+title: "Core Concepts"
+description: "The three primitives, event types, fingerprinting, incident lifecycle, and bundle types."
+icon: Blocks
+---
+
+DebugBundle is built on three primitives: **bundles**, **incidents**, and **profiles**. Understanding these gives you the mental model for everything else in the system.
+
+---
+
+## Debug Bundles
+
+A debug bundle is a deterministic, versioned JSON document that packages all debugging context for a single incident. It is the core artifact of the system.
+
+### Bundle Types
+
+| Type | When created | Purpose |
+|---|---|---|
+| `failure` | An unhandled exception, fatal error, or critical log fires | Standard debugging: understand what broke and why |
+| `improvement` | An incident is resolved and the fix is detected | Documents what changed: before/after comparison for knowledge capture |
+
+### What's Inside
+
+Every bundle contains a `summary` (title, severity, occurrence count, service, environment) and a set of `context` blocks. Each context block is independently versioned (`version: 1`) so blocks can evolve without breaking the bundle schema.
+
+Context blocks: `error`, `request`, `response`, `logs`, `frontend`, `environment`, `deploy`, `runtime`, `git`, `dependencies`, `probe_data`, `device`.
+
+### Determinism Guarantee
+
+Given the same normalized events, the bundle generator produces **byte-identical output**. No random IDs or wall-clock timestamps are injected during generation. This means bundles can be diffed, cached, and verified.
+
+---
+
+## Incidents
+
+An incident is a fingerprint-grouped container of events. When the system sees a new `incident_signal` event, it computes a fingerprint and either creates a new incident or groups it with an existing one.
+
+### Incident Lifecycle
+
+```
+          new event
+              │
+              ▼
+         ┌─────────┐     resolve     ┌──────────┐
+         │  Open    │ ──────────────► │ Resolved │
+         └─────────┘                  └──────────┘
+              ▲                            │
+              │         new event          │
+              │         (regression)       │
+              │                            ▼
+              │                      ┌───────────┐
+              └───────────────────── │ Regressed │
+                                     └───────────┘
+```
+
+**Open** — Active incident receiving new occurrences.
+
+**Resolved** — Manually resolved via CLI (`debugbundle resolve`), API (`POST /v1/incidents/{id}/resolve`), or MCP (`resolve_incident`).
+
+**Regressed** — A resolved incident that received a new matching event. Automatically transitions back and can trigger alerts and webhooks.
+
+### Spike Detection
+
+The system maintains rolling frequency counters for each incident across four windows: 1 minute, 5 minutes, 1 hour, and 24 hours. A spike is detected when the 5-minute/1-hour ratio reaches ≥ 3.0, indicating a sudden increase in occurrence rate.
+
+### Occurrence Retention
+
+Not every occurrence is retained in full detail. The system keeps:
+- First occurrence
+- Latest occurrence
+- First occurrence after each deploy
+- Highest-severity occurrence
+
+Other occurrences are demoted to summary-only metadata to bound storage.
+
+---
+
+## Profiles
+
+A project profile (`profile.json`) is the configuration file for a DebugBundle project. It lives in `.debugbundle/profile.json` and is created by `debugbundle setup`.
+
+The profile contains:
+- Project identification (name, token, environment)
+- Service metadata
+- Capture policy overrides
+- Local processing settings
+- Agent skill references
+
+Profiles are validated by the CLI and SDK on startup. Staleness warnings are emitted if the profile hasn't been updated after significant project changes.
+
+---
+
+## Event Types
+
+Every piece of data entering DebugBundle is an **event**. Events are classified into three immutable classes during normalization:
+
+| Event class | Examples | Creates incident? | Billed (free tier)? |
+|---|---|---|---|
+| `incident_signal` | Unhandled exceptions, fatal errors, critical log entries | Yes | Yes |
+| `context_signal` | Logs, breadcrumbs, request/response context, probe data | No — attaches to incidents | No |
+| `operational_signal` | Health checks, SDK lifecycle events, config fetches | No | No |
+
+Classification is **immutable** — once assigned during normalization, it never changes. This simplifies billing, grouping, and retention logic.
+
+---
+
+## Fingerprinting
+
+Fingerprinting determines which events belong to the same incident. The algorithm examines:
+
+- Error class and message (with variable parts normalized)
+- Stack trace frames (file, function, line)
+- Service name
+- Environment
+
+Two errors with the same fingerprint are grouped into the same incident. This means fixing one occurrence fixes all grouped occurrences.
+
+---
+
+## Reproduction Artifacts
+
+When an incident has HTTP request context, the reproduction engine generates executable artifacts:
+
+| Artifact | Format | Example |
+|---|---|---|
+| `curl` | Shell command | `curl -X POST https://api.example.com/v1/endpoint -H 'Content-Type: application/json' -d '{...}'` |
+| `httpie` | Shell command | `http POST https://api.example.com/v1/endpoint Content-Type:application/json key=value` |
+| `json_spec` | Structured JSON | Machine-readable spec with method, URL, headers, body |
+
+Each artifact includes a **confidence level** indicating how completely the request could be reconstructed from available context.
+
+## Next Steps
+
+- [Quickstart](/docs/quickstart) — Capture your first incident
+- [How It Works](/docs/how-it-works) — The full 4-stage lifecycle
+- [SDKs Overview](/docs/sdks) — Configure capture for your language and framework
+- [CLI Local Workflow](/docs/cli/local-workflow) — Process, inspect, and resolve incidents locally

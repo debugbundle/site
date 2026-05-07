@@ -1,0 +1,42 @@
+---
+title: "Automation patterns"
+description: "Connect DebugBundle GitHub automation to repository_dispatch workflows, fetch full bundle context in GitHub Actions, and hand off to repository-owned automation."
+---
+
+<SurfaceGrid>
+  <SurfaceCard title="repository_dispatch to GitHub Actions">
+    Connect a project repo in the dedicated GitHub project tab, let DebugBundle emit `repository_dispatch`, and start triage inside GitHub Actions.
+  </SurfaceCard>
+  <SurfaceCard title="Reference action for full context">
+    Use `debugbundle/action` to fetch the full bundle and reproduction into the canonical `.debugbundle/bundles/cloud` layout.
+  </SurfaceCard>
+  <SurfaceCard title="Repository-owned automation">
+    After the fetch step, let your workflow decide whether to open an issue, invoke an agent, create a PR, or stop.
+  </SurfaceCard>
+</SurfaceGrid>
+
+DebugBundle's GitHub automation path is intentionally narrow:
+
+1. Open the project's GitHub tab and connect GitHub.
+2. Assign one primary repository to the project.
+3. Create dispatch rules that select which lifecycle events should trigger automation.
+4. Receive `repository_dispatch` in GitHub Actions and fetch the full incident context with `debugbundle/action`.
+
+DebugBundle owns the dispatch. Your repository owns the policy after the workflow starts.
+
+<TerminalExample
+  title="Example flow"
+  lines={[
+    '$ debugbundle github status --project-id proj_123',
+    '$ debugbundle github rules --project-id proj_123',
+    '$ gh workflow view .github/workflows/debugbundle.yml',
+  ]}
+/>
+
+The action and workflow examples live alongside the product docs:
+
+- `examples/github-actions/basic.yml`
+- `examples/github-actions/agent-capable.yml`
+- `examples/github-actions/issue-creation.yml`
+
+The fetch action itself is published separately at `debugbundle/action@v1`.

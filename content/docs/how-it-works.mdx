@@ -1,0 +1,155 @@
+---
+title: "How It Works"
+description: "The 4-stage lifecycle: Capture → Ship → Process → Retrieve. How DebugBundle turns production errors into structured debug bundles."
+icon: Workflow
+---
+
+DebugBundle operates in four stages. Each stage is a clean boundary with well-defined inputs and outputs.
+
+```
+Capture → Ship → Process → Retrieve
+```
+
+---
+
+## Stage 1: Capture
+
+SDKs intercept errors and context at runtime. No manual instrumentation required — the SDK hooks into your language's native error handling and optionally into your logging framework.
+
+**What gets captured:**
+
+| Source | Events |
+|---|---|
+| Unhandled exceptions | Stack trace, error class, message |
+| HTTP requests & responses | Method, URL, headers, body (redacted) |
+| Logs | Structured log entries via logger integrations (pino, winston, bunyan, structlog, loguru, Monolog) |
+| Browser activity | Console, navigation, DOM errors, network requests, breadcrumbs |
+| Probes | Always-on diagnostic ring buffer data (all tiers) |
+| Device context | Browser, OS, screen, viewport, language, touch/network/display preferences (browser SDK; may contribute to browser fingerprinting) |
+
+**Capture policy** controls what gets shipped. The server-side capture policy (fetched by the SDK on init) defines three presets:
+
+| Preset | Behavior |
+|---|---|
+| `minimal` | Exceptions only |
+| `balanced` | Exceptions + request/response + logs (default) |
+| `investigative` | Everything including standalone breadcrumbs and verbose probes |
+
+SDKs also apply local volume controls: storm suppression (repeated exceptions/logs are deduplicated with `error_suppressed` checkpoints), per-event sample rates, and log-level filtering.
+
+---
+
+## Stage 2: Ship
+
+The SDK batches captured events, applies redaction, and sends them to their destination.
+
+**Two transport modes:**
+
+| Mode | How it works | When to use |
+|---|---|---|
+| **File transport** | SDK writes events as JSON files to `.debugbundle/local/events/` (atomic temp-file + rename) | Local development, local-only mode |
+| **HTTP transport** | SDK batches and POSTs events to `POST /v1/events` | Staging, production, connected mode |
+
+**Browser SDK shipping:** Browser events are sent through a same-origin relay handler (`POST /debugbundle/browser`) hosted on your backend. The relay validates, sanitizes, and either writes to local events (local mode) or spools for forwarding (connected mode). This avoids CORS issues and keeps project tokens off the client.
+
+**Log-based capture:** An alternative input path. `debugbundle ingest` and `debugbundle watch` parse existing log files (via `packages/log-parser`) into the same event format. Supports `debugbundle-ndjson` (canonical structured format) and first-party adapters for PHP error logs and Apache error logs.
+
+---
+
+## Stage 3: Process
+
+Raw events are transformed into debug bundles through a deterministic pipeline.
+
+**In connected mode**, the ingestion API validates events, persists raw payloads to S3, and enqueues processing jobs. The worker then runs the pipeline:
+
+```
+Normalize → Classify → Group → Bundle → Reproduce → Notify
+```
+
+**In local-only mode**, `debugbundle process` runs the same pipeline locally using the same pure-function packages.
+
+### Pipeline steps
+
+**Normalize** — Raw events are parsed into a canonical internal form.
+
+**Classify** — Each event is assigned an immutable `event_class`:
+
+| Class | Purpose | Creates incident? |
+|---|---|---|
+| `incident_signal` | Errors, exceptions, fatal conditions | Yes |
+| `context_signal` | Logs, breadcrumbs, request context | No (attaches to incidents) |
+| `operational_signal` | Health checks, SDK lifecycle events | No |
+
+**Group** — `incident_signal` events are fingerprinted and grouped into incidents. The system maintains rolling frequency counters (1m / 5m / 1h / 24h) and detects:
+- **Spikes** — 5m/1h ratio ≥ 3.0
+- **Regressions** — new occurrence on a resolved incident
+
+**Bundle** — The bundle engine assembles a deterministic debug bundle from all context associated with the incident. Given the same normalized events, it produces byte-identical output.
+
+**Reproduce** — The reproduction engine generates executable artifacts (curl commands, HTTPie commands, JSON spec) from request context, with a confidence level.
+
+**Notify** — Matching webhook endpoints receive signed payloads (`bundle.created`, `bundle.updated`, `bundle.reopened`, `bundle.resolved`). Alert rules evaluate and deliver to configured channels (email, Slack, Discord, webhook). Solo and Team projects can also evaluate GitHub automation rules and send `repository_dispatch` events to the project's assigned repository.
+
+**Act** — Repository-owned workflows fetch the full bundle and reproduction artifacts, then decide whether to open an issue, invoke an agent, create a PR, or do nothing.
+
+---
+
+## Stage 4: Retrieve
+
+The debug bundle and all related data are available through three equal interfaces:
+
+| Interface | Access method | Auth |
+|---|---|---|
+| **API** | `GET /v1/incidents/{id}/bundle` | Member token or browser session |
+| **CLI** | `debugbundle inspect <incident-id>` | Member token (cloud) or local state (local-only) |
+| **MCP** | `get_bundle` tool | Reuses CLI auth state |
+
+All three interfaces call the same domain services — no capability is exclusive to any single interface.
+
+**In connected mode**, retrieval fetches from the cloud API. The CLI and MCP default to a merged local+cloud view, with `--source local|cloud` for explicit filtering.
+
+**In local-only mode**, retrieval reads directly from `.debugbundle/local/state.json` and `.debugbundle/bundles/local/`. No cloud account or authentication required.
+
+---
+
+## Architecture Diagram
+
+```
+┌────────────────────────────────────────────────┐
+│                  SDK Layer                      │
+│  Node.js · Browser · Python · PHP              │
+│  Capture → Redact → Batch → Ship               │
+└──────────┬─────────────────┬───────────────────┘
+           │ File transport   │ HTTP transport
+           │ (local)          │ (connected)
+           ▼                  ▼
+┌──────────────────┐  ┌──────────────────────────┐
+│ .debugbundle/    │  │ Ingestion API (Fastify)   │
+│  local/events/   │  │ Validate → S3 → Enqueue   │
+└────────┬─────────┘  └───────────┬──────────────┘
+         │                        │
+         │  debugbundle process   │  Worker (BullMQ)
+         ▼                        ▼
+┌────────────────────────────────────────────────┐
+│        Normalize → Classify → Group →          │
+│        Bundle → Reproduce → Notify             │
+│        (same pure-function packages)           │
+└──────────┬─────────────────┬───────────────────┘
+           │                 │
+    ┌──────▼──────┐   ┌─────▼──────┐
+    │ PostgreSQL  │   │   AWS S3   │
+    │ (metadata)  │   │  (blobs)   │
+    └──────┬──────┘   └─────┬──────┘
+           │                │
+┌──────────▼────────────────▼────────────────────┐
+│              Retrieval Layer                    │
+│     API    │    CLI    │    MCP Server          │
+│     (same domain services underneath)          │
+└────────────────────────────────────────────────┘
+```
+
+## Next Steps
+
+- [Quickstart](/docs/quickstart) — Set up DebugBundle and capture your first error
+- [Installation](/docs/installation) — All installation methods
+- [Core Concepts](/docs/core-concepts) — Bundles, incidents, profiles, and event types

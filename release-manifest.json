@@ -1,0 +1,21 @@
+{
+  "package": "debugbundle/site",
+  "publicRepository": "https://github.com/debugbundle/site",
+  "sourceDirectory": "site",
+  "distributionRef": "debugbundle/site",
+  "requiredReleaseFiles": [
+    "package.json",
+    "pnpm-lock.yaml",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    ".github/workflows/ci.yml",
+    ".github/workflows/release.yml",
+    ".github/ISSUE_TEMPLATE/bug_report.yml",
+    ".github/ISSUE_TEMPLATE/feature_request.yml",
+    ".github/PULL_REQUEST_TEMPLATE.md"
+  ]
+}

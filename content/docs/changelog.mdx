@@ -1,0 +1,73 @@
+---
+title: Changelog
+description: Version history for DebugBundle — product updates, SDK changes, and API additions.
+icon: History
+---
+
+Track what's new, changed, and fixed in DebugBundle. This page covers
+product-level changes. For detailed SDK changelogs, see the individual
+SDK package release notes.
+
+## Format
+
+This changelog follows [Keep a Changelog](https://keepachangelog.com/) conventions:
+
+- **Added** — New features and capabilities
+- **Changed** — Changes to existing functionality
+- **Fixed** — Bug fixes
+- **Removed** — Removed features
+- **Security** — Security improvements
+
+## [Unreleased]
+
+### Added
+
+- **Local-first onboarding** — Full capture-to-investigation workflow without a cloud account
+  - `debugbundle setup` creates project scaffold with profile, connection config, and agent skill file
+  - `debugbundle process` converts local events into bundles and incidents
+  - `debugbundle clean` manages local data retention and cache lifecycle
+- **Node.js SDK file transport** — Write events to `.debugbundle/local/events/` for local processing
+- **Connected-mode dual-source retrieval** — Merged local + cloud incident view with `--source` narrowing
+- **Cloud artifact caching** — Bundle and reproduction fetches persisted to `.debugbundle/bundles/cloud/`
+- **CLI local processing** — Full event → incident → bundle → reproduction pipeline
+- **Agent skill file** — `.agents/skills/debugbundle/SKILL.md` following agentskills.io spec
+- **MCP local-store parity** — All local retrieval operations available through MCP tools
+- **Incident lifecycle** — `resolve` and `reopen` for both local and cloud incidents
+- **Probe system** — Always-on probes with remote activation for paid tiers
+- **Webhook system** — 8 event types with HMAC-SHA256 signed deliveries
+- **Alert system** — Email, Slack, Discord, and webhook alert channels with 5 condition types
+- **Billing** — Stripe-powered subscriptions with dynamic capacity management
+- **Self-hosting** — Docker Compose deployment with PostgreSQL, Redis, and S3-compatible storage
+
+### Changed
+
+- Project setup flow now produces `.debugbundle/` directory structure instead of flat config files
+- SDK initialization detects local vs connected mode from project configuration
+- Bundle generation uses deterministic output (same inputs → byte-identical bundles)
+
+---
+
+## Upcoming
+
+The following are planned for near-term releases:
+
+- **Python SDK** — Full SDK with Django and Flask integrations
+- **PHP SDK** — Full SDK with Laravel integration
+- **Browser SDK improvements** — Enhanced breadcrumb capture and relay mode
+- **Annual billing** — 15-20% discount on annual subscriptions
+- **Enterprise tier** — Unlimited projects, SSO, SCIM, fine-grained RBAC
+
+## SDK Versions
+
+| SDK | Version | Status |
+|-----|---------|--------|
+| `@debugbundle/sdk-node` | 0.x | Active development |
+| `@debugbundle/sdk-browser` | 0.x | Active development |
+| `debugbundle-python` | — | Planned |
+| `debugbundle-php` | — | Planned |
+
+## Next Steps
+
+- [What's New](/blog) — Blog posts about product updates
+- [Installation](/docs/installation) — Get started with the latest version
+- [FAQ](/docs/faq) — Frequently asked questions

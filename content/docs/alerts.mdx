@@ -1,0 +1,149 @@
+---
+title: Alerts
+description: Configure real-time alert rules to get notified when incidents occur.
+icon: Bell
+---
+
+Alerts notify your team when DebugBundle detects important events — new incidents,
+regressions, error spikes, and severity changes. Configure alert rules to route
+notifications to the right people through the right channels.
+
+## How Alerts Work
+
+1. An event triggers in DebugBundle (new incident, regression, spike).
+2. The system evaluates all active alert rules for the project.
+3. Rules matching the event's conditions and filters fire.
+4. Notifications are delivered to the configured channel.
+
+## Channels
+
+| Channel | Delivery | Configuration |
+|---------|----------|---------------|
+| **Email** | Email message to a specific address | `recipient_email` |
+| **Slack** | Message to a Slack channel via webhook | `webhook_url`, `channel` |
+| **Discord** | Message to a Discord channel via webhook | `webhook_url` |
+| **Webhook** | HTTP POST to any URL with optional signing | `url`, `secret` (optional) |
+
+### Email
+
+```json
+{
+  "channel": "email",
+  "config": {
+    "recipient_email": "oncall@mycompany.com"
+  }
+}
+```
+
+### Slack
+
+```json
+{
+  "channel": "slack",
+  "config": {
+    "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx",
+    "channel": "#incidents"
+  }
+}
+```
+
+### Discord
+
+```json
+{
+  "channel": "discord",
+  "config": {
+    "webhook_url": "https://discord.com/api/webhooks/..."
+  }
+}
+```
+
+### Webhook
+
+```json
+{
+  "channel": "webhook",
+  "config": {
+    "url": "https://myapp.com/alerts",
+    "secret": "optional-signing-secret"
+  }
+}
+```
+
+Webhook alerts deliver a JSON payload signed with HMAC-SHA256 (when a secret is provided),
+following the same signature format as [webhook deliveries](/docs/webhooks/verification).
+
+## Condition Types
+
+Each alert rule has a condition that determines when it fires.
+
+| Condition | Trigger | Typical Use |
+|-----------|---------|-------------|
+| `new_incident` | A new incident is created. | "Tell me about new errors." |
+| `incident_regressed` | A resolved incident reopened. | "Alert if a fix didn't hold." |
+| `error_spike` | Unusual increase in error occurrences. | "Warn if something is going off." |
+| `severity_threshold` | Incident severity meets or exceeds a threshold. | "Only page me for critical." |
+| `regression_after_deploy` | Regression detected after a deployment. | "Did the deploy break something?" |
+
+## Severity Filter
+
+Alert rules can include a `severity_min` threshold. When set, the alert only fires
+for incidents at or above the specified severity:
+
+```
+low < medium < high < critical
+```
+
+For example, `severity_min: "high"` fires for `high` and `critical` incidents only.
+
+## Service Scope
+
+Optionally scope an alert to a specific service using `service_id`. When set, the alert
+rule only evaluates events from that service.
+
+## Alert Lifecycle
+
+| State | Meaning |
+|-------|---------|
+| `is_enabled: true` | Alert actively evaluates events and sends notifications. |
+| `is_enabled: false` | Alert is paused — no notifications sent. |
+
+Disable alerts temporarily during maintenance windows or known-issue periods without
+deleting the rule configuration.
+
+## Example: Production Alert Stack
+
+A typical production setup combines multiple alert rules:
+
+```
+Channel: Slack (#incidents)
+  Condition: new_incident
+  Severity: >= medium
+
+Channel: Slack (#incidents-critical)
+  Condition: severity_threshold
+  Severity: >= critical
+
+Channel: Email (oncall@company.com)
+  Condition: incident_regressed
+
+Channel: Webhook (PagerDuty)
+  Condition: error_spike
+  Severity: >= high
+```
+
+## Managing Alerts
+
+Alerts can be managed through all three interfaces:
+
+| Interface | Reference |
+|-----------|-----------|
+| **API** | [Alerts API](/docs/api/alerts) |
+| **CLI** | [CLI Alert Management](/docs/cli/alerts) |
+| **MCP** | [MCP Tools](/docs/mcp/tools#alert-management) |
+
+## Next Steps
+
+- [Alerts API](/docs/api/alerts) — CRUD endpoints for alert rules
+- [CLI Alert Management](/docs/cli/alerts) — Manage alerts from the command line
+- [Webhook Events](/docs/webhooks/events) — Events that can trigger alerts

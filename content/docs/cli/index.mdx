@@ -1,0 +1,148 @@
+---
+title: "CLI"
+description: "Install and authenticate the DebugBundle CLI. Manage incidents, bundles, tokens, webhooks, and alerts from the terminal."
+icon: Terminal
+---
+
+## What the CLI Does
+
+The DebugBundle CLI is your primary interface for:
+
+- **Local-first debugging** — Setup, capture, process, inspect, and resolve incidents without any cloud account
+- **Cloud management** — Connect a project, verify ingestion, manage tokens and webhooks
+- **Agent integration** — Every command outputs structured `--json` for AI-agent consumption via MCP or direct invocation
+- **Log ingestion** — Ingest and tail-watch log files with first-party parsers
+
+## Installation
+
+```bash
+npm install -g @debugbundle/cli
+```
+
+Or as a project dev dependency:
+
+```bash
+npm install --save-dev @debugbundle/cli
+```
+
+Verify installation:
+
+```bash
+debugbundle --help
+```
+
+## Authentication
+
+The CLI uses two authentication modes:
+
+| Mode | Token Prefix | Use Case |
+|---|---|---|
+| **Local-only** | No token needed | `setup`, `process`, `inspect`, `doctor` — everything local |
+| **Connected** | `dbundle_mem_*` | Cloud retrieval, token management, webhook CRUD, billing |
+
+### Login
+
+```bash
+debugbundle login dbundle_mem_xxxxxxxxxxxx
+```
+
+This saves your member token to `~/.debugbundle/auth.json`. All subsequent cloud commands use this token automatically.
+
+Customize the API base URL:
+
+```bash
+debugbundle login dbundle_mem_xxxxxxxxxxxx --base-url https://api.self-hosted.example.com
+```
+
+### Verify Identity
+
+```bash
+debugbundle whoami
+```
+
+## Global Flags
+
+Every command supports these flags:
+
+| Flag | Description |
+|---|---|
+| `--json` | Output machine-readable JSON instead of human-readable text |
+| `--auth-file <path>` | Override the default auth file location (cloud commands only) |
+
+## Exit Codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Success |
+| `1` | Internal error |
+| `2` | Authentication error |
+| `3` | Resource not found |
+| `4` | Input validation error |
+
+## Command Index
+
+### Local Workflow
+
+| Command | Description |
+|---|---|
+| `setup` | Initialize the DebugBundle scaffold in your project |
+| `doctor` | Health check: profile, connection, auth, local state |
+| `process` | Process local events into incidents and bundles |
+| `validate` | Check scaffold files exist and are valid |
+| `clean` | Remove local events, bundles, or both |
+| `analyze` | Run analysis recipes on local incidents |
+
+### Incident Management
+
+| Command | Description |
+|---|---|
+| `incidents` | List incidents (local, cloud, or both) |
+| `inspect <id>` | View full incident detail |
+| `resolve <id>` | Mark an incident as resolved |
+| `reopen <id>` | Reopen a resolved incident |
+| `bundle <id>` | Retrieve the debug bundle for an incident |
+| `reproduce <id>` | Get reproduction artifacts (curl, httpie, JSON spec) |
+| `logs <id>` | View event logs for an incident |
+
+### Ingestion
+
+| Command | Description |
+|---|---|
+| `ingest <file>` | Ingest a log file as events |
+| `watch` | Tail-watch a log file and continuously ingest |
+
+### Cloud Operations
+
+| Command | Description |
+|---|---|
+| `login <token>` | Authenticate with a member token |
+| `whoami` | Show current auth identity |
+| `connect` | Link local project to a cloud project |
+| `verify local` | Verify the local scaffold is healthy |
+| `verify cloud` | Verify cloud ingestion is working |
+| `smoke` | End-to-end smoke test for cloud ingestion |
+
+### Resource Management
+
+| Command | Description |
+|---|---|
+| `services` | List services for a project |
+| `token project list/create/revoke` | Manage project tokens (SDK write-only) |
+| `token member list/create/revoke` | Manage member tokens (CLI/API/MCP) |
+| `webhook list/create/update/delete/test` | Manage webhooks |
+| `webhook deliveries/retry` | View and retry webhook deliveries |
+| `alert list/create/update/delete` | Manage alert rules |
+| `billing get` | View billing summary |
+| `billing capacity increase/schedule-reduction/cancel-reduction` | Manage billing capacity |
+| `weekly-report list/create/update/delete` | Manage weekly reports |
+| `capture-policy get/set` | View and update capture policy |
+| `project list/create/update/delete` | Manage projects |
+| `probe activate/list/deactivate` | Manage debug probes |
+| `member list/invites/invite/cancel-invite/update-role/remove` | Manage organization members |
+| `profile validate` | Validate the local project profile |
+
+## Next Steps
+
+- [Setup & Configuration](/docs/cli/setup) — Initialize your project with `debugbundle setup`
+- [Local Workflow](/docs/cli/local-workflow) — The complete offline debugging flow
+- [SDKs Overview](/docs/sdks) — Capture events from your application code

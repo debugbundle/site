@@ -1,0 +1,156 @@
+---
+title: Reproduction
+description: How DebugBundle generates reproduction artifacts from captured request context.
+icon: RotateCcw
+---
+
+When a bundle has sufficient request context, DebugBundle automatically generates reproduction
+artifacts — ready-to-run commands and structured specifications that recreate the failing
+request.
+
+## Reproduction Artifacts
+
+Each reproduction includes three formats:
+
+### cURL
+
+A complete, ready-to-run cURL command:
+
+```bash
+curl -X POST 'https://api.example.com/checkout' \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json' \
+  --data-raw '{"cart_id":"cart_01H...","step":"payment"}'
+```
+
+### HTTPie
+
+A complete HTTPie command:
+
+```bash
+printf '%s' '{"cart_id":"cart_01H...","step":"payment"}' | \
+  http POST 'https://api.example.com/checkout' \
+  'Content-Type:application/json' \
+  'Accept:application/json'
+```
+
+### JSON Spec
+
+A structured, machine-readable specification:
+
+```json
+{
+  "method": "POST",
+  "url": "https://api.example.com/checkout",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "query": {},
+  "body": {
+    "cart_id": "cart_01H...",
+    "step": "payment"
+  }
+}
+```
+
+The JSON spec is designed for programmatic use — agent tools, test frameworks, and CI
+pipelines can consume it directly.
+
+## Reproduction Confidence
+
+Each reproduction includes a confidence score (0–1) and a reason:
+
+| Field | Description |
+|-------|-------------|
+| `possible` | `true` if reproduction can be generated; `false` otherwise. |
+| `confidence` | Numeric confidence score (0.0 to 1.0). |
+| `reason` | Why reproduction is (or isn't) possible: `request_context_available`, `insufficient_context`, etc. |
+
+### Feasibility by Scenario
+
+Different types of bugs have different reproduction feasibility:
+
+| Scenario | Feasibility | Notes |
+|----------|-------------|-------|
+| Standard HTTP bugs | **High** | Direct request replay usually reproduces the issue. |
+| Frontend interaction + failing request | **Medium-high** | Request context is available; browser state may differ. |
+| Background jobs | **Medium** | Job payload may be available, but timing and queue state matter. |
+| External outage timing | **Low-medium** | Third-party state can't be replayed. |
+| Race conditions | **Low** | Timing-dependent; single request replay may not trigger. |
+
+## What Gets Included
+
+The reproduction engine builds artifacts from the request context captured by the SDK:
+
+| Data Source | Used For |
+|-------------|----------|
+| `context.request.method` | HTTP method in the command. |
+| `context.request.path` | URL path. |
+| `context.request.query` | Query string parameters. |
+| `context.request.headers` | Request headers (sensitive values are redacted). |
+| `context.request.body` | Request body. |
+| `context.response` | Not included in reproduction (used for bundle context only). |
+
+### Redaction
+
+Sensitive data is redacted before reproduction artifacts are generated. Authorization
+headers, cookies, and other sensitive values are replaced with `[REDACTED]`. This ensures
+reproduction commands are safe to share in issue trackers, chat, and CI logs.
+
+## Accessing Reproductions
+
+### API
+
+```bash
+curl https://api.debugbundle.com/v1/incidents/inc_01H.../reproduction \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+### CLI
+
+```bash
+debugbundle incidents show inc_01H... --reproduction
+```
+
+### MCP
+
+```
+get_reproduction(incident_id: "inc_01H...")
+```
+
+## When Reproduction Isn't Possible
+
+Reproduction artifacts require request context. They won't be generated when:
+
+- The error occurred outside an HTTP request (background jobs, cron tasks).
+- The SDK didn't capture request context (configuration, SDK limitations).
+- The error is in a frontend-only path with no triggering network request.
+- The event type is `log_event`, `deploy_metadata`, or `probe_event`.
+
+In these cases, `reproduction.possible` is `false` and `reproduction.reason` explains why.
+
+## Using Reproductions in CI
+
+The JSON spec format integrates well with test frameworks:
+
+```js
+import spec from "./reproduction.json";
+
+test("reproduce incident inc_01H...", async () => {
+  const response = await fetch(spec.url, {
+    method: spec.method,
+    headers: spec.headers,
+    body: JSON.stringify(spec.body),
+  });
+
+  // Verify the fix: this should no longer return 500
+  expect(response.status).not.toBe(500);
+});
+```
+
+## Next Steps
+
+- [Incidents](/docs/incidents) — Incident lifecycle and grouping
+- [Bundle Schema](/docs/bundles/schema) — Full bundle JSON structure
+- [MCP Workflows](/docs/mcp/workflows) — Agent-driven investigation patterns

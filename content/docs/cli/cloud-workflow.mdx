@@ -1,0 +1,251 @@
+---
+title: Cloud Workflow
+description: Connect your local DebugBundle project to the cloud for team-wide incident visibility and remote management.
+icon: Cloud
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The cloud workflow extends your local DebugBundle setup with cloud-hosted incident management. Events are delivered to the DebugBundle API, processed by cloud workers, and accessible to your entire team via CLI, API, MCP, or the web dashboard.
+
+## Prerequisites
+
+Before connecting to the cloud, ensure you have:
+
+1. A local project set up with `debugbundle setup` (see [CLI Setup](/docs/cli/setup))
+2. A DebugBundle account — sign up at [debugbundle.com](https://debugbundle.com)
+3. The CLI installed and authenticated
+
+## Authenticate
+
+Log in to your DebugBundle account:
+
+```bash
+debugbundle login
+```
+
+This opens a browser window for authentication and stores your member token in `~/.debugbundle/auth.json`. The member token is used for all cloud operations (CLI, API, MCP).
+
+<Callout type="info">
+  Member tokens authenticate **you** for management operations. They are separate from project tokens, which authenticate **SDKs** for event ingestion. See [Authentication](/docs/api/authentication) for details.
+</Callout>
+
+## Connect to Cloud
+
+Link your local project to a cloud project:
+
+```bash
+debugbundle connect
+```
+
+The connect command:
+
+1. Reads your local profile from `.debugbundle/profile.json`
+2. Creates or selects a matching cloud project
+3. Generates a project token (shown once — copy it immediately)
+4. Updates `.debugbundle/local/connection.json` with the cloud configuration
+
+### Connection Configuration
+
+After connecting, your `.debugbundle/local/connection.json` looks like:
+
+```json
+{
+  "mode": "connected",
+  "cloud_project_id": "proj_01HXYZ...",
+  "cloud_base_url": "https://api.debugbundle.com",
+  "environments": {
+    "local": { "delivery": "local-only" },
+    "development": { "delivery": "local-only" },
+    "staging": { "delivery": "local-only" },
+    "production": { "delivery": "cloud-enabled" }
+  }
+}
+```
+
+### Environment Delivery Policy
+
+Each environment can independently choose its delivery mode:
+
+| Delivery Mode | Behavior |
+|---------------|----------|
+| `local-only` | Events written to local filesystem only. Processed by `debugbundle process`. |
+| `cloud-enabled` | Events sent to the DebugBundle ingestion API via HTTPS. |
+
+By default, `production` uses cloud delivery and everything else stays local. Edit `.debugbundle/local/connection.json` to customize.
+
+## Verify Cloud Connection
+
+Confirm that events are reaching the cloud:
+
+```bash
+debugbundle verify cloud \
+  --project-id proj_01HXYZ... \
+  --service api-server \
+  --environment production
+```
+
+The verify command polls for recent incidents from the specified project, service, and environment. It reports:
+
+- **Healthy** — Recent events found within the time window
+- **Warning** — No events found, but connection appears valid
+- **Error** — Authentication or connectivity issues detected
+
+### Options
+
+| Flag | Type | Default | Description |
+|------|------|---------|-------------|
+| `--project-id` | `string` | — | **Required.** Cloud project ID. |
+| `--service` | `string` | — | Filter by service name. |
+| `--environment` | `string` | — | Filter by environment. |
+| `--max-age-minutes` | `number` | `30` | Time window for finding recent events. |
+| `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
+| `--json` | `boolean` | `false` | Output as JSON. |
+
+## Cloud Incident Management
+
+Once connected, all incident commands work with both local and cloud data:
+
+### List Incidents (Merged View)
+
+```bash
+debugbundle incidents
+```
+
+By default, this shows incidents from **all sources** (local + cloud). Use `--source` to filter:
+
+```bash
+# Cloud incidents only
+debugbundle incidents --source cloud
+
+# Local incidents only
+debugbundle incidents --source local
+```
+
+### Inspect a Cloud Incident
+
+```bash
+debugbundle inspect inc_01HXYZ...
+```
+
+Works identically for local and cloud incidents. The CLI detects the source automatically based on the incident ID format.
+
+### Resolve / Reopen
+
+```bash
+debugbundle resolve inc_01HXYZ...
+debugbundle reopen inc_01HXYZ...
+```
+
+Resolving or reopening a cloud incident updates the status in the cloud database, visible to all team members.
+
+## Cloud Log Watching
+
+Send log events directly to the cloud:
+
+```bash
+debugbundle watch --cloud \
+  --log /var/log/myapp/error.log \
+  --format php-error
+```
+
+The `--cloud` flag sends parsed events to the ingestion API instead of writing them locally. Requires:
+
+- `connection.json` with `mode: "connected"`
+- `DEBUGBUNDLE_PROJECT_TOKEN` environment variable set
+
+See [Log Ingestion](/docs/cli/log-ingestion) for format details.
+
+## SDK Configuration for Cloud
+
+Set the project token in your SDK initialization:
+
+```javascript
+const debugbundle = require('@debugbundle/sdk-node');
+
+debugbundle.init({
+  projectToken: process.env.DEBUGBUNDLE_PROJECT_TOKEN,
+  environment: 'production',
+});
+```
+
+The SDK automatically detects the transport mode from the environment. When `projectToken` is set and the environment allows cloud delivery, events go to the ingestion API.
+
+## Project Management
+
+Manage projects from the CLI:
+
+```bash
+# List all projects
+debugbundle project list
+
+# Create a new project
+debugbundle project create --name "Backend API" --slug backend-api
+
+# Update a project
+debugbundle project update proj_01HXYZ... --name "Backend API v2"
+
+# Delete a project
+debugbundle project delete proj_01HXYZ...
+```
+
+## Probe Management
+
+Activate debug probes to collect additional diagnostic data from SDKs without redeployment:
+
+```bash
+# Activate a probe
+debugbundle probe activate \
+  --project-id proj_01HXYZ... \
+  --label-pattern "auth.*" \
+  --service api-gateway \
+  --ttl 3600
+
+# List active probes
+debugbundle probe list --project-id proj_01HXYZ...
+
+# Deactivate a probe
+debugbundle probe deactivate --project-id proj_01HXYZ... --activation-id prb_01H9KL...
+```
+
+These commands have equivalent [MCP tools](/docs/mcp/tools#probes): `activate_probe`, `list_active_probes`, `deactivate_probe`.
+
+## Member Management
+
+Manage team access to your organization:
+
+```bash
+# List organization members
+debugbundle member list
+
+# List pending invitations
+debugbundle member invites
+
+# Invite a new member
+debugbundle member invite --email dev@example.com --role member
+
+# Cancel a pending invitation
+debugbundle member cancel-invite inv_01HXYZ...
+
+# Update a member's role
+debugbundle member update-role usr_01HXYZ... --role admin
+
+# Remove a member
+debugbundle member remove usr_01HXYZ...
+```
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `Error: auth state not found` | Run `debugbundle login` to authenticate. |
+| `Error: project not found` | Verify the project ID with `debugbundle project list`. |
+| `verify cloud` shows no events | Check that the SDK has `projectToken` set and `environment` matches the filter. |
+| Events stuck locally | Verify `connection.json` has `"delivery": "cloud-enabled"` for the target environment. |
+
+## Next Steps
+
+- [Token Management](/docs/cli/tokens) — Create and manage project and member tokens
+- [Webhook Management](/docs/cli/webhooks) — Set up webhook notifications for incidents
+- [Alert Management](/docs/cli/alerts) — Configure alert channels for your team
+- [API Overview](/docs/api) — Full API reference for cloud operations

@@ -1,0 +1,151 @@
+---
+title: Billing
+description: How DebugBundle billing works — Stripe integration, shared allowances, capacity units, and billing lifecycle.
+icon: Receipt
+---
+
+DebugBundle uses Stripe for all payment processing. This page explains how
+billing works, from checkout through ongoing subscription management.
+
+## Overview
+
+Billing follows a simple model:
+
+1. **Choose a plan** — Solo ($2.99/mo) or Team ($49/mo)
+2. **Complete checkout** — Stripe Checkout handles payment securely
+3. **Add capacity as needed** — Purchase extra capacity units from the billing page
+4. **Manage via portal** — Update payment methods and view invoices through Stripe
+
+## Stripe Integration
+
+DebugBundle never stores credit card numbers or payment details. All payment
+processing is handled by Stripe:
+
+- **Checkout** — Stripe Checkout Session (hosted payment page)
+- **Portal** — Stripe Customer Portal (self-service subscription management)
+- **Webhooks** — Stripe notifies DebugBundle of subscription changes
+- **Invoicing** — Stripe handles all invoice generation and delivery
+
+## Checkout Flow
+
+When you upgrade from Free:
+
+1. Click **Upgrade** on the billing page
+2. Redirected to Stripe Checkout with the selected plan
+3. Complete payment
+4. Redirected back to DebugBundle
+5. Stripe webhook updates your organization's entitlements
+
+The upgrade is effective immediately after payment.
+
+## Shared Allowances
+
+Usage allowances are **pooled across your entire account**. Each included or
+purchased capacity unit expands the total allowance pool.
+
+```
+Solo plan (2 included units) + 3 extra units = 5 allowance units
+Total allowance = 5 × per-unit allowance
+Any number of projects can use any portion of the shared pool
+```
+
+Projects draw from the same pool, so your allowance follows where activity is
+happening most.
+
+Paid plans keep project creation unlimited. Capacity units expand shared
+allowance capacity across the full account.
+
+## Capacity Management
+
+### Increasing Capacity
+
+Capacity increases take effect immediately with prorated billing:
+
+```bash
+# Add 2 extra capacity units
+debugbundle billing capacity increase --target-additional-capacity-units 2
+```
+
+Or from the billing page in the dashboard — click **Manage capacity**.
+
+The prorated charge covers the remainder of the current billing period.
+
+### Reducing Capacity
+
+Capacity reductions are **scheduled for the next billing period** to prevent
+mid-cycle disruption:
+
+```bash
+# Schedule reduction: go from current 5 purchased units to 3
+debugbundle billing capacity schedule-reduction --target-additional-capacity-units 3
+
+# View pending reduction
+debugbundle billing get --json
+
+# Cancel a pending reduction
+debugbundle billing capacity cancel-reduction
+```
+
+The billing summary shows any pending reduction with the target purchased-unit
+count, effective date, and resulting allowance capacity.
+
+### Capacity Notes
+
+Project creation is not hard-gated on paid plans. Capacity changes affect your
+shared hosted allowance, not whether you can create another project.
+
+## Billing Lifecycle
+
+### Active
+
+Normal state. Subscription is paid and current. All tier features are available.
+
+### Past Due
+
+Payment failed (expired card, insufficient funds). Stripe automatically
+retries according to its Smart Retries schedule. During this period:
+
+- All features remain available
+- DebugBundle sends email notifications about the payment issue
+
+### Canceled
+
+Subscription was explicitly canceled or failed all retry attempts.
+
+- Access is downgraded to Free tier limits
+- Existing data is retained per the original tier's retention period
+- You can resubscribe at any time
+
+## Billing Emails
+
+| Event | Email |
+|-------|-------|
+| Subscription created | Welcome + receipt |
+| Payment succeeded | Invoice receipt |
+| Payment failed | Action required notification |
+| Subscription canceled | Confirmation + data retention info |
+| Capacity change | Updated invoice |
+
+## API Access
+
+The billing API allows programmatic subscription management:
+
+```bash
+# Get billing summary
+curl https://api.debugbundle.com/v1/billing \
+  -H "Authorization: Bearer dbundle_mem_..."
+
+# Increase capacity
+curl -X POST https://api.debugbundle.com/v1/billing/capacity/increase \
+  -H "Authorization: Bearer dbundle_mem_..." \
+  -H "Content-Type: application/json" \
+  -d '{ "target_additional_capacity_units": 2 }'
+```
+
+See [Billing API](/docs/api/billing) for all endpoints.
+
+## Next Steps
+
+- [Pricing](/docs/pricing) — Plan comparison and features
+- [Billing API](/docs/api/billing) — Programmatic billing management
+- [Project Setup](/docs/project-setup) — Configure your projects

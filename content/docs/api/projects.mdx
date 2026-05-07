@@ -1,0 +1,200 @@
+---
+title: Projects API
+description: Create, list, update, and delete projects via the DebugBundle REST API.
+icon: FolderOpen
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+All project endpoints require member token authentication via the `Authorization` header.
+
+<Callout type="info">
+  All project operations are also available via the CLI (`debugbundle project list/create/update/delete`) and
+  MCP tools (`list_projects`, `create_project`, `update_project`, `delete_project`). See
+  [CLI Cloud Workflow](/docs/cli/cloud-workflow#project-management) and [MCP Tools](/docs/mcp/tools#projects).
+</Callout>
+
+## List Projects
+
+```
+GET /v1/projects
+```
+
+```bash
+curl https://api.debugbundle.com/v1/projects \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Response (200):**
+
+```json
+{
+  "projects": [
+    {
+      "project_id": "proj_01HXYZ...",
+      "organization_id": "org_01HABCDE...",
+      "name": "Backend API",
+      "slug": "backend-api",
+      "environment_default": "production",
+      "organization_plan": "team",
+      "created_at": "2026-01-10T08:00:00Z",
+      "updated_at": "2026-03-15T14:30:00Z"
+    }
+  ]
+}
+```
+
+## Create Project
+
+```
+POST /v1/projects
+```
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/projects \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Backend API",
+    "slug": "backend-api",
+    "environment_default": "production"
+  }'
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | `string` | Yes | Human-readable project name. |
+| `slug` | `string` | Yes | URL-safe identifier (lowercase, hyphens, no spaces). |
+| `environment_default` | `string` | No | Editable project default used in setup snippets and prefilled project metadata. Common values: `production`, `staging`, `development`, but custom values are allowed. |
+
+**Response (201):**
+
+```json
+{
+  "project": {
+    "project_id": "proj_01HNEW...",
+    "organization_id": "org_01HABCDE...",
+    "name": "Backend API",
+    "slug": "backend-api",
+    "environment_default": "production",
+    "organization_plan": "team",
+    "created_at": "2026-03-24T11:00:00Z"
+  }
+}
+```
+
+## Get Project
+
+```
+GET /v1/projects/{id}
+```
+
+```bash
+curl https://api.debugbundle.com/v1/projects/proj_01HXYZ... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Response (200):** Single project object.
+
+## Update Project
+
+```
+PATCH /v1/projects/{id}
+```
+
+```bash
+curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Backend API v2",
+    "environment_default": "staging"
+  }'
+```
+
+Partial update — only the specified fields are changed.
+
+**Response (200):** Updated project object.
+
+## Delete Project
+
+```
+DELETE /v1/projects/{id}
+```
+
+```bash
+curl -X DELETE https://api.debugbundle.com/v1/projects/proj_01HXYZ... \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Response (204):** No content.
+
+<Callout type="warn">
+Deleting a project permanently removes all incidents, bundles, tokens, webhooks, and alerts
+associated with that project. This operation cannot be undone.
+</Callout>
+
+## Capture Policy
+
+Each project has a capture policy that controls event ingestion behavior.
+
+### Get Capture Policy
+
+```
+GET /v1/projects/{id}/capture-policy
+```
+
+```bash
+curl https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+```
+
+**Response (200):**
+
+```json
+{
+  "capture_policy": {
+    "preset": "balanced",
+    "sample_rate": 0.5,
+    "duplicate_suppression_window_seconds": 300,
+    "max_events_per_minute": 100,
+    "severity_filter_min": null
+  }
+}
+```
+
+### Update Capture Policy
+
+```
+PATCH /v1/projects/{id}/capture-policy
+```
+
+```bash
+curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
+  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "preset": "high_volume",
+    "sample_rate": 0.1,
+    "max_events_per_minute": 500
+  }'
+```
+
+**Presets:**
+
+| Preset | Sample Rate | Rate Limit | Dedup Window | Description |
+|--------|------------|------------|--------------|-------------|
+| `full_capture` | `1.0` | 50/min | 60s | Capture everything. Best for low-traffic apps. |
+| `balanced` | `0.5` | 100/min | 300s | Default. Balanced coverage and volume. |
+| `high_volume` | `0.1` | 500/min | 600s | Aggressive sampling for high-traffic services. |
+| `custom` | User-set | User-set | User-set | Full manual control. |
+
+Setting a preset overrides all fields to the preset defaults. Providing individual fields alongside a preset creates a `custom` override.
+
+## Next Steps
+
+- [API Ingestion](/docs/api/ingestion) — Event ingestion endpoint
+- [Probes API](/docs/api/probes) — Activate debug probes
+- [Alerts API](/docs/api/alerts) — Alert rule management
