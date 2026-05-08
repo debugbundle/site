@@ -10,6 +10,9 @@ const withMDX = createMDX({
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
+  turbopack: {
+    root: fileURLToPath(new URL('.', import.meta.url)),
+  },
   images: {
     unoptimized: true,
   },
