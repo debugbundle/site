@@ -43,7 +43,7 @@ All SDKs accept these common configuration fields:
 | `redactFields` | `string[]` | Default set | Additional field names to redact before transmission. |
 | `sampleRate` | `number` | `1.0` | Event sampling rate (0.0–1.0). Applied per-event. |
 | `batchSize` | `number` | SDK-specific | Max events per batch (Node: 50, Browser: 25). |
-| `flushInterval` | `number` (ms) | SDK-specific | Max time before batch send (Node: 2000, Browser: 5000). |
+| `flushInterval` | `number` (ms) | SDK-specific | Max time before batch send (Node: 2000, Browser: 3000). |
 | `endpoint` | `string` | `https://api.debugbundle.com/v1/events` | Ingestion endpoint URL. |
 | `transport` | `string` | auto-detect | `http`, `file`, or `relay` (browser only). |
 | `localEventsDir` | `string` | `.debugbundle/local/events` | Directory for file transport output. |
@@ -187,11 +187,11 @@ debugbundle.init({
 
 Custom fields are merged with defaults — you cannot disable default redaction.
 
-## SDK Comparison Matrix
+## SDK Support Snapshot
 
 | Feature | Node.js | Browser | Python | PHP |
 |---------|---------|---------|--------|-----|
-| Status | ✅ Shipped | ✅ Shipped | 🔜 Coming Soon | 🔜 Coming Soon |
+| Status | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped |
 | Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` |
 | Framework integrations | Express, Fastify, Next.js | — | Django, Flask, FastAPI | Laravel, Symfony |
 | Logger integrations | pino, winston, bunyan | — | logging, structlog, loguru | Monolog |
@@ -200,10 +200,12 @@ Custom fields are merged with defaults — you cannot disable default redaction.
 | Probes | ✅ | ✅ | ✅ | ✅ |
 | File transport | ✅ | — | ✅ | ✅ |
 
+For the public V1 parity matrix, including 5xx request-failure behavior and relay support, see [SDKs](/docs/sdks).
+
 ## Next Steps
 
 - [Node.js SDK](/docs/sdks/node) — Full Node.js setup and framework integrations
 - [Browser SDK](/docs/sdks/browser) — Full Browser SDK setup with breadcrumbs and relay
-- [Python SDK](/docs/sdks/python) — Python SDK (coming soon)
-- [PHP SDK](/docs/sdks/php) — PHP SDK (coming soon)
+- [Python SDK](/docs/sdks/python) — Full Python setup and framework integrations
+- [PHP SDK](/docs/sdks/php) — Full PHP setup and framework integrations
 - [Browser Relay Setup](/docs/sdks/browser-relay) — Relay architecture and backend setup

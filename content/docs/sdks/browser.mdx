@@ -16,7 +16,7 @@ npm install @debugbundle/sdk-browser
 import DebugBundle from '@debugbundle/sdk-browser';
 
 DebugBundle.init({
-  projectToken: 'tok_xxxx',   // Your project token (write-only)
+  endpoint: '/debugbundle/browser',
   environment: 'production',
   service: 'my-spa',
 });
@@ -32,16 +32,16 @@ Calling `init()` automatically:
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `projectToken` | `string` | — | **Required.** Project-scoped write-only token. |
+| `projectToken` | `string` | — | Required for direct API ingestion. Omit it when you send browser events through a same-origin relay that injects the project token server-side. |
 | `environment` | `string` | `"production"` | Environment name. |
 | `service` | `string` | `document.title` or `"browser-app"` | Service identifier. |
-| `endpoint` | `string` | Auto-resolved | Ingestion endpoint. Prefers relay path, falls back to direct API. |
+| `endpoint` | `string` | `https://api.debugbundle.com/v1/events` | Ingestion endpoint. Set this to your same-origin relay path, typically `/debugbundle/browser`, when using relay transport. |
 | `enabled` | `boolean` | `true` | Kill switch. |
 | `sampleRate` | `number` (0–1) | `1.0` | Event-level sampling rate. |
 | `logLevel` | `LogLevel` | `"warning"` | Minimum log level to capture. |
 | `redactFields` | `string[]` | `["password", "secret", "token", "authorization", "cookie", "ssn", "credit_card"]` | Field names to redact from captured data. |
-| `maxBreadcrumbs` | `number` | `50` | Maximum breadcrumbs retained in the ring buffer. |
-| `breadcrumbsOnErrorOnly` | `boolean` | `false` | When `true`, breadcrumbs attach only to error events, not standalone logs. |
+| `maxBreadcrumbs` | `number` | `10` | Maximum breadcrumbs retained in the ring buffer. |
+| `breadcrumbsOnErrorOnly` | `boolean` | `true` | When `true`, breadcrumbs attach only to error events instead of being shipped as standalone `frontend_breadcrumb` events. |
 | `captureNetwork` | `boolean` | `true` | Capture `fetch` and `XMLHttpRequest` calls as breadcrumbs; first-party 5xx responses also emit `request_event`. |
 | `captureClicks` | `boolean` | `true` | Capture click events with CSS selector paths. |
 | `captureRouteChanges` | `boolean` | `true` | Capture `popstate` and `pushState`/`replaceState` route changes. |
@@ -57,11 +57,7 @@ Calling `init()` automatically:
 
 ## Transport Resolution
 
-The Browser SDK resolves its transport endpoint in this order:
-
-1. **Explicit `endpoint`** — If you set `endpoint` in config, the SDK uses it directly.
-2. **Same-origin relay** — The SDK probes for a relay handler at `/_debugbundle/browser` on the current origin. If found, all events route through your backend.
-3. **Direct API** — Falls back to `https://api.debugbundle.com/v1/events`.
+The Browser SDK uses the configured `endpoint` directly. In production, the recommended setup is a same-origin relay endpoint such as `/debugbundle/browser`; if you do not override it, the SDK uses the default cloud ingestion endpoint.
 
 The relay path is preferred because it avoids CORS, ad-blocker interference, and content security policy issues.
 

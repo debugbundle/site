@@ -60,21 +60,20 @@ npm install @debugbundle/sdk-browser
 import DebugBundle from '@debugbundle/sdk-browser';
 
 DebugBundle.init({
-  projectToken: 'dbundle_proj_...',
+  endpoint: '/debugbundle/browser',
   environment: 'production',
   service: 'my-frontend',
-  relayUrl: '/debugbundle/browser',  // same-origin relay endpoint
 });
 ```
 
-Browser events are shipped through a same-origin relay handler on your backend — not directly to the DebugBundle API. See [Browser Relay Setup](/docs/sdks/browser-relay) for configuration.
+Browser events are typically shipped through a same-origin relay handler on your backend, which injects the project token server-side. See [Browser Relay Setup](/docs/sdks/browser-relay) for configuration.
 
 ---
 
 ## Python SDK
 
 ```bash
-pip install debugbundle
+pip install debugbundle-python
 ```
 
 ```python
@@ -98,7 +97,9 @@ composer require debugbundle/sdk-php
 ```
 
 ```php
-\DebugBundle\SDK::init([
+use DebugBundle\DebugBundle;
+
+DebugBundle::init([
     'projectToken' => 'local',
     'environment' => 'production',
     'service' => 'my-api',
@@ -106,6 +107,8 @@ composer require debugbundle/sdk-php
 ```
 
 Framework integrations for Laravel and Symfony are included. See the [PHP SDK guide](/docs/sdks/php).
+
+Across the Node.js, Browser, Python, and PHP SDKs, request failures with 5xx responses are treated as incident signals. On the Browser SDK, first-party 5xx responses also remain visible as breadcrumbs while emitting standalone `request_event` signals for incident creation.
 
 ---
 

@@ -33,14 +33,25 @@ All SDKs follow the same safety contract:
 - **Graceful degradation** — if the buffer fills, events are dropped silently
 - **Redaction before transmission** — sensitive fields are scrubbed before any data leaves the process
 
-## Language Support
+## V1 Parity Matrix
 
-| SDK | Package | Status | Frameworks |
-|---|---|---|---|
-| [Node.js](/docs/sdks/node) | `@debugbundle/sdk-node` | Shipped | Express, Fastify, Next.js + pino, winston, bunyan |
-| [Browser](/docs/sdks/browser) | `@debugbundle/sdk-browser` | Shipped | Any SPA/MPA. Ships via relay handler. |
-| [Python](/docs/sdks/python) | `debugbundle` | Coming soon | Django, Flask, FastAPI + structlog, loguru |
-| [PHP](/docs/sdks/php) | `debugbundle/sdk-php` | Coming soon | Laravel, Symfony + Monolog |
+| Capability | Node.js | Browser | Python | PHP |
+|---|---|---|---|---|
+| Status | Shipped | Shipped | Shipped | Shipped |
+| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` |
+| Unhandled exceptions | Yes | Yes | Yes | Yes |
+| Handled exception capture | Yes | Yes | Yes | Yes |
+| Request 5xx incident capture | Yes | Yes | Yes | Yes |
+| Browser first-party 5xx promotion | N/A | Yes | N/A | N/A |
+| Breadcrumbs | No | Yes | No | No |
+| Relay support | Server relay exports | Relay client path | Browser relay foundation | Browser relay foundation |
+| Remote config and capture policy | Yes | Yes | Yes | Yes |
+| Probes | Yes | Yes | Yes | Yes |
+| Redaction defaults | Yes | Yes | Yes | Yes |
+| Framework integrations | Express, Fastify, Next.js | Browser-native; works with React, Next.js client-side, Vue, Angular, Svelte, and vanilla apps | Django, Flask, FastAPI | Laravel, Symfony |
+| Local file transport | Yes | No | Yes | Yes |
+
+Across all shipped SDKs, request failures with 5xx responses remain incident signals. On the Browser SDK, first-party 5xx `fetch` and `XMLHttpRequest` responses also stay in the breadcrumb trail while emitting standalone `request_event` signals for incident creation.
 
 ## Transport Modes
 
