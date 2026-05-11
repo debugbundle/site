@@ -61,8 +61,8 @@ Events are classified into three categories:
 
 | Event Class | Event Types | Role |
 |-------------|-------------|------|
-| **Incident Signal** | `backend_exception`, `frontend_exception`, `request_event` (4xx/5xx) | Create/update incidents directly. |
-| **Context Signal** | `log_event`, `frontend_breadcrumb`, `deploy_metadata`, `probe_event` | Enrich existing incidents with additional data. |
+| **Incident Signal** | `backend_exception`, `frontend_exception`, qualifying `log_event`, `request_event` (5xx) | Create/update incidents directly. |
+| **Context Signal** | Non-5xx `request_event`, `frontend_breadcrumb`, `deploy_metadata`, `probe_event`, lower-level `log_event` | Enrich existing incidents with additional data. |
 | **Operational Signal** | `error_suppressed` | Tracked but may not create new incidents. |
 
 ## Incident Lifecycle

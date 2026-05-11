@@ -72,9 +72,10 @@ The relay only accepts browser-origin event types:
 - `frontend_exception`
 - `error_suppressed`
 - `frontend_breadcrumb`
+- `request_event`
 - `probe_event`
 
-Server-side event types (`backend_exception`, `request_event`, `log_event`) are rejected with `400 Bad Request`.
+Server-side-only event types (`backend_exception`, `log_event`) are rejected with `400 Bad Request`.
 
 ## Express
 

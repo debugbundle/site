@@ -2385,6 +2385,102 @@
         }
       }
     },
+    "/v1/billing/checkout/confirm": {
+      "post": {
+        "operationId": "confirmBillingCheckout",
+        "summary": "Confirm a returned Stripe checkout session",
+        "tags": [
+          "Billing"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BillingCheckoutConfirmBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated billing summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingSummaryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Browser session is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Billing or checkout session was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Checkout session is not complete.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Billing confirmation is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/billing/portal": {
       "post": {
         "operationId": "createBillingPortal",
@@ -10268,6 +10364,20 @@
         },
         "required": [
           "url"
+        ],
+        "additionalProperties": false
+      },
+      "BillingCheckoutConfirmBody": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "session_id"
         ],
         "additionalProperties": false
       },

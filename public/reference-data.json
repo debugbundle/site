@@ -262,6 +262,18 @@
     },
     {
       "method": "POST",
+      "path": "/v1/billing/checkout/confirm",
+      "operationId": "confirmBillingCheckout",
+      "summary": "Confirm a returned Stripe checkout session",
+      "tags": [
+        "Billing"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
+      "method": "POST",
       "path": "/v1/billing/portal",
       "operationId": "createBillingPortal",
       "summary": "Create a Stripe customer portal link",
@@ -2018,6 +2030,24 @@
       },
       {
         "code": "billing_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "billing_service_error",
+        "statusCodes": [
+          "503"
+        ]
+      },
+      {
+        "code": "checkout_not_complete",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "checkout_session_not_found",
         "statusCodes": [
           "404"
         ]

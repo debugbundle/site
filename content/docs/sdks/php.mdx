@@ -197,7 +197,7 @@ $response = $relay->handle([
 - Laravel: `DebugBundle\Framework\Laravel\DebugBundleRelayMiddleware`
 - Symfony: `DebugBundle\Framework\Symfony\DebugBundleRelayController`
 
-The relay foundation validates same-origin or configured allowed origins, requires `Content-Type: application/json`, rejects bodies larger than `256 KB`, applies in-memory per-IP rate limiting, accepts only `frontend_exception`, `error_suppressed`, `frontend_breadcrumb`, and `probe_event`, strips trust-sensitive headers, removes client-supplied `project_token` and `organization_id`, forces `sdk_name` to `@debugbundle/sdk-browser`, and preserves `correlation.trace_id` when present.
+The relay foundation validates same-origin or configured allowed origins, requires `Content-Type: application/json`, rejects bodies larger than `256 KB`, applies in-memory per-IP rate limiting, accepts only `frontend_exception`, `error_suppressed`, `frontend_breadcrumb`, `request_event`, and `probe_event`, strips trust-sensitive headers, removes client-supplied `project_token` and `organization_id`, forces `sdk_name` to `@debugbundle/sdk-browser`, and preserves `correlation.trace_id` when present.
 
 ## Logger Integrations
 

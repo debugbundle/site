@@ -46,9 +46,9 @@ Controls which HTTP request/response pairs are captured.
 
 | Value | Behavior |
 |-------|----------|
-| `off` | No request events captured. |
-| `failures_only` | Only requests with 4xx/5xx responses. |
-| `filtered` | Requests matching configured filters (routes, status codes). |
+| `off` | Non-5xx request events are dropped; 5xx request failures are still captured as incident signals. |
+| `failures_only` | Only requests with 5xx responses. |
+| `filtered` | Requests matching configured filters; until custom filters are configured, SDKs treat this as 5xx-only. |
 | `all` | All requests captured. |
 
 ### Capture Breadcrumbs

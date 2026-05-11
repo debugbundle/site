@@ -42,13 +42,13 @@ Calling `init()` automatically:
 | `redactFields` | `string[]` | `["password", "secret", "token", "authorization", "cookie", "ssn", "credit_card"]` | Field names to redact from captured data. |
 | `maxBreadcrumbs` | `number` | `50` | Maximum breadcrumbs retained in the ring buffer. |
 | `breadcrumbsOnErrorOnly` | `boolean` | `false` | When `true`, breadcrumbs attach only to error events, not standalone logs. |
-| `captureNetwork` | `boolean` | `true` | Capture `fetch` and `XMLHttpRequest` calls as breadcrumbs. |
+| `captureNetwork` | `boolean` | `true` | Capture `fetch` and `XMLHttpRequest` calls as breadcrumbs; first-party 5xx responses also emit `request_event`. |
 | `captureClicks` | `boolean` | `true` | Capture click events with CSS selector paths. |
 | `captureRouteChanges` | `boolean` | `true` | Capture `popstate` and `pushState`/`replaceState` route changes. |
 | `captureConsole` | `boolean` | `false` | Opt-in: capture `console.error` and `console.warn`. |
 | `networkFilter` | `BrowserNetworkFilterConfig` | — | Filter captured network requests by URL pattern, header, or status code. |
 | `sessionSampleRate` | `number` (0–1) | `1.0` | Session-level sampling. Decided once at session start. |
-| `maxEventsPerSession` | `number` | `100` | Hard cap per session. After this, events are silently dropped. |
+| `maxEventsPerSession` | `number` | `100` | Hard cap per session. After this, only exceptions and first-party 5xx request events are captured. |
 | `batchSize` | `number` | `25` | Events per flush batch. |
 | `flushInterval` | `number` (ms) | `3000` | Auto-flush interval. |
 | `maxBufferedEvents` | `number` | `500` | Max events in buffer before oldest are dropped. |

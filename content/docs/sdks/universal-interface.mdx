@@ -96,7 +96,7 @@ Every captured event is wrapped in a standard envelope:
 |------|--------|-------------|
 | `backend_exception` | Server SDKs | Unhandled or manually captured exceptions. |
 | `frontend_exception` | Browser SDK | JavaScript errors and promise rejections. |
-| `request_event` | Server SDKs | HTTP request/response pairs. |
+| `request_event` | Server SDKs; Browser SDK for first-party 5xx network failures | HTTP request/response pairs. |
 | `log_event` | All SDKs | Structured log entries. |
 | `frontend_breadcrumb` | Browser SDK | User interaction breadcrumbs (clicks, navigation, network). |
 | `deploy_metadata` | CLI / API | Deployment information. |
