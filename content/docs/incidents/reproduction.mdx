@@ -98,6 +98,10 @@ Sensitive data is redacted before reproduction artifacts are generated. Authoriz
 headers, cookies, and other sensitive values are replaced with `[REDACTED]`. This ensures
 reproduction commands are safe to share in issue trackers, chat, and CI logs.
 
+### Header Selection
+
+Replay artifacts keep headers that affect application behavior, content negotiation, CORS origin, authentication state, and request correlation. Browser and transport noise such as `Host`, forwarded host/proto, `Connection`, `Accept-Encoding`, `Content-Length`, `Cache-Control`, `User-Agent`, and `Sec-*` fetch/client-hint headers is removed so the generated cURL, HTTPie, and JSON spec stay focused on the request an agent can meaningfully replay.
+
 ## Accessing Reproductions
 
 ### API

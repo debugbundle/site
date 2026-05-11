@@ -310,6 +310,8 @@ are optional.
 }
 ```
 
+Backend SDKs populate this block from safe runtime facts when available. The Node.js SDK captures the full process-fact set shown above without reading environment variables. Python and PHP currently emit runtime version and framework/request context, with fuller safe process facts tracked as SDK parity follow-up.
+
 ### Git
 
 ```json
@@ -417,6 +419,8 @@ are optional.
   }
 }
 ```
+
+Replay artifacts intentionally filter noisy browser and transport headers while preserving replay-relevant values: redacted auth/cookie headers, content negotiation, CORS origin, request ids, correlation ids, and DebugBundle trace ids. This keeps generated commands deterministic and easier for agents to run or turn into tests.
 
 ## Metadata
 

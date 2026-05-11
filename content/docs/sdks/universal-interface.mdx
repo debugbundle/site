@@ -90,6 +90,19 @@ Every captured event is wrapped in a standard envelope:
 }
 ```
 
+### Backend Runtime Facts
+
+Backend exception events include a `payload.runtime` object. Every backend SDK reports the runtime version; SDKs should also include safe process facts when the language exposes them without reading environment variables or secrets.
+
+| Field | Meaning |
+|-------|---------|
+| `platform`, `arch` | Operating system and CPU architecture. |
+| `pid`, `cwd`, `uptime_sec`, `hostname` | Process identity and lifetime context. |
+| `memory` | Best-effort runtime memory stats when available. |
+| `framework_version`, `framework_extras` | Best-effort framework-specific context. |
+
+Current shipped scope: the Node.js SDK captures the full safe process-fact set. Python and PHP emit runtime version today and can receive the same fuller enrichment in their SDK-specific releases.
+
 ### Event Types
 
 | Type | Source | Description |
@@ -195,6 +208,7 @@ Custom fields are merged with defaults — you cannot disable default redaction.
 | Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` |
 | Framework integrations | Express, Fastify, Next.js | — | Django, Flask, FastAPI | Laravel, Symfony |
 | Logger integrations | pino, winston, bunyan | — | logging, structlog, loguru | Monolog |
+| Safe backend runtime facts | Full process facts | — | Runtime version | Runtime version |
 | Breadcrumbs | — | ✅ | — | — |
 | Relay handler | ✅ (exports) | — | — | — |
 | Probes | ✅ | ✅ | ✅ | ✅ |

@@ -879,7 +879,7 @@
     },
     {
       "commandPath": "verify cloud",
-      "usage": "debugbundle verify cloud --project-id <id> [--service <name>] [--environment <name>] [--max-age-minutes <n>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle verify cloud --project-id <id> [--trigger-5xx] [--service <name>] [--environment <name>] [--max-age-minutes <n>] [--auth-file <path>] [--json]",
       "group": "verify"
     },
     {
@@ -911,6 +911,11 @@
       "commandPath": "inspect",
       "usage": "debugbundle inspect <incident-id> [--source <local|cloud>] [--auth-file <path>] [--json]",
       "group": "inspect"
+    },
+    {
+      "commandPath": "explain",
+      "usage": "debugbundle explain <incident-id> [--source <local|cloud>] [--auth-file <path>] [--json]",
+      "group": "explain"
     },
     {
       "commandPath": "resolve",
@@ -1203,7 +1208,8 @@
           "description": "Run local DebugBundle environment diagnostics.",
           "requiredArguments": [],
           "optionalArguments": [
-            "authFilePath"
+            "authFilePath",
+            "privacy"
           ]
         },
         {
@@ -1237,7 +1243,8 @@
             "authFilePath",
             "environment",
             "maxAgeMinutes",
-            "service"
+            "service",
+            "trigger5xx"
           ]
         },
         {
@@ -1281,6 +1288,17 @@
         {
           "name": "get_incident",
           "description": "Fetch a single incident by incident id.",
+          "requiredArguments": [
+            "incidentId"
+          ],
+          "optionalArguments": [
+            "bearerToken",
+            "source"
+          ]
+        },
+        {
+          "name": "get_incident_context",
+          "description": "Fetch deterministic one-call incident context for explanation and triage.",
           "requiredArguments": [
             "incidentId"
           ],

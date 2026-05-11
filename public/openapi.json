@@ -5752,6 +5752,182 @@
                             "version": {
                               "type": "string",
                               "minLength": 1
+                            },
+                            "platform": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "arch": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "pid": {
+                              "anyOf": [
+                                {
+                                  "type": "integer",
+                                  "minimum": 0
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "cwd": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "uptime_sec": {
+                              "anyOf": [
+                                {
+                                  "type": "number",
+                                  "minimum": 0
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "hostname": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "thread_id": {
+                              "anyOf": [
+                                {
+                                  "type": [
+                                    "string",
+                                    "number"
+                                  ]
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "framework_version": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "memory": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "rss": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "heap_total": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "heap_used": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "external": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "peak": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "rss",
+                                    "heap_total",
+                                    "heap_used",
+                                    "external",
+                                    "peak"
+                                  ],
+                                  "additionalProperties": false
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "framework_extras": {
+                              "anyOf": [
+                                {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
                             }
                           },
                           "required": [
@@ -7475,6 +7651,47 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                "incident_reason": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "backend_exception",
+                        "frontend_exception",
+                        "request_failure_5xx",
+                        "error_log"
+                      ]
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string",
+                      "enum": [
+                        "backend_exception",
+                        "frontend_exception",
+                        "request_event",
+                        "log_event"
+                      ]
+                    },
+                    "event_class": {
+                      "type": "string",
+                      "const": "incident_signal"
+                    },
+                    "matched_policy": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "description",
+                    "event_type",
+                    "event_class",
+                    "matched_policy"
+                  ],
+                  "additionalProperties": false
                 }
               },
               "required": [
@@ -7595,6 +7812,47 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "incident_reason": {
+                "type": "object",
+                "properties": {
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "backend_exception",
+                      "frontend_exception",
+                      "request_failure_5xx",
+                      "error_log"
+                    ]
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "backend_exception",
+                      "frontend_exception",
+                      "request_event",
+                      "log_event"
+                    ]
+                  },
+                  "event_class": {
+                    "type": "string",
+                    "const": "incident_signal"
+                  },
+                  "matched_policy": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "description",
+                  "event_type",
+                  "event_class",
+                  "matched_policy"
+                ],
+                "additionalProperties": false
               }
             },
             "required": [
