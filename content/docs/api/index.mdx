@@ -20,7 +20,7 @@ The API uses three authentication methods, each scoped differently:
 |---|---|---|---|
 | **Project token** | `Authorization: Bearer dbundle_proj_*` | Write-only ingestion | SDKs sending events via `POST /v1/events` |
 | **Member token** | `Authorization: Bearer dbundle_mem_*` | Full read/manage | CLI, API clients, MCP — incidents, webhooks, tokens, billing |
-| **Browser session** | `Cookie: debugbundle_session=*` | Full read/manage | Web dashboard (same permissions as member token) |
+| **Browser session** | `Cookie: dbundle_session=*` | Full read/manage | Web dashboard (same permissions as member token) |
 
 Project tokens can only ingest events. They cannot read incidents, manage webhooks, or perform any other operation.
 
@@ -170,12 +170,12 @@ Management endpoints (incidents, webhooks, tokens) are not rate-limited in the c
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/v1/tokens/project/:id` | Member token | List project tokens |
-| `POST` | `/v1/tokens/project/:id` | Member token | Create project token |
-| `DELETE` | `/v1/tokens/project/:id/:tokenId` | Member token | Revoke project token |
-| `GET` | `/v1/tokens/member` | Member token | List member tokens |
-| `POST` | `/v1/tokens/member` | Member token | Create member token |
-| `DELETE` | `/v1/tokens/member/:tokenId` | Member token | Revoke member token |
+| `GET` | `/v1/projects/:id/tokens` | Member token | List project tokens |
+| `POST` | `/v1/projects/:id/tokens` | Member token | Create project token |
+| `POST` | `/v1/projects/:id/tokens/:tokenId/revoke` | Member token | Revoke project token |
+| `GET` | `/v1/member/tokens` | Member token | List member tokens |
+| `POST` | `/v1/member/tokens` | Member token | Create member token |
+| `POST` | `/v1/member/tokens/:tokenId/revoke` | Member token | Revoke member token |
 
 ### Projects
 
@@ -211,16 +211,17 @@ Management endpoints (incidents, webhooks, tokens) are not rate-limited in the c
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/v1/probes/config` | Project token | Get probe config (SDK polls this) |
-| `POST` | `/v1/probes/activate` | Member token | Activate a remote probe |
-| `POST` | `/v1/probes/deactivate` | Member token | Deactivate a remote probe |
+| `GET` | `/v1/sdk/config` | Project token | Get SDK config, including capture policy and active probe directives |
+| `GET` | `/v1/projects/:id/probes` | Member token | List active probes for a project |
+| `POST` | `/v1/projects/:id/probes/activate` | Member token | Activate a remote probe |
+| `POST` | `/v1/projects/:id/probes/deactivate` | Member token | Deactivate a remote probe |
 
 ### Capture Policy
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/v1/capture-policy` | Member token | Get current capture policy |
-| `PUT` | `/v1/capture-policy` | Member token | Set capture policy |
+| `GET` | `/v1/projects/:id/capture-policy` | Member token | Get current capture policy for a project |
+| `PATCH` | `/v1/projects/:id/capture-policy` | Member token | Set capture policy for a project |
 
 ### Authentication
 
@@ -232,6 +233,10 @@ Management endpoints (incidents, webhooks, tokens) are not rate-limited in the c
 | `POST` | `/v1/auth/logout` | Session | End session |
 | `GET` | `/v1/auth/github/start` | None | Start GitHub OAuth |
 | `GET` | `/v1/auth/github/callback` | None | Complete GitHub OAuth |
+| `POST` | `/v1/auth/github/device/start` | None | Start GitHub device flow for CLI bootstrap |
+| `POST` | `/v1/auth/github/device/poll` | None | Poll GitHub device-flow status |
+| `POST` | `/v1/auth/github/device/claim` | None | Claim the issued member token after approval |
+| `POST` | `/v1/auth/github/token/exchange` | None | Exchange an existing GitHub access token for a member token |
 
 ## Next Steps
 

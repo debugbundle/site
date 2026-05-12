@@ -22,7 +22,7 @@ GET /v1/projects
 
 ```bash
 curl https://api.debugbundle.com/v1/projects \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Response (200):**
@@ -52,7 +52,7 @@ POST /v1/projects
 
 ```bash
 curl -X POST https://api.debugbundle.com/v1/projects \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Backend API",
@@ -93,7 +93,7 @@ GET /v1/projects/{id}
 
 ```bash
 curl https://api.debugbundle.com/v1/projects/proj_01HXYZ... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Response (200):** Single project object.
@@ -106,7 +106,7 @@ PATCH /v1/projects/{id}
 
 ```bash
 curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Backend API v2",
@@ -126,7 +126,7 @@ DELETE /v1/projects/{id}
 
 ```bash
 curl -X DELETE https://api.debugbundle.com/v1/projects/proj_01HXYZ... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Response (204):** No content.
@@ -148,7 +148,7 @@ GET /v1/projects/{id}/capture-policy
 
 ```bash
 curl https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Response (200):**
@@ -173,7 +173,7 @@ PATCH /v1/projects/{id}/capture-policy
 
 ```bash
 curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
     "preset": "high_volume",

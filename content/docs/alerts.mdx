@@ -19,10 +19,10 @@ notifications to the right people through the right channels.
 
 | Channel | Delivery | Configuration |
 |---------|----------|---------------|
-| **Email** | Email message to a specific address | `recipient_email` |
-| **Slack** | Message to a Slack channel via webhook | `webhook_url`, `channel` |
+| **Email** | Email message to a single address | `to` |
+| **Slack** | Message to a Slack channel via webhook | `webhook_url` |
 | **Discord** | Message to a Discord channel via webhook | `webhook_url` |
-| **Webhook** | HTTP POST to any URL with optional signing | `url`, `secret` (optional) |
+| **Webhook** | HTTP POST to any URL | `target_url` |
 
 ### Email
 
@@ -30,10 +30,12 @@ notifications to the right people through the right channels.
 {
   "channel": "email",
   "config": {
-    "recipient_email": "oncall@mycompany.com"
+    "to": "oncall@mycompany.com"
   }
 }
 ```
+
+Email alerts send to one recipient per rule. If multiple people should receive email notifications, create multiple alert rules.
 
 ### Slack
 
@@ -41,8 +43,7 @@ notifications to the right people through the right channels.
 {
   "channel": "slack",
   "config": {
-    "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx",
-    "channel": "#incidents"
+    "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx"
   }
 }
 ```
@@ -64,14 +65,10 @@ notifications to the right people through the right channels.
 {
   "channel": "webhook",
   "config": {
-    "url": "https://myapp.com/alerts",
-    "secret": "optional-signing-secret"
+    "target_url": "https://myapp.com/alerts"
   }
 }
 ```
-
-Webhook alerts deliver a JSON payload signed with HMAC-SHA256 (when a secret is provided),
-following the same signature format as [webhook deliveries](/docs/webhooks/verification).
 
 ## Condition Types
 

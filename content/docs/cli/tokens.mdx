@@ -13,7 +13,7 @@ The CLI provides commands for managing both project tokens (SDK ingestion) and m
 | Token Type | Prefix | Purpose | Scope |
 |------------|--------|---------|-------|
 | **Project token** | `dbundle_proj_...` | SDK event ingestion | Write-only to ingestion API |
-| **Member token** | `dbundle_member_...` | CLI, API, MCP operations | Read/manage all project resources |
+| **Member token** | `dbundle_mem_...` | CLI, API, MCP operations | Read/manage all project resources |
 
 <Callout type="warn">
   Token plaintext is shown **only once at creation**. Copy it immediately — it cannot be retrieved later. Tokens are stored as SHA-256 hashes at rest.
@@ -149,7 +149,7 @@ Output:
   "token": {
     "token_id": "tok_01HMNO...",
     "label": "ci-pipeline",
-    "plaintext": "dbundle_member_a1b2c3d4e5f6...",
+    "plaintext": "dbundle_mem_a1b2c3d4e5f6...",
     "revoked_at": null
   }
 }

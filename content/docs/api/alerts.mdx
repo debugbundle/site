@@ -14,7 +14,7 @@ GET /v1/alerts?project_id={projectId}
 
 ```bash
 curl https://api.debugbundle.com/v1/alerts?project_id=proj_01HXYZ... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Query Parameters:**
@@ -37,8 +37,7 @@ curl https://api.debugbundle.com/v1/alerts?project_id=proj_01HXYZ... \
       "service_id": null,
       "severity_min": "high",
       "config": {
-        "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx",
-        "channel": "#incidents"
+        "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx"
       },
       "is_enabled": true,
       "created_at": "2026-03-20T10:00:00Z",
@@ -56,7 +55,7 @@ POST /v1/alerts
 
 ```bash
 curl -X POST https://api.debugbundle.com/v1/alerts \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
     "project_id": "proj_01HXYZ...",
@@ -80,7 +79,7 @@ curl -X POST https://api.debugbundle.com/v1/alerts \
 | `condition_type` | `string` | Yes | Trigger condition (see below). |
 | `service_id` | `string` | No | Scope to a specific service. |
 | `severity_min` | `string` | No | Minimum severity: `low`, `medium`, `high`, `critical`. |
-| `config` | `object` | Yes | Channel-specific configuration. |
+| `config` | `object` | Yes | Channel-specific configuration. Email alerts require a single `to` recipient email. |
 | `is_enabled` | `boolean` | No | Default: `true`. |
 
 ### Condition Types
@@ -98,15 +97,14 @@ curl -X POST https://api.debugbundle.com/v1/alerts \
 **Email:**
 
 ```json
-{ "recipient_email": "oncall@mycompany.com" }
+{ "to": "oncall@mycompany.com" }
 ```
 
 **Slack:**
 
 ```json
 {
-  "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx",
-  "channel": "#incidents"
+  "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx"
 }
 ```
 
@@ -119,7 +117,7 @@ curl -X POST https://api.debugbundle.com/v1/alerts \
 **Webhook:**
 
 ```json
-{ "url": "https://myapp.com/alerts", "secret": "optional-signing-secret" }
+{ "target_url": "https://myapp.com/alerts" }
 ```
 
 **Response (201):**
@@ -147,7 +145,7 @@ PATCH /v1/alerts/{id}
 
 ```bash
 curl -X PATCH https://api.debugbundle.com/v1/alerts/alt_01HDEF... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
     "severity_min": "critical",
@@ -156,6 +154,7 @@ curl -X PATCH https://api.debugbundle.com/v1/alerts/alt_01HDEF... \
 ```
 
 Partial update — only the specified fields are changed. Set a field to `null` to clear it.
+When updating channel-specific `config`, include the `channel` in the same request.
 
 **Response (200):** Updated alert object.
 
@@ -167,7 +166,7 @@ DELETE /v1/alerts/{id}
 
 ```bash
 curl -X DELETE https://api.debugbundle.com/v1/alerts/alt_01HDEF... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Response (204):** No content.

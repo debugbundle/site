@@ -18,13 +18,25 @@ Before connecting to the cloud, ensure you have:
 
 ## Authenticate
 
-Log in to your DebugBundle account:
+The CLI stores a normal member token in `~/.debugbundle/auth.json`. You can bootstrap that state in three ways:
 
 ```bash
-debugbundle login
+# Direct member token
+debugbundle login dbundle_mem_xxxxxxxxxxxx
+
+# Auto mode: try `gh auth token` first, then fall back to GitHub device flow
+debugbundle login --github
+
+# Explicit modes
+debugbundle login --github-cli
+debugbundle login --github-device
 ```
 
-This opens a browser window for authentication and stores your member token in `~/.debugbundle/auth.json`. The member token is used for all cloud operations (CLI, API, MCP).
+The CLI and local MCP server both reuse this stored auth state for cloud operations.
+
+<Callout type="info">
+  GitHub device flow shows a URL and short code in the terminal, waits for the user to approve the DebugBundle OAuth app in a browser, then finishes automatically. The `--github-cli` mode skips that browser step when `gh` is already authenticated on the machine.
+</Callout>
 
 <Callout type="info">
   Member tokens authenticate **you** for management operations. They are separate from project tokens, which authenticate **SDKs** for event ingestion. See [Authentication](/docs/api/authentication) for details.

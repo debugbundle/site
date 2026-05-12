@@ -33,7 +33,7 @@ POST /v1/probes
 
 ```bash
 curl -X POST https://api.debugbundle.com/v1/probes \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
     "project_id": "proj_01HXYZ...",
@@ -87,7 +87,7 @@ GET /v1/probes?project_id={projectId}
 
 ```bash
 curl https://api.debugbundle.com/v1/probes?project_id=proj_01HXYZ... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Query Parameters:**
@@ -127,7 +127,7 @@ DELETE /v1/probes/{id}
 
 ```bash
 curl -X DELETE https://api.debugbundle.com/v1/probes/prb_01H9KL... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Response (204):** No content.

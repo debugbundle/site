@@ -77,11 +77,11 @@ Controls how probe-collected data is handled.
 ```bash
 # Get current policy
 curl https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 
 # Update policy
 curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{ "preset": "investigative" }'
 ```
@@ -107,7 +107,7 @@ override individual controls:
 ```bash
 # Start with balanced preset, but capture all request events
 curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
     "preset": "balanced",

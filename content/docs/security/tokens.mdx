@@ -100,26 +100,33 @@ against brute-force attacks.
 
 ```bash
 # Create a project token
-debugbundle tokens create --type project --project-id proj_01HXYZ...
+debugbundle token project create proj_01HXYZ... --label "Production SDK"
 
-# Create a member token
-debugbundle tokens create --type member
-
-# Create a probe trigger token
-debugbundle tokens create --type probe-trigger --project-id proj_01HXYZ...
+# Create an additional member token
+debugbundle token member create --label "CI pipeline"
 ```
+
+The first member token is usually created from the web app after email-code or GitHub browser sign-in, or bootstrapped through `debugbundle login --github`, `--github-cli`, or `--github-device`. Probe trigger tokens are returned by probe activation, for example `debugbundle probe activate ... --trigger-ttl-seconds ...`.
 
 ### API
 
 ```bash
 # Create a project token
-curl -X POST https://api.debugbundle.com/v1/tokens \
+curl -X POST https://api.debugbundle.com/v1/projects/proj_01HXYZ.../tokens \
   -H "Authorization: Bearer dbundle_mem_..." \
   -H "Content-Type: application/json" \
   -d '{
-    "type": "project",
-    "project_id": "proj_01HXYZ...",
-    "name": "Production SDK"
+    "label": "Production SDK"
+  }'
+```
+
+```bash
+# Create an additional member token
+curl -X POST https://api.debugbundle.com/v1/member/tokens \
+  -H "Authorization: Bearer dbundle_mem_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "label": "CI pipeline"
   }'
 ```
 
@@ -143,13 +150,13 @@ Rotate tokens without downtime by overlapping old and new tokens:
 
 ```bash
 # List tokens to find the one to rotate
-debugbundle tokens list --project-id proj_01HXYZ...
+debugbundle token project list proj_01HXYZ...
 
 # Create replacement
-debugbundle tokens create --type project --project-id proj_01HXYZ... --name "Production SDK v2"
+debugbundle token project create proj_01HXYZ... --label "Production SDK v2"
 
 # After deploying the new token, revoke the old one
-debugbundle tokens revoke tok_01HOLD...
+debugbundle token project revoke proj_01HXYZ... tok_01HOLD...
 ```
 
 ## Scope Enforcement

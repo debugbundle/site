@@ -11,7 +11,7 @@ DebugBundle uses three distinct authentication artifacts:
 | Token Type | Prefix | Scope | Created By |
 |---|---|---|---|
 | **Project token** | `dbundle_proj_` | Ingestion only (`POST /v1/events` + probe config) | Member via CLI, API, or dashboard |
-| **Member token** | `dbundle_mem_` | Full read/manage (incidents, webhooks, tokens, billing) | Member via CLI, API, or dashboard |
+| **Member token** | `dbundle_mem_` | Full read/manage (incidents, webhooks, tokens, billing) | Verified member via browser session or an existing member token |
 | **Browser session** | Cookie-based | Same as member token | Email code or GitHub OAuth |
 
 ### Scope Separation
@@ -83,6 +83,11 @@ Response:
 # Save token to ~/.debugbundle/auth.json
 debugbundle login dbundle_mem_xxxxxxxxxxxx
 
+# Or bootstrap the same member-token state through GitHub
+debugbundle login --github
+debugbundle login --github-cli
+debugbundle login --github-device
+
 # All subsequent commands use the saved token
 debugbundle incidents
 debugbundle inspect inc_abc123
@@ -111,17 +116,19 @@ debugbundle incidents --auth-file /path/to/custom/auth.json
 # Create a project token
 debugbundle token project create proj_xxxx --label "production-sdk"
 
-# Create a member token
+# Create an additional member token
 debugbundle token member create --label "ci-pipeline"
 ```
 
 The plaintext token is shown once at creation. It is never stored or retrievable again.
 
+The first member token can be created in the web app after email-code or GitHub browser sign-in, or bootstrapped directly from the CLI through GitHub device flow or an existing `gh auth token`. After you have one member token, the same identity can create additional member tokens through CLI, API, or MCP-backed workflows.
+
 ### Via API
 
 ```bash
 # Create a project token
-curl -X POST https://api.debugbundle.com/v1/tokens/project/proj_xxxx \
+curl -X POST https://api.debugbundle.com/v1/projects/proj_xxxx/tokens \
   -H "Authorization: Bearer dbundle_mem_xxxxxxxxxxxx" \
   -H "Content-Type: application/json" \
   -d '{ "label": "production-sdk" }'
@@ -188,6 +195,13 @@ curl -X POST https://api.debugbundle.com/v1/auth/verify-code \
 ### GitHub OAuth
 
 The dashboard redirects to GitHub for authentication and completes via the callback endpoint. No manual API call needed.
+
+### GitHub CLI Bootstrap
+
+For headless or agent workflows, DebugBundle also supports two CLI bootstrap paths that both end by issuing a normal member token:
+
+- `debugbundle login --github-device` starts GitHub device flow and shows a browser URL plus short code.
+- `debugbundle login --github-cli` exchanges an already-authenticated `gh auth token` with DebugBundle.
 
 ### Session Cookie
 

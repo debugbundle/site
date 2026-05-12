@@ -44,9 +44,10 @@ The CLI uses two authentication modes:
 
 ```bash
 debugbundle login dbundle_mem_xxxxxxxxxxxx
+debugbundle login --github
 ```
 
-This saves your member token to `~/.debugbundle/auth.json`. All subsequent cloud commands use this token automatically.
+This saves a normal member token to `~/.debugbundle/auth.json`. All subsequent cloud commands use this token automatically. `--github` first tries an existing `gh auth token`, then falls back to GitHub device flow if needed. Users who prefer the manual path, or who do not have GitHub, can still sign in with email in the web app and paste the resulting `dbundle_mem_*` token into `debugbundle login`.
 
 Customize the API base URL:
 
@@ -115,7 +116,7 @@ Every command supports these flags:
 
 | Command | Description |
 |---|---|
-| `login <token>` | Authenticate with a member token |
+| `login <token>` / `login --github` | Authenticate with a member token or GitHub bootstrap |
 | `whoami` | Show current auth identity |
 | `connect` | Link local project to a cloud project |
 | `verify local` | Verify the local scaffold is healthy |

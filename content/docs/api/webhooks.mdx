@@ -16,7 +16,7 @@ GET /v1/webhooks?project_id={projectId}
 
 ```bash
 curl https://api.debugbundle.com/v1/webhooks?project_id=proj_01HXYZ... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Query Parameters:**
@@ -58,7 +58,7 @@ POST /v1/webhooks
 
 ```bash
 curl -X POST https://api.debugbundle.com/v1/webhooks \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
     "project_id": "proj_01HXYZ...",
@@ -113,7 +113,7 @@ GET /v1/webhooks/{id}
 
 ```bash
 curl https://api.debugbundle.com/v1/webhooks/wh_01HDEF... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Response (200):** Single webhook object (same structure as list items).
@@ -126,7 +126,7 @@ PATCH /v1/webhooks/{id}
 
 ```bash
 curl -X PATCH https://api.debugbundle.com/v1/webhooks/wh_01HDEF... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
     "events": ["bundle.created", "bundle.resolved", "bundle.reopened"],
@@ -148,7 +148,7 @@ DELETE /v1/webhooks/{id}
 
 ```bash
 curl -X DELETE https://api.debugbundle.com/v1/webhooks/wh_01HDEF... \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Response (204):** No content.
@@ -163,7 +163,7 @@ POST /v1/webhooks/{id}/test
 
 ```bash
 curl -X POST https://api.debugbundle.com/v1/webhooks/wh_01HDEF.../test \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..." \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{ "event_type": "verification.passed" }'
 ```
@@ -184,7 +184,7 @@ GET /v1/webhooks/{id}/deliveries
 
 ```bash
 curl https://api.debugbundle.com/v1/webhooks/wh_01HDEF.../deliveries?limit=10 \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 **Query Parameters:**
@@ -219,7 +219,7 @@ POST /v1/webhooks/{id}/deliveries/{deliveryId}/retry
 
 ```bash
 curl -X POST https://api.debugbundle.com/v1/webhooks/wh_01HDEF.../deliveries/del_01HJKL.../retry \
-  -H "Authorization: Bearer dbundle_member_a1b2c3d4..."
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 Resets a `failed` or `disabled` delivery to `retrying` status.

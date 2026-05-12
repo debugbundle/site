@@ -13,7 +13,21 @@ Before you start:
 3. Create at least one GitHub automation rule, either in the web app or with `debugbundle github rules create`.
 4. Add a `DEBUGBUNDLE_TOKEN` secret to the repository so workflows can fetch the full bundle and reproduction.
 
-DebugBundle emits `repository_dispatch` with `event_type: debugbundle.incident`. The workflow then fetches the full context with `debugbundle/action@v1`.
+## What DebugBundle sends
+
+DebugBundle sends a GitHub `repository_dispatch` event into the assigned repository. The dispatch `event_type` is always `debugbundle.incident`, so the repository must contain a workflow that listens for:
+
+```yaml
+on:
+  repository_dispatch:
+    types: [debugbundle.incident]
+```
+
+The dispatch payload is intentionally small. It includes incident summary fields such as `incident_id`, `debugbundle_event`, `severity`, `title`, and retrieval links. Delivery metadata such as `dispatch_id`, `project_id`, and `dispatched_at` lives under `github.event.client_payload.debugbundle`.
+
+DebugBundle delivery status means GitHub accepted or rejected the `repository_dispatch` API call. A `delivered` record with GitHub status `204` proves GitHub accepted the dispatch, but it does not prove a GitHub Actions workflow completed. The receiving repository still owns the workflow file, run result, issue creation, agent invocation, and any follow-up policy.
+
+After the workflow starts, fetch the full context with `debugbundle/action@v1`.
 
 ## Recipe 1: Basic GitHub triage workflow
 
@@ -135,9 +149,21 @@ Use the checked-in example at `examples/github-actions/issue-creation.yml` if yo
 
 - `repository_dispatch` is the only supported GitHub trigger for this integration.
 - DebugBundle owns repo connection, rule evaluation, delivery history, and retry.
+- DebugBundle delivery history tracks GitHub dispatch acceptance. Check GitHub Actions for workflow run status and logs.
 - Your repository owns everything after the workflow starts: issue creation, agent invocation, PR creation, and triage policy.
 - Full bundle JSON is not embedded in the dispatch payload. The workflow fetches it on demand with the DebugBundle member token.
 - The fetch step uses the separately published `debugbundle/action@v1`; the core repo only keeps the example workflow YAML files.
+
+## Validate the automation path
+
+Use this loop when you want to prove a new repository connection before keeping permanent automation in place.
+
+1. Add a temporary workflow that listens for `repository_dispatch` with `types: [debugbundle.incident]`.
+2. Trigger one controlled high-severity incident that matches a GitHub dispatch rule.
+3. Open the project GitHub tab or run `debugbundle github deliveries --project-id <project-id>`.
+4. Confirm the latest delivery is `delivered` with GitHub status `204`.
+5. Open the repository's Actions tab and confirm the temporary workflow run completed.
+6. Resolve the intentional incident and remove the temporary workflow.
 
 ## CLI parity
 
