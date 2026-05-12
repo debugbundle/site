@@ -21,6 +21,9 @@ Before connecting to the cloud, ensure you have:
 The CLI stores a normal member token in `~/.debugbundle/auth.json`. You can bootstrap that state in three ways:
 
 ```bash
+# Interactive chooser
+debugbundle login
+
 # Direct member token
 debugbundle login dbundle_mem_xxxxxxxxxxxx
 
@@ -32,7 +35,7 @@ debugbundle login --github-cli
 debugbundle login --github-device
 ```
 
-The CLI and local MCP server both reuse this stored auth state for cloud operations.
+The CLI and local MCP server both reuse this stored auth state for cloud operations. In a normal terminal, `debugbundle login` with no flags prompts you to choose one of these bootstrap paths.
 
 <Callout type="info">
   GitHub device flow shows a URL and short code in the terminal, waits for the user to approve the DebugBundle OAuth app in a browser, then finishes automatically. The `--github-cli` mode skips that browser step when `gh` is already authenticated on the machine.
@@ -49,6 +52,8 @@ Link your local project to a cloud project:
 ```bash
 debugbundle connect
 ```
+
+If local member auth is missing, `debugbundle connect` now prompts for login first and then resumes automatically after authentication completes.
 
 The connect command:
 

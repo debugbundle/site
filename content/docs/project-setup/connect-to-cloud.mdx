@@ -13,6 +13,8 @@ team-wide incident visibility, webhooks, alerts, probes, and the web dashboard.
 - CLI authenticated: `debugbundle login`
 - An initialized local project: `debugbundle setup`
 
+If you are not authenticated yet, `debugbundle connect` can now prompt you to log in first and then continue automatically.
+
 ## Connect Flow
 
 ```bash
@@ -22,10 +24,11 @@ debugbundle connect
 The connect command performs these steps automatically:
 
 1. **Reads your profile** — extracts the project name from `.debugbundle/profile.json`
-2. **Creates or selects a cloud project** — uses the profile name to find an existing
+2. **Prompts for login if needed** — offers GitHub auto mode, GitHub device flow, or an existing member token when local auth is missing
+3. **Creates or selects a cloud project** — uses the profile name to find an existing
    project or create a new one with a slugified name
-3. **Generates a project token** — creates a write-only SDK token for event ingestion
-4. **Updates connection.json** — switches mode to `"connected"` and enables cloud
+4. **Generates a project token** — creates a write-only SDK token for event ingestion
+5. **Updates connection.json** — switches mode to `"connected"` and enables cloud
   delivery for the production environment
 
 ### Output

@@ -80,6 +80,9 @@ Response:
 ### In the CLI
 
 ```bash
+# Interactive chooser
+debugbundle login
+
 # Save token to ~/.debugbundle/auth.json
 debugbundle login dbundle_mem_xxxxxxxxxxxx
 
@@ -122,7 +125,7 @@ debugbundle token member create --label "ci-pipeline"
 
 The plaintext token is shown once at creation. It is never stored or retrievable again.
 
-The first member token can be created in the web app after email-code or GitHub browser sign-in, or bootstrapped directly from the CLI through GitHub device flow or an existing `gh auth token`. After you have one member token, the same identity can create additional member tokens through CLI, API, or MCP-backed workflows.
+The first member token can be created in the web app after email-code or GitHub browser sign-in, or bootstrapped directly from the CLI through `debugbundle login`, GitHub device flow, or an existing `gh auth token`. In an interactive terminal, plain `debugbundle login` offers the available bootstrap paths and stores the resulting auth state once complete. After you have one member token, the same identity can create additional member tokens through CLI, API, or MCP-backed workflows.
 
 ### Via API
 
@@ -202,6 +205,7 @@ For headless or agent workflows, DebugBundle also supports two CLI bootstrap pat
 
 - `debugbundle login --github-device` starts GitHub device flow and shows a browser URL plus short code.
 - `debugbundle login --github-cli` exchanges an already-authenticated `gh auth token` with DebugBundle.
+- `debugbundle login` offers these same choices interactively when run in a TTY without explicit auth flags.
 
 ### Session Cookie
 

@@ -32,12 +32,13 @@ authenticated session. No additional configuration is required.
 If the CLI is not authenticated yet, bootstrap it first with any of these paths:
 
 ```bash
+debugbundle login
 debugbundle login dbundle_mem_xxxxxxxxxxxx
 debugbundle login --github
 debugbundle login --github-device
 ```
 
-`--github` first tries an existing `gh auth token` for a fully headless agent flow, then falls back to GitHub device flow when browser approval is needed. Email-code signup and manual token creation remain available in the web app for users who do not use GitHub.
+`debugbundle login` with no flags opens an interactive chooser in a TTY. `--github` first tries an existing `gh auth token` for a fully headless agent flow, then falls back to GitHub device flow when browser approval is needed. Email-code signup and manual token creation remain available in the web app for users who do not use GitHub.
 
 For remote or headless environments, pass a member token as the `bearerToken`:
 

@@ -58,13 +58,13 @@ If empty, your SDK or log ingestion hasn't written events yet. See [Local Workfl
 | `profile: missing` | Run `debugbundle setup` |
 | `profile: stale` | Review and update `.debugbundle/profile.json`, update `last_reviewed_at` |
 | `connection: missing` | Run `debugbundle setup` |
-| `auth: missing` | Run `debugbundle login <member-token>` |
+| `auth: missing` | Run `debugbundle login` to choose an auth flow |
 | `skill: missing` | Run `debugbundle validate --fix` |
 
 ### Authentication errors (exit code 2)
 
 1. **Check auth file exists:** `ls ~/.debugbundle/auth.json`
-2. **Re-login:** `debugbundle login dbundle_mem_xxxxxxxxxxxx`
+2. **Re-login:** `debugbundle login`
 3. **Verify token is valid:** `debugbundle whoami`
 4. **Check token type:** Cloud commands require a member token (`dbundle_mem_*`), not a project token.
 
