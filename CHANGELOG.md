@@ -6,6 +6,16 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-05-13
+
+### Added
+
+- Public documentation for interactive CLI auth bootstrap, including `debugbundle login` TTY selection, GitHub device flow, `gh`-based headless login, and `debugbundle connect` auth recovery.
+
+### Changed
+
+- Refreshed generated Next route types after the latest standalone site build verification.
+
 ## [0.1.0] - 2026-05-07
 
 ### Added
