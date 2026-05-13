@@ -20,7 +20,7 @@ notifications to the right people through the right channels.
 | Channel | Delivery | Configuration |
 |---------|----------|---------------|
 | **Email** | Email message to a single address | `to` |
-| **Slack** | Message to a Slack channel via webhook | `webhook_url` |
+| **Slack** | Message to a connected Slack channel | `slack_destination_id` or `webhook_url` |
 | **Discord** | Message to a Discord channel via webhook | `webhook_url` |
 | **Webhook** | HTTP POST to any URL | `target_url` |
 
@@ -39,14 +39,18 @@ Email alerts send to one recipient per rule. If multiple people should receive e
 
 ### Slack
 
+Team workspaces can connect Slack from the project alerts modal. DebugBundle opens Slack OAuth, Slack shows a channel picker, and alert rules store the returned destination ID instead of exposing the webhook URL.
+
 ```json
 {
   "channel": "slack",
   "config": {
-    "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx"
+    "slack_destination_id": "11111111-1111-4111-8111-111111111111"
   }
 }
 ```
+
+Direct `webhook_url` configuration is still accepted through API, CLI, and MCP for automation that intentionally manages its own Slack webhooks.
 
 ### Discord
 

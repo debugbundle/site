@@ -13,7 +13,7 @@ The CLI provides CRUD operations for alert rules. Alerts notify your team throug
 | Channel | Description | Config Required |
 |---------|-------------|-----------------|
 | `email` | Email notification to one recipient | `to` |
-| `slack` | Slack webhook message | `webhook_url` |
+| `slack` | Slack channel message | `slack_destination_id` or `webhook_url` |
 | `discord` | Discord webhook message | `webhook_url` |
 | `webhook` | Generic alert webhook | `target_url` |
 
@@ -47,7 +47,7 @@ Output:
       "severity_min": "high",
       "is_enabled": true,
       "config": {
-        "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx"
+        "slack_destination_id": "11111111-1111-4111-8111-111111111111"
       }
     }
   ]
@@ -81,7 +81,7 @@ debugbundle alert create \
   --project-id proj_01HXYZ... \
   --channel slack \
   --condition error_spike \
-  --config-json '{"webhook_url": "https://hooks.slack.com/services/T.../B.../xxx"}'
+  --config-json '{"slack_destination_id": "11111111-1111-4111-8111-111111111111"}'
 ```
 
 ### Discord Alert
@@ -163,6 +163,16 @@ Each email alert rule targets a single recipient. Create additional rules if mor
 
 ### Slack
 
+Preferred connected destination configuration:
+
+```json
+{
+  "slack_destination_id": "11111111-1111-4111-8111-111111111111"
+}
+```
+
+Direct webhook configuration is still available for automation that intentionally manages its own Slack webhook:
+
 ```json
 {
   "webhook_url": "https://hooks.slack.com/services/T.../B.../xxx"
@@ -170,8 +180,21 @@ Each email alert rule targets a single recipient. Create additional rules if mor
 ```
 
 <Callout type="info">
-  Create a Slack Incoming Webhook at [api.slack.com/messaging/webhooks](https://api.slack.com/messaging/webhooks) and use the webhook URL in your alert configuration.
+  For the simplest setup, use `debugbundle slack connect-url` to complete Slack OAuth in a browser, then reference the returned destination ID in alert rules.
 </Callout>
+
+## Slack Destinations
+
+Connected Slack destinations let agents and developers reuse the same Slack channel without exposing webhook URLs in alert configuration.
+
+```bash
+debugbundle slack connect-url --project-id proj_01HXYZ...
+debugbundle slack list --project-id proj_01HXYZ...
+debugbundle slack test 11111111-1111-4111-8111-111111111111 --project-id proj_01HXYZ...
+debugbundle slack delete 11111111-1111-4111-8111-111111111111 --project-id proj_01HXYZ...
+```
+
+`slack connect-url` prints a browser URL for Slack OAuth and channel selection. `slack delete` only succeeds once no alert rule or weekly report still references the destination.
 
 ### Discord
 

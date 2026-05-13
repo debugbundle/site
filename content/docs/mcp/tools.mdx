@@ -291,6 +291,45 @@ Delete an alert rule.
 
 ---
 
+## Slack Destinations
+
+### list_slack_destinations
+
+List connected Slack destinations for a project organization.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project whose organization owns the destinations. |
+
+### get_slack_connect_url
+
+Return a browser URL for Slack OAuth and channel selection.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project to return to after connection. |
+| `returnTo` | `string` | Optional app-relative return path. |
+
+### test_slack_destination
+
+Send a test message to a connected Slack destination.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project whose organization owns the destination. |
+| `destinationId` | `string` | **Required.** Slack destination ID. |
+
+### delete_slack_destination
+
+Delete a connected Slack destination when no alert rule or weekly report still references it.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project whose organization owns the destination. |
+| `destinationId` | `string` | **Required.** Slack destination ID. |
+
+---
+
 ## Weekly Reports
 
 ### list_weekly_reports
