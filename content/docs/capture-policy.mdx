@@ -15,7 +15,7 @@ override individual controls.
 
 | Preset | Logs | Request Events | Breadcrumbs | Probe Events | Best For |
 |--------|------|---------------|-------------|-------------|----------|
-| `minimal` | `error` | `off` | `local_only` | `buffer_only` | Free tier, low-traffic apps |
+| `minimal` | `error` | `failures_only` | `local_only` | `buffer_only` | Free tier, low-traffic apps |
 | `balanced` | `warning` | `failures_only` | `exception_only` | `buffer_only` | Most projects (default for Solo/Team) |
 | `investigative` | `info` | `all` | `standalone` | `standalone_when_activated` | Active debugging, full visibility |
 
@@ -46,9 +46,9 @@ Controls which HTTP request/response pairs are captured.
 
 | Value | Behavior |
 |-------|----------|
-| `off` | Non-5xx request events are dropped; 5xx request failures are still captured as incident signals. |
-| `failures_only` | Only requests with 5xx responses. |
-| `filtered` | Requests matching configured filters; until custom filters are configured, SDKs treat this as 5xx-only. |
+| `off` | Standalone request events are dropped unless they match the active preset's immediate request-failure statuses; those immediate request failures are still captured as incident signals. |
+| `failures_only` | Immediate request failures for the active preset are captured as incident signals: `minimal` = `5xx`; `balanced` = `5xx`, `408`, `423`, `424`, `425`, `429`; `investigative` = balanced plus `409`. Balanced and investigative also capture preset-enabled request-anomaly candidates (`400`, `401`, `403`, `404`, `409`, `410`, `422`) as context signals so repeated failures can open request-anomaly incidents. |
+| `filtered` | Requests matching configured filters; until custom filters are configured, SDKs keep only immediate request failures and do not ship additional filtered request context. |
 | `all` | All requests captured. |
 
 ### Capture Breadcrumbs

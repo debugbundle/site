@@ -353,6 +353,300 @@
         }
       }
     },
+    "/v1/auth/github/device/start": {
+      "post": {
+        "operationId": "startGithubDeviceLogin",
+        "summary": "Start GitHub device login",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GithubDeviceStartBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "GitHub device authorization created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GithubDeviceStartResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many auth attempts from this IP.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "GitHub device auth is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/github/device/poll": {
+      "post": {
+        "operationId": "pollGithubDeviceLogin",
+        "summary": "Poll GitHub device login status",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GithubDevicePollBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Current GitHub device authorization status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GithubDevicePollResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Device authorization request was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many auth attempts from this IP.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "GitHub device auth is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/github/device/claim": {
+      "post": {
+        "operationId": "claimGithubDeviceLogin",
+        "summary": "Claim the member token issued by GitHub device login",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GithubDeviceClaimBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Member token issued.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Device authorization request was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Device authorization is not claimable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many auth attempts from this IP.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "GitHub device auth is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/auth/github/token/exchange": {
+      "post": {
+        "operationId": "exchangeGithubAccessToken",
+        "summary": "Exchange a GitHub access token for a DebugBundle member token",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GithubTokenExchangeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Member token issued.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body or missing GitHub email.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "GitHub access token is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "GitHub identity cannot bootstrap this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many auth attempts from this IP.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "GitHub auth is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/auth/session": {
       "get": {
         "operationId": "getSession",
@@ -5165,6 +5459,296 @@
         ],
         "additionalProperties": false
       },
+      "GithubDeviceStartBody": {
+        "type": "object",
+        "properties": {
+          "accepted_terms": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "accepted_terms"
+        ],
+        "additionalProperties": false
+      },
+      "GithubDeviceStartResponse": {
+        "type": "object",
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user_code": {
+            "type": "string"
+          },
+          "verification_uri": {
+            "type": "string",
+            "format": "uri"
+          },
+          "interval_seconds": {
+            "type": "integer",
+            "exclusiveMinimum": true,
+            "minimum": 0
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "request_id",
+          "user_code",
+          "verification_uri",
+          "interval_seconds",
+          "expires_at"
+        ],
+        "additionalProperties": false
+      },
+      "GithubDevicePollBody": {
+        "type": "object",
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "request_id"
+        ],
+        "additionalProperties": false
+      },
+      "GithubDevicePollResponse": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "const": "pending"
+              },
+              "interval_seconds": {
+                "type": "integer",
+                "exclusiveMinimum": true,
+                "minimum": 0
+              },
+              "expires_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "status",
+              "interval_seconds",
+              "expires_at"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "approved",
+                  "claimed"
+                ]
+              },
+              "expires_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "status",
+              "expires_at"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "denied",
+                  "expired",
+                  "rejected"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              },
+              "expires_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "status",
+              "reason",
+              "expires_at"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "GithubDeviceClaimBody": {
+        "type": "object",
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          }
+        },
+        "required": [
+          "request_id",
+          "label"
+        ],
+        "additionalProperties": false
+      },
+      "TokenResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "token_id": {
+                    "type": "string"
+                  },
+                  "project_id": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  },
+                  "last_used_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "revoked_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "expires_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "plaintext": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "token_id",
+                  "project_id",
+                  "label",
+                  "created_at",
+                  "last_used_at",
+                  "revoked_at",
+                  "expires_at"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "token_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "organization_id": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "created_at": {
+                    "type": "string"
+                  },
+                  "last_used_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "revoked_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "expires_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "plaintext": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "token_id",
+                  "user_id",
+                  "organization_id",
+                  "label",
+                  "created_at",
+                  "last_used_at",
+                  "revoked_at",
+                  "expires_at"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "additionalProperties": false
+      },
+      "GithubTokenExchangeBody": {
+        "type": "object",
+        "properties": {
+          "github_access_token": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "accepted_terms": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "github_access_token",
+          "label",
+          "accepted_terms"
+        ],
+        "additionalProperties": false
+      },
       "AcceptInviteBody": {
         "type": "object",
         "properties": {
@@ -7660,7 +8244,7 @@
                       "enum": [
                         "backend_exception",
                         "frontend_exception",
-                        "request_failure_5xx",
+                        "request_failure",
                         "error_log"
                       ]
                     },
@@ -7821,7 +8405,7 @@
                     "enum": [
                       "backend_exception",
                       "frontend_exception",
-                      "request_failure_5xx",
+                      "request_failure",
                       "error_log"
                     ]
                   },
@@ -10783,119 +11367,6 @@
         ],
         "additionalProperties": false
       },
-      "TokenResponse": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "token_id": {
-                    "type": "string"
-                  },
-                  "project_id": {
-                    "type": "string"
-                  },
-                  "label": {
-                    "type": "string"
-                  },
-                  "created_at": {
-                    "type": "string"
-                  },
-                  "last_used_at": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "revoked_at": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "expires_at": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "plaintext": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "token_id",
-                  "project_id",
-                  "label",
-                  "created_at",
-                  "last_used_at",
-                  "revoked_at",
-                  "expires_at"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "token_id": {
-                    "type": "string"
-                  },
-                  "user_id": {
-                    "type": "string"
-                  },
-                  "organization_id": {
-                    "type": "string"
-                  },
-                  "label": {
-                    "type": "string"
-                  },
-                  "created_at": {
-                    "type": "string"
-                  },
-                  "last_used_at": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "revoked_at": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "expires_at": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "plaintext": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "token_id",
-                  "user_id",
-                  "organization_id",
-                  "label",
-                  "created_at",
-                  "last_used_at",
-                  "revoked_at",
-                  "expires_at"
-                ],
-                "additionalProperties": false
-              }
-            ]
-          }
-        },
-        "required": [
-          "token"
-        ],
-        "additionalProperties": false
-      },
       "AlertListResponse": {
         "type": "object",
         "properties": {
@@ -10987,60 +11458,251 @@
         "additionalProperties": false
       },
       "CreateAlertBody": {
-        "type": "object",
-        "properties": {
-          "project_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "service_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "channel": {
-            "type": "string",
-            "enum": [
-              "email",
-              "slack",
-              "discord",
-              "webhook"
-            ]
-          },
-          "condition_type": {
-            "type": "string",
-            "enum": [
-              "new_incident",
-              "incident_regressed",
-              "error_spike",
-              "severity_threshold",
-              "regression_after_deploy"
-            ]
-          },
-          "severity_min": {
-            "type": "string",
-            "enum": [
-              "low",
-              "medium",
-              "high",
-              "critical"
-            ]
-          },
-          "config": {
+        "anyOf": [
+          {
             "type": "object",
-            "additionalProperties": {},
-            "default": {}
+            "properties": {
+              "project_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "service_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "condition_type": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "error_spike",
+                  "severity_threshold",
+                  "regression_after_deploy"
+                ]
+              },
+              "severity_min": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ]
+              },
+              "is_enabled": {
+                "type": "boolean",
+                "default": true
+              },
+              "channel": {
+                "type": "string",
+                "const": "email"
+              },
+              "config": {
+                "type": "object",
+                "properties": {
+                  "to": {
+                    "type": "string",
+                    "format": "email"
+                  }
+                },
+                "required": [
+                  "to"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "project_id",
+              "condition_type",
+              "channel",
+              "config"
+            ],
+            "additionalProperties": false
           },
-          "is_enabled": {
-            "type": "boolean",
-            "default": true
+          {
+            "type": "object",
+            "properties": {
+              "project_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "service_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "condition_type": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "error_spike",
+                  "severity_threshold",
+                  "regression_after_deploy"
+                ]
+              },
+              "severity_min": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ]
+              },
+              "is_enabled": {
+                "type": "boolean",
+                "default": true
+              },
+              "channel": {
+                "type": "string",
+                "const": "slack"
+              },
+              "config": {
+                "type": "object",
+                "properties": {
+                  "webhook_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2000
+                  }
+                },
+                "required": [
+                  "webhook_url"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "project_id",
+              "condition_type",
+              "channel",
+              "config"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "project_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "service_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "condition_type": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "error_spike",
+                  "severity_threshold",
+                  "regression_after_deploy"
+                ]
+              },
+              "severity_min": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ]
+              },
+              "is_enabled": {
+                "type": "boolean",
+                "default": true
+              },
+              "channel": {
+                "type": "string",
+                "const": "discord"
+              },
+              "config": {
+                "type": "object",
+                "properties": {
+                  "webhook_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2000
+                  }
+                },
+                "required": [
+                  "webhook_url"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "project_id",
+              "condition_type",
+              "channel",
+              "config"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "project_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "service_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "condition_type": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "error_spike",
+                  "severity_threshold",
+                  "regression_after_deploy"
+                ]
+              },
+              "severity_min": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ]
+              },
+              "is_enabled": {
+                "type": "boolean",
+                "default": true
+              },
+              "channel": {
+                "type": "string",
+                "const": "webhook"
+              },
+              "config": {
+                "type": "object",
+                "properties": {
+                  "target_url": {
+                    "type": "string",
+                    "format": "uri",
+                    "maxLength": 2000
+                  }
+                },
+                "required": [
+                  "target_url"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "project_id",
+              "condition_type",
+              "channel",
+              "config"
+            ],
+            "additionalProperties": false
           }
-        },
-        "required": [
-          "project_id",
-          "channel",
-          "condition_type"
-        ],
-        "additionalProperties": false
+        ]
       },
       "AlertResponse": {
         "type": "object",
@@ -11130,70 +11792,358 @@
         "additionalProperties": false
       },
       "UpdateAlertBody": {
-        "type": "object",
-        "properties": {
-          "service_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "channel": {
-            "type": "string",
-            "enum": [
-              "email",
-              "slack",
-              "discord",
-              "webhook"
-            ]
-          },
-          "condition_type": {
-            "type": "string",
-            "enum": [
-              "new_incident",
-              "incident_regressed",
-              "error_spike",
-              "severity_threshold",
-              "regression_after_deploy"
-            ]
-          },
-          "severity_min": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": [
-                  "low",
-                  "medium",
-                  "high",
-                  "critical"
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "service_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "config": {
-            "anyOf": [
-              {
-                "type": "object",
-                "additionalProperties": {}
+              "condition_type": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "error_spike",
+                  "severity_threshold",
+                  "regression_after_deploy"
+                ]
               },
-              {
-                "type": "null"
+              "severity_min": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high",
+                      "critical"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "is_enabled": {
+                "type": "boolean"
+              },
+              "channel": {
+                "type": "string",
+                "const": "email"
+              },
+              "config": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "to": {
+                        "type": "string",
+                        "format": "email"
+                      }
+                    },
+                    "required": [
+                      "to"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
-            ]
+            },
+            "required": [
+              "channel"
+            ],
+            "additionalProperties": false
           },
-          "is_enabled": {
-            "type": "boolean"
+          {
+            "type": "object",
+            "properties": {
+              "service_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "condition_type": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "error_spike",
+                  "severity_threshold",
+                  "regression_after_deploy"
+                ]
+              },
+              "severity_min": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high",
+                      "critical"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "is_enabled": {
+                "type": "boolean"
+              },
+              "channel": {
+                "type": "string",
+                "const": "slack"
+              },
+              "config": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "webhook_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2000
+                      }
+                    },
+                    "required": [
+                      "webhook_url"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "channel"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "service_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "condition_type": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "error_spike",
+                  "severity_threshold",
+                  "regression_after_deploy"
+                ]
+              },
+              "severity_min": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high",
+                      "critical"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "is_enabled": {
+                "type": "boolean"
+              },
+              "channel": {
+                "type": "string",
+                "const": "discord"
+              },
+              "config": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "webhook_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2000
+                      }
+                    },
+                    "required": [
+                      "webhook_url"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "channel"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "service_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "condition_type": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "error_spike",
+                  "severity_threshold",
+                  "regression_after_deploy"
+                ]
+              },
+              "severity_min": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high",
+                      "critical"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "is_enabled": {
+                "type": "boolean"
+              },
+              "channel": {
+                "type": "string",
+                "const": "webhook"
+              },
+              "config": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "target_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2000
+                      }
+                    },
+                    "required": [
+                      "target_url"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "channel"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "service_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "condition_type": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "error_spike",
+                  "severity_threshold",
+                  "regression_after_deploy"
+                ]
+              },
+              "severity_min": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high",
+                      "critical"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "is_enabled": {
+                "type": "boolean"
+              },
+              "channel": {
+                "type": "string",
+                "enum": [
+                  "email",
+                  "slack",
+                  "discord",
+                  "webhook"
+                ]
+              }
+            },
+            "additionalProperties": false
           }
-        },
-        "additionalProperties": false
+        ]
       },
       "WeeklyReportChannelListResponse": {
         "type": "object",
