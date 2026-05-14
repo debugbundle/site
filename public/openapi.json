@@ -11759,9 +11759,6 @@
                   "monthly_alert_deliveries"
                 ],
                 "additionalProperties": false
-              },
-              "email_verification_required": {
-                "type": "boolean"
               }
             },
             "required": [
@@ -11829,7 +11826,7 @@
           "target_additional_capacity_units": {
             "type": "integer",
             "minimum": 0,
-            "maximum": 1000
+            "maximum": 99
           }
         },
         "required": [

@@ -7,7 +7,7 @@ import { Notice, SectionTitle } from '@/components/content-blocks';
 export const metadata: Metadata = {
   title: 'Pricing — DebugBundle',
   description:
-    'Free, Solo ($2.99/mo), and Team ($49/mo) plans. Local-first debugging with optional hosted services, unlimited projects, and shared allowance capacity.',
+    'Free, Solo ($2.99/mo), and Team ($19/mo) plans. Local-first debugging with optional hosted services, unlimited projects, and shared allowance capacity.',
   openGraph: {
     title: 'Pricing — DebugBundle',
     description: 'Free, Solo, and Team plans for production debugging.',
@@ -54,18 +54,18 @@ const tiers = [
     highlight: true,
     features: [
       'Unlimited projects',
-      '2 included capacity units',
+      '3 included capacity units',
       '1 member',
-      '500 bundle requests / month',
-      '4,000 ingested events / month',
-      '300 retained bundles',
-      '150 alert deliveries / month',
+      '750 bundle requests / month',
+      '6,000 ingested events / month',
+      '450 retained bundles',
+      '225 alert deliveries / month',
       '30-day bundle retention',
       '14-day raw event retention',
       'Always-on probes',
       'Remote probe activation',
       'Webhooks',
-      'Extra capacity units: +$1.99/unit/mo',
+      'Extra capacity units: +$0.99/unit/mo',
     ],
     excluded: [
       'Team collaboration',
@@ -75,7 +75,7 @@ const tiers = [
   },
   {
     name: 'Team',
-    price: '$49',
+    price: '$19',
     period: '/month',
     description: 'Shared usage, collaboration, and operational surfaces for teams.',
     cta: 'Start Team',
@@ -83,12 +83,12 @@ const tiers = [
     highlight: false,
     features: [
       'Unlimited projects',
-      '10 included capacity units',
+      '15 included capacity units',
       '5 members',
-      '2,500 bundle requests / month',
-      '20,000 ingested events / month',
-      '1,500 retained bundles',
-      '750 alert deliveries / month',
+      '7,500 bundle requests / month',
+      '75,000 ingested events / month',
+      '4,500 retained bundles',
+      '2,250 alert deliveries / month',
       '90-day bundle retention',
       '30-day raw event retention',
       'Always-on probes',
@@ -99,7 +99,7 @@ const tiers = [
       'Shared dashboards',
       'Member invite flow',
       'Priority support',
-      'Extra capacity units: +$4.99/unit/mo',
+      'Extra capacity units: +$1.99/unit/mo',
     ],
     excluded: [],
   },
@@ -210,11 +210,11 @@ export default function PricingPage(): ReactElement {
         <div className="grid max-w-2xl gap-4 md:grid-cols-2">
           <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface)] p-5">
             <p className="text-sm font-semibold text-[var(--site-text)]">Solo extra unit</p>
-            <p className="mt-1 text-2xl font-bold text-[var(--site-text)]">$1.99<span className="text-sm font-normal text-[var(--site-text-muted)]"> /unit/month</span></p>
+            <p className="mt-1 text-2xl font-bold text-[var(--site-text)]">$0.99<span className="text-sm font-normal text-[var(--site-text-muted)]"> /unit/month</span></p>
           </div>
           <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface)] p-5">
             <p className="text-sm font-semibold text-[var(--site-text)]">Team extra unit</p>
-            <p className="mt-1 text-2xl font-bold text-[var(--site-text)]">$4.99<span className="text-sm font-normal text-[var(--site-text-muted)]"> /unit/month</span></p>
+            <p className="mt-1 text-2xl font-bold text-[var(--site-text)]">$1.99<span className="text-sm font-normal text-[var(--site-text-muted)]"> /unit/month</span></p>
           </div>
         </div>
       </section>

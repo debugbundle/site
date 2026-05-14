@@ -11,7 +11,7 @@ billing works, from checkout through ongoing subscription management.
 
 Billing follows a simple model:
 
-1. **Choose a plan** — Solo ($2.99/mo) or Team ($49/mo)
+1. **Choose a plan** — Solo ($2.99/mo) or Team ($19/mo)
 2. **Complete checkout** — Stripe Checkout handles payment securely
 3. **Add capacity as needed** — Purchase extra capacity units from the billing page
 4. **Manage via portal** — Update payment methods and view invoices through Stripe
@@ -44,8 +44,8 @@ Usage allowances are **pooled across your entire account**. Each included or
 purchased capacity unit expands the total allowance pool.
 
 ```
-Solo plan (2 included units) + 3 extra units = 5 allowance units
-Total allowance = 5 × per-unit allowance
+Solo plan (3 included units) + 3 extra units = 6 allowance units
+Total allowance = 6 × per-unit allowance
 Any number of projects can use any portion of the shared pool
 ```
 
@@ -68,7 +68,7 @@ debugbundle billing capacity increase --target-additional-capacity-units 2
 
 Or from the billing page in the dashboard — click **Manage capacity**.
 
-The prorated charge covers the remainder of the current billing period.
+The prorated charge covers the remainder of the current billing period. Paid organizations can hold up to 99 purchased extra capacity units.
 
 ### Reducing Capacity
 

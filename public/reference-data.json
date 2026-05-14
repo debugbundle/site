@@ -2498,12 +2498,6 @@
         ]
       },
       {
-        "code": "verification_required",
-        "statusCodes": [
-          "403"
-        ]
-      },
-      {
         "code": "weekly_report_channel_not_found",
         "statusCodes": [
           "404"

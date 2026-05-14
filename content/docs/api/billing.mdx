@@ -38,11 +38,10 @@ GET /v1/billing
   "billing": {
     "plan": "solo",
     "stripe_customer_id": "cus_123",
-    "email_verification_required": false,
     "active_projects": 4,
     "capacity_units": {
-      "total": 5,
-      "included": 2,
+      "total": 6,
+      "included": 3,
       "additional_purchased": 3,
       "pending_reduction": null
     },
@@ -51,11 +50,11 @@ GET /v1/billing
       "ends_at": "2025-02-01T00:00:00Z"
     },
     "allowances": {
-      "monthly_bundle_requests": { "used": 120, "limit": 1250 },
-      "monthly_raw_ingested_events": { "used": 820, "limit": 12500 },
-      "retained_bundle_cap": { "used": 40, "limit": 750 },
-      "monthly_remote_activations": { "used": 4, "limit": 125 },
-      "monthly_alert_deliveries": { "used": 18, "limit": 375 }
+      "monthly_bundle_requests": { "used": 120, "limit": 1500 },
+      "monthly_raw_ingested_events": { "used": 820, "limit": 12000 },
+      "retained_bundle_cap": { "used": 40, "limit": 900 },
+      "monthly_remote_activations": { "used": 4, "limit": 150 },
+      "monthly_alert_deliveries": { "used": 18, "limit": 450 }
     }
   }
 }
@@ -69,7 +68,7 @@ When a capacity reduction is pending:
     "capacity_units": {
       "pending_reduction": {
         "additional_purchased": 1,
-        "total": 3,
+        "total": 4,
         "effective_at": "2025-02-01T00:00:00Z"
       }
     }
@@ -115,6 +114,7 @@ POST /v1/billing/portal
 ### Increase Capacity
 
 Adds extra capacity units immediately with prorated billing.
+The target extra-capacity quantity must be greater than the current purchased quantity and no greater than 99.
 
 ```
 POST /v1/billing/capacity/increase
@@ -134,7 +134,7 @@ POST /v1/billing/capacity/increase
     "active_projects": 4,
     "capacity_units": {
       "total": 7,
-      "included": 2,
+      "included": 3,
       "additional_purchased": 5,
       "pending_reduction": null
     }
@@ -145,6 +145,7 @@ POST /v1/billing/capacity/increase
 ### Schedule Capacity Reduction
 
 Schedules a capacity reduction for the next billing-period boundary.
+The target extra-capacity quantity must be lower than the current purchased quantity and no greater than 99.
 
 ```
 POST /v1/billing/capacity/scheduled-reduction
@@ -164,7 +165,7 @@ POST /v1/billing/capacity/scheduled-reduction
     "capacity_units": {
       "pending_reduction": {
         "additional_purchased": 1,
-        "total": 3,
+        "total": 4,
         "effective_at": "2025-02-01T00:00:00Z"
       }
     }
