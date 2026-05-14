@@ -155,15 +155,26 @@ curl https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
 
 ```json
 {
-  "capture_policy": {
+  "policy": {
     "preset": "balanced",
-    "sample_rate": 0.5,
-    "duplicate_suppression_window_seconds": 300,
-    "max_events_per_minute": 100,
-    "severity_filter_min": null
+    "capture_logs": "warning",
+    "capture_request_events": "failures_only",
+    "capture_breadcrumbs": "exception_only",
+    "capture_probe_events": "buffer_only",
+    "immediate_client_error_statuses": []
+  },
+  "overrides": {
+    "capture_logs": null,
+    "capture_request_events": null,
+    "capture_breadcrumbs": null,
+    "capture_probe_events": null,
+    "immediate_client_error_statuses": null
   }
 }
 ```
+
+`policy` is the fully resolved capture policy. `overrides` preserves the raw saved state so clients can distinguish
+`use preset default` from explicit values such as `[]` for client error incidents.
 
 ### Update Capture Policy
 
@@ -176,22 +187,25 @@ curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-pol
   -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
-    "preset": "high_volume",
-    "sample_rate": 0.1,
-    "max_events_per_minute": 500
+    "preset": "investigative",
+    "immediate_client_error_statuses": [401, 403, 409, 422]
   }'
 ```
 
-**Presets:**
+### Presets
 
-| Preset | Sample Rate | Rate Limit | Dedup Window | Description |
-|--------|------------|------------|--------------|-------------|
-| `full_capture` | `1.0` | 50/min | 60s | Capture everything. Best for low-traffic apps. |
-| `balanced` | `0.5` | 100/min | 300s | Default. Balanced coverage and volume. |
-| `high_volume` | `0.1` | 500/min | 600s | Aggressive sampling for high-traffic services. |
-| `custom` | User-set | User-set | User-set | Full manual control. |
+| Preset | Logs | Request Events | Breadcrumbs | Probe Events | Client Error Incidents |
+|--------|------|----------------|-------------|--------------|------------------------|
+| `minimal` | `error` | `failures_only` | `local_only` | `buffer_only` | `[]` |
+| `balanced` | `warning` | `failures_only` | `exception_only` | `buffer_only` | `[]` |
+| `investigative` | `info` | `all` | `standalone` | `standalone_when_activated` | `[401,403,409,422]` |
 
-Setting a preset overrides all fields to the preset defaults. Providing individual fields alongside a preset creates a `custom` override.
+Setting a preset changes the resolved defaults. Individual fields remain override-based:
+
+- Omitted fields keep their existing override state.
+- `null` clears an override and returns that field to the preset default.
+- `immediate_client_error_statuses: []` means explicit `none`.
+- `immediate_client_error_statuses: [401,403,409,422]` promotes those `4xx` statuses into immediate incidents.
 
 ## Next Steps
 

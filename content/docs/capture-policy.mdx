@@ -6,7 +6,9 @@ icon: SlidersHorizontal
 
 The capture policy controls how your SDKs behave — what types of events they capture,
 at what verbosity level, and how breadcrumbs and probes are handled. Each project has
-one capture policy that applies to all SDKs connecting to it.
+one capture policy that applies to all SDKs connecting to it. The same policy also controls
+which selected `4xx` responses open incidents immediately instead of waiting for repeated-anomaly
+thresholds.
 
 ## Presets
 
@@ -46,8 +48,8 @@ Controls which HTTP request/response pairs are captured.
 
 | Value | Behavior |
 |-------|----------|
-| `off` | Standalone request events are dropped unless they match the active preset's immediate request-failure statuses; those immediate request failures are still captured as incident signals. |
-| `failures_only` | Immediate request failures for the active preset are captured as incident signals: `minimal` = `5xx`; `balanced` = `5xx`, `408`, `423`, `424`, `425`, `429`; `investigative` = balanced plus `409`. Balanced and investigative also capture preset-enabled request-anomaly candidates (`400`, `401`, `403`, `404`, `409`, `410`, `422`) as context signals so repeated failures can open request-anomaly incidents. |
+| `off` | Standalone request events are dropped unless they match the active preset's immediate request-failure statuses or the project's selected client error incidents; those immediate request failures are still captured as incident signals. |
+| `failures_only` | Immediate request failures for the active preset plus selected client error incidents are captured as incident signals: `minimal` = `5xx`; `balanced` = `5xx`, `408`, `423`, `424`, `425`, `429`; `investigative` = balanced plus `409`. Balanced and investigative also capture preset-enabled request-anomaly candidates (`400`, `401`, `403`, `404`, `409`, `410`, `422`) as context signals so repeated failures can open request-anomaly incidents. |
 | `filtered` | Requests matching configured filters; until custom filters are configured, SDKs keep only immediate request failures and do not ship additional filtered request context. |
 | `all` | All requests captured. |
 
@@ -70,6 +72,22 @@ Controls how probe-collected data is handled.
 | `buffer_only` | Probe data buffered locally, attached to the next exception event. |
 | `standalone_when_activated` | Probe data sent as independent events when a probe is active. |
 
+### Client Error Incidents
+
+Controls which HTTP `4xx` responses are promoted into immediate incident-opening request failures.
+
+`5xx` responses remain immediate incidents automatically and are not configured here.
+
+| Mode | Behavior |
+|------|----------|
+| `preset default` | Use the preset's built-in `4xx` incident list. `minimal` and `balanced` default to none. `investigative` defaults to `401, 403, 409, 422`. |
+| `none` | Do not promote additional `4xx` responses immediately. |
+| `recommended` | Promote `401`, `403`, `409`, and `422` immediately. |
+| `custom` | Promote a normalized deduped ascending list of selected `4xx` statuses (max 12). |
+
+Promoted client errors behave like any other request-failure incident: they can trigger alerts,
+webhooks, GitHub dispatch automation, bundle generation, retention, and usage accounting.
+
 ## Managing the Policy
 
 ### API
@@ -90,19 +108,21 @@ curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-pol
 
 ```bash
 # View current policy
-debugbundle capture-policy get --project-id proj_01HXYZ...
+debugbundle capture-policy get --project proj_01HXYZ...
 
 # Switch to investigative mode
-debugbundle capture-policy set --project-id proj_01HXYZ... --preset investigative
+debugbundle capture-policy set --project proj_01HXYZ... --preset investigative
 
-# Override a specific control
-debugbundle capture-policy set --project-id proj_01HXYZ... --capture-logs info
+# Promote the recommended interactive-app client errors immediately
+debugbundle capture-policy set \
+  --project proj_01HXYZ... \
+  --client-error-incidents recommended
 ```
 
 ## Override Behavior
 
-When you set a preset, all controls reset to the preset defaults. You can then
-override individual controls:
+Setting a preset changes the resolved defaults. Existing advanced overrides stay in place
+unless you clear or replace them, so you can update only the fields you mean to change:
 
 ```bash
 # Start with balanced preset, but capture all request events
@@ -115,7 +135,8 @@ curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-pol
   }'
 ```
 
-Result: all controls use `balanced` defaults except `capture_request_events` which is `all`.
+Result: the preset becomes `balanced`, the saved request-event override becomes `all`, and
+any other existing advanced overrides keep their previous saved state.
 
 To clear an override and revert to the preset default, set the field to `null`:
 
@@ -123,11 +144,26 @@ To clear an override and revert to the preset default, set the field to `null`:
 { "capture_request_events": null }
 ```
 
+The same `null` vs `[]` distinction matters for client error incidents:
+
+```json
+{ "immediate_client_error_statuses": null }
+```
+
+means "use the preset default", while:
+
+```json
+{ "immediate_client_error_statuses": [] }
+```
+
+means "explicitly promote no additional `4xx` statuses".
+
 ## SDK Behavior
 
 SDKs fetch the capture policy from the server during initialization and periodically
-refresh it. When the policy changes, SDKs adjust their capture behavior without
-requiring a restart or redeploy.
+refresh it. When the policy changes, shipped Browser, Node.js, Python, and PHP SDKs
+adjust their capture behavior without requiring a restart or redeploy, including the
+selected client error incident statuses.
 
 In local-only mode, SDKs use built-in defaults (equivalent to the `balanced` preset).
 

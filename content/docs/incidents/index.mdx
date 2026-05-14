@@ -61,7 +61,7 @@ Events are classified into three categories:
 
 | Event Class | Event Types | Role |
 |-------------|-------------|------|
-| **Incident Signal** | `backend_exception`, `frontend_exception`, qualifying `log_event`, preset-specific immediate `request_event` failures (`minimal`: 5xx; `balanced`: 5xx plus 408/423/424/425/429; `investigative`: balanced plus 409) | Create/update incidents directly. |
+| **Incident Signal** | `backend_exception`, `frontend_exception`, qualifying `log_event`, preset-specific immediate `request_event` failures (`minimal`: 5xx; `balanced`: 5xx plus 408/423/424/425/429; `investigative`: balanced plus 409), plus any project-selected `4xx` statuses from `immediate_client_error_statuses` | Create/update incidents directly. |
 | **Context Signal** | `request_event` outside the preset's immediate failure set, `frontend_breadcrumb`, `deploy_metadata`, `probe_event`, lower-level `log_event` | Enrich existing incidents with additional data. Repeated contextual request failures can open request-anomaly incidents without changing the stored event class. |
 | **Operational Signal** | `error_suppressed` | Tracked but may not create new incidents. |
 
