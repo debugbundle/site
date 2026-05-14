@@ -37,6 +37,9 @@
       "name": "Projects"
     },
     {
+      "name": "Slack"
+    },
+    {
       "name": "Billing"
     },
     {
@@ -2524,6 +2527,449 @@
         }
       }
     },
+    "/v1/slack/app/install-url": {
+      "get": {
+        "operationId": "getSlackAppInstallUrl",
+        "summary": "Create a Slack OAuth install URL",
+        "tags": [
+          "Slack"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "return_to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Slack OAuth install URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SlackInstallUrlResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner access or Team tier is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Slack integration is not configured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/slack/app/callback": {
+      "get": {
+        "operationId": "completeSlackAppInstall",
+        "summary": "Complete the Slack OAuth install flow",
+        "tags": [
+          "Slack"
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "error",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirects back to the application after Slack OAuth completes or is cancelled."
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/slack/destinations": {
+      "get": {
+        "operationId": "listProjectSlackDestinations",
+        "summary": "List reusable Slack destinations for a project organization",
+        "tags": [
+          "Slack"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reusable Slack destinations.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SlackDestinationListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Team tier is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Slack integration is not configured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/slack/destinations/{destinationId}/test": {
+      "post": {
+        "operationId": "testProjectSlackDestination",
+        "summary": "Send a test message to a reusable Slack destination",
+        "tags": [
+          "Slack"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "destinationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Slack destination test delivered.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SlackDestinationTestResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id or Slack destination id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner access or Team tier is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project or Slack destination was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Slack delivery failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Slack integration is not configured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/slack/destinations/{destinationId}": {
+      "delete": {
+        "operationId": "deleteProjectSlackDestination",
+        "summary": "Delete a reusable Slack destination",
+        "tags": [
+          "Slack"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "destinationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Slack destination deleted."
+          },
+          "400": {
+            "description": "Invalid project id or Slack destination id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner access or Team tier is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Slack destination was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Slack destination is still referenced by an alert rule or weekly report.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Slack integration is not configured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/billing": {
       "get": {
         "operationId": "getBillingSummary",
@@ -3972,8 +4418,28 @@
               }
             }
           },
+          "403": {
+            "description": "Team tier is required for connected Slack destinations.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Project was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Slack integration is not configured.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4052,8 +4518,28 @@
               }
             }
           },
+          "403": {
+            "description": "Team tier is required for connected Slack destinations.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Weekly report channel was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Slack integration is not configured.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5838,6 +6324,13 @@
               "additionalProperties": {}
             }
           },
+          "slack_destinations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
           "project_tokens": {
             "type": "array",
             "items": {
@@ -6053,6 +6546,7 @@
           "invites",
           "member_tokens",
           "projects",
+          "slack_destinations",
           "project_tokens",
           "capture_policies",
           "services",
@@ -10964,6 +11458,112 @@
         ],
         "additionalProperties": false
       },
+      "SlackInstallUrlResponse": {
+        "type": "object",
+        "properties": {
+          "install_url": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "install_url"
+        ],
+        "additionalProperties": false
+      },
+      "SlackDestinationListResponse": {
+        "type": "object",
+        "properties": {
+          "destinations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "slack_destination_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "organization_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "slack_team_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "slack_team_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "slack_channel_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "slack_channel_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "installed_by_member_id": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "is_active": {
+                  "type": "boolean"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "slack_destination_id",
+                "organization_id",
+                "slack_team_id",
+                "slack_team_name",
+                "slack_channel_id",
+                "slack_channel_name",
+                "installed_by_member_id",
+                "is_active",
+                "created_at",
+                "updated_at"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "destinations"
+        ],
+        "additionalProperties": false
+      },
+      "SlackDestinationTestResponse": {
+        "type": "object",
+        "properties": {
+          "delivered": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "delivered"
+        ],
+        "additionalProperties": false
+      },
       "BillingSummaryResponse": {
         "type": "object",
         "properties": {
@@ -11558,18 +12158,35 @@
                 "const": "slack"
               },
               "config": {
-                "type": "object",
-                "properties": {
-                  "webhook_url": {
-                    "type": "string",
-                    "format": "uri",
-                    "maxLength": 2000
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "webhook_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2000
+                      }
+                    },
+                    "required": [
+                      "webhook_url"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "slack_destination_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    },
+                    "required": [
+                      "slack_destination_id"
+                    ],
+                    "additionalProperties": false
                   }
-                },
-                "required": [
-                  "webhook_url"
-                ],
-                "additionalProperties": false
+                ]
               }
             },
             "required": [
@@ -11916,18 +12533,35 @@
               "config": {
                 "anyOf": [
                   {
-                    "type": "object",
-                    "properties": {
-                      "webhook_url": {
-                        "type": "string",
-                        "format": "uri",
-                        "maxLength": 2000
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "webhook_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "maxLength": 2000
+                          }
+                        },
+                        "required": [
+                          "webhook_url"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "slack_destination_id": {
+                            "type": "string",
+                            "format": "uuid"
+                          }
+                        },
+                        "required": [
+                          "slack_destination_id"
+                        ],
+                        "additionalProperties": false
                       }
-                    },
-                    "required": [
-                      "webhook_url"
-                    ],
-                    "additionalProperties": false
+                    ]
                   },
                   {
                     "type": "null"
@@ -12318,18 +12952,35 @@
                 "const": "slack"
               },
               "config": {
-                "type": "object",
-                "properties": {
-                  "webhook_url": {
-                    "type": "string",
-                    "format": "uri",
-                    "maxLength": 2000
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "webhook_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2000
+                      }
+                    },
+                    "required": [
+                      "webhook_url"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "slack_destination_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    },
+                    "required": [
+                      "slack_destination_id"
+                    ],
+                    "additionalProperties": false
                   }
-                },
-                "required": [
-                  "webhook_url"
-                ],
-                "additionalProperties": false
+                ]
               },
               "schedule": {
                 "type": "object",
@@ -12484,18 +13135,35 @@
                 "additionalProperties": false
               },
               {
-                "type": "object",
-                "properties": {
-                  "webhook_url": {
-                    "type": "string",
-                    "format": "uri",
-                    "maxLength": 2000
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "webhook_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "maxLength": 2000
+                      }
+                    },
+                    "required": [
+                      "webhook_url"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "slack_destination_id": {
+                        "type": "string",
+                        "format": "uuid"
+                      }
+                    },
+                    "required": [
+                      "slack_destination_id"
+                    ],
+                    "additionalProperties": false
                   }
-                },
-                "required": [
-                  "webhook_url"
-                ],
-                "additionalProperties": false
+                ]
               }
             ]
           },
@@ -13422,6 +14090,15 @@
                   "buffer_only",
                   "standalone_when_activated"
                 ]
+              },
+              "immediate_client_error_statuses": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 400,
+                  "maximum": 499
+                },
+                "maxItems": 12
               }
             },
             "required": [
@@ -13429,13 +14106,105 @@
               "capture_logs",
               "capture_request_events",
               "capture_breadcrumbs",
-              "capture_probe_events"
+              "capture_probe_events",
+              "immediate_client_error_statuses"
+            ],
+            "additionalProperties": false
+          },
+          "overrides": {
+            "type": "object",
+            "properties": {
+              "capture_logs": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "off",
+                      "error",
+                      "warning",
+                      "info"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "capture_request_events": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "off",
+                      "failures_only",
+                      "filtered",
+                      "all"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "capture_breadcrumbs": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "local_only",
+                      "exception_only",
+                      "standalone"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "capture_probe_events": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "buffer_only",
+                      "standalone_when_activated"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "immediate_client_error_statuses": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 400,
+                      "maximum": 499
+                    },
+                    "maxItems": 12
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "capture_logs",
+              "capture_request_events",
+              "capture_breadcrumbs",
+              "capture_probe_events",
+              "immediate_client_error_statuses"
             ],
             "additionalProperties": false
           }
         },
         "required": [
-          "policy"
+          "policy",
+          "overrides"
         ],
         "additionalProperties": false
       },
@@ -13505,6 +14274,22 @@
                   "buffer_only",
                   "standalone_when_activated"
                 ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "immediate_client_error_statuses": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 400,
+                  "maximum": 499
+                },
+                "maxItems": 12
               },
               {
                 "type": "null"
@@ -13608,6 +14393,15 @@
                   "buffer_only",
                   "standalone_when_activated"
                 ]
+              },
+              "immediate_client_error_statuses": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 400,
+                  "maximum": 499
+                },
+                "maxItems": 12
               }
             },
             "required": [
@@ -13615,7 +14409,8 @@
               "capture_logs",
               "capture_request_events",
               "capture_breadcrumbs",
-              "capture_probe_events"
+              "capture_probe_events",
+              "immediate_client_error_statuses"
             ],
             "additionalProperties": false
           },

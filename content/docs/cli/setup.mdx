@@ -205,6 +205,18 @@ debugbundle verify cloud \
 
 This checks that events from the specified service and environment have been received within the lookback window.
 
+To actively prove the hosted incident pipeline, use one of the trigger modes:
+
+```bash
+# Synthetic 5xx request failure
+debugbundle verify cloud --project-id proj_xxxx --trigger-5xx
+
+# Synthetic configured client-error incident
+debugbundle verify cloud --project-id proj_xxxx --trigger-4xx 403
+```
+
+The 4xx trigger succeeds only when the project capture policy promotes that status.
+
 ## Next Steps
 
 - [Local Workflow](/docs/cli/local-workflow) — Processing events and inspecting incidents

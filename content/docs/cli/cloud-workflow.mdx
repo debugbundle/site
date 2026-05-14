@@ -108,11 +108,25 @@ The verify command polls for recent incidents from the specified project, servic
 - **Warning** — No events found, but connection appears valid
 - **Error** — Authentication or connectivity issues detected
 
+For an active end-to-end proof, have the CLI create a temporary project token, send a synthetic request event through hosted ingestion, poll for the incident and bundle, then revoke the temporary token:
+
+```bash
+# Prove the standard 5xx request-failure path
+debugbundle verify cloud --project-id proj_01HXYZ... --trigger-5xx
+
+# Prove a configured client-error incident path
+debugbundle verify cloud --project-id proj_01HXYZ... --trigger-4xx 403
+```
+
+`--trigger-4xx` accepts an integer status from `400` through `499` and succeeds only when the project capture policy promotes that status, such as `403` in `immediate_client_error_statuses`. It cannot be combined with `--trigger-5xx`.
+
 ### Options
 
 | Flag | Type | Default | Description |
 |------|------|---------|-------------|
 | `--project-id` | `string` | — | **Required.** Cloud project ID. |
+| `--trigger-5xx` | `boolean` | `false` | Send a synthetic `503` request event and verify hosted incident plus bundle visibility. |
+| `--trigger-4xx` | `number` | — | Send a synthetic configured client-error request event for a `400`-`499` status and verify hosted incident plus bundle visibility. |
 | `--service` | `string` | — | Filter by service name. |
 | `--environment` | `string` | — | Filter by environment. |
 | `--max-age-minutes` | `number` | `30` | Time window for finding recent events. |

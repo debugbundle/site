@@ -38,11 +38,18 @@ Verify local-mode setup (CLI installed, log directory writable, parser available
 
 ### verify_cloud
 
-Verify cloud connectivity (API reachable, token valid, project accessible).
+Verify cloud connectivity (API reachable, token valid, project accessible) or actively prove hosted incident creation.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| _(none)_ | — | Checks cloud prerequisites and token validity. |
+| `projectId` | `string` | Required. Cloud project ID. |
+| `service` | `string` | Optional service filter for passive checks and synthetic verification events. |
+| `environment` | `string` | Optional environment filter for passive checks and synthetic verification events. |
+| `maxAgeMinutes` | `number` | Optional lookback window for passive incident checks. |
+| `trigger5xx` | `boolean` | Optional. Send a synthetic `503` request event and verify hosted incident plus bundle visibility. |
+| `trigger4xxStatus` | `number` | Optional. Send a synthetic `400`-`499` client-error request event and verify hosted incident plus bundle visibility. |
+
+`trigger4xxStatus` succeeds only when the target project's capture policy promotes that status. It is mutually exclusive with `trigger5xx`.
 
 ### smoke
 

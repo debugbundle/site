@@ -93,7 +93,7 @@ You can change any environment's delivery mode by editing `connection.json`.
 After deploying with the project token, verify the connection:
 
 ```bash
-debugbundle verify cloud
+debugbundle verify cloud --project-id proj_01HXYZ...
 ```
 
 This checks:
@@ -102,10 +102,22 @@ This checks:
 - The cloud project exists and is accessible
 - Recent events have been received within the verification window
 
+To actively prove hosted incident creation, send a synthetic request event through the real ingestion path:
+
+```bash
+# Prove the standard request-failure path
+debugbundle verify cloud --project-id proj_01HXYZ... --trigger-5xx
+
+# Prove a configured client-error incident path
+debugbundle verify cloud --project-id proj_01HXYZ... --trigger-4xx 403
+```
+
+The 4xx proof succeeds only when the target project's capture policy promotes that status, for example with `immediate_client_error_statuses` containing `403`.
+
 ### JSON Output
 
 ```bash
-debugbundle verify cloud --json
+debugbundle verify cloud --project-id proj_01HXYZ... --json
 ```
 
 ```json

@@ -27,9 +27,10 @@ icon: Wrench
 ### Events not showing in the cloud
 
 1. **Verify the project token:** Run `debugbundle verify cloud --project-id proj_xxx`.
-2. **Check the endpoint:** Ensure `endpoint` in SDK config points to the correct API URL.
-3. **Check rate limits:** The API returns `rate_limited` errors in the response. Check your tier's limit.
-4. **Check network:** Ensure your environment can reach `api.debugbundle.com` (or your self-hosted endpoint).
+2. **Prove ingestion with a synthetic incident:** Run `debugbundle verify cloud --project-id proj_xxx --trigger-5xx`, or `debugbundle verify cloud --project-id proj_xxx --trigger-4xx 403` when the capture policy promotes that client-error status.
+3. **Check the endpoint:** Ensure `endpoint` in SDK config points to the correct API URL.
+4. **Check rate limits:** The API returns `rate_limited` errors in the response. Check your tier's limit.
+5. **Check network:** Ensure your environment can reach `api.debugbundle.com` (or your self-hosted endpoint).
 
 ---
 

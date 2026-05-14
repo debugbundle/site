@@ -39,11 +39,14 @@ When starting work on a project, verify that DebugBundle is configured correctly
 1. doctor               → Full connectivity check
 2. verify_local         → Confirm local mode works
 3. verify_cloud         → Confirm cloud mode works (if connected)
-4. smoke                → End-to-end test event
+4. verify_cloud         → Confirm hosted incident creation with trigger5xx or trigger4xxStatus
+5. smoke                → End-to-end test event
 ```
 
 This pattern is useful as a first step when a user says "set up DebugBundle" or when
 debugging connectivity issues.
+
+Use `trigger5xx: true` to prove the standard request-failure path, or `trigger4xxStatus: 403` to prove a configured client-error status promoted by the project's capture policy.
 
 ## Token Rotation
 

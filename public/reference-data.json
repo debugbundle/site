@@ -659,6 +659,45 @@
     },
     {
       "method": "GET",
+      "path": "/v1/projects/{id}/slack/destinations",
+      "operationId": "listProjectSlackDestinations",
+      "summary": "List reusable Slack destinations for a project organization",
+      "tags": [
+        "Slack"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/projects/{id}/slack/destinations/{destinationId}",
+      "operationId": "deleteProjectSlackDestination",
+      "summary": "Delete a reusable Slack destination",
+      "tags": [
+        "Slack"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/projects/{id}/slack/destinations/{destinationId}/test",
+      "operationId": "testProjectSlackDestination",
+      "summary": "Send a test message to a reusable Slack destination",
+      "tags": [
+        "Slack"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
       "path": "/v1/projects/{id}/tokens",
       "operationId": "listProjectTokens",
       "summary": "List project tokens",
@@ -714,6 +753,31 @@
         "Services"
       ],
       "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/slack/app/callback",
+      "operationId": "completeSlackAppInstall",
+      "summary": "Complete the Slack OAuth install flow",
+      "tags": [
+        "Slack"
+      ],
+      "auth": [
+        "Public"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/slack/app/install-url",
+      "operationId": "getSlackAppInstallUrl",
+      "summary": "Create a Slack OAuth install URL",
+      "tags": [
+        "Slack"
+      ],
+      "auth": [
+        "Browser session",
         "Member bearer token"
       ]
     },
@@ -927,7 +991,7 @@
     },
     {
       "commandPath": "verify cloud",
-      "usage": "debugbundle verify cloud --project-id <id> [--trigger-5xx] [--service <name>] [--environment <name>] [--max-age-minutes <n>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle verify cloud --project-id <id> [--trigger-5xx | --trigger-4xx <400-499>] [--service <name>] [--environment <name>] [--max-age-minutes <n>] [--auth-file <path>] [--json]",
       "group": "verify"
     },
     {
@@ -1156,6 +1220,26 @@
       "group": "alert"
     },
     {
+      "commandPath": "slack list",
+      "usage": "debugbundle slack list --project-id <id> [--auth-file <path>] [--json]",
+      "group": "slack"
+    },
+    {
+      "commandPath": "slack connect-url",
+      "usage": "debugbundle slack connect-url --project-id <id> [--return-to </projects/...>] [--auth-file <path>] [--json]",
+      "group": "slack"
+    },
+    {
+      "commandPath": "slack test",
+      "usage": "debugbundle slack test <destination-id> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "slack"
+    },
+    {
+      "commandPath": "slack delete",
+      "usage": "debugbundle slack delete <destination-id> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "slack"
+    },
+    {
       "commandPath": "webhook list",
       "usage": "debugbundle webhook list --project-id <id> [--limit <n>] [--auth-file <path>] [--json]",
       "group": "webhook"
@@ -1217,7 +1301,7 @@
     },
     {
       "commandPath": "capture-policy set",
-      "usage": "debugbundle capture-policy set --project <id> [--preset <minimal|balanced|investigative>] [--override <key=value>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle capture-policy set --project <id> [--preset <minimal|balanced|investigative>] [--override <key=value>] [--client-error-incidents <preset-default|none|recommended|custom>] [--client-error-statuses <400,401,...>] [--auth-file <path>] [--json]",
       "group": "capture-policy"
     },
     {
@@ -1303,7 +1387,7 @@
         },
         {
           "name": "verify_cloud",
-          "description": "Verify that a hosted project is sending data to DebugBundle.",
+          "description": "Verify hosted ingestion or actively prove hosted incident creation.",
           "requiredArguments": [
             "projectId"
           ],
@@ -1312,6 +1396,7 @@
             "environment",
             "maxAgeMinutes",
             "service",
+            "trigger4xxStatus",
             "trigger5xx"
           ]
         },
@@ -1711,6 +1796,52 @@
             "isEnabled",
             "url"
           ]
+        }
+      ]
+    },
+    {
+      "group": "slack",
+      "label": "Slack",
+      "tools": [
+        {
+          "name": "delete_slack_destination",
+          "description": "Delete a connected Slack destination from a project organization.",
+          "requiredArguments": [
+            "bearerToken",
+            "destinationId",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "get_slack_connect_url",
+          "description": "Return a browser Slack connect URL for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "returnTo"
+          ]
+        },
+        {
+          "name": "list_slack_destinations",
+          "description": "List reusable connected Slack destinations for a project organization.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "test_slack_destination",
+          "description": "Send a test message to a connected Slack destination.",
+          "requiredArguments": [
+            "bearerToken",
+            "destinationId",
+            "projectId"
+          ],
+          "optionalArguments": []
         }
       ]
     },
@@ -2340,6 +2471,24 @@
         "code": "rule_not_found",
         "statusCodes": [
           "404"
+        ]
+      },
+      {
+        "code": "slack_destination_in_use",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "slack_destination_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
+        "code": "slack_not_configured",
+        "statusCodes": [
+          "503"
         ]
       },
       {
