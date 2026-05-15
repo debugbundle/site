@@ -37,6 +37,7 @@ const tiers = [
     ],
     excluded: [
       'Remote probe activation',
+      'GitHub automation',
       'Extra capacity units',
       'Team collaboration',
       'Slack integration',
@@ -63,6 +64,7 @@ const tiers = [
       'Webhooks',
       'Always-on probes',
       'Remote probe activation',
+      'GitHub automation',
       'Extra capacity units: +$0.99/unit/mo',
     ],
     excluded: [
@@ -75,7 +77,7 @@ const tiers = [
     name: 'Team',
     price: '$19',
     period: '/month',
-    description: 'Shared allowance and collaboration for growing teams.',
+    description: 'Shared allowance and collaboration for teams.',
     cta: 'Start Team',
     ctaHref: 'https://app.debugbundle.com',
     highlight: false,
@@ -91,6 +93,7 @@ const tiers = [
       'Webhooks',
       'Always-on probes',
       'Remote probe activation',
+      'GitHub automation',
       'Extra capacity units: +$1.99/unit/mo',
       'Slack integration',
       'Team collaboration',
