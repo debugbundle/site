@@ -59,8 +59,8 @@ The relay handler accepts these options:
 | `allowedOrigins` | `string[]` | Auto from Host | Origins permitted to send events. If empty, validates against `Host`/`X-Forwarded-Host`. |
 | `rateLimitPerMinute` | `number` | `60` | Max requests per IP per minute. |
 | `maxBodyBytes` | `number` | `262144` (256 KB) | Max request body size. Requests exceeding this are rejected. |
-| `durableWrite` | `boolean` | `false` | Persist events to disk spool before uploading. Survives server restarts. |
-| `spoolDir` | `string` | — | Directory for durable write spool files. |
+| `durableWrite` | `boolean` | `true` | Persist events to a local spool before forwarding to DebugBundle cloud. |
+| `spoolDir` | `string` | `.debugbundle/local/browser-relay-spool/` | Directory for durable spool files. Use persistent storage in containers or pods if you need the spool to survive pod replacement. |
 | `endpoint` | `string` | `https://api.debugbundle.com/v1/events` | Override ingestion endpoint (for self-hosted). |
 | `environment` | `string` | — | Override `service.environment` on relayed events. |
 | `service` | `string` | — | Override `service.name` on relayed events. |
@@ -178,7 +178,7 @@ debugBundleRelay({
 
 ## Durable Writes
 
-For critical applications, enable durable writes to persist events to disk before uploading:
+In connected mode, durable writes are enabled by default. Use a dedicated `spoolDir` when you want the relay spool on a persistent volume:
 
 ```javascript
 debugBundleRelay({
@@ -190,8 +190,12 @@ debugBundleRelay({
 
 With durable writes enabled:
 1. Events are written to the spool directory immediately
-2. A background process uploads spooled events to the ingestion API
-3. If the server restarts, unuploaded events are retried on next startup
+2. The relay forwards the accepted batch to the ingestion API
+3. If forwarding fails, the spool file remains on disk for inspection and manual recovery
+
+Run `debugbundle doctor --check-relay` to report undelivered spool files and their age.
+
+If you do not want a local relay spool, set `durableWrite: false`. In ephemeral containers or pods, that removes the persistent handoff entirely and the relay depends on immediate forwarding only.
 
 ## Trace Correlation
 

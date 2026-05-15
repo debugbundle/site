@@ -61,6 +61,8 @@ The Browser SDK uses the configured `endpoint` directly. In production, the reco
 
 The relay path is preferred because it avoids CORS, ad-blocker interference, and content security policy issues.
 
+Content Security Policy is a browser-side concern. If the Browser SDK sends directly to DebugBundle cloud, your CSP must allow the endpoint in `connect-src`. If you use a same-origin relay such as `/debugbundle/browser`, your CSP usually only needs to allow your own origin.
+
 ---
 
 ## Breadcrumbs

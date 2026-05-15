@@ -19,87 +19,82 @@ const tiers = [
     name: 'Free',
     price: '$0',
     period: 'forever',
-    description: 'Local-first onboarding with get-started hosted capacity.',
+    description: 'Get started with debugging at no cost.',
     cta: 'Get Started',
     ctaHref: '/docs/quickstart/',
     highlight: false,
     features: [
       'Unlimited projects',
-      'Get-started capacity',
-      '1 member (owner only)',
-      '100 bundle requests / month',
-      '750 ingested events / month',
+      '1 member',
+      '100 bundle requests /month',
+      '750 ingested events /month',
       '50 retained bundles',
-      '25 alert deliveries / month',
+      '25 alert deliveries /month',
       '7-day bundle retention',
       '7-day raw event retention',
-      'Always-on probes',
       'Webhooks',
-      'Self-hosted: unlimited',
+      'Always-on probes',
     ],
     excluded: [
       'Remote probe activation',
       'Extra capacity units',
       'Team collaboration',
       'Slack integration',
+      'Priority support',
     ],
   },
   {
     name: 'Solo',
     price: '$2.99',
     period: '/month',
-    description: 'For independent developers and agent-driven projects.',
+    description: 'Shared allowance for independent developers.',
     cta: 'Start Solo',
     ctaHref: 'https://app.debugbundle.com',
     highlight: true,
     features: [
       'Unlimited projects',
-      '3 included capacity units',
       '1 member',
-      '750 bundle requests / month',
-      '6,000 ingested events / month',
+      '750 bundle requests /month',
+      '10,500 ingested events /month',
       '450 retained bundles',
-      '225 alert deliveries / month',
+      '225 alert deliveries /month',
       '30-day bundle retention',
       '14-day raw event retention',
+      'Webhooks',
       'Always-on probes',
       'Remote probe activation',
-      'Webhooks',
       'Extra capacity units: +$0.99/unit/mo',
     ],
     excluded: [
-      'Team collaboration',
       'Slack integration',
-      'Shared dashboards',
+      'Team collaboration',
+      'Priority support',
     ],
   },
   {
     name: 'Team',
     price: '$19',
     period: '/month',
-    description: 'Shared usage, collaboration, and operational surfaces for teams.',
+    description: 'Shared allowance and collaboration for growing teams.',
     cta: 'Start Team',
     ctaHref: 'https://app.debugbundle.com',
     highlight: false,
     features: [
       'Unlimited projects',
-      '15 included capacity units',
       '5 members',
-      '7,500 bundle requests / month',
-      '75,000 ingested events / month',
-      '4,500 retained bundles',
-      '2,250 alert deliveries / month',
+      '15,000 bundle requests /month',
+      '150,000 ingested events /month',
+      '6,000 retained bundles',
+      '4,500 alert deliveries /month',
       '90-day bundle retention',
       '30-day raw event retention',
+      'Webhooks',
       'Always-on probes',
       'Remote probe activation',
-      'Cloud-automated improvement bundles',
-      'Webhooks',
-      'Slack integration',
-      'Shared dashboards',
-      'Member invite flow',
-      'Priority support',
       'Extra capacity units: +$1.99/unit/mo',
+      'Slack integration',
+      'Team collaboration',
+      'Priority support',
     ],
     excluded: [],
   },
@@ -117,6 +112,29 @@ const faqs = [
   {
     q: 'Is self-hosting free?',
     a: 'Yes. Self-hosted DebugBundle is unlimited on the Free tier. You run the infrastructure, we provide the software.',
+  },
+];
+
+const extraCapacityUnits = [
+  {
+    name: 'Solo extra unit',
+    price: '$0.99',
+    increases: [
+      '+250 bundle requests /month',
+      '+3,500 ingested events /month',
+      '+150 retained bundles',
+      '+75 alert deliveries /month',
+    ],
+  },
+  {
+    name: 'Team extra unit',
+    price: '$1.99',
+    increases: [
+      '+1,000 bundle requests /month',
+      '+10,000 ingested events /month',
+      '+400 retained bundles',
+      '+300 alert deliveries /month',
+    ],
   },
 ];
 
@@ -140,7 +158,7 @@ export default function PricingPage(): ReactElement {
       <SectionTitle
         eyebrow="Pricing"
         title="Simple, developer-friendly pricing"
-        description="Start free with local-first debugging. Upgrade when you need hosted processing, remote probes, or team collaboration."
+        description="Start free with hosted or local-first debugging. Upgrade when you need higher limits, remote probes, or team collaboration."
       />
 
       {/* Tier cards */}
@@ -193,31 +211,39 @@ export default function PricingPage(): ReactElement {
         ))}
       </div>
 
-      {/* Shared allowance explanation */}
-      <Notice title="How shared allowances work">
-        Each included or purchased capacity unit contributes the same allowance bucket to your account.
-        Allowances are shared across all your projects, not isolated per project. Paid plans support unlimited
-        projects, so extra capacity units simply expand your total account headroom.
-      </Notice>
-
       {/* Extra capacity pricing */}
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-[var(--site-text)]">Extra capacity units</h2>
         <p className="max-w-3xl text-sm leading-7 text-[var(--site-text-muted)]">
           Paid plans include a base number of capacity units. Add more at any time to expand shared allowance
-          capacity without changing how many projects you can create.
+          capacity. Each extra unit adds more shared allowance for your plan.
         </p>
         <div className="grid max-w-2xl gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface)] p-5">
-            <p className="text-sm font-semibold text-[var(--site-text)]">Solo extra unit</p>
-            <p className="mt-1 text-2xl font-bold text-[var(--site-text)]">$0.99<span className="text-sm font-normal text-[var(--site-text-muted)]"> /unit/month</span></p>
-          </div>
-          <div className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface)] p-5">
-            <p className="text-sm font-semibold text-[var(--site-text)]">Team extra unit</p>
-            <p className="mt-1 text-2xl font-bold text-[var(--site-text)]">$1.99<span className="text-sm font-normal text-[var(--site-text-muted)]"> /unit/month</span></p>
-          </div>
+          {extraCapacityUnits.map((unit) => (
+            <div
+              key={unit.name}
+              className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface)] p-5"
+            >
+              <p className="text-sm font-semibold text-[var(--site-text)]">{unit.name}</p>
+              <p className="mt-1 text-2xl font-bold text-[var(--site-text)]">
+                {unit.price}
+                <span className="text-sm font-normal text-[var(--site-text-muted)]"> /unit/month</span>
+              </p>
+              <ul className="mt-4 space-y-1 text-xs leading-6 text-[var(--site-text-muted)]">
+                {unit.increases.map((increase) => (
+                  <li key={increase}>{increase}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
       </section>
+
+      {/* Shared allowance explanation */}
+      <Notice title="How shared allowances work">
+        Each included or purchased capacity unit contributes the same allowance bucket to your account.
+        Allowances are shared across all your projects, not isolated per project.
+      </Notice>
 
       {/* FAQ-style trust section */}
       <section className="space-y-4">

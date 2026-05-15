@@ -8,6 +8,10 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 The CLI provides CRUD operations for alert rules. Alerts notify your team through various channels when incident conditions are met.
 
+<Callout>
+Manual incident capture works with alerts. If your application calls `captureException()` or another incident-driving SDK method, the resulting incident can trigger `new_incident` alerts the same way as an unhandled exception.
+</Callout>
+
 ## Channels
 
 | Channel | Description | Config Required |

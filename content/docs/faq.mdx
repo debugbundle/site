@@ -54,6 +54,14 @@ export default DebugBundle.nextjs(handler);          // Next.js
 
 Yes. The Node.js SDK auto-detects and attaches to pino, winston, and bunyan. You can also pass a logger instance explicitly. See [Node.js SDK — Logger Integrations](/docs/sdks/node#logger-integrations).
 
+### Can I manually trigger an incident from a catch block?
+
+Yes. The normal way is to call `captureException()` or `captureError()` inside the catch block. Those exception events are incident-driving, so they create or update an incident in the usual pipeline.
+
+If you want a notification, make sure you also have an alert rule or webhook configured for new incidents. A manual capture creates the incident signal; alerts and webhooks handle the delivery.
+
+`captureLog()` and `captureMessage()` can also contribute, but only incident-level log severities such as `error`, `fatal`, or `critical` create incidents. For explicit catch-block reporting, `captureException()` is the clearest path.
+
 ---
 
 ## Data & Privacy
@@ -83,6 +91,18 @@ Yes. By default, the SDK redacts values for fields named: `password`, `secret`, 
 ### Can I self-host DebugBundle?
 
 Yes. DebugBundle ships a Docker Compose stack that runs all components (API, Worker, Postgres, Redis, S3-compatible storage) on your infrastructure. Your data never touches third-party services. See [Installation](/docs/installation) for deployment instructions.
+
+### Why am I not receiving errors in DebugBundle?
+
+The most common causes are configuration and delivery rules rather than the SDK crashing or containers breaking.
+
+- In connected `staging` and `production`, backend SDKs send events over HTTP. They need outbound network access to your configured DebugBundle API endpoint. In locked-down environments, check firewall rules, proxy configuration, NAT/VPC egress, or similar outbound controls.
+- Browser delivery can be blocked by browser-side policy. If the Browser SDK sends directly to DebugBundle cloud, your CSP must allow the endpoint in `connect-src`. If you use a same-origin relay, CSP usually only needs to allow your own origin instead.
+- Your project's [Capture Policy](/docs/capture-policy) may intentionally filter or downgrade what gets shipped. For example, some client-error request statuses only become incident-driving events when the policy promotes them.
+- In local-only mode, and in connected development, events are written to local disk. If you run inside ephemeral containers or pods and do not mount persistent storage, those local event files disappear when the container is replaced.
+- Buffered events still need time to flush. Graceful shutdown is supported, but a hard kill such as `SIGKILL` can still drop in-memory events.
+
+If you are unsure which case applies, start with [Troubleshooting](/docs/troubleshooting) and then verify the project's [Capture Policy](/docs/capture-policy).
 
 ---
 
@@ -130,7 +150,7 @@ Deliveries retry with exponential backoff. After sustained failures, the webhook
 
 ### Is there a free tier?
 
-Yes. The free tier includes unlimited projects, get-started capacity, 60 events/minute, and all core features. No credit card required.
+Yes. The free tier includes unlimited projects, get-started capacity, and the core debugging workflow. Paid-only  features such as GitHub automation or Slack integration require Solo or Team. No credit card required.
 
 ### What happens when I exceed the rate limit?
 

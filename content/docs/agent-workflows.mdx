@@ -3,6 +3,12 @@ title: "Automation patterns"
 description: "Connect DebugBundle GitHub automation to repository_dispatch workflows, fetch full bundle context in GitHub Actions, and hand off to repository-owned automation."
 ---
 
+import { Callout } from 'fumadocs-ui/components/callout';
+
+<Callout type="info">
+  GitHub automation is available on Solo and Team plans.
+</Callout>
+
 <SurfaceGrid>
   <SurfaceCard title="repository_dispatch to GitHub Actions">
     Connect a project repo in the dedicated GitHub project tab, let DebugBundle emit `repository_dispatch`, and start triage inside GitHub Actions.

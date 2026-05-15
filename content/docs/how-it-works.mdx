@@ -50,7 +50,9 @@ The SDK batches captured events, applies redaction, and sends them to their dest
 | **File transport** | SDK writes events as JSON files to `.debugbundle/local/events/` (atomic temp-file + rename) | Local development, local-only mode |
 | **HTTP transport** | SDK batches and POSTs events to `POST /v1/events` | Staging, production, connected mode |
 
-**Browser SDK shipping:** Browser events are sent through a same-origin relay handler (`POST /debugbundle/browser`) hosted on your backend. The relay validates, sanitizes, and either writes to local events (local mode) or spools for forwarding (connected mode). This avoids CORS issues and keeps project tokens off the client.
+In connected `staging` and `production`, backend SDK delivery does not depend on container-local disk. Ephemeral containers and pods are fine as long as they can reach the ingestion API and have enough graceful shutdown time to flush buffered events. In local-only mode, and in connected development, events are written to local disk, so use a mounted volume if you need those files to survive container replacement.
+
+**Browser SDK shipping:** Browser events are sent through a same-origin relay handler (`POST /debugbundle/browser`) hosted on your backend. The relay validates, sanitizes, and either writes to local events (local mode) or spools for forwarding (connected mode). This avoids CORS issues and keeps project tokens off the client. If you rely on the relay spool for durability in containers or pods, place the spool directory on persistent storage.
 
 **Log-based capture:** An alternative input path. `debugbundle ingest` and `debugbundle watch` parse existing log files (via `packages/log-parser`) into the same event format. Supports `debugbundle-ndjson` (canonical structured format) and first-party adapters for PHP error logs and Apache error logs.
 

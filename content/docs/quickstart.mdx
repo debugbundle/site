@@ -90,6 +90,16 @@ curl http://localhost:3000/test-error
 
 The SDK captures the exception along with its full context (request, environment, runtime, git info) and writes it to `.debugbundle/local/events/`.
 
+You can also report handled failures manually from a catch block:
+
+```typescript
+try {
+  await riskyOperation();
+} catch (error) {
+  DebugBundle.captureException(error);
+}
+```
+
 ### 5. Process Events into a Bundle
 
 ```bash

@@ -18,7 +18,7 @@ icon: Wrench
 
 2. **Check the project token:** Use `'local'` for local-only mode or a valid `dbundle_proj_*` token for connected mode.
 
-3. **Check the `projectMode`:** In `local-only` mode, events write to disk. In `connected` mode with `development` environment, events also write to disk. In `connected` mode with `production`, events send to the API.
+3. **Check the `projectMode`:** In `local-only` mode, events write to disk. In `connected` mode with `development`, events also write to disk. In `connected` mode with `staging` or `production`, events send to the API instead of relying on local disk.
 
 4. **Flush on exit:** The SDK flushes on process shutdown, but if your process is killed with `SIGKILL`, buffered events are lost. Call `DebugBundle.flush()` if you need to force a flush.
 
@@ -30,7 +30,7 @@ icon: Wrench
 2. **Prove ingestion with a synthetic incident:** Run `debugbundle verify cloud --project-id proj_xxx --trigger-5xx`, or `debugbundle verify cloud --project-id proj_xxx --trigger-4xx 403` when the capture policy promotes that client-error status.
 3. **Check the endpoint:** Ensure `endpoint` in SDK config points to the correct API URL.
 4. **Check rate limits:** The API returns `rate_limited` errors in the response. Check your tier's limit.
-5. **Check network:** Ensure your environment can reach `api.debugbundle.com` (or your self-hosted endpoint).
+5. **Check network:** Ensure your environment can reach `api.debugbundle.com` (or your self-hosted endpoint). In Kubernetes or other locked-down environments, verify outbound HTTPS egress rules, firewall allowlists, and any required proxy configuration.
 
 ---
 
@@ -120,13 +120,14 @@ Fix the underlying delivery issue first, then re-enable.
 1. **Check `enabled`:** Verify it's not disabled.
 2. **Check `sessionSampleRate`:** A value of `0` drops all sessions.
 3. **Check ad blockers:** Ad blockers may block requests to `api.debugbundle.com`. Use the relay transport to route through your own backend.
-4. **Check CSP headers:** If your Content Security Policy blocks the DebugBundle endpoint, add it to `connect-src`.
+4. **Check CSP headers:** If your Content Security Policy blocks the DebugBundle endpoint, add it to `connect-src`. This applies to browser delivery only, not to Node.js, Python, or PHP SDKs.
 
 ### Relay not working
 
-1. **Verify the relay handler is registered:** Check your Express/Fastify/Next.js route handles POST to `/_debugbundle/browser`.
+1. **Verify the relay handler is registered:** Check your Express/Fastify/Next.js route handles POST to `/debugbundle/browser` (or your configured relay path).
 2. **Check CORS:** The relay should be same-origin, so CORS shouldn't apply. If using a different origin, configure CORS.
 3. **Check the relay spool:** Run `debugbundle doctor --check-relay` to check for stuck spool files.
+4. **Check relay storage in containers:** If you rely on durable relay writes, mount `spoolDir` on persistent storage. Otherwise, spool files disappear when the pod or container is replaced.
 
 ---
 

@@ -72,6 +72,8 @@ The SDK automatically picks the right transport:
 
 File transport writes atomic files: `<timestamp>-<sequence>-<service>.events.json`.
 
+Server-side SDKs are not controlled by browser CSP. In connected `staging` and `production`, the practical requirement is outbound network access from your runtime to the configured DebugBundle API endpoint. In locked-down environments, that usually means allowing HTTPS egress, proxy routing, or an internal self-hosted endpoint.
+
 ---
 
 ## Framework Integrations
@@ -240,6 +242,8 @@ The original logger behavior is preserved — DebugBundle patches call the origi
 
 ## Manual Capture
 
+Use manual capture when you want to report a handled failure instead of only relying on unhandled exceptions. In connected mode, `captureException()` and `captureError()` create or update incidents through the normal ingestion pipeline.
+
 ### Exceptions
 
 ```typescript
@@ -254,6 +258,8 @@ try {
 }
 ```
 
+This is the recommended way to surface a handled failure from a catch block. If you have alert rules for `new_incident`, the resulting incident can trigger notifications just like an unhandled exception.
+
 ### Logs
 
 ```typescript
@@ -261,6 +267,8 @@ DebugBundle.captureLog('User signup completed', 'info', {
   tags: { flow: 'onboarding' },
 });
 ```
+
+Only incident-level log severities such as `error`, `fatal`, or `critical` create incidents. Informational and warning logs remain contextual unless another incident-driving event exists.
 
 ### HTTP Requests
 
