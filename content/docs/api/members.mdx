@@ -1,86 +1,47 @@
 ---
-title: Members API
-description: List, invite, update, and remove organization members via the DebugBundle REST API.
+title: Project Members API
+description: List, invite, update, and remove project collaborators via the DebugBundle REST API.
 icon: Users
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-Manage organization members and invitations programmatically. All member endpoints
-require owner-level member token authentication via the `Authorization` header.
+Manage access for one project at a time. These endpoints require browser-session or member-token authentication and re-check access against the target project on every request.
 
 <Callout type="info">
-  All member operations are also available via the CLI (`debugbundle member list/invites/invite/cancel-invite/update-role/remove`) and
-  MCP tools (`list_members`, `list_member_invites`, `invite_member`, `cancel_member_invite`, `update_member_role`, `remove_member`). See
-  [CLI Cloud Workflow](/docs/cli/cloud-workflow#member-management) and [MCP Tools](/docs/mcp/tools#members).
+  Project member operations are also available via the CLI (`debugbundle project members list/invites/invite/cancel-invite/update-role/remove --project-id <id>`) and MCP tools (`list_project_members`, `list_project_member_invites`, `invite_project_member`, `cancel_project_member_invite`, `update_project_member_role`, `remove_project_member`).
 </Callout>
 
 ## List Members
 
 ```
-GET /v1/organization/members
+GET /v1/projects/{id}/members
 ```
 
 ```bash
-curl https://api.debugbundle.com/v1/organization/members \
+curl https://api.debugbundle.com/v1/projects/proj_01HABCDE.../members \
   -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
-```
-
-**Response (200):**
-
-```json
-{
-  "members": [
-    {
-      "user_id": "usr_01HABCDE...",
-      "email": "alice@example.com",
-      "role": "owner",
-      "joined_at": "2026-01-10T08:00:00Z"
-    },
-    {
-      "user_id": "usr_01HFGHIJ...",
-      "email": "bob@example.com",
-      "role": "member",
-      "joined_at": "2026-02-15T14:30:00Z"
-    }
-  ]
-}
 ```
 
 ## List Pending Invites
 
 ```
-GET /v1/organization/members/invites
+GET /v1/projects/{id}/invites
 ```
 
 ```bash
-curl https://api.debugbundle.com/v1/organization/members/invites \
+curl https://api.debugbundle.com/v1/projects/proj_01HABCDE.../invites \
   -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
-**Response (200):**
-
-```json
-{
-  "invites": [
-    {
-      "invite_id": "inv_01HKLMNO...",
-      "email": "carol@example.com",
-      "role": "member",
-      "expires_at": "2026-04-02T08:00:00Z"
-    }
-  ]
-}
-```
-
-## Invite Member
+## Invite Collaborator
 
 ```
-POST /v1/organization/members/invite
+POST /v1/projects/{id}/invite
 ```
 
 ```bash
-curl -X POST https://api.debugbundle.com/v1/organization/members/invite \
+curl -X POST https://api.debugbundle.com/v1/projects/proj_01HABCDE.../invite \
   -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
@@ -89,142 +50,63 @@ curl -X POST https://api.debugbundle.com/v1/organization/members/invite \
   }'
 ```
 
-**Request Body:**
-
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `email` | `string` | Yes | Email address for the invitation. |
-| `role` | `string` | No | Role to assign. Currently only `member` is supported. Default: `member`. |
+| `role` | `string` | No | Project role to assign: `admin` or `member`. Default: `member`. |
 
-**Response (201):**
-
-```json
-{
-  "invite": {
-    "invite_id": "inv_01HKLMNO...",
-    "email": "carol@example.com",
-    "role": "member",
-    "expires_at": "2026-04-02T08:00:00Z"
-  }
-}
-```
-
-Invitations expire after 7 days. The invited user receives an email with a link to accept.
-
-**Errors:**
-
-| Status | Code | Description |
-|--------|------|-------------|
-| 400 | `invalid_payload` | Missing or invalid email/role. |
-| 403 | `upgrade_required` | Plan does not support additional members. |
-| 409 | `member_already_exists` | User is already a member. |
-| 409 | `invite_already_exists` | A pending invite for this email already exists. |
+Invitations expire after 7 days. The invited user receives an email link for `/invite?token=...` and must sign in with the invited email address before accepting.
 
 ## Cancel Invite
 
 ```
-DELETE /v1/organization/members/invites/{inviteId}
+DELETE /v1/projects/{id}/invites/{inviteId}
 ```
 
 ```bash
-curl -X DELETE https://api.debugbundle.com/v1/organization/members/invites/inv_01HKLMNO... \
+curl -X DELETE https://api.debugbundle.com/v1/projects/proj_01HABCDE.../invites/pinv_01HKLMNO... \
   -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
-
-**Response (200):**
-
-```json
-{
-  "invite": {
-    "invite_id": "inv_01HKLMNO...",
-    "email": "carol@example.com",
-    "role": "member",
-    "expires_at": "2026-04-02T08:00:00Z"
-  }
-}
-```
-
-**Errors:**
-
-| Status | Code | Description |
-|--------|------|-------------|
-| 404 | `invite_not_found` | No pending invite with this ID. |
 
 ## Update Member Role
 
 ```
-PATCH /v1/organization/members/{userId}
+PATCH /v1/projects/{id}/members/{userId}
 ```
 
 ```bash
-curl -X PATCH https://api.debugbundle.com/v1/organization/members/usr_01HFGHIJ... \
+curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HABCDE.../members/usr_01HFGHIJ... \
   -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
-    "role": "owner"
+    "role": "admin"
   }'
 ```
-
-**Request Body:**
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `role` | `string` | Yes | New role: `owner` or `member`. |
-
-**Response (200):**
-
-```json
-{
-  "member": {
-    "user_id": "usr_01HFGHIJ...",
-    "email": "bob@example.com",
-    "role": "owner",
-    "joined_at": "2026-02-15T14:30:00Z"
-  }
-}
-```
-
-**Errors:**
-
-| Status | Code | Description |
-|--------|------|-------------|
-| 404 | `member_not_found` | No member with this user ID. |
-| 409 | `owner_role_change_not_allowed` | Cannot change the role of the organization owner. |
 
 ## Remove Member
 
 ```
-DELETE /v1/organization/members/{userId}
+DELETE /v1/projects/{id}/members/{userId}
 ```
 
 ```bash
-curl -X DELETE https://api.debugbundle.com/v1/organization/members/usr_01HFGHIJ... \
+curl -X DELETE https://api.debugbundle.com/v1/projects/proj_01HABCDE.../members/usr_01HFGHIJ... \
   -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
-**Response (200):**
-
-```json
-{
-  "member": {
-    "user_id": "usr_01HFGHIJ...",
-    "email": "bob@example.com",
-    "role": "member",
-    "joined_at": "2026-02-15T14:30:00Z"
-  }
-}
-```
-
-**Errors:**
+## Errors
 
 | Status | Code | Description |
 |--------|------|-------------|
-| 404 | `member_not_found` | No member with this user ID. |
-| 409 | `owner_removal_not_allowed` | Cannot remove the organization owner. |
-
-## Next Steps
-
-- [CLI Cloud Workflow](/docs/cli/cloud-workflow#member-management) — Manage members via the CLI
-- [MCP Tools](/docs/mcp/tools#members) — MCP tool reference for member management
-- [Billing](/docs/billing) — Member limits by plan tier
-- [API Overview](/docs/api) — API authentication and conventions
+| 400 | `invalid_payload` | Missing or invalid request body. |
+| 400 | `invalid_project_id` | Project ID is malformed. |
+| 400 | `invalid_invite_id` | Invite ID is malformed. |
+| 400 | `invalid_member_id` | Member user ID is malformed. |
+| 403 | `forbidden` | Caller cannot manage members for this project. |
+| 403 | `upgrade_required` | Project owner's plan does not support project sharing. |
+| 403 | `email_verification_required` | Browser-session caller must verify email first. |
+| 404 | `project_not_found` | Project is missing or inaccessible. |
+| 404 | `invite_not_found` | No pending invite with this ID. |
+| 404 | `member_not_found` | No project member with this user ID. |
+| 409 | `member_already_exists` | User already has access to this project. |
+| 409 | `invite_already_exists` | A pending invite for this email already exists. |

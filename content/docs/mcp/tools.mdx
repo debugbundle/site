@@ -524,54 +524,58 @@ Cancel a scheduled capacity reduction.
 
 ## Members
 
-### list_members
+### list_project_members
 
-List organization members.
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| _(none beyond auth)_ | — | Returns all members of the organization. |
-
-### list_member_invites
-
-List pending organization invites.
+List members for a project.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| _(none beyond auth)_ | — | Returns all pending invitations. |
+| `projectId` | `string` | **Required.** The project ID. |
 
-### invite_member
+### list_project_member_invites
 
-Invite a new member to the organization.
+List pending invites for a project.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+
+### invite_project_member
+
+Invite a collaborator to a project.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
 | `email` | `string` | **Required.** Email address for the invitation. |
 | `role` | `string` | **Required.** Member role (e.g., `admin`, `member`). |
 
-### cancel_member_invite
+### cancel_project_member_invite
 
 Cancel a pending invitation.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
 | `inviteId` | `string` | **Required.** The invite ID to cancel. |
 
-### update_member_role
+### update_project_member_role
 
-Update the role of an organization member.
+Update the role of a project member.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
 | `userId` | `string` | **Required.** The user ID. |
 | `role` | `string` | **Required.** The new role. |
 
-### remove_member
+### remove_project_member
 
-Remove a member from the organization.
+Remove a member from a project.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
 | `userId` | `string` | **Required.** The user ID to remove. |
 
 ---

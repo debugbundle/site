@@ -113,18 +113,6 @@
       ]
     },
     {
-      "method": "POST",
-      "path": "/v1/auth/accept-invite",
-      "operationId": "acceptInvite",
-      "summary": "Accept an organization invite",
-      "tags": [
-        "Auth"
-      ],
-      "auth": [
-        "Browser session"
-      ]
-    },
-    {
       "method": "GET",
       "path": "/v1/auth/github/callback",
       "operationId": "completeGithubLogin",
@@ -201,6 +189,18 @@
       "path": "/v1/auth/logout",
       "operationId": "logout",
       "summary": "Revoke the current browser session",
+      "tags": [
+        "Auth"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/auth/project-invite/accept",
+      "operationId": "acceptInvite",
+      "summary": "Accept a project invite",
       "tags": [
         "Auth"
       ],
@@ -467,84 +467,6 @@
     },
     {
       "method": "GET",
-      "path": "/v1/organization/members",
-      "operationId": "listOrganizationMembers",
-      "summary": "List organization members",
-      "tags": [
-        "Organization"
-      ],
-      "auth": [
-        "Browser session",
-        "Member bearer token"
-      ]
-    },
-    {
-      "method": "PATCH",
-      "path": "/v1/organization/members/{userId}",
-      "operationId": "updateOrganizationMemberRole",
-      "summary": "Update an organization member role",
-      "tags": [
-        "Organization"
-      ],
-      "auth": [
-        "Browser session",
-        "Member bearer token"
-      ]
-    },
-    {
-      "method": "DELETE",
-      "path": "/v1/organization/members/{userId}",
-      "operationId": "removeOrganizationMember",
-      "summary": "Remove an organization member",
-      "tags": [
-        "Organization"
-      ],
-      "auth": [
-        "Browser session",
-        "Member bearer token"
-      ]
-    },
-    {
-      "method": "POST",
-      "path": "/v1/organization/members/invite",
-      "operationId": "inviteOrganizationMember",
-      "summary": "Invite an organization member",
-      "tags": [
-        "Organization"
-      ],
-      "auth": [
-        "Browser session",
-        "Member bearer token"
-      ]
-    },
-    {
-      "method": "GET",
-      "path": "/v1/organization/members/invites",
-      "operationId": "listOrganizationInvites",
-      "summary": "List pending organization invites",
-      "tags": [
-        "Organization"
-      ],
-      "auth": [
-        "Browser session",
-        "Member bearer token"
-      ]
-    },
-    {
-      "method": "DELETE",
-      "path": "/v1/organization/members/invites/{inviteId}",
-      "operationId": "cancelOrganizationInvite",
-      "summary": "Cancel an organization invite",
-      "tags": [
-        "Organization"
-      ],
-      "auth": [
-        "Browser session",
-        "Member bearer token"
-      ]
-    },
-    {
-      "method": "GET",
       "path": "/v1/projects",
       "operationId": "listProjects",
       "summary": "List projects",
@@ -615,6 +537,84 @@
       "summary": "Update the capture policy for a project",
       "tags": [
         "Capture Policy"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/projects/{id}/invite",
+      "operationId": "inviteProjectMember",
+      "summary": "Invite a project member",
+      "tags": [
+        "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/invites",
+      "operationId": "listProjectInvites",
+      "summary": "List pending project invites",
+      "tags": [
+        "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/projects/{id}/invites/{inviteId}",
+      "operationId": "cancelProjectInvite",
+      "summary": "Cancel a project invite",
+      "tags": [
+        "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/members",
+      "operationId": "listProjectMembers",
+      "summary": "List project members",
+      "tags": [
+        "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/projects/{id}/members/{userId}",
+      "operationId": "updateProjectMemberRole",
+      "summary": "Update a project member role",
+      "tags": [
+        "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/projects/{id}/members/{userId}",
+      "operationId": "removeProjectMember",
+      "summary": "Remove a project member",
+      "tags": [
+        "Projects"
       ],
       "auth": [
         "Browser session",
@@ -1320,34 +1320,34 @@
       "group": "probe"
     },
     {
-      "commandPath": "member list",
-      "usage": "debugbundle member list [--auth-file <path>] [--json]",
-      "group": "member"
+      "commandPath": "project members list",
+      "usage": "debugbundle project members list --project-id <id> [--auth-file <path>] [--json]",
+      "group": "project"
     },
     {
-      "commandPath": "member invites",
-      "usage": "debugbundle member invites [--auth-file <path>] [--json]",
-      "group": "member"
+      "commandPath": "project members invites",
+      "usage": "debugbundle project members invites --project-id <id> [--auth-file <path>] [--json]",
+      "group": "project"
     },
     {
-      "commandPath": "member invite",
-      "usage": "debugbundle member invite --email <email> --role <owner|admin|member> [--auth-file <path>] [--json]",
-      "group": "member"
+      "commandPath": "project members invite",
+      "usage": "debugbundle project members invite --project-id <id> --email <email> --role <admin|member> [--auth-file <path>] [--json]",
+      "group": "project"
     },
     {
-      "commandPath": "member cancel-invite",
-      "usage": "debugbundle member cancel-invite <invite-id> [--auth-file <path>] [--json]",
-      "group": "member"
+      "commandPath": "project members cancel-invite",
+      "usage": "debugbundle project members cancel-invite <invite-id> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "project"
     },
     {
-      "commandPath": "member update-role",
-      "usage": "debugbundle member update-role <user-id> --role <owner|admin|member> [--auth-file <path>] [--json]",
-      "group": "member"
+      "commandPath": "project members update-role",
+      "usage": "debugbundle project members update-role <user-id> --project-id <id> --role <admin|member> [--auth-file <path>] [--json]",
+      "group": "project"
     },
     {
-      "commandPath": "member remove",
-      "usage": "debugbundle member remove <user-id> [--auth-file <path>] [--json]",
-      "group": "member"
+      "commandPath": "project members remove",
+      "usage": "debugbundle project members remove <user-id> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "project"
     }
   ],
   "mcpGroups": [
@@ -2116,54 +2116,60 @@
       "label": "Members",
       "tools": [
         {
-          "name": "cancel_member_invite",
-          "description": "Cancel a pending organization invite.",
+          "name": "cancel_project_member_invite",
+          "description": "Cancel a pending project invite.",
           "requiredArguments": [
             "bearerToken",
-            "inviteId"
+            "inviteId",
+            "projectId"
           ],
           "optionalArguments": []
         },
         {
-          "name": "invite_member",
-          "description": "Invite a member to the organization.",
+          "name": "invite_project_member",
+          "description": "Invite a collaborator to a project.",
           "requiredArguments": [
             "bearerToken",
             "email",
+            "projectId",
             "role"
           ],
           "optionalArguments": []
         },
         {
-          "name": "list_member_invites",
-          "description": "List pending organization invites.",
-          "requiredArguments": [
-            "bearerToken"
-          ],
-          "optionalArguments": []
-        },
-        {
-          "name": "list_members",
-          "description": "List organization members.",
-          "requiredArguments": [
-            "bearerToken"
-          ],
-          "optionalArguments": []
-        },
-        {
-          "name": "remove_member",
-          "description": "Remove a member from the organization.",
+          "name": "list_project_member_invites",
+          "description": "List pending invites for a project.",
           "requiredArguments": [
             "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_project_members",
+          "description": "List members for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "remove_project_member",
+          "description": "Remove a collaborator from a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId",
             "userId"
           ],
           "optionalArguments": []
         },
         {
-          "name": "update_member_role",
-          "description": "Update the role of an organization member.",
+          "name": "update_project_member_role",
+          "description": "Update the role of a project collaborator.",
           "requiredArguments": [
             "bearerToken",
+            "projectId",
             "role",
             "userId"
           ],

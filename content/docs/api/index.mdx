@@ -191,12 +191,12 @@ Management endpoints (incidents, webhooks, tokens) are not rate-limited in the c
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/v1/organization/members` | Member token | List members |
-| `GET` | `/v1/organization/members/invites` | Member token | List pending invites |
-| `POST` | `/v1/organization/members/invite` | Member token | Invite a member |
-| `DELETE` | `/v1/organization/members/invites/:inviteId` | Member token | Cancel an invite |
-| `PATCH` | `/v1/organization/members/:userId` | Member token | Update member role |
-| `DELETE` | `/v1/organization/members/:userId` | Member token | Remove a member |
+| `GET` | `/v1/projects/:id/members` | Member token | List project members |
+| `GET` | `/v1/projects/:id/invites` | Member token | List pending project invites |
+| `POST` | `/v1/projects/:id/invite` | Member token | Invite a collaborator |
+| `DELETE` | `/v1/projects/:id/invites/:inviteId` | Member token | Cancel a project invite |
+| `PATCH` | `/v1/projects/:id/members/:userId` | Member token | Update project member role |
+| `DELETE` | `/v1/projects/:id/members/:userId` | Member token | Remove a project member |
 
 ### Billing
 

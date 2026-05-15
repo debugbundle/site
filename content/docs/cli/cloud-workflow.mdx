@@ -241,28 +241,28 @@ debugbundle probe deactivate --project-id proj_01HXYZ... --activation-id prb_01H
 
 These commands have equivalent [MCP tools](/docs/mcp/tools#probes): `activate_probe`, `list_active_probes`, `deactivate_probe`.
 
-## Member Management
+## Project Member Management
 
-Manage team access to your organization:
+Manage collaborator access for a specific project:
 
 ```bash
-# List organization members
-debugbundle member list
+# List project members
+debugbundle project members list --project-id proj_01HXYZ...
 
-# List pending invitations
-debugbundle member invites
+# List pending project invitations
+debugbundle project members invites --project-id proj_01HXYZ...
 
-# Invite a new member
-debugbundle member invite --email dev@example.com --role member
+# Invite a collaborator
+debugbundle project members invite --project-id proj_01HXYZ... --email dev@example.com --role member
 
-# Cancel a pending invitation
-debugbundle member cancel-invite inv_01HXYZ...
+# Cancel a pending project invitation
+debugbundle project members cancel-invite --project-id proj_01HXYZ... inv_01HXYZ...
 
-# Update a member's role
-debugbundle member update-role usr_01HXYZ... --role admin
+# Update a project member's role
+debugbundle project members update-role --project-id proj_01HXYZ... usr_01HXYZ... --role admin
 
-# Remove a member
-debugbundle member remove usr_01HXYZ...
+# Remove a project member
+debugbundle project members remove --project-id proj_01HXYZ... usr_01HXYZ...
 ```
 
 ## Troubleshooting

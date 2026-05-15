@@ -31,9 +31,6 @@
       "name": "Services"
     },
     {
-      "name": "Organization"
-    },
-    {
       "name": "Projects"
     },
     {
@@ -732,10 +729,10 @@
         }
       }
     },
-    "/v1/auth/accept-invite": {
+    "/v1/auth/project-invite/accept": {
       "post": {
         "operationId": "acceptInvite",
-        "summary": "Accept an organization invite",
+        "summary": "Accept a project invite",
         "tags": [
           "Auth"
         ],
@@ -1705,12 +1702,12 @@
         }
       }
     },
-    "/v1/organization/members": {
+    "/v1/projects/{id}/members": {
       "get": {
-        "operationId": "listOrganizationMembers",
-        "summary": "List organization members",
+        "operationId": "listProjectMembers",
+        "summary": "List project members",
         "tags": [
-          "Organization"
+          "Projects"
         ],
         "security": [
           {
@@ -1720,13 +1717,34 @@
             "memberBearerToken": []
           }
         ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Organization members.",
+            "description": "Project members.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationMemberListResponse"
+                  "$ref": "#/components/schemas/ProjectMemberListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
                 }
               }
             }
@@ -1741,18 +1759,8 @@
               }
             }
           },
-          "403": {
-            "description": "Owner access is required.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
           "404": {
-            "description": "Organization member management is unavailable.",
+            "description": "Project was not found or collaboration is unavailable.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1764,12 +1772,12 @@
         }
       }
     },
-    "/v1/organization/members/invites": {
+    "/v1/projects/{id}/invites": {
       "get": {
-        "operationId": "listOrganizationInvites",
-        "summary": "List pending organization invites",
+        "operationId": "listProjectInvites",
+        "summary": "List pending project invites",
         "tags": [
-          "Organization"
+          "Projects"
         ],
         "security": [
           {
@@ -1779,13 +1787,34 @@
             "memberBearerToken": []
           }
         ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Pending organization invites.",
+            "description": "Pending project invites.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationInviteListResponse"
+                  "$ref": "#/components/schemas/ProjectInviteListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
                 }
               }
             }
@@ -1800,18 +1829,8 @@
               }
             }
           },
-          "403": {
-            "description": "Owner access is required.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
           "404": {
-            "description": "Organization member management is unavailable.",
+            "description": "Project was not found or collaboration is unavailable.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1823,12 +1842,12 @@
         }
       }
     },
-    "/v1/organization/members/invite": {
+    "/v1/projects/{id}/invite": {
       "post": {
-        "operationId": "inviteOrganizationMember",
-        "summary": "Invite an organization member",
+        "operationId": "inviteProjectMember",
+        "summary": "Invite a project member",
         "tags": [
-          "Organization"
+          "Projects"
         ],
         "security": [
           {
@@ -1836,6 +1855,17 @@
           },
           {
             "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "requestBody": {
@@ -1843,7 +1873,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateOrganizationInviteBody"
+                "$ref": "#/components/schemas/CreateProjectInviteBody"
               }
             }
           }
@@ -1854,7 +1884,116 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationInviteResponse"
+                  "$ref": "#/components/schemas/ProjectInviteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id or request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Admin or owner access and verified email are required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project was not found or collaboration is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Member or invite already exists, or collaborator limits were reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected invite creation failure.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/invites/{inviteId}": {
+      "delete": {
+        "operationId": "cancelProjectInvite",
+        "summary": "Cancel a project invite",
+        "tags": [
+          "Projects"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "inviteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invite cancelled.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectInviteResponse"
                 }
               }
             }
@@ -1880,107 +2019,7 @@
             }
           },
           "403": {
-            "description": "Owner access or verified email is required.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Organization member management is unavailable.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Member or invite already exists.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unexpected invite creation failure.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/organization/members/invites/{inviteId}": {
-      "delete": {
-        "operationId": "cancelOrganizationInvite",
-        "summary": "Cancel an organization invite",
-        "tags": [
-          "Organization"
-        ],
-        "security": [
-          {
-            "browserSession": []
-          },
-          {
-            "memberBearerToken": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "inviteId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Invite cancelled.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OrganizationInviteResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid invite id.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication is invalid.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Owner access or verified email is required.",
+            "description": "Admin or owner access and verified email are required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2002,12 +2041,12 @@
         }
       }
     },
-    "/v1/organization/members/{userId}": {
+    "/v1/projects/{id}/members/{userId}": {
       "patch": {
-        "operationId": "updateOrganizationMemberRole",
-        "summary": "Update an organization member role",
+        "operationId": "updateProjectMemberRole",
+        "summary": "Update a project member role",
         "tags": [
-          "Organization"
+          "Projects"
         ],
         "security": [
           {
@@ -2018,6 +2057,15 @@
           }
         ],
         "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
           {
             "name": "userId",
             "in": "path",
@@ -2033,18 +2081,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpdateOrganizationMemberRoleBody"
+                "$ref": "#/components/schemas/UpdateProjectMemberRoleBody"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Updated organization member.",
+            "description": "Updated project member.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationMemberResponse"
+                  "$ref": "#/components/schemas/ProjectMemberResponse"
                 }
               }
             }
@@ -2070,7 +2118,7 @@
             }
           },
           "403": {
-            "description": "Owner access is required.",
+            "description": "Admin or owner access is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -2102,10 +2150,10 @@
         }
       },
       "delete": {
-        "operationId": "removeOrganizationMember",
-        "summary": "Remove an organization member",
+        "operationId": "removeProjectMember",
+        "summary": "Remove a project member",
         "tags": [
-          "Organization"
+          "Projects"
         ],
         "security": [
           {
@@ -2116,6 +2164,15 @@
           }
         ],
         "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
           {
             "name": "userId",
             "in": "path",
@@ -2128,11 +2185,11 @@
         ],
         "responses": {
           "200": {
-            "description": "Removed organization member.",
+            "description": "Removed project member.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrganizationMemberResponse"
+                  "$ref": "#/components/schemas/ProjectMemberResponse"
                 }
               }
             }
@@ -2158,7 +2215,7 @@
             }
           },
           "403": {
-            "description": "Owner access is required.",
+            "description": "Admin or owner access is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6254,23 +6311,31 @@
           "membership": {
             "type": "object",
             "properties": {
-              "user_id": {
+              "project_id": {
                 "type": "string"
               },
-              "organization_id": {
+              "user_id": {
                 "type": "string"
               },
               "role": {
                 "type": "string",
                 "enum": [
                   "owner",
+                  "admin",
                   "member"
+                ]
+              },
+              "membership_type": {
+                "type": "string",
+                "enum": [
+                  "owner",
+                  "collaborator"
                 ]
               }
             },
             "required": [
+              "project_id",
               "user_id",
-              "organization_id",
               "role"
             ],
             "additionalProperties": false
@@ -6303,7 +6368,7 @@
               "additionalProperties": {}
             }
           },
-          "invites": {
+          "project_invites": {
             "type": "array",
             "items": {
               "type": "object",
@@ -6543,7 +6608,7 @@
           "user",
           "organization",
           "members",
-          "invites",
+          "project_invites",
           "member_tokens",
           "projects",
           "slack_destinations",
@@ -10861,7 +10926,7 @@
         ],
         "additionalProperties": false
       },
-      "OrganizationMemberListResponse": {
+      "ProjectMemberListResponse": {
         "type": "object",
         "properties": {
           "members": {
@@ -10880,7 +10945,15 @@
                   "type": "string",
                   "enum": [
                     "owner",
+                    "admin",
                     "member"
+                  ]
+                },
+                "membership_type": {
+                  "type": "string",
+                  "enum": [
+                    "owner",
+                    "collaborator"
                   ]
                 },
                 "created_at": {
@@ -10892,6 +10965,7 @@
                 "user_id",
                 "email",
                 "role",
+                "membership_type",
                 "created_at"
               ],
               "additionalProperties": false
@@ -10903,7 +10977,7 @@
         ],
         "additionalProperties": false
       },
-      "OrganizationInviteListResponse": {
+      "ProjectInviteListResponse": {
         "type": "object",
         "properties": {
           "invites": {
@@ -10915,7 +10989,7 @@
                   "type": "string",
                   "format": "uuid"
                 },
-                "organization_id": {
+                "project_id": {
                   "type": "string"
                 },
                 "email": {
@@ -10924,12 +10998,26 @@
                 },
                 "role": {
                   "type": "string",
-                  "const": "member"
+                  "enum": [
+                    "admin",
+                    "member"
+                  ]
                 },
-                "invited_by": {
+                "invited_by_user_id": {
                   "type": "string"
                 },
                 "accepted_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "canceled_at": {
                   "anyOf": [
                     {
                       "type": "string",
@@ -10951,11 +11039,12 @@
               },
               "required": [
                 "invite_id",
-                "organization_id",
+                "project_id",
                 "email",
                 "role",
-                "invited_by",
+                "invited_by_user_id",
                 "accepted_at",
+                "canceled_at",
                 "expires_at",
                 "created_at"
               ],
@@ -10968,7 +11057,7 @@
         ],
         "additionalProperties": false
       },
-      "CreateOrganizationInviteBody": {
+      "CreateProjectInviteBody": {
         "type": "object",
         "properties": {
           "email": {
@@ -10977,7 +11066,10 @@
           },
           "role": {
             "type": "string",
-            "const": "member",
+            "enum": [
+              "admin",
+              "member"
+            ],
             "default": "member"
           }
         },
@@ -10986,7 +11078,7 @@
         ],
         "additionalProperties": false
       },
-      "OrganizationInviteResponse": {
+      "ProjectInviteResponse": {
         "type": "object",
         "properties": {
           "invite": {
@@ -10996,7 +11088,7 @@
                 "type": "string",
                 "format": "uuid"
               },
-              "organization_id": {
+              "project_id": {
                 "type": "string"
               },
               "email": {
@@ -11005,12 +11097,26 @@
               },
               "role": {
                 "type": "string",
-                "const": "member"
+                "enum": [
+                  "admin",
+                  "member"
+                ]
               },
-              "invited_by": {
+              "invited_by_user_id": {
                 "type": "string"
               },
               "accepted_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "canceled_at": {
                 "anyOf": [
                   {
                     "type": "string",
@@ -11032,11 +11138,12 @@
             },
             "required": [
               "invite_id",
-              "organization_id",
+              "project_id",
               "email",
               "role",
-              "invited_by",
+              "invited_by_user_id",
               "accepted_at",
+              "canceled_at",
               "expires_at",
               "created_at"
             ],
@@ -11048,13 +11155,13 @@
         ],
         "additionalProperties": false
       },
-      "UpdateOrganizationMemberRoleBody": {
+      "UpdateProjectMemberRoleBody": {
         "type": "object",
         "properties": {
           "role": {
             "type": "string",
             "enum": [
-              "owner",
+              "admin",
               "member"
             ]
           }
@@ -11064,7 +11171,7 @@
         ],
         "additionalProperties": false
       },
-      "OrganizationMemberResponse": {
+      "ProjectMemberResponse": {
         "type": "object",
         "properties": {
           "member": {
@@ -11081,7 +11188,15 @@
                 "type": "string",
                 "enum": [
                   "owner",
+                  "admin",
                   "member"
+                ]
+              },
+              "membership_type": {
+                "type": "string",
+                "enum": [
+                  "owner",
+                  "collaborator"
                 ]
               },
               "created_at": {
@@ -11093,6 +11208,7 @@
               "user_id",
               "email",
               "role",
+              "membership_type",
               "created_at"
             ],
             "additionalProperties": false
@@ -11116,6 +11232,28 @@
                 },
                 "organization_id": {
                   "type": "string"
+                },
+                "owner_user_id": {
+                  "type": "string"
+                },
+                "owner_email": {
+                  "type": "string",
+                  "format": "email"
+                },
+                "relationship": {
+                  "type": "string",
+                  "enum": [
+                    "owned",
+                    "shared"
+                  ]
+                },
+                "effective_role": {
+                  "type": "string",
+                  "enum": [
+                    "owner",
+                    "admin",
+                    "member"
+                  ]
                 },
                 "name": {
                   "type": "string"
@@ -11172,6 +11310,10 @@
               "required": [
                 "project_id",
                 "organization_id",
+                "owner_user_id",
+                "owner_email",
+                "relationship",
+                "effective_role",
                 "name",
                 "slug",
                 "environment_default",
@@ -11228,6 +11370,28 @@
               "organization_id": {
                 "type": "string"
               },
+              "owner_user_id": {
+                "type": "string"
+              },
+              "owner_email": {
+                "type": "string",
+                "format": "email"
+              },
+              "relationship": {
+                "type": "string",
+                "enum": [
+                  "owned",
+                  "shared"
+                ]
+              },
+              "effective_role": {
+                "type": "string",
+                "enum": [
+                  "owner",
+                  "admin",
+                  "member"
+                ]
+              },
               "name": {
                 "type": "string"
               },
@@ -11283,6 +11447,10 @@
             "required": [
               "project_id",
               "organization_id",
+              "owner_user_id",
+              "owner_email",
+              "relationship",
+              "effective_role",
               "name",
               "slug",
               "environment_default",
@@ -11333,6 +11501,28 @@
               "organization_id": {
                 "type": "string"
               },
+              "owner_user_id": {
+                "type": "string"
+              },
+              "owner_email": {
+                "type": "string",
+                "format": "email"
+              },
+              "relationship": {
+                "type": "string",
+                "enum": [
+                  "owned",
+                  "shared"
+                ]
+              },
+              "effective_role": {
+                "type": "string",
+                "enum": [
+                  "owner",
+                  "admin",
+                  "member"
+                ]
+              },
               "name": {
                 "type": "string"
               },
@@ -11388,6 +11578,10 @@
             "required": [
               "project_id",
               "organization_id",
+              "owner_user_id",
+              "owner_email",
+              "relationship",
+              "effective_role",
               "name",
               "slug",
               "environment_default",
@@ -11416,6 +11610,28 @@
               "organization_id": {
                 "type": "string"
               },
+              "owner_user_id": {
+                "type": "string"
+              },
+              "owner_email": {
+                "type": "string",
+                "format": "email"
+              },
+              "relationship": {
+                "type": "string",
+                "enum": [
+                  "owned",
+                  "shared"
+                ]
+              },
+              "effective_role": {
+                "type": "string",
+                "enum": [
+                  "owner",
+                  "admin",
+                  "member"
+                ]
+              },
               "name": {
                 "type": "string"
               },
@@ -11443,6 +11659,10 @@
             "required": [
               "project_id",
               "organization_id",
+              "owner_user_id",
+              "owner_email",
+              "relationship",
+              "effective_role",
               "name",
               "slug",
               "environment_default",
