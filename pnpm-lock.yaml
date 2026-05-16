@@ -70,13 +70,13 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
-  '@debugbundle/redaction@0.1.7':
+  '@debugbundle/redaction@0.1.6':
     resolution: {integrity: sha512-oSFQK9xWvqmr6GGu4GrVoXsmmBHycGZrk/eTLoWx+WwBHQ4zA6K4mYCQOP/N0UqHhPQDRhZRd+Z8jpf4c6PLbQ==}
 
-  '@debugbundle/sdk-browser@0.1.7':
+  '@debugbundle/sdk-browser@0.1.6':
     resolution: {integrity: sha512-AJSR4QvesEDM06aRoW/HfGSR22JwjqCv17KVbFj2bzkgYQ2Mev+zNTfptyNfxzUFeDglGA6GAzW0hQ/P/gmVtg==}
 
-  '@debugbundle/shared-types@0.1.7':
+  '@debugbundle/shared-types@0.1.6':
     resolution: {integrity: sha512-UI2/QtFKwqLyWIEvTR9Kw1MqD4FVvcRLPAzCH2Th3Xfk2Z+6vUmsbPer/Poaxh2aSH7RQAmyPMCy7NIwyCt21w==}
 
   '@emnapi/runtime@1.10.0':
@@ -2134,14 +2134,14 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@debugbundle/redaction@0.1.7': {}
+  '@debugbundle/redaction@0.1.6': {}
 
-  '@debugbundle/sdk-browser@0.1.7':
+  '@debugbundle/sdk-browser@0.1.6':
     dependencies:
-      '@debugbundle/redaction': 0.1.7
-      '@debugbundle/shared-types': 0.1.7
+      '@debugbundle/redaction': 0.1.6
+      '@debugbundle/shared-types': 0.1.6
 
-  '@debugbundle/shared-types@0.1.7':
+  '@debugbundle/shared-types@0.1.6':
     dependencies:
       zod: 3.25.76
 
