@@ -161,7 +161,7 @@ export default function PricingPage(): ReactElement {
       <SectionTitle
         eyebrow="Pricing"
         title="Simple, developer-friendly pricing"
-        description="Start free with hosted or local-first debugging. Upgrade when you need higher limits, remote probes, or team collaboration."
+            description="Start free with hosted or local-first debugging. Upgrade when you need higher limits, remote probes, GitHub automation, or team collaboration."
       />
 
       {/* Tier cards */}
