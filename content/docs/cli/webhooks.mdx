@@ -102,6 +102,7 @@ Output:
 
 ```bash
 debugbundle webhook update wh_01HDEF... \
+  --project-id proj_01HXYZ... \
   --event bundle.created,bundle.resolved,incident.spike_detected \
   --severity-min medium
 ```
@@ -110,6 +111,7 @@ Partial update — only the specified fields are changed. Omitted fields remain 
 
 | Flag | Type | Description |
 |------|------|-------------|
+| `--project-id` | `string` | **Required.** Project that owns the webhook. |
 | `--url` | `string` | New endpoint URL. |
 | `--event` | `string` | Replace subscribed event types (comma-separated). |
 | `--environment` | `string` | Replace environment filter (comma-separated). |
@@ -124,7 +126,7 @@ Partial update — only the specified fields are changed. Omitted fields remain 
 ## Delete Webhook
 
 ```bash
-debugbundle webhook delete wh_01HDEF...
+debugbundle webhook delete wh_01HDEF... --project-id proj_01HXYZ...
 ```
 
 Permanently removes the webhook. Pending deliveries are cancelled.
@@ -134,19 +136,20 @@ Permanently removes the webhook. Pending deliveries are cancelled.
 Send a synthetic signed delivery to verify your endpoint:
 
 ```bash
-debugbundle webhook test wh_01HDEF...
+debugbundle webhook test wh_01HDEF... --project-id proj_01HXYZ...
 ```
 
 The test command sends a `verification.passed` event by default. Specify a different event:
 
 ```bash
-debugbundle webhook test wh_01HDEF... --event verification.failed
+debugbundle webhook test wh_01HDEF... --project-id proj_01HXYZ... --event verification.failed
 ```
 
 Use this to verify that your webhook endpoint correctly validates HMAC-SHA256 signatures and processes payloads.
 
 | Flag | Type | Default | Description |
 |------|------|---------|-------------|
+| `--project-id` | `string` | — | **Required.** Project that owns the webhook. |
 | `--event` | `string` | `verification.passed` | Event type to send (`verification.passed` or `verification.failed`). |
 | `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
 | `--json` | `boolean` | `false` | Output as JSON. |
@@ -156,7 +159,7 @@ Use this to verify that your webhook endpoint correctly validates HMAC-SHA256 si
 List recent deliveries for a webhook:
 
 ```bash
-debugbundle webhook deliveries wh_01HDEF...
+debugbundle webhook deliveries wh_01HDEF... --project-id proj_01HXYZ...
 ```
 
 Output:
@@ -199,7 +202,7 @@ Output:
 Retry a specific failed delivery:
 
 ```bash
-debugbundle webhook retry wh_01HDEF... del_01HJKL...
+debugbundle webhook retry wh_01HDEF... del_01HJKL... --project-id proj_01HXYZ...
 ```
 
 This resets the delivery to `retrying` status and re-queues it for delivery. Useful for manual recovery of failed or disabled deliveries.

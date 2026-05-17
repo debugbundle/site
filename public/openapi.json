@@ -871,6 +871,128 @@
         }
       }
     },
+    "/v1/account/avatar": {
+      "get": {
+        "operationId": "getAccountAvatar",
+        "summary": "Get the current account avatar image",
+        "tags": [
+          "Account"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Avatar image bytes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvatarImageResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Browser session is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Avatar was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Account management is not configured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/account/avatar/import-gravatar": {
+      "post": {
+        "operationId": "importAccountAvatarFromGravatar",
+        "summary": "Import and cache a Gravatar avatar for the signed-in account",
+        "tags": [
+          "Account"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Avatar imported and cached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountAvatarImportResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Browser session is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No Gravatar image was found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "Avatar import failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Account management is not configured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/account": {
       "delete": {
         "operationId": "deleteAccount",
@@ -1831,6 +1953,95 @@
           },
           "404": {
             "description": "Project was not found or collaboration is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/members/{userId}/avatar": {
+      "get": {
+        "operationId": "getProjectMemberAvatar",
+        "summary": "Get a cached project member avatar image",
+        "tags": [
+          "Projects"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Avatar image bytes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvatarImageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid member id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project, member, or avatar was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Account management is not configured.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5955,6 +6166,17 @@
                       }
                     ]
                   },
+                  "avatar_url": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
                   "csrf_token": {
                     "type": "string"
                   },
@@ -5986,6 +6208,7 @@
                   "created_at",
                   "expires_at",
                   "revoked_at",
+                  "avatar_url",
                   "csrf_token",
                   "auth_methods"
                 ],
@@ -6634,6 +6857,44 @@
           "processed_billing_events",
           "audit_logs",
           "artifacts"
+        ],
+        "additionalProperties": false
+      },
+      "AvatarImageResponse": {
+        "type": "string"
+      },
+      "AccountAvatarImportResponse": {
+        "type": "object",
+        "properties": {
+          "avatar": {
+            "type": "object",
+            "properties": {
+              "source": {
+                "type": "string",
+                "enum": [
+                  "github",
+                  "gravatar"
+                ]
+              },
+              "avatar_url": {
+                "type": "string",
+                "minLength": 1
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "source",
+              "avatar_url",
+              "updated_at"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "avatar"
         ],
         "additionalProperties": false
       },
@@ -10956,6 +11217,17 @@
                     "collaborator"
                   ]
                 },
+                "avatar_url": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "created_at": {
                   "type": "string",
                   "format": "date-time"
@@ -10966,6 +11238,7 @@
                 "email",
                 "role",
                 "membership_type",
+                "avatar_url",
                 "created_at"
               ],
               "additionalProperties": false
@@ -11199,6 +11472,17 @@
                   "collaborator"
                 ]
               },
+              "avatar_url": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "created_at": {
                 "type": "string",
                 "format": "date-time"
@@ -11209,6 +11493,7 @@
               "email",
               "role",
               "membership_type",
+              "avatar_url",
               "created_at"
             ],
             "additionalProperties": false
@@ -11245,6 +11530,14 @@
                   "enum": [
                     "owned",
                     "shared"
+                  ]
+                },
+                "sharing_state": {
+                  "type": "string",
+                  "enum": [
+                    "private",
+                    "shared_by_you",
+                    "shared_with_you"
                   ]
                 },
                 "effective_role": {
@@ -11313,6 +11606,7 @@
                 "owner_user_id",
                 "owner_email",
                 "relationship",
+                "sharing_state",
                 "effective_role",
                 "name",
                 "slug",
@@ -11384,6 +11678,14 @@
                   "shared"
                 ]
               },
+              "sharing_state": {
+                "type": "string",
+                "enum": [
+                  "private",
+                  "shared_by_you",
+                  "shared_with_you"
+                ]
+              },
               "effective_role": {
                 "type": "string",
                 "enum": [
@@ -11450,6 +11752,7 @@
               "owner_user_id",
               "owner_email",
               "relationship",
+              "sharing_state",
               "effective_role",
               "name",
               "slug",
@@ -11515,6 +11818,14 @@
                   "shared"
                 ]
               },
+              "sharing_state": {
+                "type": "string",
+                "enum": [
+                  "private",
+                  "shared_by_you",
+                  "shared_with_you"
+                ]
+              },
               "effective_role": {
                 "type": "string",
                 "enum": [
@@ -11581,6 +11892,7 @@
               "owner_user_id",
               "owner_email",
               "relationship",
+              "sharing_state",
               "effective_role",
               "name",
               "slug",
@@ -11624,6 +11936,14 @@
                   "shared"
                 ]
               },
+              "sharing_state": {
+                "type": "string",
+                "enum": [
+                  "private",
+                  "shared_by_you",
+                  "shared_with_you"
+                ]
+              },
               "effective_role": {
                 "type": "string",
                 "enum": [
@@ -11662,6 +11982,7 @@
               "owner_user_id",
               "owner_email",
               "relationship",
+              "sharing_state",
               "effective_role",
               "name",
               "slug",
@@ -12198,6 +12519,9 @@
                 "project_id": {
                   "type": "string"
                 },
+                "created_by_user_id": {
+                  "type": "string"
+                },
                 "service_id": {
                   "type": [
                     "string",
@@ -12256,6 +12580,7 @@
               "required": [
                 "alert_id",
                 "project_id",
+                "created_by_user_id",
                 "service_id",
                 "channel",
                 "condition_type",
@@ -12550,6 +12875,9 @@
               "project_id": {
                 "type": "string"
               },
+              "created_by_user_id": {
+                "type": "string"
+              },
               "service_id": {
                 "type": [
                   "string",
@@ -12608,6 +12936,7 @@
             "required": [
               "alert_id",
               "project_id",
+              "created_by_user_id",
               "service_id",
               "channel",
               "condition_type",
@@ -13436,6 +13765,9 @@
                 "project_id": {
                   "type": "string"
                 },
+                "created_by_user_id": {
+                  "type": "string"
+                },
                 "url": {
                   "type": "string"
                 },
@@ -13508,6 +13840,7 @@
               "required": [
                 "webhook_id",
                 "project_id",
+                "created_by_user_id",
                 "url",
                 "events",
                 "filters",
@@ -13620,6 +13953,9 @@
               "project_id": {
                 "type": "string"
               },
+              "created_by_user_id": {
+                "type": "string"
+              },
               "url": {
                 "type": "string"
               },
@@ -13695,6 +14031,7 @@
             "required": [
               "webhook_id",
               "project_id",
+              "created_by_user_id",
               "url",
               "events",
               "filters",
@@ -13721,6 +14058,9 @@
                 "type": "string"
               },
               "project_id": {
+                "type": "string"
+              },
+              "created_by_user_id": {
                 "type": "string"
               },
               "url": {
@@ -13795,6 +14135,7 @@
             "required": [
               "webhook_id",
               "project_id",
+              "created_by_user_id",
               "url",
               "events",
               "filters",
@@ -14264,6 +14605,13 @@
       "CapturePolicyResponse": {
         "type": "object",
         "properties": {
+          "access_mode": {
+            "type": "string",
+            "enum": [
+              "manage",
+              "preview"
+            ]
+          },
           "policy": {
             "type": "object",
             "properties": {
@@ -14420,6 +14768,7 @@
           }
         },
         "required": [
+          "access_mode",
           "policy",
           "overrides"
         ],

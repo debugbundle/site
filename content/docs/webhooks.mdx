@@ -217,13 +217,13 @@ Failed deliveries retry with exponential backoff. After sustained failures, the 
 ### Viewing Deliveries
 
 ```bash
-debugbundle webhook deliveries whk_xxx --limit 20
+debugbundle webhook deliveries whk_xxx --project-id proj_xxx --limit 20
 ```
 
 ### Retrying a Delivery
 
 ```bash
-debugbundle webhook retry whk_xxx del_xxx
+debugbundle webhook retry whk_xxx del_xxx --project-id proj_xxx
 ```
 
 ---
@@ -233,13 +233,13 @@ debugbundle webhook retry whk_xxx del_xxx
 Send a test delivery to verify your endpoint:
 
 ```bash
-debugbundle webhook test whk_xxx
+debugbundle webhook test whk_xxx --project-id proj_xxx
 ```
 
 By default this sends a `verification.passed` event. To test failure:
 
 ```bash
-debugbundle webhook test whk_xxx --event verification.failed
+debugbundle webhook test whk_xxx --project-id proj_xxx --event verification.failed
 ```
 
 ## Managing Webhooks
@@ -249,13 +249,13 @@ debugbundle webhook test whk_xxx --event verification.failed
 debugbundle webhook list --project-id proj_xxx
 
 # Update a webhook
-debugbundle webhook update whk_xxx --url https://new-endpoint.example.com
+debugbundle webhook update whk_xxx --project-id proj_xxx --url https://new-endpoint.example.com
 
 # Disable a webhook
-debugbundle webhook update whk_xxx --is-enabled false
+debugbundle webhook update whk_xxx --project-id proj_xxx --is-enabled false
 
 # Delete a webhook
-debugbundle webhook delete whk_xxx
+debugbundle webhook delete whk_xxx --project-id proj_xxx
 ```
 
 ## Next Steps

@@ -128,6 +128,7 @@ debugbundle alert create \
 
 ```bash
 debugbundle alert update alt_01HABC... \
+  --project-id proj_01HXYZ... \
   --severity-min critical \
   --is-enabled true
 ```
@@ -136,6 +137,7 @@ Partial update — only the specified fields are changed.
 
 | Flag | Type | Description |
 |------|------|-------------|
+| `--project-id` | `string` | **Required.** Project that owns the alert. |
 | `--channel` | `string` | Update channel type. |
 | `--condition` | `string` | Update condition type. |
 | `--service-id` | `string` | Update service scope (use `null` to clear). |
@@ -148,7 +150,7 @@ Partial update — only the specified fields are changed.
 ## Delete Alert
 
 ```bash
-debugbundle alert delete alt_01HABC...
+debugbundle alert delete alt_01HABC... --project-id proj_01HXYZ...
 ```
 
 Permanently removes the alert rule. No further notifications are sent.

@@ -106,7 +106,7 @@ debugbundle incidents --status open --json \
 After repeated delivery failures, webhooks are automatically disabled. To re-enable:
 
 ```bash
-debugbundle webhook update whk_xxx --is-enabled true
+debugbundle webhook update whk_xxx --project-id proj_xxx --is-enabled true
 ```
 
 Fix the underlying delivery issue first, then re-enable.

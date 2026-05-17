@@ -50,6 +50,30 @@
     },
     {
       "method": "GET",
+      "path": "/v1/account/avatar",
+      "operationId": "getAccountAvatar",
+      "summary": "Get the current account avatar image",
+      "tags": [
+        "Account"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/account/avatar/import-gravatar",
+      "operationId": "importAccountAvatarFromGravatar",
+      "summary": "Import and cache a Gravatar avatar for the signed-in account",
+      "tags": [
+        "Account"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
+      "method": "GET",
       "path": "/v1/account/export",
       "operationId": "exportAccount",
       "summary": "Export retained organization account data",
@@ -623,6 +647,19 @@
     },
     {
       "method": "GET",
+      "path": "/v1/projects/{id}/members/{userId}/avatar",
+      "operationId": "getProjectMemberAvatar",
+      "summary": "Get a cached project member avatar image",
+      "tags": [
+        "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
       "path": "/v1/projects/{id}/probes",
       "operationId": "listActiveProbes",
       "summary": "List active remote probes",
@@ -1106,7 +1143,7 @@
     },
     {
       "commandPath": "github repos",
-      "usage": "debugbundle github repos [--auth-file <path>] [--json]",
+      "usage": "debugbundle github repos [--project-id <id>] [--auth-file <path>] [--json]",
       "group": "github"
     },
     {
@@ -1211,12 +1248,12 @@
     },
     {
       "commandPath": "alert update",
-      "usage": "debugbundle alert update <alert-id> [--service-id <id|null>] [--channel <channel>] [--condition <condition>] [--severity-min <level|null>] [--config-json <json|null>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle alert update <alert-id> --project-id <id> [--service-id <id|null>] [--channel <channel>] [--condition <condition>] [--severity-min <level|null>] [--config-json <json|null>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
       "group": "alert"
     },
     {
       "commandPath": "alert delete",
-      "usage": "debugbundle alert delete <alert-id> [--auth-file <path>] [--json]",
+      "usage": "debugbundle alert delete <alert-id> --project-id <id> [--auth-file <path>] [--json]",
       "group": "alert"
     },
     {
@@ -1251,27 +1288,27 @@
     },
     {
       "commandPath": "webhook update",
-      "usage": "debugbundle webhook update <webhook-id> [--url <url>] [--event <event[,event]>] [--environment <env[,env]>] [--service <svc[,svc]>] [--severity-min <level>] [--bundle-type <type[,type]>] [--verification <true|false>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle webhook update <webhook-id> --project-id <id> [--url <url>] [--event <event[,event]>] [--environment <env[,env]>] [--service <svc[,svc]>] [--severity-min <level>] [--bundle-type <type[,type]>] [--verification <true|false>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
       "group": "webhook"
     },
     {
       "commandPath": "webhook delete",
-      "usage": "debugbundle webhook delete <webhook-id> [--auth-file <path>] [--json]",
+      "usage": "debugbundle webhook delete <webhook-id> --project-id <id> [--auth-file <path>] [--json]",
       "group": "webhook"
     },
     {
       "commandPath": "webhook test",
-      "usage": "debugbundle webhook test <webhook-id> [--event <verification.passed|verification.failed>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle webhook test <webhook-id> --project-id <id> [--event <verification.passed|verification.failed>] [--auth-file <path>] [--json]",
       "group": "webhook"
     },
     {
       "commandPath": "webhook deliveries",
-      "usage": "debugbundle webhook deliveries <webhook-id> [--limit <n>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle webhook deliveries <webhook-id> --project-id <id> [--limit <n>] [--auth-file <path>] [--json]",
       "group": "webhook"
     },
     {
       "commandPath": "webhook retry",
-      "usage": "debugbundle webhook retry <webhook-id> <delivery-id> [--auth-file <path>] [--json]",
+      "usage": "debugbundle webhook retry <webhook-id> <delivery-id> --project-id <id> [--auth-file <path>] [--json]",
       "group": "webhook"
     },
     {
@@ -1559,7 +1596,7 @@
         },
         {
           "name": "get_github_status",
-          "description": "Get the organization GitHub App installation status and optional project repo assignment.",
+          "description": "Get the project GitHub App installation status and optional project repo assignment.",
           "requiredArguments": [
             "bearerToken"
           ],
@@ -1590,11 +1627,13 @@
         },
         {
           "name": "list_github_repositories",
-          "description": "List repositories available to the organization GitHub App installation.",
+          "description": "List repositories available to the project GitHub App installation for owner/admin callers.",
           "requiredArguments": [
             "bearerToken"
           ],
-          "optionalArguments": []
+          "optionalArguments": [
+            "projectId"
+          ]
         },
         {
           "name": "remove_project_github_repo",
@@ -1736,6 +1775,7 @@
           "description": "Delete a webhook endpoint.",
           "requiredArguments": [
             "bearerToken",
+            "projectId",
             "webhookId"
           ],
           "optionalArguments": []
@@ -1745,6 +1785,7 @@
           "description": "List deliveries for a webhook endpoint.",
           "requiredArguments": [
             "bearerToken",
+            "projectId",
             "webhookId"
           ],
           "optionalArguments": [
@@ -1768,6 +1809,7 @@
           "requiredArguments": [
             "bearerToken",
             "deliveryId",
+            "projectId",
             "webhookId"
           ],
           "optionalArguments": []
@@ -1777,6 +1819,7 @@
           "description": "Queue a synthetic webhook delivery.",
           "requiredArguments": [
             "bearerToken",
+            "projectId",
             "webhookId"
           ],
           "optionalArguments": [
@@ -1788,6 +1831,7 @@
           "description": "Update a webhook endpoint.",
           "requiredArguments": [
             "bearerToken",
+            "projectId",
             "webhookId"
           ],
           "optionalArguments": [
@@ -1923,7 +1967,8 @@
           "description": "Delete an alert rule.",
           "requiredArguments": [
             "alertId",
-            "bearerToken"
+            "bearerToken",
+            "projectId"
           ],
           "optionalArguments": []
         },
@@ -1943,7 +1988,8 @@
           "description": "Update an alert rule.",
           "requiredArguments": [
             "alertId",
-            "bearerToken"
+            "bearerToken",
+            "projectId"
           ],
           "optionalArguments": [
             "channel",
@@ -2240,6 +2286,18 @@
         ]
       },
       {
+        "code": "avatar_import_failed",
+        "statusCodes": [
+          "502"
+        ]
+      },
+      {
+        "code": "avatar_not_found",
+        "statusCodes": [
+          "404"
+        ]
+      },
+      {
         "code": "billing_not_available",
         "statusCodes": [
           "404"
@@ -2291,6 +2349,12 @@
         "code": "forbidden",
         "statusCodes": [
           "403"
+        ]
+      },
+      {
+        "code": "gravatar_not_found",
+        "statusCodes": [
+          "404"
         ]
       },
       {

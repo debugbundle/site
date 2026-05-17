@@ -191,12 +191,12 @@ Management endpoints (incidents, webhooks, tokens) are not rate-limited in the c
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/v1/projects/:id/members` | Member token | List project members |
-| `GET` | `/v1/projects/:id/invites` | Member token | List pending project invites |
-| `POST` | `/v1/projects/:id/invite` | Member token | Invite a collaborator |
-| `DELETE` | `/v1/projects/:id/invites/:inviteId` | Member token | Cancel a project invite |
-| `PATCH` | `/v1/projects/:id/members/:userId` | Member token | Update project member role |
-| `DELETE` | `/v1/projects/:id/members/:userId` | Member token | Remove a project member |
+| `GET` | `/v1/projects/:id/members` | Member token (owner/admin) | List project members |
+| `GET` | `/v1/projects/:id/invites` | Member token (owner/admin) | List pending project invites |
+| `POST` | `/v1/projects/:id/invite` | Member token (owner/admin) | Invite a collaborator |
+| `DELETE` | `/v1/projects/:id/invites/:inviteId` | Member token (owner/admin) | Cancel a project invite |
+| `PATCH` | `/v1/projects/:id/members/:userId` | Member token (owner/admin) | Update project member role |
+| `DELETE` | `/v1/projects/:id/members/:userId` | Member token (owner/admin) | Remove a project member |
 
 ### Billing
 
@@ -220,8 +220,8 @@ Management endpoints (incidents, webhooks, tokens) are not rate-limited in the c
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/v1/projects/:id/capture-policy` | Member token | Get current capture policy for a project |
-| `PATCH` | `/v1/projects/:id/capture-policy` | Member token | Set capture policy for a project |
+| `GET` | `/v1/projects/:id/capture-policy` | Member token | Get current capture policy for a project; plain members receive preview-only output |
+| `PATCH` | `/v1/projects/:id/capture-policy` | Member token (owner/admin) | Set capture policy for a project |
 
 ### Authentication
 
