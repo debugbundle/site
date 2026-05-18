@@ -86,7 +86,7 @@ Normalize → Classify → Group → Bundle → Reproduce → Notify
 - **Spikes** — 5m/1h ratio ≥ 3.0
 - **Regressions** — new occurrence on a resolved incident
 
-**Bundle** — The bundle engine assembles a deterministic debug bundle from the qualifying failure or improvement opportunity context. Failure bundles center on grouped incidents; improvement bundles center on deterministic opportunity records built from repeated request/log/incident/deploy patterns. Given the same normalized inputs, generation remains byte-identical.
+**Bundle** — The bundle engine assembles a deterministic debug bundle from the qualifying failure or improvement opportunity context. Failure bundles center on grouped incidents; hosted improvement bundles center on deterministic request/log opportunity records. Incident-derived improvement opportunities are still recorded, but they point agents at the related incident bundles instead of generating duplicate hosted improvement artifacts. Given the same normalized inputs, generation remains byte-identical.
 
 **Reproduce** — The reproduction engine generates executable artifacts (curl commands, HTTPie commands, JSON spec) from request context, with a confidence level.
 
@@ -104,7 +104,7 @@ Solo, Team, and self-host projects also run a hosted deterministic improvement l
 - recurring incidents
 - post-deploy regressions
 
-When a rule qualifies, DebugBundle stores an improvement opportunity, builds a hosted `bundle_type: "improvement"` artifact, and exposes it through the same retrieval surfaces as failure bundles.
+When a bundle-producing request or log rule qualifies, DebugBundle stores an improvement opportunity, builds a hosted `bundle_type: "improvement"` artifact, and exposes it through the same retrieval surfaces as failure bundles. Incident-derived rules still create improvement opportunities, but those opportunities link back to the related incident bundles instead of producing a second hosted artifact.
 
 ---
 

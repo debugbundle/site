@@ -15,10 +15,9 @@ Examples:
 - Repeated slow requests on the same route or service
 - Repeated request failures that are noisy but not yet incident-grade
 - Warning hotspots with the same canonicalized log pattern
-- Recurring incidents that keep reopening or re-triggering
-- Regressions that begin or worsen shortly after a deploy
+- Incident patterns that should be prioritized through their existing failure bundles
 
-The goal is to give you a **bundle-shaped investigation surface** for problems that are actionable, but not necessarily urgent failures.
+The goal is to give you a **bundle-shaped investigation surface** for problems that are actionable, but not necessarily urgent failures. When the signal is already an incident, DebugBundle records an improvement opportunity that links to the related incident bundle instead of creating a duplicate improvement bundle.
 
 ## Availability
 
@@ -27,7 +26,7 @@ DebugBundle supports two improvement flows:
 | Flow | Availability | What it does |
 |---|---|---|
 | Local/manual improvement analysis | All tiers | Run `debugbundle analyze --type improvement --local` against local bundles and repository context |
-| Hosted automated improvement bundles | Solo, Team, self-host | Generate deterministic hosted automated improvement bundles from recurring request, log, deploy, and incident patterns |
+| Hosted automated improvement bundles | Solo, Team, self-host | Generate deterministic hosted automated improvement bundles from recurring request and log patterns |
 
 Free tier projects do not receive hosted automated improvement bundles, but they can still use the local/manual analysis flow.
 
@@ -43,12 +42,14 @@ The worker evaluates recurring patterns across:
 - deploy metadata
 - rolling counters and frequency windows
 
-When a qualifying pattern crosses the configured threshold and passes dedupe/cooldown checks, DebugBundle:
+When a bundle-producing request or log pattern crosses the configured threshold and passes dedupe/cooldown checks, DebugBundle:
 
 1. creates or updates an improvement opportunity
 2. builds a standard `BundleV1` artifact with `bundle_type: "improvement"`
 3. stores it under the improvement bundle object path
 4. emits `improvement_bundle.created` when a new hosted bundle is persisted
+
+When an incident-derived pattern crosses its threshold, DebugBundle creates or updates the improvement opportunity and stores `related_incident_ids`. The improvement bundle route returns `covered_by_incident_bundle` so agents know to fetch the incident bundle instead.
 
 ## Initial Detection Kinds
 
@@ -59,8 +60,8 @@ V1 hosted improvement detection covers five deterministic signal families:
 | `warning_hotspot` | Repeated warning/error logs with a stable canonicalized message |
 | `slow_request` | Repeated slow requests on the same route/service/environment |
 | `request_failure_pattern` | Repeated contextual request failures that do not need to become incidents first |
-| `recurring_incident` | Incidents that repeatedly reopen or keep crossing recurrence thresholds |
-| `post_deploy_regression` | A failure/warning pattern that begins or worsens after deploy metadata changes |
+| `recurring_incident` | Opportunity-only signal for incidents that repeatedly reopen or keep crossing recurrence thresholds; inspect `related_incident_ids` |
+| `post_deploy_regression` | Opportunity-only signal for incidents that regress after deploy metadata changes; inspect `related_incident_ids` |
 
 These are intentionally conservative. The purpose is useful signal with bounded noise, not “generate a bundle for every odd event.”
 
@@ -71,9 +72,9 @@ These are intentionally conservative. The purpose is useful signal with bounded 
 | Explains what broke | Explains what keeps degrading, repeating, or regressing |
 | Centers on an incident or hard failure signal | Centers on an improvement opportunity record |
 | Prioritizes debugging an active failure | Prioritizes hardening, cleanup, and pre-incident optimization |
-| Generated from incident/failure grouping | Generated from deterministic opportunity rules across request/log/incident/deploy data |
+| Generated from incident/failure grouping | Generated from deterministic opportunity rules across request/log data; incident-derived opportunities link back to failure bundles |
 
-Both use the same bundle contract shape and the same retrieval surfaces.
+Bundle-producing hosted improvements use the same bundle contract shape and retrieval surfaces as failure bundles.
 
 ## Quota and Retention
 
