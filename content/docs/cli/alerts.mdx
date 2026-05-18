@@ -165,7 +165,7 @@ Permanently removes the alert rule. No further notifications are sent.
 }
 ```
 
-Each email alert rule targets a single recipient. Create additional rules if more people should receive email notifications.
+Each email alert rule targets a single recipient. Create additional rules if more people should receive email notifications. Email deliveries are batched into 10-second per-project, per-recipient digests so sudden incident bursts send one summary email instead of one message per incident.
 
 ### Slack
 

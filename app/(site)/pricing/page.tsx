@@ -30,6 +30,7 @@ const tiers = [
       '750 ingested events /month',
       '50 retained bundles',
       '25 alert deliveries /month',
+      '100 lifecycle webhook deliveries /month',
       '7-day bundle retention',
       '7-day raw event retention',
       'Webhooks',
@@ -59,6 +60,7 @@ const tiers = [
       '10,500 ingested events /month',
       '450 retained bundles',
       '225 alert deliveries /month',
+      '750 lifecycle webhook deliveries /month',
       '30-day bundle retention',
       '14-day raw event retention',
       'Webhooks',
@@ -83,11 +85,12 @@ const tiers = [
     highlight: false,
     features: [
       'Unlimited projects',
-      '5 members',
+      'Up to 5 members',
       '15,000 bundle requests /month',
       '150,000 ingested events /month',
       '6,000 retained bundles',
       '4,500 alert deliveries /month',
+      '15,000 lifecycle webhook deliveries /month',
       '90-day bundle retention',
       '30-day raw event retention',
       'Webhooks',
@@ -110,7 +113,7 @@ const faqs = [
   },
   {
     q: 'What happens if I exceed my allowance?',
-    a: 'Ingestion is soft-limited. You will receive a notification and can purchase additional capacity units to expand your shared allowance.',
+    a: 'New hosted usage for that meter pauses until the monthly reset or until you add capacity. Existing incidents, bundles, and delivery history stay visible.',
   },
   {
     q: 'Is self-hosting free?',
@@ -127,6 +130,7 @@ const extraCapacityUnits = [
       '+3,500 ingested events /month',
       '+150 retained bundles',
       '+75 alert deliveries /month',
+      '+250 lifecycle webhook deliveries /month',
     ],
   },
   {
@@ -137,6 +141,7 @@ const extraCapacityUnits = [
       '+10,000 ingested events /month',
       '+400 retained bundles',
       '+300 alert deliveries /month',
+      '+1,000 lifecycle webhook deliveries /month',
     ],
   },
 ];

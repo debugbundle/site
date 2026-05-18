@@ -36,7 +36,7 @@ export default function TermsPage(): ReactElement {
 
         <section className="space-y-2">
           <h2 className="text-base font-semibold text-[var(--site-text)]">Usage limits</h2>
-          <p>Each plan tier includes usage allowances for bundle requests, ingested events, retained bundles, and alert deliveries. Exceeding allowances may result in rate limiting. See the{' '}
+          <p>Each plan tier includes usage allowances for bundle requests, ingested events, retained bundles, alert deliveries, and lifecycle webhook deliveries. Exceeding allowances may result in rate limiting. See the{' '}
             <Link className="text-[var(--site-accent)] underline" href="/pricing/">
               pricing page
             </Link>{' '}

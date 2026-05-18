@@ -25,7 +25,7 @@ export default function PrivacyPage(): ReactElement {
           <ul className="list-disc space-y-1 pl-5">
             <li>Account information (email address, hashed password)</li>
             <li>Event data submitted through SDKs and the ingestion API</li>
-            <li>Usage metrics (bundle requests, event counts, alert deliveries)</li>
+            <li>Usage metrics (bundle requests, event counts, alert deliveries, webhook deliveries)</li>
             <li>Session data for authentication purposes</li>
           </ul>
         </section>

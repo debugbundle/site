@@ -36,9 +36,10 @@ the full capture → bundle → investigation workflow.
 **Includes:**
 - Unlimited projects
 - Get-started capacity
-- 1 member (owner)
+- 1 member
+- 25 alert deliveries / month
+- 100 lifecycle webhook deliveries / month
 - Webhooks and basic email alerts
-- No GitHub automation
 - Always-on probes (local only)
 - 7-day bundle and event retention
 - Full self-hosted option (unlimited)
@@ -46,6 +47,7 @@ the full capture → bundle → investigation workflow.
 **Limitations:**
 - No extra capacity units
 - No remote probe activation
+- No GitHub automation
 - No Slack integration
 - No shared dashboards
 - Lower ingestion and retrieval rate limits
@@ -60,6 +62,8 @@ capacity that you can expand cheaply.
 - Unlimited projects
 - 3 included capacity units
 - Extra capacity units at $0.99/unit/month
+- 225 alert deliveries / month
+- 750 lifecycle webhook deliveries / month
 - 30-day bundle retention
 - 14-day raw event retention
 - Remote probe activation
@@ -79,9 +83,11 @@ and more shared allowance headroom.
 
 **Includes everything in Solo, plus:**
 - Unlimited projects
+- Up to 5 members
 - 15 included capacity units
 - Extra capacity units at $1.99/unit/month
-- Unlimited project collaborators
+- 4,500 alert deliveries / month
+- 15,000 lifecycle webhook deliveries / month
 - 90-day bundle retention
 - 30-day raw event retention
 - Slack integration
@@ -98,6 +104,12 @@ units determine how much shared hosted allowance your account gets.
 
 Capacity units expand shared allowance capacity while project creation stays
 unlimited.
+
+Hosted allowance meters are hard-stop by meter. If you exhaust bundle requests,
+ingested events, remote activations, alert deliveries, or lifecycle webhook
+deliveries, new usage for that meter pauses until the monthly reset or until
+you add capacity. Existing incidents, bundles, and delivery history stay
+available.
 
 ```
 Solo plan + 3 extra units = 6 total allowance units

@@ -5352,6 +5352,15 @@
               "maximum": 100,
               "default": 20
             }
+          },
+          {
+            "name": "project_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
           }
         ],
         "responses": {
@@ -12290,6 +12299,24 @@
                       "limit"
                     ],
                     "additionalProperties": false
+                  },
+                  "monthly_webhook_deliveries": {
+                    "type": "object",
+                    "properties": {
+                      "used": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "limit": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "used",
+                      "limit"
+                    ],
+                    "additionalProperties": false
                   }
                 },
                 "required": [
@@ -12297,7 +12324,8 @@
                   "monthly_raw_ingested_events",
                   "retained_bundle_cap",
                   "monthly_remote_activations",
-                  "monthly_alert_deliveries"
+                  "monthly_alert_deliveries",
+                  "monthly_webhook_deliveries"
                 ],
                 "additionalProperties": false
               }

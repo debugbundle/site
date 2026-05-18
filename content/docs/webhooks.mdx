@@ -214,6 +214,12 @@ def verify_webhook(body: bytes, signature: str, signing_secret: str) -> bool:
 
 Failed deliveries retry with exponential backoff. After sustained failures, the webhook is automatically disabled. You can re-enable and retry manually.
 
+Lifecycle webhook deliveries also count against the plan's shared monthly
+`monthly_webhook_deliveries` allowance. When that allowance is exhausted,
+DebugBundle stops creating new lifecycle webhook delivery intents until the
+monthly reset or until more capacity is added. Existing delivery history
+remains visible.
+
 ### Viewing Deliveries
 
 ```bash
@@ -241,6 +247,10 @@ By default this sends a `verification.passed` event. To test failure:
 ```bash
 debugbundle webhook test whk_xxx --project-id proj_xxx --event verification.failed
 ```
+
+Synthetic test deliveries consume the same lifecycle webhook allowance. When
+that meter is exhausted, the API rejects the test with
+`429 monthly_quota_exceeded` and a `Retry-After` header.
 
 ## Managing Webhooks
 

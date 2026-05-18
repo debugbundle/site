@@ -2490,6 +2490,12 @@
         ]
       },
       {
+        "code": "monthly_quota_exceeded",
+        "statusCodes": [
+          "429"
+        ]
+      },
+      {
         "code": "no_active_subscription",
         "statusCodes": [
           "409"
