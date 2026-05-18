@@ -90,7 +90,7 @@ Normalize → Classify → Group → Bundle → Reproduce → Notify
 
 **Reproduce** — The reproduction engine generates executable artifacts (curl commands, HTTPie commands, JSON spec) from request context, with a confidence level.
 
-**Notify** — Matching webhook endpoints receive signed payloads (`bundle.created`, `bundle.updated`, `bundle.reopened`, `bundle.resolved`). Alert rules evaluate and deliver to configured channels (email, Slack, Discord, webhook). Solo and Team projects can also evaluate GitHub automation rules and send `repository_dispatch` events to the project's assigned repository.
+**Notify** — Matching webhook endpoints receive signed payloads (`bundle.created`, `bundle.updated`, `bundle.reopened`, `bundle.resolved`, `improvement_bundle.created`). Alert rules evaluate incident conditions and deliver to configured channels (email, Slack, Discord, webhook). Solo and Team projects can also evaluate GitHub automation rules for incident lifecycle events and hosted improvement bundle creation, then send `repository_dispatch` events to the project's assigned repository.
 
 **Act** — Repository-owned workflows fetch the full bundle and reproduction artifacts, then decide whether to open an issue, invoke an agent, create a PR, or do nothing.
 

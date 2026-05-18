@@ -26,7 +26,7 @@ DebugBundle's GitHub automation path is intentionally narrow:
 1. Open the project's GitHub tab and connect GitHub.
 2. Assign one primary repository to the project.
 3. Create dispatch rules that select which lifecycle events should trigger automation.
-4. Receive `repository_dispatch` in GitHub Actions and fetch the full incident context with `debugbundle/action`.
+4. Receive `repository_dispatch` in GitHub Actions. Incident dispatches can fetch full incident context with `debugbundle/action`; hosted improvement dispatches include `improvement_id` plus a bundle link for repository-owned workflows that want to fetch the improvement bundle directly.
 
 DebugBundle owns the dispatch. Your repository owns the policy after the workflow starts.
 
