@@ -87,7 +87,7 @@ const tiers = [
     highlight: false,
     features: [
       'Unlimited projects',
-      'Up to 5 members',
+      'Unlimited members',
       '15,000 bundle requests /month',
       '150,000 ingested events /month',
       '6,000 retained bundles',
