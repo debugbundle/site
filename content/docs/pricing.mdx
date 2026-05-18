@@ -24,7 +24,7 @@ collaboration, cloud automation, and larger shared allowances.
 | **Email alerts** | Basic | Configurable | Advanced |
 | **Slack integration** | — | — | Yes |
 | **Remote probes** | — | Yes | Yes |
-| **Improvement bundles** | Local only | Local only | Cloud-automated |
+| **Automated improvement bundles** | — | Included | Included |
 | **Shared dashboards** | — | — | Yes |
 | **Priority support** | — | — | Yes |
 
@@ -47,6 +47,7 @@ the full capture → bundle → investigation workflow.
 **Limitations:**
 - No extra capacity units
 - No remote probe activation
+- No hosted automated improvement bundles
 - No GitHub automation
 - No Slack integration
 - No shared dashboards
@@ -67,6 +68,7 @@ capacity that you can expand cheaply.
 - 30-day bundle retention
 - 14-day raw event retention
 - Remote probe activation
+- Automated improvement bundles
 - GitHub automation with dispatch rules and delivery history
 - Configurable alerts
 - Higher rate limits
@@ -91,6 +93,7 @@ and more shared allowance headroom.
 - 90-day bundle retention
 - 30-day raw event retention
 - Slack integration
+- Automated improvement bundles with higher allowance and retention
 - Shared dashboards and team views
 - GitHub automation with longer delivery history windows
 - Project invite flow
@@ -148,6 +151,19 @@ DebugBundle experience with no restrictions.
 
 [Self-Hosting Guide →](/docs/self-hosting)
 
+## Pricing FAQ
+
+### Can I still get improvement analysis in the Free tier?
+
+Yes. Free still supports local/manual improvement analysis with:
+
+```bash
+debugbundle analyze --type improvement --local
+```
+
+What Free does not include is hosted automated improvement bundle generation.
+Hosted automated improvement bundles are available on Solo and Team.
+
 ## When to Upgrade
 
 | Situation | Recommended Tier |
@@ -155,6 +171,7 @@ DebugBundle experience with no restrictions.
 | Trying DebugBundle for the first time | Free |
 | Solo developer who wants hosted debugging without team features | Solo |
 | Need more shared allowance capacity on a paid plan | Solo + extra units |
+| Want automated improvement bundles | Solo |
 | Want GitHub automation & remote probe activation | Solo |
 | Team needing shared incident visibility | Team |
 | Team using Slack for incident alerts | Team |

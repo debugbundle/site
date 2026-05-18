@@ -13,7 +13,9 @@ and designed for both human and AI consumption.
 | Type | Description |
 |------|-------------|
 | `failure` | Captures an error, exception, or degraded behavior. |
-| `improvement` | Captures a positive signal — performance improvement, successful fix verification. |
+| `improvement` | Captures a recurring hardening or optimization opportunity from deterministic request, log, deploy, or incident patterns. |
+
+Improvement bundles are a first-class hosted artifact for Solo+, not just a footnote on the failure-bundle flow. See [Improvement Bundles](/docs/bundles/improvement-bundles) for the product-specific model, triggers, quota behavior, and settings surface.
 
 ## What's in a Bundle
 
@@ -50,9 +52,17 @@ simply absent, not null-padded.
 
 ## Bundle Generation
 
-Bundles are generated asynchronously by the worker after events are grouped into incidents.
-Generation triggers at specific occurrence thresholds (1, 3, 10 events) and whenever
-significant new data arrives.
+Failure bundles are generated asynchronously by the worker after events are grouped into incidents.
+Improvement bundles are generated asynchronously when deterministic opportunity rules cross threshold and dedupe gates.
+
+Common generation triggers:
+
+- failure occurrence thresholds and meaningful context changes
+- recurring warning/log patterns
+- repeated slow requests
+- repeated request failures
+- recurring incident reopen/regression behavior
+- post-deploy regressions
 
 ### Determinism
 
@@ -89,6 +99,8 @@ The `signal.signal_type` field describes what kind of signal triggered the bundl
 | `performance_issue` | A detected performance regression. |
 | `retry_loop` | A detected retry loop pattern. |
 | `slow_query` | A slow database query. |
+
+Improvement bundles commonly use `warning`, `performance_issue`, `request_failure`, and `retry_loop` style signals depending on the qualifying rule.
 
 ## Severity Levels
 
@@ -138,5 +150,6 @@ See [Bundle Schema](/docs/bundles/schema) for the complete JSON structure.
 ## Next Steps
 
 - [Bundle Schema](/docs/bundles/schema) — Complete JSON schema reference
+- [Improvement Bundles](/docs/bundles/improvement-bundles) — Hosted deterministic improvement opportunities
 - [Incidents](/docs/incidents) — How incidents are created from events
 - [Probes](/docs/probes) — Enrich bundles with probe data

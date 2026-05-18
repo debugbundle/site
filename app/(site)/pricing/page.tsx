@@ -38,6 +38,7 @@ const tiers = [
     ],
     excluded: [
       'Remote probe activation',
+      'Automated improvement bundles',
       'GitHub automation',
       'Extra capacity units',
       'Team collaboration',
@@ -66,6 +67,7 @@ const tiers = [
       'Webhooks',
       'Always-on probes',
       'Remote probe activation',
+      'Automated improvement bundles',
       'GitHub automation',
       'Extra capacity units: +$0.99/unit/mo',
     ],
@@ -96,6 +98,7 @@ const tiers = [
       'Webhooks',
       'Always-on probes',
       'Remote probe activation',
+      'Automated improvement bundles',
       'GitHub automation',
       'Extra capacity units: +$1.99/unit/mo',
       'Slack integration',
@@ -110,6 +113,10 @@ const faqs = [
   {
     q: 'Can I use DebugBundle without paying?',
     a: 'Yes. The Free tier gives you local-first debugging with zero cloud dependency, unlimited projects, and get-started hosted capacity.',
+  },
+  {
+    q: 'Can I still get improvement analysis on the Free tier?',
+    a: 'Yes. Free still supports local/manual improvement analysis through the CLI and local bundles. Hosted automated improvement bundles are available on Solo and Team.',
   },
   {
     q: 'What happens if I exceed my allowance?',
@@ -166,7 +173,7 @@ export default function PricingPage(): ReactElement {
       <SectionTitle
         eyebrow="Pricing"
         title="Simple, developer-friendly pricing"
-            description="Start free with hosted or local-first debugging. Upgrade when you need higher limits, remote probes, GitHub automation, or team collaboration."
+        description="Start free with hosted or local-first debugging. Upgrade when you need higher limits, remote probes, GitHub automation, or team collaboration."
       />
 
       {/* Tier cards */}

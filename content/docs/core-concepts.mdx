@@ -4,20 +4,22 @@ description: "The three primitives, event types, fingerprinting, incident lifecy
 icon: Blocks
 ---
 
-DebugBundle is built on three primitives: **bundles**, **incidents**, and **profiles**. Understanding these gives you the mental model for everything else in the system.
+DebugBundle is built on three primitives: **bundles**, **incidents**, and **profiles**. Hosted improvements add an opportunity layer on top of those primitives, but the mental model still starts here.
 
 ---
 
 ## Debug Bundles
 
-A debug bundle is a deterministic, versioned JSON document that packages all debugging context for a single incident. It is the core artifact of the system.
+A debug bundle is a deterministic, versioned JSON document that packages debugging or hardening context into one portable artifact. It is the core artifact of the system.
 
 ### Bundle Types
 
 | Type | When created | Purpose |
 |---|---|---|
-| `failure` | An unhandled exception, fatal error, or critical log fires | Standard debugging: understand what broke and why |
-| `improvement` | An incident is resolved and the fix is detected | Documents what changed: before/after comparison for knowledge capture |
+| `failure` | An unhandled exception, fatal error, or critical failure signal fires | Standard debugging: understand what broke and why |
+| `improvement` | Deterministic hosted rules detect a recurring hardening or optimization opportunity | Prioritize recurring latency, warning, request-failure, regression, or recurrence patterns before they become larger problems |
+
+Hosted automated improvement bundles are available on Solo, Team, and self-host projects. They are generated from deterministic request/log/incident/deploy rules, not by an LLM.
 
 ### What's Inside
 
@@ -133,5 +135,6 @@ Each artifact includes a **confidence level** indicating how completely the requ
 
 - [Quickstart](/docs/quickstart) — Capture your first incident
 - [How It Works](/docs/how-it-works) — The full 4-stage lifecycle
+- [Improvement Bundles](/docs/bundles/improvement-bundles) — Hosted deterministic improvement opportunities
 - [SDKs Overview](/docs/sdks) — Configure capture for your language and framework
 - [CLI Local Workflow](/docs/cli/local-workflow) — Process, inspect, and resolve incidents locally

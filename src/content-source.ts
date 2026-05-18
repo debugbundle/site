@@ -16,6 +16,7 @@ import * as docsBillingPage from '../content/docs/billing.mdx';
 import * as docsCapturePolicy from '../content/docs/capture-policy.mdx';
 import * as docsAlertsPage from '../content/docs/alerts.mdx';
 import * as docsBundlesIndexPage from '../content/docs/bundles/index.mdx';
+import * as docsBundlesImprovementBundlesPage from '../content/docs/bundles/improvement-bundles.mdx';
 import * as docsBundlesSchemaPage from '../content/docs/bundles/schema.mdx';
 import * as docsIncidentsIndexPage from '../content/docs/incidents/index.mdx';
 import * as docsIncidentsReproductionPage from '../content/docs/incidents/reproduction.mdx';
@@ -179,7 +180,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   },
   './bundles/meta.json': {
     title: 'Bundles',
-    pages: ['index', 'schema'],
+    pages: ['index', 'improvement-bundles', 'schema'],
   },
   './incidents/meta.json': {
     title: 'Incidents',
@@ -223,6 +224,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './probes.mdx': docsProbesPage,
   './security.mdx': docsSecurityPage,
   './bundles/index.mdx': docsBundlesIndexPage,
+  './bundles/improvement-bundles.mdx': docsBundlesImprovementBundlesPage,
   './bundles/schema.mdx': docsBundlesSchemaPage,
   './incidents/index.mdx': docsIncidentsIndexPage,
   './incidents/reproduction.mdx': docsIncidentsReproductionPage,
