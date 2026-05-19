@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import Link from 'next/link';
 
 import { SectionTitle, SurfaceCard, SurfaceGrid, TerminalExample } from '@/components/content-blocks';
+import { JsonLdScript } from '@/components/json-ld';
 
 export const metadata: Metadata = {
   title: 'DebugBundle — Production debugging for AI agents',
@@ -38,10 +39,7 @@ export default function HomePage(): ReactElement {
 
   return (
     <div className="space-y-16">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
-      />
+      <JsonLdScript id="software-jsonld" data={softwareJsonLd} />
       {/* Hero */}
       <section className="space-y-8 rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface)] p-8 sm:p-12">
         <SectionTitle

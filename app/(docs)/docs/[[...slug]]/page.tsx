@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layouts/docs/page';
 
+import { QuickstartDocsPage } from '@/components/quickstart-docs-page';
 import { createPageMdxComponents } from '@/content-components';
 import { readDocsPageData } from '@/content-page-data';
 import { docsSource } from '@/content-source';
@@ -50,6 +51,19 @@ export default async function DocsContentPage({
   const pageData = readDocsPageData(page);
   const Content = pageData.body;
   const docsPageProps = pageData.toc === undefined ? {} : { toc: pageData.toc };
+  const isQuickstartPage = (resolvedParams.slug ?? []).join('/') === 'quickstart';
+
+  if (isQuickstartPage && pageData.toc !== undefined) {
+    return (
+      <QuickstartDocsPage
+        description={pageData.description}
+        title={pageData.title}
+        toc={pageData.toc}
+      >
+        <Content components={createPageMdxComponents(docsSource, page)} />
+      </QuickstartDocsPage>
+    );
+  }
 
   return (
     <DocsPage {...docsPageProps}>

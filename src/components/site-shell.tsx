@@ -1,6 +1,7 @@
 import type { ReactElement, ReactNode } from 'react';
 import Link from 'next/link';
 
+import { BrandLockup } from '@/components/brand-lockup';
 import { GitHubMark } from '@/components/github-mark';
 import { siteConfig } from '@/site-config';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -17,9 +18,7 @@ export function SiteShell({ children }: { children: ReactNode }): ReactElement {
       <header className="border-b border-[var(--site-border)] bg-[color:color-mix(in_srgb,var(--site-bg)_88%,transparent)] backdrop-blur">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-6 py-4">
           <div className="flex items-center gap-8">
-            <Link className="text-lg font-semibold tracking-tight" href="/">
-              DebugBundle
-            </Link>
+            <BrandLockup labelClassName="text-lg" />
             <nav className="hidden items-center gap-5 md:flex">
               {siteConfig.primaryNav.map((item) => (
                 <Link

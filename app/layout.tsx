@@ -5,6 +5,7 @@ import { RootProvider } from 'fumadocs-ui/provider/next';
 
 import { DogfoodingBootstrap } from '@/components/dogfooding-bootstrap';
 import { DocsSearchDialog } from '@/components/docs-search-dialog';
+import { JsonLdScript } from '@/components/json-ld';
 import { siteConfig } from '@/site-config';
 
 import './globals.css';
@@ -57,10 +58,7 @@ export default function RootLayout({ children }: { children: ReactNode }): React
   return (
     <html className={`${inter.variable} ${jetbrainsMono.variable}`} lang="en" suppressHydrationWarning>
       <body className="font-[family-name:var(--font-inter)] antialiased">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
+        <JsonLdScript id="organization-jsonld" data={organizationJsonLd} />
         <DogfoodingBootstrap />
         <RootProvider
           theme={{

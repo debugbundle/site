@@ -45,9 +45,11 @@ export function SurfaceCard({
       <div>
         <h2 className="mt-0 flex items-center gap-3 text-lg font-semibold text-[var(--site-text)]">
           {Icon ? <Icon className="size-5 text-[var(--site-accent)]" aria-hidden="true" /> : null}
-          <span>{title}</span>
+          <span className="min-w-0 break-words">{title}</span>
         </h2>
-        <div className="mt-3 text-sm leading-7 text-[var(--site-text-muted)]">{children}</div>
+        <div className="mt-3 min-w-0 break-words text-sm leading-7 text-[var(--site-text-muted)] [overflow-wrap:anywhere] [&_code]:whitespace-normal [&_code]:break-words [&_code]:[overflow-wrap:anywhere]">
+          {children}
+        </div>
       </div>
       {action ? (
         <span
@@ -79,7 +81,9 @@ export function Notice({ title, children }: { title: string; children: ReactNode
   return (
     <section className="rounded-lg border border-[var(--site-border-strong)] bg-[var(--site-surface-muted)] p-6">
       <h2 className="text-base font-semibold text-[var(--site-text)]">{title}</h2>
-      <div className="mt-2 text-sm leading-7 text-[var(--site-text-muted)]">{children}</div>
+      <div className="mt-2 min-w-0 break-words text-sm leading-7 text-[var(--site-text-muted)] [overflow-wrap:anywhere] [&_code]:whitespace-normal [&_code]:break-words [&_code]:[overflow-wrap:anywhere]">
+        {children}
+      </div>
     </section>
   );
 }
@@ -109,10 +113,12 @@ export function WorkflowStep({
   meta?: string;
 }): ReactElement {
   return (
-    <section className="relative rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-4">
+    <section className="relative min-w-0 rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-4">
       {meta ? <p className="mb-2 text-xs font-medium uppercase text-[var(--site-text-subtle)]">{meta}</p> : null}
-      <h3 className="text-base font-semibold text-[var(--site-text)]">{title}</h3>
-      <div className="mt-2 text-sm leading-6 text-[var(--site-text-muted)]">{children}</div>
+      <h3 className="min-w-0 break-words text-base font-semibold text-[var(--site-text)]">{title}</h3>
+      <div className="mt-2 min-w-0 break-words text-sm leading-6 text-[var(--site-text-muted)] [overflow-wrap:anywhere] [&_code]:whitespace-normal [&_code]:break-words [&_code]:[overflow-wrap:anywhere]">
+        {children}
+      </div>
     </section>
   );
 }

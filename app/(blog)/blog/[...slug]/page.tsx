@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import { DocsBody, DocsDescription, DocsTitle } from 'fumadocs-ui/layouts/docs/page';
 
 import { createPageMdxComponents } from '@/content-components';
+import { JsonLdScript } from '@/components/json-ld';
 import { readBlogPageData } from '@/content-page-data';
 import { blogSource } from '@/content-source';
 
@@ -67,10 +68,7 @@ export default async function BlogPostPage({
 
   return (
     <article className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
-      />
+      <JsonLdScript id={`article-jsonld-${resolvedParams.slug.join('-')}`} data={articleJsonLd} />
       <header className="space-y-3">
         {dateStr ? (
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-fd-muted-foreground">{dateStr}</p>

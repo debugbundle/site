@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import Link from 'next/link';
 
 import { Notice, SectionTitle } from '@/components/content-blocks';
+import { JsonLdScript } from '@/components/json-ld';
 
 export const metadata: Metadata = {
   title: 'Pricing — DebugBundle',
@@ -166,10 +167,7 @@ export default function PricingPage(): ReactElement {
 
   return (
     <div className="space-y-12">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
+      <JsonLdScript id="pricing-faq-jsonld" data={faqJsonLd} />
       <SectionTitle
         eyebrow="Pricing"
         title="Simple, developer-friendly pricing"

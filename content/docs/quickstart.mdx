@@ -1,10 +1,207 @@
 ---
 title: "Quickstart"
-description: "Capture your first local event, process it into an incident, and inspect the generated debug bundle."
+description: "Choose a cloud or local-only DebugBundle path, capture your first event, and inspect the generated debug bundle."
 icon: Rocket
 ---
 
-Use local-only mode first. It writes events to `.debugbundle/local/events/`, processes them on your machine, and does not require a cloud account.
+<Tabs items={['Cloud', 'Local-only']} data-toc-scope="quickstart-path">
+  <Tab>
+
+Use Cloud when you are preparing a hosted deployment or already running in production. Events go to DebugBundle Cloud, where you can inspect incidents with your team, receive alerts, send webhooks, run GitHub automations, and keep a local fallback for development.
+
+## Agent Path
+
+Copy this prompt into your coding agent:
+
+```text
+Set up DebugBundle for this repository with DebugBundle Cloud.
+
+First inspect the project language, framework, package manager, entry points, and logging setup.
+Then read the relevant DebugBundle docs:
+- https://debugbundle.com/docs/installation
+- https://debugbundle.com/docs/project-setup/connect-to-cloud
+- https://debugbundle.com/docs/cli/cloud-workflow
+- https://debugbundle.com/docs/sdks
+- https://debugbundle.com/docs/agent-workflows/skill-file
+
+Run `debugbundle setup`, then read `.agents/skills/debugbundle/SKILL.md` and follow
+the generated DebugBundle skill guidance for this repository.
+
+Authenticate with `debugbundle login`, connect the project with `debugbundle connect`,
+and configure `DEBUGBUNDLE_PROJECT_TOKEN` for the hosted environment.
+
+Choose the smallest safe SDK, browser relay, WordPress plugin, or log-ingestion path
+that matches this project. Trigger or capture one intentional test error through the
+real ingestion path, then verify cloud ingestion with `debugbundle verify cloud`.
+End by showing the hosted incident with `debugbundle incidents --source cloud` and
+the bundle with `debugbundle inspect <incident-id>`.
+```
+
+The agent should end with a connected cloud project, a verified hosted incident, and a bundle visible from `debugbundle inspect <incident-id>`.
+
+## Manual Path
+
+### 1. Install the CLI
+
+```bash
+npm install -g @debugbundle/cli
+debugbundle --version
+```
+
+The CLI drives setup, authentication, cloud connection, verification, and incident inspection. If you do not want to install the CLI globally, run it through your normal Node package runner for local tooling.
+
+### 2. Scaffold the Project
+
+```bash
+debugbundle setup
+```
+
+This creates `.debugbundle/profile.json`, `.debugbundle/local/connection.json`, local event directories, and the agent skill files. Keep `profile.json` and `connection.json` in git. Keep `.debugbundle/local/` and `.debugbundle/bundles/` ignored.
+
+### 3. Connect to Cloud
+
+```bash
+debugbundle login
+debugbundle connect
+```
+
+`connect` creates or selects a cloud project, creates a write-only project token, and updates `.debugbundle/local/connection.json`. Store the shown project token in your hosted environment:
+
+```bash
+DEBUGBUNDLE_PROJECT_TOKEN=dbundle_proj_xxxxxxxxxxxx
+```
+
+### 4. Add Capture
+
+Pick the path that matches your project.
+
+<Tabs items={['Node.js', 'Python', 'PHP', 'Existing Logs']}>
+  <Tab>
+
+```bash
+npm install @debugbundle/sdk-node
+```
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-node';
+
+DebugBundle.init({
+  projectToken: process.env.DEBUGBUNDLE_PROJECT_TOKEN,
+  environment: 'production',
+  service: 'api',
+});
+
+DebugBundle.captureExceptions();
+DebugBundle.captureRejections();
+```
+
+For framework middleware, logger capture, and browser relay setup, see [Node.js SDK](/docs/sdks/node).
+
+  </Tab>
+  <Tab>
+
+```bash
+pip install debugbundle-python
+```
+
+```python
+import os
+import debugbundle
+
+debugbundle.init(
+    project_token=os.environ["DEBUGBUNDLE_PROJECT_TOKEN"],
+    environment="production",
+    service="api",
+)
+
+debugbundle.capture_exceptions()
+debugbundle.capture_logging()
+```
+
+For Django, Flask, FastAPI, structlog, and loguru, see [Python SDK](/docs/sdks/python).
+
+  </Tab>
+  <Tab>
+
+```bash
+composer require debugbundle/sdk-php
+```
+
+```php
+<?php
+
+use DebugBundle\DebugBundle;
+
+DebugBundle::init([
+    'projectToken' => getenv('DEBUGBUNDLE_PROJECT_TOKEN'),
+    'environment' => 'production',
+    'service' => 'api',
+]);
+
+DebugBundle::captureErrors();
+DebugBundle::captureExceptions();
+DebugBundle::captureShutdown();
+```
+
+For Laravel, Symfony, and Monolog, see [PHP SDK](/docs/sdks/php).
+
+  </Tab>
+  <Tab>
+
+Use log ingestion when you cannot add an SDK yet.
+
+```bash
+debugbundle watch --cloud --log ./storage/logs/app.log --format php-error
+debugbundle watch --cloud --log ./var/log/apache/error.log --format apache-error
+```
+
+For structured input, emit DebugBundle NDJSON and ingest it:
+
+```bash
+debugbundle watch --cloud --log ./debugbundle.ndjson --format debugbundle-ndjson
+```
+
+See [Log Ingestion](/docs/cli/log-ingestion).
+
+  </Tab>
+</Tabs>
+
+### 5. Verify Cloud Ingestion
+
+Deploy or run the configured service with `DEBUGBUNDLE_PROJECT_TOKEN` set, then verify ingestion:
+
+```bash
+debugbundle verify cloud --project-id proj_01HXYZ... --trigger-5xx
+debugbundle incidents --source cloud
+debugbundle inspect inc_01HXYZ...
+```
+
+`verify cloud --trigger-5xx` sends a synthetic request-failure event through hosted ingestion, polls for the incident and bundle, and reports whether the cloud path is ready.
+
+## What You Should See
+
+A cloud incident includes the same bundle context as local mode, plus hosted workflows:
+
+| Capability | Purpose |
+|---|---|
+| Hosted incidents | Team-visible incident list, status, assignment, and bundle access |
+| Alerts | Email, Slack, Discord, or webhook notifications for lifecycle events |
+| Webhooks | Signed automation events for incident and verification workflows |
+| GitHub automation | Repository dispatch and follow-up workflows owned by your repo |
+| MCP/API access | Agent and automation access to incidents, bundles, probes, and project operations |
+
+## Next Steps
+
+- [Connect to Cloud](/docs/project-setup/connect-to-cloud) — Understand project tokens and delivery modes
+- [CLI Cloud Workflow](/docs/cli/cloud-workflow) — Verify, inspect, resolve, and manage cloud incidents
+- [Alerts](/docs/alerts) — Notify teams when incidents change
+- [Webhooks](/docs/webhooks) — Send signed lifecycle events to automation systems
+- [GitHub Automation](/docs/agent-workflows/automation-recipes) — Connect repository dispatch and follow-up actions
+
+</Tab>
+<Tab>
+
+Use local-only mode when you want to evaluate DebugBundle without a cloud account or keep all investigation data on your machine. It writes events to `.debugbundle/local/events/`, processes them locally, and keeps bundles under `.debugbundle/bundles/`.
 
 ## Agent Path
 
@@ -15,17 +212,18 @@ Set up DebugBundle for this repository in local-only mode.
 
 First inspect the project language, framework, package manager, entry points, and logging setup.
 Then read the relevant DebugBundle docs:
-- /docs/installation
-- /docs/sdks
-- /docs/cli/setup
-- /docs/cli/local-workflow
+- https://debugbundle.com/docs/installation
+- https://debugbundle.com/docs/project-setup/local-only
+- https://debugbundle.com/docs/cli/local-workflow
+- https://debugbundle.com/docs/sdks
+- https://debugbundle.com/docs/agent-workflows/skill-file
 
-Choose the correct SDK or log-ingestion path for this project. Run `debugbundle setup`,
-add the smallest safe capture integration, trigger or capture one intentional test error,
-run `debugbundle process`, then show the latest bundle with `debugbundle inspect`.
+Run `debugbundle setup`, then read `.agents/skills/debugbundle/SKILL.md` and follow
+the generated DebugBundle skill guidance for this repository.
 
-Do not assume this is a Node.js project. Use the language-specific DebugBundle guide
-that matches the repository.
+Choose the smallest safe SDK, browser relay, WordPress plugin, or log-ingestion path
+that matches this project. Trigger or capture one intentional test error, run
+`debugbundle process`, then show the latest bundle with `debugbundle inspect`.
 ```
 
 The agent should end with a processed local incident and a bundle visible from `debugbundle inspect`.
@@ -39,7 +237,7 @@ npm install -g @debugbundle/cli
 debugbundle --version
 ```
 
-The CLI drives setup, local processing, inspection, and cloud connection. If you do not want to install the CLI globally, run it through your normal Node package runner for local tooling.
+The CLI drives setup, local processing, inspection, and optional cloud connection. If you do not want to install the CLI globally, run it through your normal Node package runner for local tooling.
 
 ### 2. Scaffold the Project
 
@@ -185,3 +383,6 @@ A local bundle includes:
 - [CLI Local Workflow](/docs/cli/local-workflow) — Process, inspect, resolve, reopen, and clean up incidents
 - [SDKs](/docs/sdks) — Language-specific setup and capture options
 - [Core Concepts](/docs/core-concepts) — Bundles, incidents, profiles, and event types
+
+</Tab>
+</Tabs>
