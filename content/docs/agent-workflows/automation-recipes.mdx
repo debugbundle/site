@@ -1,12 +1,12 @@
 ---
-title: Automation Recipes
-description: End-to-end GitHub automation recipes using DebugBundle repository dispatch, the reference fetch action, and repository-owned follow-up logic.
+title: GitHub Automation
+description: Configure DebugBundle repository dispatch, the reference fetch action, and repository-owned GitHub Actions follow-up logic.
 icon: BookOpen
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-These recipes are the supported GitHub automation path for DebugBundle.
+This is the supported GitHub automation path for DebugBundle.
 
 <Callout type="info">
   GitHub automation is available on Solo and Team plans.
@@ -37,7 +37,7 @@ DebugBundle delivery status means GitHub accepted or rejected the `repository_di
 
 After an incident workflow starts, fetch the full context with `debugbundle/action@v1`. Improvement workflows can use the same dispatch trigger and fetch the improvement bundle from the payload link.
 
-## Recipe 1: Basic GitHub triage workflow
+## Basic GitHub Triage Workflow
 
 Use this when the repository only needs to print or route incident information.
 
@@ -71,7 +71,7 @@ jobs:
 
 Use the checked-in example at `examples/github-actions/basic.yml` if you want a ready-made starting point.
 
-## Recipe 2: Agent-capable workflow
+## Agent-Capable Workflow
 
 Use this when the repository will hand the fetched bundle to a coding agent, internal script, or reusable workflow.
 
@@ -107,7 +107,7 @@ jobs:
 
 Use the checked-in example at `examples/github-actions/agent-capable.yml` when you want the workflow skeleton without coupling DebugBundle to a specific agent runtime.
 
-## Recipe 3: Issue creation workflow
+## Issue Creation Workflow
 
 Use this when the repository wants a low-friction first automation outcome: create a tracking issue from the dispatch payload and bundle links.
 

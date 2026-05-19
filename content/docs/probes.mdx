@@ -17,19 +17,23 @@ collect extra context and include it in subsequent events.
 
 ## How Probes Work
 
-```
-┌──────────┐    ┌────────────┐    ┌─────────┐    ┌──────────┐
-│  You      │───▶│  Activate  │───▶│  API    │───▶│  Probe   │
-│ (API/CLI) │    │  Probe     │    │  Store  │    │  Active  │
-└──────────┘    └────────────┘    └─────────┘    └──────────┘
-                                                       │
-                     ┌─────────────────────────────────┘
-                     ▼
-              ┌────────────┐    ┌──────────────┐    ┌───────────┐
-              │  SDK Polls │───▶│  Probe       │───▶│  Enriched │
-              │  /v1/events│    │  Directives  │    │  Events   │
-              └────────────┘    └──────────────┘    └───────────┘
-```
+<WorkflowDiagram>
+  <WorkflowStep title="Activate" meta="API, CLI, or MCP">
+    Create a probe with a label pattern, service filter, environment filter, and TTL.
+  </WorkflowStep>
+  <WorkflowStep title="Store">
+    DebugBundle stores the activation and returns the current directive state.
+  </WorkflowStep>
+  <WorkflowStep title="Distribute">
+    SDKs receive probe directives through config polling and ingestion responses.
+  </WorkflowStep>
+  <WorkflowStep title="Collect">
+    Matching SDK instances attach probe data to subsequent events.
+  </WorkflowStep>
+  <WorkflowStep title="Bundle">
+    Probe data appears in `context.probe_data` when related incidents are bundled.
+  </WorkflowStep>
+</WorkflowDiagram>
 
 1. **Activate** — You create a probe via API, CLI, or MCP with a label pattern, service
    filter, and TTL.

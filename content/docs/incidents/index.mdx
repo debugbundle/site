@@ -67,14 +67,20 @@ Events are classified into three categories:
 
 ## Incident Lifecycle
 
-```
-┌──────────┐         ┌──────────┐         ┌──────────┐
-│  Created  │────────▶│  Open    │────────▶│ Resolved │
-└──────────┘         └──────────┘         └──────────┘
-                          ▲                     │
-                          │    (regression)      │
-                          └─────────────────────┘
-```
+<WorkflowDiagram>
+  <WorkflowStep title="Created">
+    A new incident is created when an incident signal does not match an existing fingerprint.
+  </WorkflowStep>
+  <WorkflowStep title="Open">
+    Matching events continue to update occurrence counts, context, bundles, and alerts.
+  </WorkflowStep>
+  <WorkflowStep title="Resolved">
+    A team member or agent explicitly marks the incident resolved.
+  </WorkflowStep>
+  <WorkflowStep title="Reopened">
+    A new matching event after resolution reopens the incident as a regression.
+  </WorkflowStep>
+</WorkflowDiagram>
 
 | State | Description |
 |-------|-------------|

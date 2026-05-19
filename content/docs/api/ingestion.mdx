@@ -167,12 +167,20 @@ Configure capture policies via the [Projects API](/docs/api/projects) or CLI.
 
 After ingestion, events flow through the asynchronous processing pipeline:
 
-```
-POST /v1/events → validate → persist to S3 → enqueue job → 202 response
-                                                    │
-                                                    ▼ (async worker)
-                                              normalize → fingerprint → group into incidents → generate bundles
-```
+<WorkflowDiagram>
+  <WorkflowStep title="Accept">
+    `POST /v1/events` validates auth, payload shape, rate limits, and capture policy.
+  </WorkflowStep>
+  <WorkflowStep title="Persist">
+    Raw accepted events are written to object storage.
+  </WorkflowStep>
+  <WorkflowStep title="Enqueue">
+    Processing jobs are queued and the API returns without doing heavy work.
+  </WorkflowStep>
+  <WorkflowStep title="Process">
+    Workers normalize, fingerprint, group incidents, and generate bundles asynchronously.
+  </WorkflowStep>
+</WorkflowDiagram>
 
 The ingestion endpoint returns immediately after persisting and enqueuing. Bundle generation, incident grouping, and webhook delivery happen asynchronously in the worker.
 

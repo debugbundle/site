@@ -39,21 +39,17 @@ An incident is a fingerprint-grouped container of events. When the system sees a
 
 ### Incident Lifecycle
 
-```
-          new event
-              │
-              ▼
-         ┌─────────┐     resolve     ┌──────────┐
-         │  Open    │ ──────────────► │ Resolved │
-         └─────────┘                  └──────────┘
-              ▲                            │
-              │         new event          │
-              │         (regression)       │
-              │                            ▼
-              │                      ┌───────────┐
-              └───────────────────── │ Regressed │
-                                     └───────────┘
-```
+<WorkflowDiagram>
+  <WorkflowStep title="Open">
+    Active incident receiving new occurrences.
+  </WorkflowStep>
+  <WorkflowStep title="Resolved">
+    Manually closed by CLI, API, MCP, or the web app.
+  </WorkflowStep>
+  <WorkflowStep title="Regressed">
+    Reopened after a new event matches a previously resolved fingerprint.
+  </WorkflowStep>
+</WorkflowDiagram>
 
 **Open** — Active incident receiving new occurrences.
 

@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import Link from 'next/link';
 
 import { Notice, SurfaceCard, SurfaceGrid } from '@/components/content-blocks';
 import { ReferencePage } from '@/components/reference-page';
@@ -13,13 +12,8 @@ export default function DocsReferencePage(): ReactElement {
     >
       <SurfaceGrid>
         {referenceRouteEntries.map((entry) => (
-          <SurfaceCard key={entry.href} title={entry.title}>
-            <p>{entry.description}</p>
-            <p className="mt-3">
-              <Link className="font-medium text-[var(--site-text)] underline" href={entry.href}>
-                Open reference page
-              </Link>
-            </p>
+          <SurfaceCard key={entry.href} title={entry.title} href={entry.href} action="Open">
+            {entry.description}
           </SurfaceCard>
         ))}
       </SurfaceGrid>

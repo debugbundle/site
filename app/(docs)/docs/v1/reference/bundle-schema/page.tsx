@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import Link from 'next/link';
 
 import { SurfaceCard, SurfaceGrid } from '@/components/content-blocks';
 import { ReferencePage } from '@/components/reference-page';
@@ -15,13 +14,8 @@ export default function DocsBundleSchemaReferencePage(): ReactElement {
     >
       <SurfaceGrid>
         {links.map((entry) => (
-          <SurfaceCard key={entry.href} title={entry.title}>
-            <p>{entry.description}</p>
-            <p className="mt-3">
-              <Link className="font-medium text-[var(--site-text)] underline" href={entry.href}>
-                Open artifact
-              </Link>
-            </p>
+          <SurfaceCard key={entry.href} title={entry.title} href={entry.href} action="Open artifact">
+            {entry.description}
           </SurfaceCard>
         ))}
       </SurfaceGrid>

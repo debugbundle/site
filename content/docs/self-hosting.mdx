@@ -171,21 +171,26 @@ That makes self-host endpoint drift visible immediately when the stored CLI auth
 
 Each component runs as its own service, even on a single machine:
 
-```
-┌─────────┐    ┌─────────┐    ┌──────────┐
-│   Web   │───▶│   API   │───▶│  Worker  │
-│  (SPA)  │    │  (REST) │    │  (Jobs)  │
-└─────────┘    └────┬────┘    └────┬─────┘
-                    │              │
-              ┌─────┴─────┐  ┌────┴─────┐
-              │ PostgreSQL │  │  Redis   │
-              └───────────┘  └──────────┘
-                    │
-              ┌─────┴─────┐
-              │ LocalStack │
-              │    (S3)    │
-              └───────────┘
-```
+<WorkflowDiagram>
+  <WorkflowStep title="Web" meta="SPA">
+    Browser dashboard served from the self-host stack.
+  </WorkflowStep>
+  <WorkflowStep title="API" meta="REST">
+    Authentication, ingestion, retrieval, project, webhook, alert, and billing-compatible routes.
+  </WorkflowStep>
+  <WorkflowStep title="Worker" meta="Jobs">
+    Normalization, grouping, bundle generation, reproduction, alerts, reports, and deliveries.
+  </WorkflowStep>
+  <WorkflowStep title="PostgreSQL" meta="Metadata">
+    Project, incident, token, member, alert, webhook, and billing-compatible metadata.
+  </WorkflowStep>
+  <WorkflowStep title="Redis" meta="Queue">
+    Worker queues, frequency counters, and transient processing state.
+  </WorkflowStep>
+  <WorkflowStep title="LocalStack S3" meta="Artifacts">
+    Raw events, bundles, reproductions, and export artifacts.
+  </WorkflowStep>
+</WorkflowDiagram>
 
 ## Scaling
 

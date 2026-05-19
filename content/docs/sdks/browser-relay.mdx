@@ -24,30 +24,20 @@ The browser relay lets your Browser SDK send events through your own backend ins
 
 ## Architecture
 
-```
-┌──────────────────────────────────────────────────┐
-│  Browser                                         │
-│  ┌─────────────────┐                             │
-│  │  Browser SDK     │──── POST /debugbundle/browser ──┐
-│  │  (relay mode)    │                             │   │
-│  └─────────────────┘                             │   │
-└──────────────────────────────────────────────────┘   │
-                                                       ▼
-┌──────────────────────────────────────────────────┐
-│  Your Backend                                    │
-│  ┌─────────────────┐                             │
-│  │  Relay Handler   │──  validates origin        │
-│  │                  │──  rate limits per-IP      │
-│  │                  │──  attaches project token  │
-│  └────────┬────────┘                             │
-│           │                                      │
-└───────────┼──────────────────────────────────────┘
-            │
-            ▼  POST /v1/events (with project token)
-┌──────────────────────────────────────────────────┐
-│  DebugBundle Ingestion API                       │
-└──────────────────────────────────────────────────┘
-```
+<WorkflowDiagram>
+  <WorkflowStep title="Browser SDK" meta="Client">
+    Sends frontend events to your same-origin relay route.
+  </WorkflowStep>
+  <WorkflowStep title="Relay Handler" meta="Backend">
+    Validates origin, applies body limits, rate-limits by IP, and attaches the project token.
+  </WorkflowStep>
+  <WorkflowStep title="Durable Spool" meta="Optional">
+    Writes events to `.debugbundle/local/browser-relay-spool/` before forwarding in connected mode.
+  </WorkflowStep>
+  <WorkflowStep title="Ingestion API" meta="DebugBundle">
+    Receives the sanitized event batch with server-side credentials.
+  </WorkflowStep>
+</WorkflowDiagram>
 
 ## Relay Configuration
 

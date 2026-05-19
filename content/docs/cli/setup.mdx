@@ -1,6 +1,6 @@
 ---
 title: "Setup & Configuration"
-description: "Initialize DebugBundle in your project with the setup command. Understand the scaffold, profile, connection config, and diagnostic tools."
+description: "Initialize DebugBundle with setup, profile generation, connection config, diagnostics, and verification."
 icon: Settings
 ---
 
@@ -19,10 +19,10 @@ debugbundle setup --non-interactive --json
 ```
 
 The setup command:
-1. Detects your project name, services, frameworks, and runtimes from `package.json`, lockfiles, and source files
+1. Detects your project name, services, frameworks, and runtimes from manifests, lockfiles, and source files
 2. Generates the local scaffold (profile, connection config, agent skill, references)
 3. Updates `.gitignore` to exclude local runtime data
-4. Scaffolds a relay route if a supported framework is detected (Express, Fastify, Next.js)
+4. Scaffolds a relay route when a supported backend framework is detected
 
 ## The `.debugbundle/` Directory
 
@@ -151,8 +151,7 @@ Check the browser relay health:
 debugbundle doctor --check-relay
 ```
 
-This additionally verifies relay spool event delivery.
-This additionally reports undelivered relay spool files and their age.
+This reports undelivered relay spool files and their age.
 
 ### JSON Output
 

@@ -1,8 +1,16 @@
 import type { ImgHTMLAttributes } from 'react';
 import type { LoaderConfig, LoaderOutput, Page } from 'fumadocs-core/source';
 import defaultMdxComponents, { createRelativeLink } from 'fumadocs-ui/mdx';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 
-import { Notice, SurfaceCard, SurfaceGrid, TerminalExample } from '@/components/content-blocks';
+import {
+  Notice,
+  SurfaceCard,
+  SurfaceGrid,
+  TerminalExample,
+  WorkflowDiagram,
+  WorkflowStep,
+} from '@/components/content-blocks';
 
 type MdxImageResult = ReturnType<(typeof defaultMdxComponents)['img']>;
 
@@ -13,6 +21,10 @@ type PageMdxComponents = typeof defaultMdxComponents & {
   SurfaceCard: typeof SurfaceCard;
   SurfaceGrid: typeof SurfaceGrid;
   TerminalExample: typeof TerminalExample;
+  Tab: typeof Tab;
+  Tabs: typeof Tabs;
+  WorkflowDiagram: typeof WorkflowDiagram;
+  WorkflowStep: typeof WorkflowStep;
 };
 
 function MdxImage(props: ImgHTMLAttributes<HTMLImageElement>): MdxImageResult {
@@ -34,5 +46,9 @@ export function createPageMdxComponents<C extends LoaderConfig>(source: LoaderOu
     SurfaceCard,
     SurfaceGrid,
     TerminalExample,
+    Tab,
+    Tabs,
+    WorkflowDiagram,
+    WorkflowStep,
   };
 }
