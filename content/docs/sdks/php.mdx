@@ -18,6 +18,8 @@ Requires PHP 8.2 or newer.
 composer require debugbundle/sdk-php
 ```
 
+For WordPress, use the [DebugBundle WordPress plugin](/docs/integrations/wordpress) instead of installing Composer packages on the site. The plugin vendors this PHP SDK, bundles the browser SDK, and registers the WordPress REST browser relay for you.
+
 ## Initialize
 
 ```php
@@ -166,7 +168,7 @@ Valid tokens activate matching probes only for that single request. Header value
 
 ## Browser Relay
 
-The PHP SDK now includes the contract-required browser relay foundation for server-rendered apps that also load `@debugbundle/sdk-browser`.
+The PHP SDK currently includes a browser relay foundation for server-rendered apps that also load `@debugbundle/sdk-browser`.
 
 ### Core Handler
 

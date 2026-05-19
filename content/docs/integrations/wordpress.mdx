@@ -1,0 +1,102 @@
+---
+title: WordPress Plugin
+description: Install the DebugBundle WordPress plugin for backend PHP capture and frontend browser capture through a same-origin relay.
+icon: PanelsTopLeft
+---
+
+The DebugBundle WordPress plugin is the easiest path for WordPress sites. It bundles the PHP SDK and browser SDK, adds a normal settings page, and keeps your project token on the server.
+
+## Requirements
+
+| Requirement | Version |
+|---|---|
+| WordPress | 6.5 or newer |
+| PHP | 8.2 or newer |
+| DebugBundle | A project token from your project settings |
+
+## Install
+
+1. Download the plugin ZIP from the `debugbundle-wordpress` GitHub release or WordPress.org once the listing is approved.
+2. In WordPress, open **Plugins -> Add New -> Upload Plugin**.
+3. Upload the ZIP, activate it, then open **Settings -> DebugBundle**.
+4. Paste your DebugBundle project token and save.
+5. Use the backend and frontend test-event buttons to verify delivery.
+
+No Composer, npm, shell access, CDN script, or manual browser relay setup is required on the WordPress host.
+
+## What It Captures
+
+| Surface | Default | Notes |
+|---|---|---|
+| Backend PHP errors and exceptions | On | Uses `debugbundle/sdk-php` hooks and request lifecycle capture. |
+| Backend request metadata | On | Captures method, path, sanitized query and headers, response status, and duration. |
+| Frontend browser exceptions | On | Uses the bundled `@debugbundle/sdk-browser` asset on public pages. |
+| Browser breadcrumbs | Error-only | Clicks, route changes, and first-party network failures stay local until a frontend exception. |
+| Browser console capture | Off | Enable only if console warnings/errors are useful for your site. |
+
+The first release does not capture `wp-admin` traffic by default.
+
+## Settings
+
+The plugin stores settings in WordPress under `debugbundle_settings`.
+
+| Setting | Default | Notes |
+|---|---|---|
+| Project token | Required | Stored server-side only and masked after save. |
+| Environment | WordPress environment type or `production` | Use `production`, `staging`, `development`, `local`, or a custom project convention. |
+| Service | Site host plus `-wordpress` | Helps separate multiple WordPress sites in one DebugBundle project. |
+| Ingestion endpoint | `https://api.debugbundle.com/v1/events` | Change only for self-hosted DebugBundle. |
+| Backend capture | On | Disables PHP SDK capture when off. |
+| Frontend capture | On | Disables browser asset enqueue and relay forwarding when off. |
+| Sample rate | `1.0` | Applies to backend capture. |
+| Browser session sample rate | `1.0` | Applies one sampling decision per browser session. |
+| Browser max events per session | `100` | Prevents runaway browser tabs from consuming quota. |
+| Delete settings on uninstall | Off | Keeps settings and spool files by default for painless reinstall. |
+
+The Status section shows plugin and bundled SDK versions, PHP compatibility, last backend and relay delivery results, and current relay spool size. It also includes two setup checks: one sends a backend SDK test event, and one sends a frontend relay test event. Both actions require an administrator session, use WordPress nonces, and report only a concise success or failure message.
+
+You can define `DEBUGBUNDLE_PROJECT_TOKEN` in `wp-config.php` to keep the token out of the database. When the constant is present, it overrides the saved option.
+
+```php
+define('DEBUGBUNDLE_PROJECT_TOKEN', 'dbundle_proj_...');
+```
+
+## Browser Relay
+
+The browser SDK posts frontend events to the same WordPress site at:
+
+```text
+/wp-json/debugbundle/v1/browser
+```
+
+The relay validates origin, enforces JSON and body-size limits, applies persistent per-IP rate limiting, strips browser-supplied credentials and trust fields, then forwards events server-side with the project token. If DebugBundle ingestion is temporarily unavailable, accepted browser events are written to a bounded local spool and retried by WP-Cron.
+
+The browser config rendered into pages never includes the project token, member tokens, API keys, or Authorization headers.
+
+## Multisite
+
+V1 uses per-site settings. A network-activated plugin still expects each site to save its own project token unless `DEBUGBUNDLE_PROJECT_TOKEN` is defined globally. Service names default from each site host so subsites can be separated in DebugBundle.
+
+## Privacy Notes
+
+DebugBundle is intended for operational debugging data: errors, request context, logs above the configured level, browser exception context, and diagnostic breadcrumbs. The plugin avoids raw WordPress usernames, emails, display names, and user IDs; logged-in users are represented with a salted hash when user context is available.
+
+Review [Security and Privacy](/docs/security) and [Redaction](/docs/security/redaction) before enabling capture on production traffic.
+
+## Troubleshooting
+
+| Symptom | Check |
+|---|---|
+| Backend test event fails | Confirm the project token, ingestion endpoint, backend capture toggle, and outbound HTTPS access from the WordPress host. |
+| Frontend relay test event fails | Confirm frontend capture is enabled and the WordPress host can POST from the relay to the configured ingestion endpoint. |
+| No browser events | Confirm frontend capture is enabled, the site has a project token, and public pages include `debugbundle-browser.js`. |
+| Relay returns 404 | The plugin is not configured or frontend capture is disabled. |
+| Relay returns 429 | The per-IP relay rate limit was exceeded; retry after the response's `Retry-After` value. |
+| Events are delayed | Check whether the local relay spool has files and whether WP-Cron is running. |
+| Activation fails | Confirm WordPress 6.5+ and PHP 8.2+. |
+
+## Links
+
+- [PHP SDK](/docs/sdks/php) - The backend SDK bundled by the plugin.
+- [Browser SDK](/docs/sdks/browser) - The frontend SDK bundled by the plugin.
+- [Browser Relay Setup](/docs/sdks/browser-relay) - The general relay model for non-WordPress apps.

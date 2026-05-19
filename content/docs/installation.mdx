@@ -1,26 +1,24 @@
 ---
 title: "Installation"
-description: "Install DebugBundle SDKs, CLI, or self-host with Docker Compose."
+description: "Install the DebugBundle CLI, SDKs, browser relay, or self-hosted stack."
 icon: Download
 ---
 
-## CLI
+Install the CLI first, then add the SDK or ingestion path that matches your runtime.
 
-The CLI is the primary tool for local workflows, project setup, and cloud management.
+## CLI
 
 ```bash
 npm install -g @debugbundle/cli
-```
-
-Verify the installation:
-
-```bash
 debugbundle --version
 ```
 
----
+The CLI runs setup, local processing, incident inspection, token management, cloud connection, and verification.
 
-## Node.js SDK
+## SDKs
+
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'WordPress']}>
+  <Tab>
 
 ```bash
 npm install @debugbundle/sdk-node
@@ -30,27 +28,16 @@ npm install @debugbundle/sdk-node
 import DebugBundle from '@debugbundle/sdk-node';
 
 DebugBundle.init({
-  projectToken: 'local',    // or your project token for connected mode
+  projectToken: 'local',
   environment: 'production',
-  service: 'my-api',
+  service: 'api',
 });
 ```
 
-The Node.js SDK includes subpath exports for framework integrations and browser relay handlers:
+Framework exports include Express, Fastify, Next.js, and browser relay handlers. See [Node.js SDK](/docs/sdks/node).
 
-| Import | Purpose |
-|---|---|
-| `@debugbundle/sdk-node` | Core SDK |
-| `@debugbundle/sdk-node/relay` | Generic relay handler |
-| `@debugbundle/sdk-node/relay/express` | Express relay middleware |
-| `@debugbundle/sdk-node/relay/fastify` | Fastify relay plugin |
-| `@debugbundle/sdk-node/relay/nextjs` | Next.js API route relay |
-
----
-
-## Browser SDK
-
-**Via npm:**
+  </Tab>
+  <Tab>
 
 ```bash
 npm install @debugbundle/sdk-browser
@@ -62,15 +49,14 @@ import DebugBundle from '@debugbundle/sdk-browser';
 DebugBundle.init({
   endpoint: '/debugbundle/browser',
   environment: 'production',
-  service: 'my-frontend',
+  service: 'frontend',
 });
 ```
 
-Browser events are typically shipped through a same-origin relay handler on your backend, which injects the project token server-side. See [Browser Relay Setup](/docs/sdks/browser-relay) for configuration.
+Browser events should usually go through a same-origin backend relay. See [Browser SDK](/docs/sdks/browser) and [Browser Relay Setup](/docs/sdks/browser-relay).
 
----
-
-## Python SDK
+  </Tab>
+  <Tab>
 
 ```bash
 pip install debugbundle-python
@@ -82,71 +68,85 @@ import debugbundle
 debugbundle.init(
     project_token="local",
     environment="production",
-    service="my-api",
+    service="api",
 )
 ```
 
-Framework integrations for Django, Flask, and FastAPI are included. See the [Python SDK guide](/docs/sdks/python).
+Django, Flask, FastAPI, structlog, and loguru integrations are included. See [Python SDK](/docs/sdks/python).
 
----
-
-## PHP SDK
+  </Tab>
+  <Tab>
 
 ```bash
 composer require debugbundle/sdk-php
 ```
 
 ```php
+<?php
+
 use DebugBundle\DebugBundle;
 
 DebugBundle::init([
     'projectToken' => 'local',
     'environment' => 'production',
-    'service' => 'my-api',
+    'service' => 'api',
 ]);
 ```
 
-Framework integrations for Laravel and Symfony are included. See the [PHP SDK guide](/docs/sdks/php).
+Laravel, Symfony, and Monolog integrations are included. See [PHP SDK](/docs/sdks/php).
 
-Across the Node.js, Browser, Python, and PHP SDKs, request failures with 5xx responses are treated as incident signals. On the Browser SDK, first-party 5xx responses also remain visible as breadcrumbs while emitting standalone `request_event` signals for incident creation.
+  </Tab>
+  <Tab>
 
----
+Download the plugin ZIP from the `debugbundle-wordpress` GitHub release or WordPress.org once the listing is approved, then upload it in WordPress under **Plugins -> Add New -> Upload Plugin**.
+
+After activation, open **Settings -> DebugBundle**, paste your project token, and save. The plugin bundles the PHP and browser SDKs, creates the same-origin browser relay, and keeps the project token server-side.
+
+See [WordPress Plugin](/docs/integrations/wordpress).
+
+  </Tab>
+</Tabs>
+
+## Browser Relay
+
+Browser SDKs should not hold project tokens. Add a same-origin relay on your backend, then point the browser SDK at that route.
+
+| Runtime | Import |
+|---|---|
+| Generic Node.js | `@debugbundle/sdk-node/relay` |
+| Express | `@debugbundle/sdk-node/relay/express` |
+| Fastify | `@debugbundle/sdk-node/relay/fastify` |
+| Next.js API route | `@debugbundle/sdk-node/relay/nextjs` |
+
+See [Browser Relay Setup](/docs/sdks/browser-relay).
+
+WordPress sites do not need a custom relay route. Use the [WordPress Plugin](/docs/integrations/wordpress), which registers `/wp-json/debugbundle/v1/browser` automatically.
+
+## Log Ingestion
+
+Use log ingestion when SDK installation is not possible yet.
+
+```bash
+debugbundle ingest ./app.log --format debugbundle-ndjson
+debugbundle watch ./app.log --format debugbundle-ndjson
+```
+
+Supported first-party parser formats include `debugbundle-ndjson`, `php-error`, and `apache-error`. See [Log Ingestion](/docs/cli/log-ingestion).
 
 ## Self-Hosting
-
-DebugBundle can be self-hosted with Docker Compose. This gives you a fully functional instance with no external dependencies and no usage limits.
-
-### Prerequisites
-
-- Docker and Docker Compose
-- 2 GB RAM minimum
-- Ports 5291 (web), 3004 (API), 5434 (PostgreSQL), 6380 (Redis), and 4567 (LocalStack) available
-
-### Quick Start
 
 ```bash
 git clone https://github.com/debugbundle/debugbundle.git
 cd debugbundle/deploy/selfhost
-cp .env.example .env  # edit with your settings
+cp .env.example .env
 docker compose up -d
 ```
 
-The self-host stack includes:
-
-| Service | Port | Purpose |
-|---|---|---|
-| Web | 5291 | Dashboard SPA |
-| API | 3004 | HTTP API |
-| Worker | — | Background processing |
-| PostgreSQL | 5434 | Metadata storage |
-| Redis | 6380 | Job queue |
-| LocalStack S3 | 4567 | Object storage |
-
-See the [Self-Hosting Guide](/docs/self-hosting) for environment variables, health checks, backups, and upgrade procedures.
+The self-host stack includes the web app, API, worker, PostgreSQL, Redis, and LocalStack S3. See [Self-Hosting](/docs/self-hosting) for environment variables, health checks, backups, and updates.
 
 ## Next Steps
 
-- [Quickstart](/docs/quickstart) — Your first debug bundle in under 5 minutes
-- [Node.js SDK](/docs/sdks/node) — Full configuration and framework integration guide
-- [Browser SDK](/docs/sdks/browser) — Breadcrumbs, network capture, session controls
-- [CLI Setup](/docs/cli/setup) — Project scaffolding and configuration
+- [Quickstart](/docs/quickstart) — Capture and inspect your first local bundle
+- [Project Setup](/docs/project-setup) — Understand `.debugbundle/` and `profile.json`
+- [CLI Setup](/docs/cli/setup) — Setup, doctor, validate, and verify commands
+- [SDKs](/docs/sdks) — Full language-specific setup guides
