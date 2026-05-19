@@ -8,8 +8,8 @@ type ReferenceTableColumn<Row> = {
 
 export function ReferenceTable<Row>({ columns, rows }: { columns: ReferenceTableColumn<Row>[]; rows: Row[] }): ReactElement {
   return (
-    <div className="overflow-x-auto rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)]">
-      <table className="min-w-full border-collapse text-left text-sm">
+    <div className="not-prose overflow-x-auto rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)]">
+      <table className="my-0 min-w-full border-collapse text-left text-sm">
         <thead className="bg-[var(--site-surface-muted)] text-[var(--site-text)]">
           <tr>
             {columns.map((column) => (

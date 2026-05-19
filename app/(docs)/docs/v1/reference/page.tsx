@@ -1,8 +1,19 @@
 import type { ReactElement } from 'react';
+import { Bot, Braces, CircleAlert, FileCode, Package, SquareTerminal, Webhook } from 'lucide-react';
 
 import { Notice, SurfaceCard, SurfaceGrid } from '@/components/content-blocks';
 import { ReferencePage } from '@/components/reference-page';
 import { referenceRouteEntries } from '@/reference-content';
+
+const referenceIcons = {
+  Bot,
+  Braces,
+  CircleAlert,
+  FileCode,
+  Package,
+  SquareTerminal,
+  Webhook,
+} as const;
 
 export default function DocsReferencePage(): ReactElement {
   return (
@@ -12,7 +23,7 @@ export default function DocsReferencePage(): ReactElement {
     >
       <SurfaceGrid>
         {referenceRouteEntries.map((entry) => (
-          <SurfaceCard key={entry.href} title={entry.title} href={entry.href} action="Open">
+          <SurfaceCard key={entry.href} title={entry.title} href={entry.href} action="Open" icon={referenceIcons[entry.icon]}>
             {entry.description}
           </SurfaceCard>
         ))}

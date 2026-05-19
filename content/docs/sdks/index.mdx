@@ -44,7 +44,7 @@ All SDKs follow the same safety contract:
 | Request 5xx incident capture | Yes | Yes | Yes | Yes | Yes |
 | Browser first-party 5xx promotion | N/A | Yes | N/A | N/A | Yes, through browser SDK |
 | Breadcrumbs | No | Yes | No | No | Yes, through browser SDK |
-| Relay support | Server relay exports | Relay client path | Browser relay foundation | Browser relay foundation | WordPress REST relay |
+| Relay support | Full relay handler + adapters | Relay client path | Full relay handler | Full relay handler | WordPress REST relay |
 | Remote config and capture policy | Yes | Yes | Yes | Yes | Yes, backend SDK path |
 | Probes | Yes | Yes | Yes | Yes | Yes, through bundled SDKs |
 | Redaction defaults | Yes | Yes | Yes | Yes | Yes |
@@ -82,6 +82,8 @@ Combined with server-side **capture policy** (configurable presets: `minimal`, `
 
 - [Node.js SDK](/docs/sdks/node) — Full setup guide with Express, Fastify, Next.js, and logger integrations
 - [Browser SDK](/docs/sdks/browser) — Breadcrumbs, network capture, session controls, relay setup
+- [Python SDK](/docs/sdks/python) — Django, Flask, FastAPI, and browser relay helpers
+- [PHP SDK](/docs/sdks/php) — Laravel, Symfony, Monolog, and browser relay setup
 - [WordPress Plugin](/docs/integrations/wordpress) — Installable plugin with backend capture, frontend capture, and a built-in browser relay
 - [Universal Interface](/docs/sdks/universal-interface) — Complete interface contract across all languages
 - [Browser Relay Setup](/docs/sdks/browser-relay) — How browser events reach DebugBundle through your backend

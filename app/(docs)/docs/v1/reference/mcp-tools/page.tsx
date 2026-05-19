@@ -15,7 +15,7 @@ export default function DocsMcpToolsReferencePage(): ReactElement {
     >
       {groups.map((group) => (
         <section key={group.group} className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">{group.label}</h2>
+          <h2 className="mt-0 text-2xl font-semibold tracking-tight text-[var(--site-text)]">{group.label}</h2>
           <ReferenceTable
             columns={[
               { key: 'name', label: 'Tool', render: (tool) => <code>{tool.name}</code> },

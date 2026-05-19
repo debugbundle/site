@@ -1,5 +1,7 @@
 import type { ReactElement, ReactNode } from 'react';
 import Link from 'next/link';
+import type { LucideIcon } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export function SectionTitle({
   eyebrow,
@@ -30,28 +32,37 @@ export function SurfaceCard({
   children,
   href,
   action,
+  icon: Icon,
 }: {
   title: string;
   children: ReactNode;
   href?: string;
   action?: string;
+  icon?: LucideIcon;
 }): ReactElement {
   const content = (
     <>
       <div>
-        <h2 className="text-lg font-semibold text-[var(--site-text)]">{title}</h2>
+        <h2 className="mt-0 flex items-center gap-3 text-lg font-semibold text-[var(--site-text)]">
+          {Icon ? <Icon className="size-5 text-[var(--site-accent)]" aria-hidden="true" /> : null}
+          <span>{title}</span>
+        </h2>
         <div className="mt-3 text-sm leading-7 text-[var(--site-text-muted)]">{children}</div>
       </div>
       {action ? (
-        <span className="mt-5 self-end text-sm font-medium text-[var(--site-accent)]" aria-hidden={href ? true : undefined}>
+        <span
+          className="mt-5 inline-flex items-center gap-2 self-end text-sm font-medium text-[var(--site-accent)]"
+          aria-hidden={href ? true : undefined}
+        >
           {action}
+          {href ? <ArrowRight className="size-4" aria-hidden="true" /> : null}
         </span>
       ) : null}
     </>
   );
 
   const className =
-    'group flex h-full min-h-36 flex-col justify-between rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] transition hover:border-[var(--site-border-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--site-focus)]';
+    'not-prose group flex h-full min-h-36 flex-col justify-between rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] transition hover:border-[var(--site-border-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--site-focus)]';
 
   if (href) {
     return (
@@ -75,7 +86,7 @@ export function Notice({ title, children }: { title: string; children: ReactNode
 
 export function TerminalExample({ title, lines }: { title: string; lines: string[] }): ReactElement {
   return (
-    <section className="rounded-lg border border-[var(--site-code-border)] bg-[var(--site-code-bg)] p-5 text-[var(--site-code-text)]">
+    <section className="not-prose rounded-lg border border-[#d8d7cb] bg-[#f1f1eb] p-5 text-[#1f201b] dark:border-[#202420] dark:bg-[#0a0b0a] dark:text-[#f3f5ef]">
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">{title}</p>
       <pre className="overflow-x-auto text-sm leading-7">
         <code>{lines.join('\n')}</code>

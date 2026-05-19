@@ -111,6 +111,38 @@ app.add_middleware(DebugBundleMiddleware)
 
 The ASGI middleware captures exceptions and request/response data. Works with Starlette-based frameworks.
 
+## Browser Relay
+
+The Python SDK includes a full browser relay handler for Django, Flask, and FastAPI applications that also load `@debugbundle/sdk-browser`.
+
+- `debugbundle.BrowserRelayHandler` exposes the framework-agnostic core handler.
+- `debugbundle.create_django_relay_view(...)` returns a Django view for `POST /debugbundle/browser`.
+- `debugbundle.create_flask_relay_handler(...)` registers the relay route on a Flask app.
+- `debugbundle.create_fastapi_relay_handler(...)` registers the relay route on a FastAPI app.
+
+```python
+import os
+
+from debugbundle.integrations import create_flask_relay_handler
+
+register_relay = create_flask_relay_handler(
+    allowed_origins=["https://app.example.com"],
+    project_mode="connected",
+    project_token=os.environ["DEBUGBUNDLE_TOKEN"],
+    endpoint="https://api.debugbundle.com/v1/events",
+)
+
+register_relay(app)
+```
+
+The relay handler validates same-origin or configured allowed origins, requires `Content-Type: application/json`, accepts the canonical `batch` request shape, rejects bodies larger than `256 KB`, applies per-IP rate limiting, strips trust-sensitive headers and fields, forces `sdk_name` to `@debugbundle/sdk-browser`, and preserves browser correlation fields (`request_id`, `trace_id`, `session_id`, and `user_id_hash`) when they are strings or `null`.
+
+Delivery modes match the other shipped server SDKs:
+
+- `project_mode="local-only"` writes accepted browser events to `.debugbundle/local/events/`.
+- `project_mode="connected"` with the default `durable_write=True` writes a durable relay spool record and then forwards with the server-side project token.
+- `project_mode="connected"` with `durable_write=False` uses the lower-latency forward-only path.
+
 ## Logger Integrations
 
 ### stdlib logging
@@ -206,5 +238,6 @@ The Python SDK implements the same volume controls as all DebugBundle SDKs:
 ## Next Steps
 
 - [Universal SDK Interface](/docs/sdks/universal-interface) — Full interface contract across all SDKs
+- [Browser Relay Setup](/docs/sdks/browser-relay) — Shared browser relay contract and deployment guidance
 - [CLI Local Workflow](/docs/cli/local-workflow) — Process captured events locally
 - [API Ingestion](/docs/api/ingestion) — Direct event ingestion API

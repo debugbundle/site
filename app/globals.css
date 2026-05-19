@@ -39,9 +39,9 @@
   --site-warning: #9a6200;
   --site-danger: #a23535;
   --site-info: #275fad;
-  --site-code-bg: #141411;
-  --site-code-border: #2a2a24;
-  --site-code-text: #ecece5;
+  --site-code-bg: #f1f1eb;
+  --site-code-border: #d8d7cb;
+  --site-code-text: #1f201b;
 }
 
 html.dark {

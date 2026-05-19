@@ -13,14 +13,14 @@ export function ReferencePage({
   eyebrow?: string;
 }): ReactElement {
   return (
-    <DocsPage toc={[]}>
+    <DocsPage toc={[]} breadcrumb={{ enabled: false }} footer={{ enabled: false }}>
       <div className="space-y-3">
         <p className="text-sm font-medium uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">{eyebrow}</p>
         <DocsTitle>{title}</DocsTitle>
-        <DocsDescription>{description}</DocsDescription>
+        <DocsDescription className="mb-0">{description}</DocsDescription>
       </div>
-      <DocsBody>
-        <div className="space-y-8">{children}</div>
+      <DocsBody className="pt-6">
+        <div className="space-y-6">{children}</div>
       </DocsBody>
     </DocsPage>
   );

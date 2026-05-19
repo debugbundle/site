@@ -168,7 +168,7 @@ Valid tokens activate matching probes only for that single request. Header value
 
 ## Browser Relay
 
-The PHP SDK currently includes a browser relay foundation for server-rendered apps that also load `@debugbundle/sdk-browser`.
+The PHP SDK includes a full browser relay handler for server-rendered apps that also load `@debugbundle/sdk-browser`.
 
 ### Core Handler
 
@@ -177,9 +177,9 @@ use DebugBundle\Relay\BrowserRelayHandler;
 
 $relay = new BrowserRelayHandler([
     'allowedOrigins' => ['https://app.example.com'],
-    'onAccept' => static function ($acceptedBatch): void {
-        // Forward sanitized browser events into your server-side ingestion path.
-    },
+    'projectMode' => 'connected',
+    'projectToken' => $_ENV['DEBUGBUNDLE_TOKEN'] ?? '',
+    'endpoint' => 'https://api.debugbundle.com/v1/events',
 ]);
 
 $response = $relay->handle([
@@ -199,7 +199,15 @@ $response = $relay->handle([
 - Laravel: `DebugBundle\Framework\Laravel\DebugBundleRelayMiddleware`
 - Symfony: `DebugBundle\Framework\Symfony\DebugBundleRelayController`
 
-The relay foundation validates same-origin or configured allowed origins, requires `Content-Type: application/json`, rejects bodies larger than `256 KB`, applies in-memory per-IP rate limiting, accepts only `frontend_exception`, `error_suppressed`, `frontend_breadcrumb`, `request_event`, and `probe_event`, strips trust-sensitive headers, removes client-supplied `project_token` and `organization_id`, forces `sdk_name` to `@debugbundle/sdk-browser`, and preserves `correlation.trace_id` when present.
+The relay handler validates same-origin or configured allowed origins, requires `Content-Type: application/json`, accepts the canonical `batch` request shape only, rejects bodies larger than `256 KB`, applies per-IP rate limiting, accepts only `frontend_exception`, `error_suppressed`, `frontend_breadcrumb`, `request_event`, and `probe_event`, strips trust-sensitive headers, removes client-supplied `project_token` and `organization_id`, forces `sdk_name` to `@debugbundle/sdk-browser`, and preserves browser correlation fields (`request_id`, `trace_id`, `session_id`, and `user_id_hash`) when they are strings or `null`.
+
+Delivery modes match the other shipped server SDKs:
+
+- `projectMode: 'local-only'` writes accepted browser events to local event files for CLI processing.
+- `projectMode: 'connected'` with the default `durableWrite: true` writes a durable relay spool record and then forwards with the server-side project token.
+- `projectMode: 'connected'` with `durableWrite: false` uses the lower-latency forward-only path.
+
+Shared-nothing runtimes can swap the default in-memory limiter by passing a custom `rateLimitStore` that implements `DebugBundle\Relay\BrowserRelayRateLimitStore`.
 
 ## Logger Integrations
 

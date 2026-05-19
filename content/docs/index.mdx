@@ -3,16 +3,33 @@ title: "DebugBundle Documentation"
 description: "Capture runtime failures, generate debug bundles, and inspect them through SDKs, CLI, API, or MCP."
 ---
 
+import {
+  BookOpen,
+  Bot,
+  Braces,
+  CircleAlert,
+  FileCode,
+  FileText,
+  GitBranch,
+  Package,
+  Rocket,
+  Shield,
+  SquareTerminal,
+  Webhook,
+  Workflow,
+  Wrench,
+} from 'lucide-react';
+
 ## Start Here
 
 <SurfaceGrid>
-  <SurfaceCard title="Quickstart" href="/docs/quickstart" action="Start now">
+  <SurfaceCard title="Quickstart" href="/docs/quickstart" action="Start now" icon={Rocket}>
     Capture an error locally, process it, and inspect the resulting bundle.
   </SurfaceCard>
-  <SurfaceCard title="What is DebugBundle?" href="/docs/what-is-debugbundle" action="Learn more">
+  <SurfaceCard title="What is DebugBundle?" href="/docs/what-is-debugbundle" action="Learn more" icon={BookOpen}>
     Understand incidents, bundles, local-first capture, and agent-readable output.
   </SurfaceCard>
-  <SurfaceCard title="Installation" href="/docs/installation" action="Install">
+  <SurfaceCard title="Installation" href="/docs/installation" action="Install" icon={Wrench}>
     Choose the CLI, SDK, browser relay, or self-host path for your stack.
   </SurfaceCard>
 </SurfaceGrid>
@@ -20,28 +37,28 @@ description: "Capture runtime failures, generate debug bundles, and inspect them
 ## By Topic
 
 <SurfaceGrid>
-  <SurfaceCard title="SDKs" href="/docs/sdks" action="View SDKs">
+  <SurfaceCard title="SDKs" href="/docs/sdks" action="View SDKs" icon={Package}>
     Node.js, Browser, Python, PHP, and WordPress capture options with the same DebugBundle event model.
   </SurfaceCard>
-  <SurfaceCard title="WordPress Plugin" href="/docs/integrations/wordpress" action="Install plugin">
+  <SurfaceCard title="WordPress Plugin" href="/docs/integrations/wordpress" action="Install plugin" icon={Workflow}>
     Add backend PHP capture, frontend browser capture, and a token-safe same-origin relay to WordPress.
   </SurfaceCard>
-  <SurfaceCard title="CLI" href="/docs/cli" action="View CLI">
+  <SurfaceCard title="CLI" href="/docs/cli" action="View CLI" icon={SquareTerminal}>
     Setup, local processing, inspection, log ingestion, cloud connection, and automation output.
   </SurfaceCard>
-  <SurfaceCard title="API" href="/docs/api" action="View API">
+  <SurfaceCard title="API" href="/docs/api" action="View API" icon={Braces}>
     Ingestion, retrieval, webhooks, alerts, projects, probes, members, and billing endpoints.
   </SurfaceCard>
-  <SurfaceCard title="Bundles & Incidents" href="/docs/bundles" action="Explore">
+  <SurfaceCard title="Bundles & Incidents" href="/docs/bundles" action="Explore" icon={Package}>
     Failure bundles, improvement bundles, grouping, reproduction artifacts, and schema details.
   </SurfaceCard>
-  <SurfaceCard title="Webhooks & Alerts" href="/docs/webhooks" action="Configure">
+  <SurfaceCard title="Webhooks & Alerts" href="/docs/webhooks" action="Configure" icon={Webhook}>
     Send signed lifecycle events and alert teams through email, Slack, Discord, or webhooks.
   </SurfaceCard>
-  <SurfaceCard title="MCP" href="/docs/mcp" action="Connect agents">
+  <SurfaceCard title="MCP" href="/docs/mcp" action="Connect agents" icon={Bot}>
     Give AI coding agents tool access to incidents, bundles, probes, alerts, and project operations.
   </SurfaceCard>
-  <SurfaceCard title="Security" href="/docs/security" action="Review">
+  <SurfaceCard title="Security" href="/docs/security" action="Review" icon={Shield}>
     Redaction, token scope separation, webhook signatures, retention, and privacy controls.
   </SurfaceCard>
 </SurfaceGrid>
@@ -49,16 +66,16 @@ description: "Capture runtime failures, generate debug bundles, and inspect them
 ## Agent Workflows
 
 <SurfaceGrid>
-  <SurfaceCard title="Agent Workflows" href="/docs/agent-workflows" action="Read guide">
+  <SurfaceCard title="Agent Workflows" href="/docs/agent-workflows" action="Read guide" icon={Bot}>
     Use MCP, CLI output, and bundle artifacts from agent-capable development environments.
   </SurfaceCard>
-  <SurfaceCard title="GitHub Automation" href="/docs/agent-workflows/automation-recipes" action="Configure">
+  <SurfaceCard title="GitHub Automation" href="/docs/agent-workflows/automation-recipes" action="Configure" icon={GitBranch}>
     Connect repository dispatch, reference fetching, and repository-owned GitHub Actions.
   </SurfaceCard>
-  <SurfaceCard title="MCP Tools" href="/docs/mcp/tools" action="Open reference">
+  <SurfaceCard title="MCP Tools" href="/docs/mcp/tools" action="Open reference" icon={Bot}>
     Review the complete tool surface that agents can call from MCP-compatible environments.
   </SurfaceCard>
-  <SurfaceCard title="llms.txt" href="/llms.txt" action="Open file">
+  <SurfaceCard title="llms.txt" href="/llms.txt" action="Open file" icon={FileText}>
     Use the machine-readable discovery file for LLMs and agent tooling.
   </SurfaceCard>
 </SurfaceGrid>
@@ -66,28 +83,28 @@ description: "Capture runtime failures, generate debug bundles, and inspect them
 ## Reference
 
 <SurfaceGrid>
-  <SurfaceCard title="Reference Index" href="/docs/v1/reference" action="Open">
+  <SurfaceCard title="Reference Index" href="/docs/v1/reference" action="Open" icon={BookOpen}>
     Start from the generated reference overview.
   </SurfaceCard>
-  <SurfaceCard title="API Endpoints" href="/docs/v1/reference/api-endpoints" action="Open">
+  <SurfaceCard title="API Endpoints" href="/docs/v1/reference/api-endpoints" action="Open" icon={Braces}>
     Generated from the public OpenAPI document.
   </SurfaceCard>
-  <SurfaceCard title="CLI Commands" href="/docs/v1/reference/cli-commands" action="Open">
+  <SurfaceCard title="CLI Commands" href="/docs/v1/reference/cli-commands" action="Open" icon={SquareTerminal}>
     Generated from the shipped CLI usage surface.
   </SurfaceCard>
-  <SurfaceCard title="MCP Tools" href="/docs/v1/reference/mcp-tools" action="Open">
+  <SurfaceCard title="MCP Tools" href="/docs/v1/reference/mcp-tools" action="Open" icon={Bot}>
     Generated from the implemented MCP tool catalog.
   </SurfaceCard>
-  <SurfaceCard title="Webhook Events" href="/docs/v1/reference/webhook-events" action="Open">
+  <SurfaceCard title="Webhook Events" href="/docs/v1/reference/webhook-events" action="Open" icon={Webhook}>
     Generated from the webhook event contract.
   </SurfaceCard>
-  <SurfaceCard title="Bundle Schema" href="/docs/v1/reference/bundle-schema" action="Open">
+  <SurfaceCard title="Bundle Schema" href="/docs/v1/reference/bundle-schema" action="Open" icon={Package}>
     Generated bundle schema and example artifacts.
   </SurfaceCard>
-  <SurfaceCard title="Profile Schema" href="/docs/v1/reference/profile-schema" action="Open">
+  <SurfaceCard title="Profile Schema" href="/docs/v1/reference/profile-schema" action="Open" icon={FileCode}>
     Generated profile schema and project configuration artifacts.
   </SurfaceCard>
-  <SurfaceCard title="Error Codes" href="/docs/v1/reference/error-codes" action="Open">
+  <SurfaceCard title="Error Codes" href="/docs/v1/reference/error-codes" action="Open" icon={CircleAlert}>
     Generated API, CLI, and validation error catalog.
   </SurfaceCard>
 </SurfaceGrid>

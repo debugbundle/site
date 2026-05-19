@@ -6,7 +6,7 @@ icon: ArrowLeftRight
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-The browser relay lets your Browser SDK send events through your own backend instead of directly to the DebugBundle ingestion API. This keeps your project token on the server and adds origin validation.
+The browser relay lets your Browser SDK send events through your own backend instead of directly to the DebugBundle ingestion API. This keeps your project token on the server, adds origin validation, and gives server SDKs the same local-only and connected delivery behavior for browser-origin events.
 
 ## Why Use a Relay?
 
@@ -39,17 +39,31 @@ The browser relay lets your Browser SDK send events through your own backend ins
   </WorkflowStep>
 </WorkflowDiagram>
 
+## Supported Backends
+
+| Backend surface | Relay support |
+|-----------------|---------------|
+| Node.js | Express, Fastify, and Next.js relay handlers from `@debugbundle/sdk-node` |
+| Python | `BrowserRelayHandler` plus Django, Flask, and FastAPI helpers from `debugbundle-python` |
+| PHP | `DebugBundle\Relay\BrowserRelayHandler` plus Laravel middleware and Symfony controller adapters |
+| WordPress | Built-in WordPress REST relay route through the DebugBundle WordPress plugin |
+
+The Browser SDK is the relay client path. It sends browser events to one of the backend handlers above; it is not itself a backend relay handler.
+
 ## Relay Configuration
 
-The relay handler accepts these options:
+Full relay handlers accept language-idiomatic equivalents of these options. JavaScript uses camelCase, Python uses snake_case, and PHP uses array keys.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
+| `projectMode` | `string` | `connected` | `connected` forwards with the server token; `local-only` writes accepted events for local CLI processing. |
 | `projectToken` | `string` | — | Project token for ingestion auth. |
 | `allowedOrigins` | `string[]` | Auto from Host | Origins permitted to send events. If empty, validates against `Host`/`X-Forwarded-Host`. |
 | `rateLimitPerMinute` | `number` | `60` | Max requests per IP per minute. |
+| `rateLimitStore` | implementation | In-memory | Optional shared/persistent limiter store for runtimes where process memory is not reliable. |
 | `maxBodyBytes` | `number` | `262144` (256 KB) | Max request body size. Requests exceeding this are rejected. |
 | `durableWrite` | `boolean` | `true` | Persist events to a local spool before forwarding to DebugBundle cloud. |
+| `localEventsDir` | `string` | `.debugbundle/local/events/` | Directory for local-only relay event files. |
 | `spoolDir` | `string` | `.debugbundle/local/browser-relay-spool/` | Directory for durable spool files. Use persistent storage in containers or pods if you need the spool to survive pod replacement. |
 | `endpoint` | `string` | `https://api.debugbundle.com/v1/events` | Override ingestion endpoint (for self-hosted). |
 | `environment` | `string` | — | Override `service.environment` on relayed events. |
@@ -67,7 +81,9 @@ The relay only accepts browser-origin event types:
 
 Server-side-only event types (`backend_exception`, `log_event`) are rejected with `400 Bad Request`.
 
-## Express
+## Node.js
+
+### Express
 
 ```javascript
 const express = require('express');
@@ -85,7 +101,7 @@ app.listen(3000);
 
 The Express relay handler parses the request body, validates the origin, applies rate limiting, and forwards accepted events to the ingestion API.
 
-## Fastify
+### Fastify
 
 ```javascript
 const fastify = require('fastify')();
@@ -102,7 +118,7 @@ await fastify.listen({ port: 3000 });
 
 The Fastify plugin registers as a standard route plugin. Pass `routePath` to customize the endpoint path (default: `/debugbundle/browser`).
 
-## Next.js (App Router)
+### Next.js (App Router)
 
 ```typescript
 // app/api/debugbundle/browser/route.ts
@@ -120,6 +136,67 @@ export async function POST(request: Request): Promise<Response> {
 
 The Next.js handler uses the Web `Request`/`Response` APIs. It extracts the client IP from `X-Forwarded-For` or `X-Real-IP` headers.
 
+## Python
+
+The Python SDK exposes a framework-agnostic `BrowserRelayHandler` plus helpers for Django, Flask, and FastAPI.
+
+### Flask
+
+```python
+import os
+
+from debugbundle.integrations import create_flask_relay_handler
+
+register_relay = create_flask_relay_handler(
+  allowed_origins=["https://myapp.com"],
+  project_mode="connected",
+  project_token=os.environ["DEBUGBUNDLE_TOKEN"],
+  endpoint="https://api.debugbundle.com/v1/events",
+)
+
+register_relay(app)
+```
+
+### FastAPI
+
+```python
+import os
+
+from debugbundle.integrations import create_fastapi_relay_handler
+
+register_relay = create_fastapi_relay_handler(
+  allowed_origins=["https://myapp.com"],
+  project_mode="connected",
+  project_token=os.environ["DEBUGBUNDLE_TOKEN"],
+  endpoint="https://api.debugbundle.com/v1/events",
+)
+
+register_relay(app)
+```
+
+For Django, use `create_django_relay_view(...)` and mount the returned view at `/debugbundle/browser` in your URL configuration.
+
+## PHP
+
+The PHP SDK exposes `DebugBundle\Relay\BrowserRelayHandler` plus Laravel and Symfony adapters.
+
+```php
+use DebugBundle\Relay\BrowserRelayHandler;
+
+$relay = new BrowserRelayHandler([
+  'allowedOrigins' => ['https://myapp.com'],
+  'projectMode' => 'connected',
+  'projectToken' => $_ENV['DEBUGBUNDLE_TOKEN'],
+  'endpoint' => 'https://api.debugbundle.com/v1/events',
+]);
+```
+
+Laravel applications can use `DebugBundle\Framework\Laravel\DebugBundleRelayMiddleware`; Symfony applications can use `DebugBundle\Framework\Symfony\DebugBundleRelayController`.
+
+## WordPress
+
+The DebugBundle WordPress plugin registers the WordPress REST relay route for you. Use the plugin settings screen to configure backend/frontend capture, relay delivery, and test events instead of wiring the PHP relay handler manually.
+
 ## Browser SDK Configuration
 
 Point the Browser SDK at your relay endpoint:
@@ -130,7 +207,6 @@ import debugbundle from '@debugbundle/sdk-browser';
 debugbundle.init({
   // No projectToken needed on the client — the relay adds it
   endpoint: '/debugbundle/browser',
-  transport: 'relay',
 });
 ```
 
@@ -155,7 +231,8 @@ The relay includes per-IP rate limiting:
 - **Default:** 60 requests per minute per IP address
 - **Tracking:** In-memory sliding window
 - **Exceeded:** `429 Too Many Requests` response
-- **Header:** `Retry-After` header included in 429 responses
+
+For PHP shared-nothing runtimes, pass a `rateLimitStore` implementation backed by shared or persistent storage. WordPress uses platform storage for persistent relay limiting.
 
 Configure with `rateLimitPerMinute`:
 
@@ -187,13 +264,27 @@ Run `debugbundle doctor --check-relay` to report undelivered spool files and the
 
 If you do not want a local relay spool, set `durableWrite: false`. In ephemeral containers or pods, that removes the persistent handoff entirely and the relay depends on immediate forwarding only.
 
+## Production Checklist
+
+- Use a shared or persistent `rateLimitStore` for PHP deployments where each request can run in a fresh process. WordPress already uses platform storage for persistent relay limiting.
+- Put `spoolDir` on persistent storage for connected durable mode in containers, pods, or autoscaled hosts. If the directory is ephemeral, retained relay events disappear when the instance is replaced.
+- Run `debugbundle doctor --check-relay` from the same filesystem context that owns `.debugbundle/local/browser-relay-spool/` so operators can see undelivered relay backlog before cleanup.
+- Run `debugbundle clean` on the normal local maintenance cadence; delivered relay spool entries are pruned after 24 hours and undelivered entries after 7 days.
+- Prefer explicit `allowedOrigins` in production, especially behind reverse proxies or custom domains. If relying on same-origin defaults, make sure the framework's trusted host/proxy configuration is correct before trusting forwarded host headers.
+- Mount the relay route before generic body-parser, auth, or CSRF middleware that could consume the raw body, reject browser session cookies, or require non-relay credentials. DebugBundle's own API keeps `POST /debugbundle/browser` exempt from browser-session CSRF and relies on relay origin validation for that route.
+
 ## Trace Correlation
 
 When using relay transport, the Browser SDK still injects `X-DebugBundle-Trace-Id` headers into all outgoing `fetch()` and `XMLHttpRequest` calls. Your backend SDK middleware reads this header and attaches the trace ID to server-side events, linking frontend breadcrumbs to backend exceptions in the same bundle.
+
+Relay handlers preserve browser correlation fields (`request_id`, `trace_id`, `session_id`, and `user_id_hash`) when they are strings or `null`; they never regenerate or overwrite `correlation.trace_id`.
 
 ## Next Steps
 
 - [Browser SDK](/docs/sdks/browser) — Full Browser SDK configuration
 - [Node.js SDK](/docs/sdks/node) — Backend SDK with framework integrations
+- [Python SDK](/docs/sdks/python) — Django, Flask, FastAPI, and relay helpers
+- [PHP SDK](/docs/sdks/php) — Laravel, Symfony, Monolog, and relay setup
+- [WordPress Plugin](/docs/integrations/wordpress) — WordPress REST relay integration
 - [API Authentication](/docs/api/authentication) — Token types and scope separation
 - [Security](/docs/security) — Token security and redaction
