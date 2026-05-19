@@ -370,6 +370,66 @@
     },
     {
       "method": "GET",
+      "path": "/v1/improvements",
+      "operationId": "listImprovements",
+      "summary": "List hosted improvement opportunities",
+      "tags": [
+        "Improvements"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/improvements/{id}",
+      "operationId": "getImprovement",
+      "summary": "Get a hosted improvement opportunity",
+      "tags": [
+        "Improvements"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/improvements/{id}/reopen",
+      "operationId": "reopenImprovement",
+      "summary": "Reopen a hosted improvement opportunity",
+      "tags": [
+        "Improvements"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/improvements/{id}/resolve",
+      "operationId": "resolveImprovement",
+      "summary": "Resolve a hosted improvement opportunity",
+      "tags": [
+        "Improvements"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/improvements/{id}/snooze",
+      "operationId": "snoozeImprovement",
+      "summary": "Snooze a hosted improvement opportunity",
+      "tags": [
+        "Improvements"
+      ],
+      "auth": [
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
       "path": "/v1/incidents",
       "operationId": "listIncidents",
       "summary": "List incidents",
@@ -561,6 +621,45 @@
       "summary": "Update the capture policy for a project",
       "tags": [
         "Capture Policy"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/improvement-settings",
+      "operationId": "getImprovementSettings",
+      "summary": "Get automated improvement settings for a project",
+      "tags": [
+        "Improvements"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/projects/{id}/improvement-settings",
+      "operationId": "updateImprovementSettings",
+      "summary": "Update automated improvement settings for a project",
+      "tags": [
+        "Improvements"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/improvements/{improvementId}/bundle",
+      "operationId": "getImprovementBundle",
+      "summary": "Get the hosted bundle for an improvement opportunity",
+      "tags": [
+        "Improvements"
       ],
       "auth": [
         "Browser session",
@@ -1342,6 +1441,46 @@
       "group": "capture-policy"
     },
     {
+      "commandPath": "improvements list",
+      "usage": "debugbundle improvements list [--project-id <id>] [--environment <name>] [--service <name>] [--status <status>] [--severity <level>] [--kind <kind>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "improvements"
+    },
+    {
+      "commandPath": "improvements get",
+      "usage": "debugbundle improvements get <improvement-id> [--auth-file <path>] [--json]",
+      "group": "improvements"
+    },
+    {
+      "commandPath": "improvements bundle",
+      "usage": "debugbundle improvements bundle <improvement-id> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "improvements"
+    },
+    {
+      "commandPath": "improvements resolve",
+      "usage": "debugbundle improvements resolve <improvement-id> [--auth-file <path>] [--json]",
+      "group": "improvements"
+    },
+    {
+      "commandPath": "improvements reopen",
+      "usage": "debugbundle improvements reopen <improvement-id> [--auth-file <path>] [--json]",
+      "group": "improvements"
+    },
+    {
+      "commandPath": "improvements snooze",
+      "usage": "debugbundle improvements snooze <improvement-id> --until <ISO8601> [--auth-file <path>] [--json]",
+      "group": "improvements"
+    },
+    {
+      "commandPath": "improvements settings get",
+      "usage": "debugbundle improvements settings get --project <id> [--auth-file <path>] [--json]",
+      "group": "improvements"
+    },
+    {
+      "commandPath": "improvements settings set",
+      "usage": "debugbundle improvements settings set --project <id> [--enabled <true|false>] [--sensitivity <high_confidence|balanced|verbose>] [--auth-file <path>] [--json]",
+      "group": "improvements"
+    },
+    {
       "commandPath": "probe activate",
       "usage": "debugbundle probe activate <project-id> --label-pattern <pattern> [--service <name>] [--environment <name>] [--ttl-seconds <n>] [--trigger-ttl-seconds <n>] [--auth-file <path>] [--json]",
       "group": "probe"
@@ -1558,6 +1697,76 @@
             "bearerToken",
             "source"
           ]
+        }
+      ]
+    },
+    {
+      "group": "improvements",
+      "label": "Improvements",
+      "tools": [
+        {
+          "name": "get_improvement",
+          "description": "Fetch a single hosted improvement opportunity by id.",
+          "requiredArguments": [
+            "bearerToken",
+            "improvementId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "get_improvement_bundle",
+          "description": "Fetch the hosted improvement bundle artifact for a project improvement opportunity.",
+          "requiredArguments": [
+            "bearerToken",
+            "improvementId",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_improvements",
+          "description": "List hosted improvement opportunities for the current workspace or a specific project.",
+          "requiredArguments": [
+            "bearerToken"
+          ],
+          "optionalArguments": [
+            "cursor",
+            "environment",
+            "kind",
+            "limit",
+            "projectId",
+            "service",
+            "severity",
+            "status"
+          ]
+        },
+        {
+          "name": "reopen_improvement",
+          "description": "Reopen a hosted improvement opportunity.",
+          "requiredArguments": [
+            "bearerToken",
+            "improvementId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "resolve_improvement",
+          "description": "Resolve a hosted improvement opportunity.",
+          "requiredArguments": [
+            "bearerToken",
+            "improvementId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "snooze_improvement",
+          "description": "Snooze a hosted improvement opportunity until an ISO8601 timestamp.",
+          "requiredArguments": [
+            "bearerToken",
+            "improvementId",
+            "snoozedUntil"
+          ],
+          "optionalArguments": []
         }
       ]
     },
@@ -2068,6 +2277,31 @@
         {
           "name": "update_capture_policy",
           "description": "Update the capture policy for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId",
+            "update"
+          ],
+          "optionalArguments": []
+        }
+      ]
+    },
+    {
+      "group": "improvement_settings",
+      "label": "Improvement Settings",
+      "tools": [
+        {
+          "name": "get_improvement_settings",
+          "description": "Get automated improvement settings for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "update_improvement_settings",
+          "description": "Update automated improvement settings for a project.",
           "requiredArguments": [
             "bearerToken",
             "projectId",

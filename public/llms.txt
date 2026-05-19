@@ -1,25 +1,78 @@
 # DebugBundle
 
-Production debugging bundles for AI agents.
+DebugBundle captures runtime failures, groups them into incidents, and publishes deterministic debug bundles for humans and AI agents.
 
 Primary docs: https://debugbundle.com/docs/
 App: https://app.debugbundle.com
 
-Documentation
-- Core concepts: https://debugbundle.com/docs/v1/overview/
-- API reference: https://debugbundle.com/docs/v1/api/
-- CLI reference: https://debugbundle.com/docs/v1/cli/
-- MCP reference: https://debugbundle.com/docs/v1/mcp/
-- Webhook events: https://debugbundle.com/docs/v1/webhooks/
+Start here
+- What is DebugBundle: https://debugbundle.com/docs/what-is-debugbundle/
+- Quickstart: https://debugbundle.com/docs/quickstart/
+- Installation: https://debugbundle.com/docs/installation/
+- How it works: https://debugbundle.com/docs/how-it-works/
+- Core concepts: https://debugbundle.com/docs/core-concepts/
+
+Setup paths
+- Local-only mode: https://debugbundle.com/docs/project-setup/local-only/
+- Connect to Cloud: https://debugbundle.com/docs/project-setup/connect-to-cloud/
+- Project setup: https://debugbundle.com/docs/project-setup/
+- Profile configuration: https://debugbundle.com/docs/project-setup/profile/
+
+Capture and integration docs
+- SDK overview: https://debugbundle.com/docs/sdks/
+- Node.js SDK: https://debugbundle.com/docs/sdks/node/
+- Browser SDK: https://debugbundle.com/docs/sdks/browser/
+- Browser relay: https://debugbundle.com/docs/sdks/browser-relay/
+- Python SDK: https://debugbundle.com/docs/sdks/python/
+- PHP SDK: https://debugbundle.com/docs/sdks/php/
+- Universal SDK interface: https://debugbundle.com/docs/sdks/universal-interface/
+- WordPress integration: https://debugbundle.com/docs/integrations/wordpress/
+- Log ingestion: https://debugbundle.com/docs/cli/log-ingestion/
+
+Interfaces
+- CLI overview: https://debugbundle.com/docs/cli/
+- CLI local workflow: https://debugbundle.com/docs/cli/local-workflow/
+- CLI cloud workflow: https://debugbundle.com/docs/cli/cloud-workflow/
+- API overview: https://debugbundle.com/docs/api/
+- MCP overview: https://debugbundle.com/docs/mcp/
+- MCP tools: https://debugbundle.com/docs/mcp/tools/
+
+Bundles, automation, and operations
+- Bundles: https://debugbundle.com/docs/bundles/
+- Improvement bundles: https://debugbundle.com/docs/bundles/improvement-bundles/
+- Incidents: https://debugbundle.com/docs/incidents/
+- Reproduction artifacts: https://debugbundle.com/docs/incidents/reproduction/
+- Probes: https://debugbundle.com/docs/probes/
+- Webhooks: https://debugbundle.com/docs/webhooks/
+- Webhook events: https://debugbundle.com/docs/webhooks/events/
+- Alerts: https://debugbundle.com/docs/alerts/
+- GitHub automation: https://debugbundle.com/docs/agent-workflows/automation-recipes/
 - Agent workflows: https://debugbundle.com/docs/agent-workflows/
+- Agent skill file: https://debugbundle.com/docs/agent-workflows/skill-file/
+
+Generated reference
+- Reference index: https://debugbundle.com/docs/v1/reference/
+- API endpoints: https://debugbundle.com/docs/v1/reference/api-endpoints/
+- CLI commands: https://debugbundle.com/docs/v1/reference/cli-commands/
+- MCP tools reference: https://debugbundle.com/docs/v1/reference/mcp-tools/
+- Webhook events reference: https://debugbundle.com/docs/v1/reference/webhook-events/
+- Bundle schema reference: https://debugbundle.com/docs/v1/reference/bundle-schema/
+- Profile schema reference: https://debugbundle.com/docs/v1/reference/profile-schema/
+- Error codes: https://debugbundle.com/docs/v1/reference/error-codes/
 
 Machine-readable artifacts
 - OpenAPI: https://debugbundle.com/openapi.json
 - Bundle schema: https://debugbundle.com/schemas/bundle.json
-- Webhook events schema: https://debugbundle.com/schemas/webhook-events.json
 - Profile schema: https://debugbundle.com/schemas/profile.json
+- Webhook events schema: https://debugbundle.com/schemas/webhook-events.json
 - MCP tools schema: https://debugbundle.com/schemas/mcp-tools.json
 
 Examples
 - Failure bundle example: https://debugbundle.com/examples/bundle.failure.json
 - Improvement bundle example: https://debugbundle.com/examples/bundle.improvement.json
+
+Agent guidance
+- Prefer MCP tools when the environment exposes the DebugBundle MCP server.
+- Prefer the CLI for local-only projects or repositories with a .debugbundle directory.
+- Use the API and generated reference pages for custom automation.
+- Use the browser relay path when adding browser capture to projects with a backend.

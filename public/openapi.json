@@ -28,6 +28,9 @@
       "name": "Incidents"
     },
     {
+      "name": "Improvements"
+    },
+    {
       "name": "Services"
     },
     {
@@ -1639,6 +1642,520 @@
           },
           "404": {
             "description": "Incident or reproduction artifact was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/improvements": {
+      "get": {
+        "operationId": "listImprovements",
+        "summary": "List hosted improvement opportunities",
+        "tags": [
+          "Improvements"
+        ],
+        "security": [
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "environment",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "service",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "open",
+                "resolved",
+                "snoozed"
+              ]
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high",
+                "critical"
+              ]
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "warning_hotspot",
+                "slow_request",
+                "request_failure_pattern",
+                "recurring_incident",
+                "post_deploy_regression"
+              ]
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Improvement opportunity list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Member token is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Improvement management is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/improvements/{id}": {
+      "get": {
+        "operationId": "getImprovement",
+        "summary": "Get a hosted improvement opportunity",
+        "tags": [
+          "Improvements"
+        ],
+        "security": [
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Improvement opportunity details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid improvement id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Member token is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Improvement opportunity was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/improvements/{id}/resolve": {
+      "post": {
+        "operationId": "resolveImprovement",
+        "summary": "Resolve a hosted improvement opportunity",
+        "tags": [
+          "Improvements"
+        ],
+        "security": [
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resolved improvement opportunity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid improvement id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Member token is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Improvement opportunity was not found or resolution is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/improvements/{id}/reopen": {
+      "post": {
+        "operationId": "reopenImprovement",
+        "summary": "Reopen a hosted improvement opportunity",
+        "tags": [
+          "Improvements"
+        ],
+        "security": [
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reopened improvement opportunity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid improvement id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Member token is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Improvement opportunity was not found or reopen is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/improvements/{id}/snooze": {
+      "post": {
+        "operationId": "snoozeImprovement",
+        "summary": "Snooze a hosted improvement opportunity",
+        "tags": [
+          "Improvements"
+        ],
+        "security": [
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImprovementSnoozeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Snoozed improvement opportunity.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid improvement id or snooze timestamp.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Member token is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Improvement opportunity was not found or snooze is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/improvements/{improvementId}/bundle": {
+      "get": {
+        "operationId": "getImprovementBundle",
+        "summary": "Get the hosted bundle for an improvement opportunity",
+        "tags": [
+          "Improvements"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "improvementId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Improvement bundle document or generation status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/BundleDocument"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PendingStatus"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BundleFailedStatus"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project or improvement id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project or improvement opportunity was not found.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5923,6 +6440,164 @@
         }
       }
     },
+    "/v1/projects/{id}/improvement-settings": {
+      "get": {
+        "operationId": "getImprovementSettings",
+        "summary": "Get automated improvement settings for a project",
+        "tags": [
+          "Improvements"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Automated improvement settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementSettingsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateImprovementSettings",
+        "summary": "Update automated improvement settings for a project",
+        "tags": [
+          "Improvements"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImprovementSettingsUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated automated improvement settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImprovementSettingsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id or request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner/admin access or an eligible paid tier is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project was not found or improvement settings are unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/sdk/config": {
       "get": {
         "operationId": "getSdkConfig",
@@ -6581,6 +7256,10 @@
       "AccountExportResponse": {
         "type": "object",
         "properties": {
+          "export_version": {
+            "type": "number",
+            "const": 1
+          },
           "exported_at": {
             "type": "string",
             "format": "date-time"
@@ -6594,6 +7273,13 @@
             "additionalProperties": {}
           },
           "members": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "project_members": {
             "type": "array",
             "items": {
               "type": "object",
@@ -6635,6 +7321,13 @@
               "additionalProperties": {}
             }
           },
+          "probe_activations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
           "capture_policies": {
             "type": "array",
             "items": {
@@ -6657,6 +7350,20 @@
             }
           },
           "processed_events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "improvement_opportunities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "improvement_opportunity_events": {
             "type": "array",
             "items": {
               "type": "object",
@@ -6692,6 +7399,20 @@
             }
           },
           "alert_deliveries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "alert_email_digests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "alert_email_digest_items": {
             "type": "array",
             "items": {
               "type": "object",
@@ -6768,6 +7489,13 @@
               "additionalProperties": {}
             }
           },
+          "operational_email_deliveries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
           "audit_logs": {
             "type": "array",
             "items": {
@@ -6836,24 +7564,31 @@
           }
         },
         "required": [
+          "export_version",
           "exported_at",
           "user",
           "organization",
           "members",
+          "project_members",
           "project_invites",
           "member_tokens",
           "projects",
           "slack_destinations",
           "project_tokens",
+          "probe_activations",
           "capture_policies",
           "services",
           "deployments",
           "processed_events",
+          "improvement_opportunities",
+          "improvement_opportunity_events",
           "incidents",
           "incident_events",
           "bundle_generations",
           "alert_rules",
           "alert_deliveries",
+          "alert_email_digests",
+          "alert_email_digest_items",
           "weekly_report_channels",
           "weekly_report_deliveries",
           "agent_webhooks",
@@ -6864,6 +7599,7 @@
           "github_dispatch_deliveries",
           "org_usage_counters",
           "processed_billing_events",
+          "operational_email_deliveries",
           "audit_logs",
           "artifacts"
         ],
@@ -11097,6 +11833,370 @@
           }
         ]
       },
+      "ImprovementListResponse": {
+        "type": "object",
+        "properties": {
+          "improvements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "improvement_id": {
+                  "type": "string"
+                },
+                "project_id": {
+                  "type": "string"
+                },
+                "project_name": {
+                  "type": "string"
+                },
+                "project_slug": {
+                  "type": "string"
+                },
+                "service_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "service_name": {
+                  "type": "string"
+                },
+                "service_runtime": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "service_framework": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "environment": {
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "warning_hotspot",
+                    "slow_request",
+                    "request_failure_pattern",
+                    "recurring_incident",
+                    "post_deploy_regression"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "open",
+                    "resolved",
+                    "snoozed"
+                  ]
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high",
+                    "critical"
+                  ]
+                },
+                "confidence": {
+                  "type": "number"
+                },
+                "fingerprint": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "summary": {
+                  "type": "string"
+                },
+                "occurrence_count": {
+                  "type": "integer"
+                },
+                "evidence": {
+                  "type": "object",
+                  "additionalProperties": {}
+                },
+                "related_incident_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "first_detected_at": {
+                  "type": "string"
+                },
+                "last_detected_at": {
+                  "type": "string"
+                },
+                "resolved_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "snoozed_until": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "bundle_generation_number": {
+                  "type": "integer"
+                },
+                "bundle_created_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "bundle_updated_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "bundle_failure_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "improvement_id",
+                "project_id",
+                "project_name",
+                "project_slug",
+                "service_id",
+                "service_name",
+                "service_runtime",
+                "service_framework",
+                "environment",
+                "kind",
+                "status",
+                "severity",
+                "confidence",
+                "fingerprint",
+                "title",
+                "summary",
+                "occurrence_count",
+                "evidence",
+                "related_incident_ids",
+                "first_detected_at",
+                "last_detected_at",
+                "resolved_at",
+                "snoozed_until",
+                "bundle_generation_number",
+                "bundle_created_at",
+                "bundle_updated_at",
+                "bundle_failure_reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "improvements"
+        ],
+        "additionalProperties": false
+      },
+      "ImprovementResponse": {
+        "type": "object",
+        "properties": {
+          "improvement": {
+            "type": "object",
+            "properties": {
+              "improvement_id": {
+                "type": "string"
+              },
+              "project_id": {
+                "type": "string"
+              },
+              "project_name": {
+                "type": "string"
+              },
+              "project_slug": {
+                "type": "string"
+              },
+              "service_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "service_name": {
+                "type": "string"
+              },
+              "service_runtime": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "service_framework": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "environment": {
+                "type": "string"
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "warning_hotspot",
+                  "slow_request",
+                  "request_failure_pattern",
+                  "recurring_incident",
+                  "post_deploy_regression"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "open",
+                  "resolved",
+                  "snoozed"
+                ]
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ]
+              },
+              "confidence": {
+                "type": "number"
+              },
+              "fingerprint": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              },
+              "occurrence_count": {
+                "type": "integer"
+              },
+              "evidence": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "related_incident_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "first_detected_at": {
+                "type": "string"
+              },
+              "last_detected_at": {
+                "type": "string"
+              },
+              "resolved_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "snoozed_until": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "bundle_generation_number": {
+                "type": "integer"
+              },
+              "bundle_created_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "bundle_updated_at": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "bundle_failure_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "improvement_id",
+              "project_id",
+              "project_name",
+              "project_slug",
+              "service_id",
+              "service_name",
+              "service_runtime",
+              "service_framework",
+              "environment",
+              "kind",
+              "status",
+              "severity",
+              "confidence",
+              "fingerprint",
+              "title",
+              "summary",
+              "occurrence_count",
+              "evidence",
+              "related_incident_ids",
+              "first_detected_at",
+              "last_detected_at",
+              "resolved_at",
+              "snoozed_until",
+              "bundle_generation_number",
+              "bundle_created_at",
+              "bundle_updated_at",
+              "bundle_failure_reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "improvement"
+        ],
+        "additionalProperties": false
+      },
+      "ImprovementSnoozeBody": {
+        "type": "object",
+        "properties": {
+          "snoozed_until": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "snoozed_until"
+        ],
+        "additionalProperties": false
+      },
       "LogsResponse": {
         "type": "object",
         "properties": {
@@ -14888,6 +15988,65 @@
               {
                 "type": "null"
               }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "ImprovementSettingsResponse": {
+        "type": "object",
+        "properties": {
+          "access_mode": {
+            "type": "string",
+            "enum": [
+              "manage",
+              "preview"
+            ]
+          },
+          "cloud_automation_available": {
+            "type": "boolean"
+          },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "automated_improvement_bundles_enabled": {
+                "type": "boolean"
+              },
+              "improvement_bundle_sensitivity": {
+                "type": "string",
+                "enum": [
+                  "high_confidence",
+                  "balanced",
+                  "verbose"
+                ]
+              }
+            },
+            "required": [
+              "automated_improvement_bundles_enabled",
+              "improvement_bundle_sensitivity"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "access_mode",
+          "cloud_automation_available",
+          "settings"
+        ],
+        "additionalProperties": false
+      },
+      "ImprovementSettingsUpdate": {
+        "type": "object",
+        "properties": {
+          "automated_improvement_bundles_enabled": {
+            "type": "boolean"
+          },
+          "improvement_bundle_sensitivity": {
+            "type": "string",
+            "enum": [
+              "high_confidence",
+              "balanced",
+              "verbose"
             ]
           }
         },

@@ -9,8 +9,8 @@ import {
   Braces,
   CircleAlert,
   FileCode,
-  FileText,
   GitBranch,
+  Lightbulb,
   Package,
   Rocket,
   Shield,
@@ -23,11 +23,11 @@ import {
 ## Start Here
 
 <SurfaceGrid>
+  <SurfaceCard title="What is DebugBundle?" href="/docs/what-is-debugbundle" action="Learn more" icon={Lightbulb}>
+    Understand incidents, bundles, local-first capture, and agent-readable output.
+  </SurfaceCard>
   <SurfaceCard title="Quickstart" href="/docs/quickstart" action="Start now" icon={Rocket}>
     Capture an error locally, process it, and inspect the resulting bundle.
-  </SurfaceCard>
-  <SurfaceCard title="What is DebugBundle?" href="/docs/what-is-debugbundle" action="Learn more" icon={BookOpen}>
-    Understand incidents, bundles, local-first capture, and agent-readable output.
   </SurfaceCard>
   <SurfaceCard title="Installation" href="/docs/installation" action="Install" icon={Wrench}>
     Choose the CLI, SDK, browser relay, or self-host path for your stack.
@@ -74,9 +74,6 @@ import {
   </SurfaceCard>
   <SurfaceCard title="MCP Tools" href="/docs/mcp/tools" action="Open reference" icon={Bot}>
     Review the complete tool surface that agents can call from MCP-compatible environments.
-  </SurfaceCard>
-  <SurfaceCard title="llms.txt" href="/llms.txt" action="Open file" icon={FileText}>
-    Use the machine-readable discovery file for LLMs and agent tooling.
   </SurfaceCard>
 </SurfaceGrid>
 
