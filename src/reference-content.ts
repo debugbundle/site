@@ -80,6 +80,10 @@ export function buildApiReferenceEntries(): ReferenceData['apiEntries'] {
   return readReferenceData().apiEntries;
 }
 
+export function buildReleaseInfo(): ReferenceData['release'] {
+  return readReferenceData().release;
+}
+
 export function buildApiReferenceGroups(): ApiReferenceGroup[] {
   const groups = new Map<string, ApiReferenceEntry[]>();
 

@@ -38,6 +38,9 @@ export type ErrorCodeReference = {
 };
 
 export type ReferenceData = {
+  release: {
+    coreVersion: string;
+  };
   apiEntries: ApiReferenceEntry[];
   cliEntries: CliReferenceEntry[];
   mcpGroups: McpToolReferenceGroup[];

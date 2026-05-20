@@ -27,7 +27,7 @@ export function ThemeToggle(): ReactElement {
   return (
     <div
       aria-label={resolvedLabel}
-      className="inline-flex items-center gap-1 rounded-full border border-[var(--site-border)] bg-[var(--site-surface)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
+      className="inline-flex items-center gap-0.5 rounded-full border border-[var(--site-border)] bg-[var(--site-surface)] p-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
       role="group"
     >
       {themeOptions.map((option) => {
@@ -39,7 +39,7 @@ export function ThemeToggle(): ReactElement {
             key={option.value}
             aria-label={option.label}
             aria-pressed={isActive}
-            className={`flex h-9 w-9 items-center justify-center rounded-full transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--site-focus)] ${
+            className={`flex h-8 w-8 items-center justify-center rounded-full transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--site-focus)] ${
               isActive
                 ? 'shadow-sm'
                 : 'text-[var(--site-text-muted)] hover:bg-[var(--site-surface-muted)] hover:text-[var(--site-text)]'
@@ -52,7 +52,7 @@ export function ThemeToggle(): ReactElement {
             }
             type="button"
           >
-            <Icon className="h-4 w-4" strokeWidth={1.9} />
+            <Icon className="h-3.5 w-3.5" strokeWidth={1.9} />
           </button>
         );
       })}

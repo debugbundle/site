@@ -3,10 +3,13 @@ import Link from 'next/link';
 
 import { BrandLockup } from '@/components/brand-lockup';
 import { GitHubMark } from '@/components/github-mark';
-import { siteConfig } from '@/site-config';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { buildReleaseInfo } from '@/reference-content';
+import { siteConfig } from '@/site-config';
 
 export function SiteShell({ children }: { children: ReactNode }): ReactElement {
+  const release = buildReleaseInfo();
+
   return (
     <div className="min-h-screen bg-[var(--site-bg)] text-[var(--site-text)]">
       <a
@@ -32,15 +35,16 @@ export function SiteShell({ children }: { children: ReactNode }): ReactElement {
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <a
-              className="text-[var(--site-text-muted)] transition hover:text-[var(--site-text)]"
+            <Link
+              aria-label={`DebugBundle GitHub repository, version ${release.coreVersion}`}
+              className="hidden items-center gap-2 rounded-full border border-[var(--site-border)] bg-[var(--site-surface)] px-3 py-2 text-sm font-medium leading-none text-[var(--site-text-muted)] transition hover:border-[var(--site-border-strong)] hover:text-[var(--site-text)] sm:inline-flex"
               href={siteConfig.githubUrl}
-              target="_blank"
               rel="noopener noreferrer"
-              aria-label="GitHub"
+              target="_blank"
             >
-              <GitHubMark className="h-5 w-5" />
-            </a>
+              <GitHubMark className="h-4 w-4" />
+              <span aria-hidden="true">v{release.coreVersion}</span>
+            </Link>
             <ThemeToggle />
             <Link
               className="rounded-full border border-[var(--site-border-strong)] px-4 py-2 text-sm font-medium transition hover:opacity-90"
