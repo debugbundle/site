@@ -9,10 +9,10 @@ import { Callout } from 'fumadocs-ui/components/callout';
 Debug probes request additional diagnostic data from SDKs without code changes or redeployment.
 When you activate a probe, matching SDK instances begin collecting extra context automatically.
 
-All probe endpoints require member token authentication via the `Authorization` header.
+Probe endpoints accept member token authentication via the `Authorization` header or an authenticated browser session from the web app.
 
 <Callout type="info">
-  All probe operations are also available via the CLI (`debugbundle probe activate/list/deactivate`) and
+  All probe operations are also available from the project Probes tab in the web app, via the CLI (`debugbundle probe activate/list/deactivate`), and
   MCP tools (`activate_probe`, `list_active_probes`, `deactivate_probe`). See
   [CLI Cloud Workflow](/docs/cli/cloud-workflow#probe-management) and [MCP Tools](/docs/mcp/tools#probes).
 </Callout>
