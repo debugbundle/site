@@ -202,17 +202,17 @@ Custom fields are merged with defaults — you cannot disable default redaction.
 
 ## SDK Support Snapshot
 
-| Feature | Node.js | Browser | Python | PHP |
-|---------|---------|---------|--------|-----|
-| Status | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped |
-| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` |
-| Framework integrations | Express, Fastify, Next.js | — | Django, Flask, FastAPI | Laravel, Symfony |
-| Logger integrations | pino, winston, bunyan | — | logging, structlog, loguru | Monolog |
-| Safe backend runtime facts | Full process facts | — | Full process facts | Full process facts |
-| Breadcrumbs | — | ✅ | — | — |
-| Relay handler | Express, Fastify, Next.js | Relay client path | Django, Flask, FastAPI | Laravel, Symfony |
-| Probes | ✅ | ✅ | ✅ | ✅ |
-| File transport | ✅ | — | ✅ | ✅ |
+| Feature | Node.js | Browser | Python | PHP | Java |
+|---------|---------|---------|--------|-----|------|
+| Status | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | Pre-release |
+| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | `com.debugbundle:debugbundle-spring-boot-starter` |
+| Framework integrations | Express, Fastify, Next.js | — | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot MVC |
+| Logger integrations | pino, winston, bunyan | — | logging, structlog, loguru | Monolog | JUL, Logback |
+| Safe backend runtime facts | Full process facts | — | Full process facts | Full process facts | Full process facts |
+| Breadcrumbs | — | ✅ | — | — | — |
+| Relay handler | Express, Fastify, Next.js | Relay client path | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot route |
+| Probes | ✅ | ✅ | ✅ | ✅ | ✅ |
+| File transport | ✅ | — | ✅ | ✅ | ✅ |
 
 For the public V1 parity matrix, including 5xx request-failure behavior and relay support, see [SDKs](/docs/sdks).
 
@@ -222,4 +222,5 @@ For the public V1 parity matrix, including 5xx request-failure behavior and rela
 - [Browser SDK](/docs/sdks/browser) — Full Browser SDK setup with breadcrumbs and relay
 - [Python SDK](/docs/sdks/python) — Full Python setup and framework integrations
 - [PHP SDK](/docs/sdks/php) — Full PHP setup and framework integrations
+- [Java SDK](/docs/sdks/java) — Full Java and Spring Boot setup
 - [Browser Relay Setup](/docs/sdks/browser-relay) — Relay architecture and backend setup

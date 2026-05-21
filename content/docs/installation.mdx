@@ -17,7 +17,7 @@ The CLI runs setup, local processing, incident inspection, token management, clo
 
 ## SDKs
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'WordPress']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java', 'WordPress']}>
   <Tab>
 
 ```bash
@@ -94,6 +94,27 @@ DebugBundle::init([
 ```
 
 Laravel, Symfony, and Monolog integrations are included. See [PHP SDK](/docs/sdks/php).
+
+  </Tab>
+  <Tab>
+
+```xml
+<dependency>
+  <groupId>com.debugbundle</groupId>
+  <artifactId>debugbundle-spring-boot-starter</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
+
+```yaml
+debugbundle:
+  project-token: ${DEBUGBUNDLE_PROJECT_TOKEN}
+  environment: production
+  service: api
+  project-mode: connected
+```
+
+Java is currently pre-release. Spring Boot 3.x applications get servlet request capture, MVC exception capture, Logback capture, remote config, probes, and an optional same-origin browser relay. See [Java SDK](/docs/sdks/java).
 
   </Tab>
   <Tab>

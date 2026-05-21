@@ -68,6 +68,7 @@ import * as docsSelfHostingPage from '../content/docs/self-hosting.mdx';
 import * as docsSdksBrowserPage from '../content/docs/sdks/browser.mdx';
 import * as docsSdksBrowserRelayPage from '../content/docs/sdks/browser-relay.mdx';
 import * as docsSdksIndexPage from '../content/docs/sdks/index.mdx';
+import * as docsSdksJavaPage from '../content/docs/sdks/java.mdx';
 import * as docsSdksNodePage from '../content/docs/sdks/node.mdx';
 import * as docsSdksPhpPage from '../content/docs/sdks/php.mdx';
 import * as docsSdksPythonPage from '../content/docs/sdks/python.mdx';
@@ -145,7 +146,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   },
   './sdks/meta.json': {
     title: 'SDKs',
-    pages: ['index', 'node', 'browser', 'browser-relay', 'python', 'php', 'universal-interface'],
+    pages: ['index', 'node', 'browser', 'browser-relay', 'python', 'php', 'java', 'universal-interface'],
   },
   './integrations/meta.json': {
     title: 'Integrations',
@@ -237,6 +238,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './sdks/browser.mdx': docsSdksBrowserPage,
   './sdks/browser-relay.mdx': docsSdksBrowserRelayPage,
   './sdks/index.mdx': docsSdksIndexPage,
+  './sdks/java.mdx': docsSdksJavaPage,
   './sdks/node.mdx': docsSdksNodePage,
   './sdks/php.mdx': docsSdksPhpPage,
   './sdks/python.mdx': docsSdksPythonPage,

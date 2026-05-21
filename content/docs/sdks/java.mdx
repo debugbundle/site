@@ -1,0 +1,92 @@
+---
+title: "Java SDK"
+description: "Install DebugBundle in Java and Spring Boot applications with request, exception, log, probe, and browser relay capture."
+icon: Coffee
+---
+
+The Java SDK ships as a reusable core SDK plus a Spring Boot starter for servlet-based Spring MVC applications.
+
+## Installation
+
+Spring Boot applications should use the starter:
+
+```xml
+<dependency>
+  <groupId>com.debugbundle</groupId>
+  <artifactId>debugbundle-spring-boot-starter</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
+
+```kotlin
+implementation("com.debugbundle:debugbundle-spring-boot-starter:0.1.0-SNAPSHOT")
+```
+
+Plain Java applications can use the core SDK:
+
+```xml
+<dependency>
+  <groupId>com.debugbundle</groupId>
+  <artifactId>debugbundle-java-core</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
+
+The Java SDK is currently pre-release. Until Maven Central publication, use the public [debugbundle-java repository](https://github.com/debugbundle/debugbundle-java) for source builds and validation.
+
+## Spring Boot
+
+```yaml
+debugbundle:
+  project-token: ${DEBUGBUNDLE_TOKEN}
+  service: patients-api
+  environment: production
+  project-mode: connected
+  relay:
+    enabled: true
+```
+
+The starter auto-configures servlet request capture, MVC exception capture, Logback capture, remote config polling, capture-policy enforcement, probes, local file transport, connected HTTP transport, and the browser relay route at `POST /debugbundle/browser`.
+
+If Spring Security protects all routes, permit the browser relay endpoint:
+
+```java
+http.authorizeHttpRequests(authorize -> authorize
+        .requestMatchers(HttpMethod.POST, "/debugbundle/browser").permitAll()
+        .anyRequest().authenticated());
+```
+
+## Vanilla Java
+
+```java
+import com.debugbundle.sdk.DebugBundle;
+import com.debugbundle.sdk.DebugBundleConfig;
+
+DebugBundle.init(DebugBundleConfig.builder()
+        .projectToken(System.getenv("DEBUGBUNDLE_TOKEN"))
+        .service("checkout-api")
+        .environment("production")
+        .build());
+
+DebugBundle.captureUncaughtExceptions();
+DebugBundle.captureJavaUtilLogging();
+DebugBundle.captureException(new RuntimeException("boom"));
+DebugBundle.flush().join();
+```
+
+## Runtime Support
+
+The SDK compiles with `--release 17` and supports Java 17 and newer GA JVMs. Java 21 is the recommended LTS lane. Java 25 and Java 26 are validated where the selected Spring Boot line supports them.
+
+The V1 Spring Boot starter targets Spring Boot 3.x, Spring Framework 6.x, and `jakarta.servlet`. Spring Boot 2.x and `javax.servlet` are not supported.
+
+## Privacy Defaults
+
+Java defaults are conservative for healthcare, financial, and enterprise systems:
+
+- request and response bodies are off by default,
+- request headers are allowlisted,
+- sensitive fields are recursively redacted before transport,
+- existing request IDs and MDC values are preserved,
+- `X-DebugBundle-Trace-Id` links browser and backend events,
+- SDK failures are swallowed internally and never throw into host application code.

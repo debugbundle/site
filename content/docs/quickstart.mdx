@@ -75,7 +75,7 @@ DEBUGBUNDLE_PROJECT_TOKEN=dbundle_proj_xxxxxxxxxxxx
 
 Pick the path that matches your project.
 
-<Tabs items={['Node.js', 'Python', 'PHP', 'Existing Logs']}>
+<Tabs items={['Node.js', 'Python', 'PHP', 'Java', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -144,6 +144,27 @@ DebugBundle::captureShutdown();
 ```
 
 For Laravel, Symfony, and Monolog, see [PHP SDK](/docs/sdks/php).
+
+  </Tab>
+  <Tab>
+
+```xml
+<dependency>
+  <groupId>com.debugbundle</groupId>
+  <artifactId>debugbundle-spring-boot-starter</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
+
+```yaml
+debugbundle:
+  project-token: ${DEBUGBUNDLE_PROJECT_TOKEN}
+  environment: production
+  service: api
+  project-mode: connected
+```
+
+Java is currently pre-release. Spring Boot 3.x applications auto-configure servlet request capture, MVC exception capture, Logback capture, remote capture policy, probes, and the optional browser relay. See [Java SDK](/docs/sdks/java).
 
   </Tab>
   <Tab>
@@ -251,7 +272,7 @@ This creates `.debugbundle/profile.json`, `.debugbundle/local/connection.json`, 
 
 Pick the path that matches your project.
 
-<Tabs items={['Node.js', 'Python', 'PHP', 'Existing Logs']}>
+<Tabs items={['Node.js', 'Python', 'PHP', 'Java', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -323,6 +344,27 @@ For Laravel, Symfony, and Monolog, see [PHP SDK](/docs/sdks/php).
   </Tab>
   <Tab>
 
+```xml
+<dependency>
+  <groupId>com.debugbundle</groupId>
+  <artifactId>debugbundle-spring-boot-starter</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+</dependency>
+```
+
+```yaml
+debugbundle:
+  project-token: local
+  environment: development
+  service: api
+  project-mode: local-only
+```
+
+Java is currently pre-release. Spring Boot 3.x applications auto-configure servlet request capture, MVC exception capture, Logback capture, probes, and local file delivery. See [Java SDK](/docs/sdks/java).
+
+  </Tab>
+  <Tab>
+
 Use log ingestion when you cannot add an SDK yet.
 
 ```bash
@@ -353,7 +395,7 @@ try {
 }
 ```
 
-For Python or PHP, use the equivalent language-specific capture method from the SDK guide.
+For Python, PHP, or Java, use the equivalent language-specific capture method from the SDK guide.
 
 ### 5. Process and Inspect
 
