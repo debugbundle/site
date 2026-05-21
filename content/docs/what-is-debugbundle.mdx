@@ -16,20 +16,68 @@ DebugBundle captures that context at the moment of failure and packages it into 
 
 A debug bundle is a deterministic, versioned JSON document that contains everything needed to understand and reproduce a production incident:
 
-| Context block | What it captures |
-|---|---|
-| `error` | Exception class, message, stack trace, raw and parsed frames |
-| `request` | HTTP method, URL, headers, query, body (redacted) |
-| `response` | Status code, headers, body (redacted) |
-| `logs` | Structured log entries captured around the time of the error |
-| `frontend` | Breadcrumbs, console entries, navigation events, network requests |
-| `environment` | Environment name, variables (redacted), feature flags |
-| `deploy` | Deploy ID, git ref, timestamp, deployer |
-| `runtime` | Language, version, OS, architecture, memory, uptime |
-| `git` | Commit SHA, branch, remote URL, dirty flag |
-| `dependencies` | Package names and versions at deploy time |
-| `probe_data` | Always-on diagnostic ring buffer data attached on failure |
-| `device` | Browser, OS, screen, viewport, language, touch/network/display preferences (browser only; may contribute to browser fingerprinting) |
+<table>
+  <colgroup>
+    <col style={{ width: '12rem' }} />
+    <col />
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Context block</th>
+      <th>What it captures</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>error</code></td>
+      <td>Exception class, message, stack trace, raw and parsed frames</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>request</code></td>
+      <td>HTTP method, URL, headers, query, body (redacted)</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>response</code></td>
+      <td>Status code, headers, body (redacted)</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>logs</code></td>
+      <td>Structured log entries captured around the time of the error</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>frontend</code></td>
+      <td>Breadcrumbs, console entries, navigation events, network requests</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>environment</code></td>
+      <td>Environment name, variables (redacted), feature flags</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>deploy</code></td>
+      <td>Deploy ID, git ref, timestamp, deployer</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>runtime</code></td>
+      <td>Language, version, OS, architecture, memory, uptime</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>git</code></td>
+      <td>Commit SHA, branch, remote URL, dirty flag</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>dependencies</code></td>
+      <td>Package names and versions at deploy time</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>probe_data</code></td>
+      <td>Always-on diagnostic ring buffer data attached on failure</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>device</code></td>
+      <td>Browser, OS, screen, viewport, language, touch/network/display preferences (browser only; may contribute to browser fingerprinting)</td>
+    </tr>
+  </tbody>
+</table>
 
 Every bundle also includes a machine-generated **reproduction artifact** — a set of curl/HTTPie commands and a JSON spec that can reproduce the request that caused the failure.
 

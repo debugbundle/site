@@ -75,7 +75,9 @@ DEBUGBUNDLE_PROJECT_TOKEN=dbundle_proj_xxxxxxxxxxxx
 
 Pick the path that matches your project.
 
-<Tabs items={['Node.js', 'Python', 'PHP', 'Java', 'Existing Logs']}>
+If you need frontend exceptions, breadcrumbs, and browser-to-backend trace correlation, add the Browser SDK too. Use it by itself for frontend-only cloud deployments, or pair it with a backend relay for full-stack apps.
+
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -96,6 +98,25 @@ DebugBundle.captureRejections();
 ```
 
 For framework middleware, logger capture, and browser relay setup, see [Node.js SDK](/docs/sdks/node).
+
+  </Tab>
+  <Tab>
+
+```bash
+npm install @debugbundle/sdk-browser
+```
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-browser';
+
+DebugBundle.init({
+  projectToken: '<public-project-token>',
+  environment: 'production',
+  service: 'web',
+});
+```
+
+For frontend-only apps, the Browser SDK can send directly to DebugBundle Cloud with a write-only project token. For full-stack apps, prefer a same-origin relay at `/debugbundle/browser` and omit `projectToken` on the client. See [Browser SDK](/docs/sdks/browser) and [Browser Relay Setup](/docs/sdks/browser-relay).
 
   </Tab>
   <Tab>
@@ -272,7 +293,9 @@ This creates `.debugbundle/profile.json`, `.debugbundle/local/connection.json`, 
 
 Pick the path that matches your project.
 
-<Tabs items={['Node.js', 'Python', 'PHP', 'Java', 'Existing Logs']}>
+Local-only browser capture requires a same-origin relay so the browser SDK can hand events to your backend, which then writes them into `.debugbundle/local/events/` for `debugbundle process`.
+
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -293,6 +316,25 @@ DebugBundle.captureRejections();
 ```
 
 For framework middleware and logger capture, see [Node.js SDK](/docs/sdks/node).
+
+  </Tab>
+  <Tab>
+
+```bash
+npm install @debugbundle/sdk-browser
+```
+
+```typescript
+import DebugBundle from '@debugbundle/sdk-browser';
+
+DebugBundle.init({
+  endpoint: '/debugbundle/browser',
+  environment: 'development',
+  service: 'web',
+});
+```
+
+Use the Browser SDK with a same-origin relay mounted on your backend in local-only mode. If your app has no backend, use the cloud quickstart instead because local-only browser capture needs a relay target. See [Browser SDK](/docs/sdks/browser) and [Browser Relay Setup](/docs/sdks/browser-relay).
 
   </Tab>
   <Tab>

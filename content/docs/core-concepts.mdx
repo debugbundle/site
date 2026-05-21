@@ -14,10 +14,32 @@ A debug bundle is a deterministic, versioned JSON document that packages debuggi
 
 ### Bundle Types
 
-| Type | When created | Purpose |
-|---|---|---|
-| `failure` | An unhandled exception, fatal error, or critical failure signal fires | Standard debugging: understand what broke and why |
-| `improvement` | Deterministic hosted rules detect a recurring hardening or optimization opportunity | Prioritize recurring latency, warning, request-failure, regression, or recurrence patterns before they become larger problems |
+<table>
+  <colgroup>
+    <col style={{ width: '9rem' }} />
+    <col />
+    <col />
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>When created</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>failure</code></td>
+      <td>An unhandled exception, fatal error, or critical failure signal fires</td>
+      <td>Standard debugging: understand what broke and why</td>
+    </tr>
+    <tr>
+      <td><code style={{ whiteSpace: 'nowrap' }}>improvement</code></td>
+      <td>Deterministic hosted rules detect a recurring hardening or optimization opportunity</td>
+      <td>Prioritize recurring latency, warning, request-failure, regression, or recurrence patterns before they become larger problems</td>
+    </tr>
+  </tbody>
+</table>
 
 Hosted automated improvement bundles are available on Solo, Team, and self-host projects. They are generated from deterministic request/log rules, not by an LLM. Incident-derived signals such as recurring incidents and post-deploy regressions are still recorded as improvement opportunities, but they point to the related incident bundles instead of generating duplicate hosted improvement artifacts.
 
