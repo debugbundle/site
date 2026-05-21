@@ -52,11 +52,30 @@ runtime failures, or production incidents should trigger DebugBundle workflows.
 
 The skill file defines a prioritized investigation workflow:
 
-1. **Check incidents first** — Query existing incidents to avoid re-investigating known failures
-2. **Inspect the bundle** — Read the debug bundle for full context (error, request, logs, environment)
-3. **Review reproduction** — Use the reproduction artifact to understand how to trigger the issue
-4. **Analyze for improvements** — Run `debugbundle analyze` for a deterministic change plan
-5. **Apply and validate** — Make the fix and verify it using the project's test workflow
+1. **Verify setup** — Run `debugbundle doctor --json` to identify local-only versus connected mode
+2. **Check incidents first** — Query local or cloud open incidents before broad source exploration
+3. **Inspect the bundle** — Read the debug bundle for full context (error, request, logs, environment)
+4. **Review reproduction** — Use the reproduction artifact to understand how to trigger the issue
+5. **Analyze for improvements** — Run `debugbundle analyze` for a deterministic change plan when local bundles are available
+6. **Apply, validate, and resolve** — Make the fix, run the project validation workflow, then resolve verified incidents
+
+The generated skill now keeps the most important commands near the top:
+
+```bash
+debugbundle doctor --json
+debugbundle incidents --source local --status open --json
+debugbundle incidents --source cloud --status open --json
+debugbundle inspect <incident-id> --source <local|cloud> --json
+debugbundle explain <incident-id> --source <local|cloud> --json
+debugbundle bundle <incident-id> --source <local|cloud> --json
+debugbundle reproduce <incident-id> --source <local|cloud> --json
+```
+
+It also points agents to the local evidence paths they need most often:
+`.debugbundle/profile.json`, `.debugbundle/local/connection.json`,
+`.debugbundle/local/events/`, `.debugbundle/local/state.json`,
+`.debugbundle/bundles/local/`, `.debugbundle/bundles/local/reproductions/`,
+and `.debugbundle/bundles/cloud/`.
 
 ### Profile Validation
 
@@ -73,13 +92,13 @@ Before investigation, agents verify the local environment:
 
 ```bash
 # Confirm profile, connection mode, and auth state
-debugbundle doctor
+debugbundle doctor --json
 
-# Restore missing generated files without overwriting the profile
-debugbundle validate --fix
+# Restore missing or stale generated files without overwriting the profile
+debugbundle validate --fix --json
 
 # Process any pending local events
-debugbundle process
+debugbundle process --preset balanced --json
 ```
 
 ## AGENTS.md Integration
@@ -93,6 +112,7 @@ The project's `AGENTS.md` file references the skill with a managed section:
 - Read `.agents/skills/debugbundle/SKILL.md` for the full debugging workflow.
 - Use `debugbundle inspect <incident-id>` or MCP `get_bundle` when a user reports an issue.
 - Run reproduction artifacts from `.debugbundle/bundles/local/reproductions/` before proposing a fix.
+- After a fix is verified, or after an intentional smoke or dogfood incident has served its purpose, resolve it with `debugbundle resolve <incident-id>` or MCP `resolve_incident` so open incidents remain actionable.
 - Use `debugbundle doctor` to validate local DebugBundle setup or connectivity issues.
 <!-- debugbundle:end -->
 ```
@@ -117,12 +137,20 @@ CLI capabilities:
 
 | CLI Command | MCP Tool |
 |-------------|----------|
-| `debugbundle incidents` | `list_incidents` |
+| `debugbundle incidents --source <local\|cloud>` | `list_incidents` |
 | `debugbundle inspect` | `get_incident` |
+| `debugbundle explain` | `get_incident_context` |
 | `debugbundle bundle` | `get_bundle` |
 | `debugbundle reproduce` | `get_reproduction` |
 | `debugbundle analyze` | `analyze` |
 | `debugbundle doctor` | `doctor` |
+
+## Drift Validation
+
+`debugbundle validate` checks that the generated skill, references, schemas, and
+evals still match the current CLI templates. If an existing generated guidance
+file is stale, validation returns a warning and `debugbundle validate --fix`
+refreshes that file without overwriting `.debugbundle/profile.json`.
 
 ## Next Steps
 

@@ -171,15 +171,20 @@ Verify scaffold files exist and are structurally correct:
 debugbundle validate
 ```
 
+Validation also compares the generated skill, reference files, analysis schemas,
+and evals against the current CLI templates. Stale managed guidance returns a
+warning so teams notice when their committed agent workflow has drifted.
+
 ### Auto-Fix Mode
 
-Regenerate missing scaffold files without overwriting your profile:
+Regenerate missing or stale scaffold files without overwriting your profile:
 
 ```bash
 debugbundle validate --fix
 ```
 
-This recreates missing reference files, skill definitions, and directory structures while preserving your manually-reviewed `profile.json`.
+This recreates or refreshes reference files, skill definitions, schemas, evals,
+and directory structures while preserving your manually-reviewed `profile.json`.
 
 ## Verify
 
