@@ -19,6 +19,7 @@ DebugBundle uses three distinct authentication artifacts:
 Project tokens and member tokens serve fundamentally different purposes:
 
 - **Project tokens** are deployed with your application. They can only write events. If compromised, the attacker can only send noise — they cannot read any data.
+- **Direct browser project tokens** are public write-only keys. For static-only sites, create a dedicated token with allowed browser origins in the dashboard or `allowed_origins` through API automation to reduce browser-based abuse. Do not reuse that token for server SDKs or relay forwarding, because allowlisted tokens reject requests without a matching `Origin`. Do not treat the allowlist as a secret boundary because non-browser clients can spoof `Origin`.
 - **Member tokens** are used by developers and agents. They can read incidents, manage webhooks, create/revoke tokens, and access billing.
 - **Browser sessions** are issued by the web dashboard login flow. They carry the same permissions as member tokens.
 
@@ -119,6 +120,11 @@ debugbundle incidents --auth-file /path/to/custom/auth.json
 # Create a project token
 debugbundle token project create proj_xxxx --label "production-sdk"
 
+# Create a static-browser token restricted to your site origin
+debugbundle token project create proj_xxxx \
+  --label "static-browser" \
+  --allowed-origin https://www.example.com
+
 # Create an additional member token
 debugbundle token member create --label "ci-pipeline"
 ```
@@ -134,7 +140,7 @@ The first member token can be created in the web app after email-code or GitHub 
 curl -X POST https://api.debugbundle.com/v1/projects/proj_xxxx/tokens \
   -H "Authorization: Bearer dbundle_mem_xxxxxxxxxxxx" \
   -H "Content-Type: application/json" \
-  -d '{ "label": "production-sdk" }'
+  -d '{ "label": "static-browser", "allowed_origins": ["https://www.example.com"] }'
 ```
 
 Response:
@@ -144,6 +150,7 @@ Response:
   "token": {
     "token_id": "tok_xxxx",
     "label": "production-sdk",
+    "allowed_origins": ["https://www.example.com"],
     "token_preview": "dbundle_proj_xxxx...xxxx",
     "plaintext": "dbundle_proj_full_token_shown_once",
     "created_at": "2025-01-15T10:30:00.000Z"
@@ -153,7 +160,7 @@ Response:
 
 ### Via Dashboard
 
-Navigate to **Project Settings → Tokens** to create and manage tokens through the web interface.
+Navigate to **Project → Tokens** to create and manage project tokens through the web interface. For static-only browser sites, fill **Allowed browser origins** when creating the token; enter one origin per line or comma-separated. The API stores those values as `allowed_origins`.
 
 ---
 

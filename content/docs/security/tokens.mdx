@@ -32,6 +32,8 @@ DebugBundle.init({
 Project tokens are scoped to a single project. You can create multiple tokens per
 project for different environments or services.
 
+Browser SDK deployments should use a same-origin relay when a backend is available, so the project token stays server-side. Static-only sites may embed a dedicated public write-only project token and set allowed browser origins in the dashboard, CLI, API, or MCP. Allowlisted tokens reject ingestion and SDK config requests without a matching `Origin`, so they should not be reused for server SDKs or relay forwarding. The allowlist blocks normal browser requests from other origins, but non-browser clients can spoof `Origin`, so it does not make the token secret.
+
 ### Member Tokens
 
 Member tokens provide **read and manage** access. They are used for:
@@ -101,6 +103,11 @@ against brute-force attacks.
 ```bash
 # Create a project token
 debugbundle token project create proj_01HXYZ... --label "Production SDK"
+
+# Create a static-browser project token with an origin allowlist
+debugbundle token project create proj_01HXYZ... \
+  --label "Static browser" \
+  --allowed-origin https://www.example.com
 
 # Create an additional member token
 debugbundle token member create --label "CI pipeline"

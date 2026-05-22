@@ -32,7 +32,7 @@ Calling `init()` automatically:
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `projectToken` | `string` | — | Required for direct API ingestion. Omit it when you send browser events through a same-origin relay that injects the project token server-side. |
+| `projectToken` | `string` | — | Required for direct API ingestion. Omit it when you send browser events through a same-origin relay that injects the project token server-side. Direct browser tokens are public write-only keys; create them with allowed browser origins from the dashboard or `allowed_origins` from API automation when using static-only deployment. |
 | `environment` | `string` | `"production"` | Environment name. |
 | `service` | `string` | `document.title` or `"browser-app"` | Service identifier. |
 | `endpoint` | `string` | `https://api.debugbundle.com/v1/events` | Ingestion endpoint. Set this to your same-origin relay path, typically `/debugbundle/browser`, when using relay transport. |
@@ -60,6 +60,10 @@ Calling `init()` automatically:
 The Browser SDK uses the configured `endpoint` directly. In production, the recommended setup is a same-origin relay endpoint such as `/debugbundle/browser`; if you do not override it, the SDK uses the default cloud ingestion endpoint.
 
 The relay path is preferred because it avoids CORS, ad-blocker interference, and content security policy issues.
+
+If you have a static-only site with no backend relay, create a dedicated project token with allowed browser origins through the dashboard, CLI, API, or MCP. The dashboard field is **Project → Tokens → Create project token → Allowed browser origins**; enter one origin per line or comma-separated. API and automation clients use `allowed_origins`.
+
+When `allowed_origins` is set, DebugBundle rejects direct `POST /v1/events` and `GET /v1/sdk/config` calls unless the request includes a matching `Origin` header. Server SDKs and backend relay forwards usually do not send `Origin`, so do not reuse an allowlisted browser token for those paths. The allowlist blocks normal browser requests from other origins, but it does not make the token secret because non-browser clients can spoof `Origin`.
 
 Content Security Policy is a browser-side concern. If the Browser SDK sends directly to DebugBundle cloud, your CSP must allow the endpoint in `connect-src`. If you use a same-origin relay such as `/debugbundle/browser`, your CSP usually only needs to allow your own origin.
 

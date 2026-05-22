@@ -116,7 +116,7 @@ DebugBundle.init({
 });
 ```
 
-For frontend-only apps, the Browser SDK can send directly to DebugBundle Cloud with a write-only project token. For full-stack apps, prefer a same-origin relay at `/debugbundle/browser` and omit `projectToken` on the client. See [Browser SDK](/docs/sdks/browser) and [Browser Relay Setup](/docs/sdks/browser-relay).
+For frontend-only apps, the Browser SDK can send directly to DebugBundle Cloud with a public write-only project token; create a dedicated token with `--allowed-origin https://your-site.example` for browser abuse reduction. For full-stack apps, prefer a same-origin relay at `/debugbundle/browser` and omit `projectToken` on the client. See [Browser SDK](/docs/sdks/browser) and [Browser Relay Setup](/docs/sdks/browser-relay).
 
   </Tab>
   <Tab>

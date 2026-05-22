@@ -150,8 +150,9 @@ Create a new project token for SDK ingestion.
 |-----------|------|-------------|
 | `project_id` | `string` | Optional. Defaults to active project. |
 | `label` | `string` | **Required.** Human-readable token label. |
+| `allowedOrigins` | `string[]` | Optional origin allowlist for direct/static browser ingestion. |
 
-Returns the token plaintext once — store it immediately.
+Returns the token plaintext once — store it immediately. Use `allowedOrigins` only for public write-only project tokens intentionally embedded in static browser apps. Allowlisted tokens reject requests without a matching `Origin`, so do not reuse them for server SDKs or relay forwarding. This reduces normal browser-origin abuse but is not a secret boundary.
 
 ### revoke_project_token
 

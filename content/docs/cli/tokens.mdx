@@ -58,6 +58,10 @@ Output:
 
 ```bash
 debugbundle token project create proj_01HXYZ... --label "production-sdk"
+
+debugbundle token project create proj_01HXYZ... \
+  --label "static-browser" \
+  --allowed-origin https://www.example.com
 ```
 
 Output:
@@ -67,6 +71,7 @@ Output:
   "token": {
     "token_id": "tok_01HGHI...",
     "label": "production-sdk",
+    "allowed_origins": [],
     "plaintext": "dbundle_proj_live_a1b2c3d4e5f6...",
     "revoked_at": null
   }
@@ -78,8 +83,11 @@ Copy the `plaintext` value — this is the only time it will be shown.
 | Flag | Type | Default | Description |
 |------|------|---------|-------------|
 | `--label` | `string` | — | **Required.** Human-readable label for the token. |
+| `--allowed-origin` | `string` | — | Optional repeatable origin allowlist for direct/static browser ingestion. Example: `https://www.example.com`. |
 | `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
 | `--json` | `boolean` | `false` | Output as JSON. |
+
+Use `--allowed-origin` only for project tokens that are intentionally embedded in static browser apps. The same setting is available in the dashboard as **Allowed browser origins** when creating a project token; the dashboard accepts one origin per line or comma-separated. Allowlisted tokens reject requests without a matching `Origin`, so do not reuse them for server SDKs or relay forwarding. The allowlist blocks normal browser requests from other origins, but non-browser clients can spoof `Origin`, so relay transport remains the stronger default when a backend exists.
 
 ### Revoke Project Token
 

@@ -13,13 +13,17 @@ The browser relay lets your Browser SDK send events through your own backend ins
 | Concern | Direct Transport | Relay Transport |
 |---------|-----------------|-----------------|
 | Project token exposure | Token in client-side code | Token stays on server |
-| Origin validation | None | Server validates request origin |
+| Origin validation | Optional token allowlist, spoofable outside browsers | Server validates request origin before credentialed forwarding |
 | Rate limiting | Per-client IP | Centralized per-IP limiting |
 | Durable writes | Browser-only (beacon) | Server-side spool to disk |
 | Works without backend | ✅ | ❌ Requires your backend |
 
 <Callout type="info">
   If your app has no backend (static site, SPA hosted on CDN), use direct transport instead. The Browser SDK uses beacon/keepalive for reliable delivery on page unload.
+</Callout>
+
+<Callout type="warn">
+  Direct browser project tokens are public write-only ingestion keys. Add allowed browser origins in the dashboard, CLI, API, or MCP for static sites to block casual browser copy/paste abuse, but do not treat it as a secret boundary because non-browser clients can spoof `Origin`.
 </Callout>
 
 ## Architecture
@@ -213,6 +217,30 @@ debugbundle.init({
 <Callout type="warn">
   When using relay transport, do **not** set `projectToken` in the Browser SDK config. The relay handler adds the token server-side.
 </Callout>
+
+## Static-Only Direct Transport
+
+Use direct transport only when there is no backend route that can host a relay. Create a dedicated project token with an origin allowlist. In the dashboard, use **Project → Tokens → Create project token → Allowed browser origins** and enter one origin per line or comma-separated. From the CLI:
+
+```bash
+debugbundle token project create proj_01HXYZ... \
+  --label "static-site-browser" \
+  --allowed-origin https://www.example.com
+```
+
+Then initialize the Browser SDK with that token:
+
+```javascript
+import debugbundle from '@debugbundle/sdk-browser';
+
+debugbundle.init({
+  projectToken: 'dbundle_proj_...',
+  environment: 'production',
+  service: 'static-site',
+});
+```
+
+When `allowed_origins` is set, DebugBundle requires matching `Origin` headers for direct `POST /v1/events` and `GET /v1/sdk/config` calls. Requests from other browser origins, or requests without an `Origin` header, receive `403 origin_not_allowed`. Do not reuse an allowlisted direct-browser token for server SDKs or relay forwarding; those paths should use a project token with no `allowed_origins`.
 
 ## Origin Validation
 

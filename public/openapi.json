@@ -4366,6 +4366,9 @@
         ],
         "security": [
           {
+            "browserSession": []
+          },
+          {
             "memberBearerToken": []
           }
         ],
@@ -4413,7 +4416,7 @@
             }
           },
           "401": {
-            "description": "Member token is invalid.",
+            "description": "Authentication is invalid.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4442,6 +4445,9 @@
         ],
         "security": [
           {
+            "browserSession": []
+          },
+          {
             "memberBearerToken": []
           }
         ],
@@ -4461,7 +4467,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateTokenBody"
+                "$ref": "#/components/schemas/CreateProjectTokenBody"
               }
             }
           }
@@ -4488,7 +4494,17 @@
             }
           },
           "401": {
-            "description": "Member token is invalid.",
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner or admin project access is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4518,6 +4534,9 @@
           "Tokens"
         ],
         "security": [
+          {
+            "browserSession": []
+          },
           {
             "memberBearerToken": []
           }
@@ -4564,7 +4583,17 @@
             }
           },
           "401": {
-            "description": "Member token is invalid.",
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner or admin project access is required.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4594,6 +4623,9 @@
           "Tokens"
         ],
         "security": [
+          {
+            "browserSession": []
+          },
           {
             "memberBearerToken": []
           }
@@ -4633,7 +4665,7 @@
             }
           },
           "401": {
-            "description": "Member token is invalid.",
+            "description": "Authentication is invalid.",
             "content": {
               "application/json": {
                 "schema": {
@@ -4721,6 +4753,9 @@
         ],
         "security": [
           {
+            "browserSession": []
+          },
+          {
             "memberBearerToken": []
           }
         ],
@@ -4757,7 +4792,7 @@
             }
           },
           "401": {
-            "description": "Member token is invalid.",
+            "description": "Authentication is invalid.",
             "content": {
               "application/json": {
                 "schema": {
@@ -7078,6 +7113,13 @@
                   },
                   "label": {
                     "type": "string"
+                  },
+                  "allowed_origins": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "default": []
                   },
                   "created_at": {
                     "type": "string"
@@ -12753,6 +12795,11 @@
             "minLength": 1,
             "maxLength": 50,
             "default": "production"
+          },
+          "weekly_report_timezone": {
+            "type": "string",
+            "minLength": 1,
+            "default": "UTC"
           }
         },
         "required": [
@@ -13522,6 +13569,13 @@
                     "label": {
                       "type": "string"
                     },
+                    "allowed_origins": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "default": []
+                    },
                     "created_at": {
                       "type": "string"
                     },
@@ -13616,6 +13670,29 @@
         },
         "required": [
           "tokens"
+        ],
+        "additionalProperties": false
+      },
+      "CreateProjectTokenBody": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "allowed_origins": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "maxItems": 20
+          }
+        },
+        "required": [
+          "label"
         ],
         "additionalProperties": false
       },
@@ -14561,7 +14638,8 @@
                       "type": "string",
                       "format": "email"
                     },
-                    "minItems": 1
+                    "minItems": 1,
+                    "maxItems": 3
                   }
                 },
                 "required": [
@@ -14800,7 +14878,8 @@
                       "type": "string",
                       "format": "email"
                     },
-                    "minItems": 1
+                    "minItems": 1,
+                    "maxItems": 3
                   }
                 },
                 "required": [
