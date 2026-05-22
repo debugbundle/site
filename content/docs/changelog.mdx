@@ -20,42 +20,47 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/) conventio
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-05-22
+
 ### Added
 
-- **Local-first onboarding** — Full capture-to-investigation workflow without a cloud account
-  - `debugbundle setup` creates project scaffold with profile, connection config, and agent skill file
-  - `debugbundle process` converts local events into bundles and incidents
-  - `debugbundle clean` manages local data retention and cache lifecycle
-- **Node.js SDK file transport** — Write events to `.debugbundle/local/events/` for local processing
-- **Connected-mode dual-source retrieval** — Merged local + cloud incident view with `--source` narrowing
-- **Cloud artifact caching** — Bundle and reproduction fetches persisted to `.debugbundle/bundles/cloud/`
-- **CLI local processing** — Full event → incident → bundle → reproduction pipeline
-- **Agent skill file** — `.agents/skills/debugbundle/SKILL.md` following agentskills.io spec
-- **MCP local-store parity** — All local retrieval operations available through MCP tools
-- **Incident lifecycle** — `resolve` and `reopen` for both local and cloud incidents
-- **Probe system** — Always-on probes with remote activation for paid tiers
-- **Webhook system** — 8 event types with HMAC-SHA256 signed deliveries
-- **Alert system** — Email, Slack, Discord, and webhook alert channels with 5 condition types
-- **Billing** — Stripe-powered subscriptions with dynamic capacity management
-- **Self-hosting** — Docker Compose deployment with PostgreSQL, Redis, and S3-compatible storage
-- **Public SDK parity docs** — Published the V1 SDK capability matrix and documented the preset-aware request-failure incident rules across the public SDK and installation docs
-- **WordPress plugin docs** — Added the official WordPress plugin guide for backend PHP capture, frontend browser capture, and the token-safe WordPress REST browser relay
+- Canonical root-repository GitHub Releases on `v*` tags so the `debugbundle` monorepo now has a product-level public release surface alongside the package-specific CLI, MCP, shared-package, and SDK releases.
+- Official GitHub Releases for the standalone JavaScript SDK repo, Python SDK repo, and WordPress plugin repo, including installable WordPress ZIP assets.
 
 ### Changed
 
-- Project setup flow now produces `.debugbundle/` directory structure instead of flat config files
-- SDK initialization detects local vs connected mode from project configuration
-- Bundle generation uses deterministic output (same inputs → byte-identical bundles)
+- Defined the root `debugbundle` repository version as the canonical public DebugBundle product release number used by the public site and product changelog.
+- Published the current WordPress plugin release through GitHub Releases while keeping WordPress.org directory publication as a separate follow-up.
+
+### Security
+
+- Hardened OAuth state validation by switching GitHub install and web-session callback comparisons to constant-time checks.
+- Hardened browser trace propagation matching by removing caller-provided regular expressions from the allowlist path and keeping string-only matching.
+
+## [0.1.2] - 2026-05-13
+
+### Added
+
+- Local-first onboarding for full capture-to-investigation workflows without a cloud account.
+- Connected-mode dual-source retrieval with `--source` narrowing and cloud artifact caching.
+- CLI local processing, MCP local-store parity, incident lifecycle actions, probes, webhooks, alerts, billing, and self-hosting.
+
+### Changed
+
+- Project setup now produces a `.debugbundle/` scaffold instead of flat config files.
+- SDK initialization detects local versus connected mode from project configuration.
+- Bundle generation remains deterministic for the same normalized source inputs.
 
 ## SDK Versions
 
 | SDK | Version | Status |
 |-----|---------|--------|
-| `@debugbundle/sdk-node` | 0.1.0 | Shipped |
-| `@debugbundle/sdk-browser` | 0.1.0 | Shipped |
-| `debugbundle-python` | 0.1.0 | Shipped |
-| `debugbundle/sdk-php` | 0.1.0 | Shipped |
-| `debugbundle-wordpress` | 0.1.0 | Pre-release |
+| `@debugbundle/sdk-node` | 0.1.8 | Shipped |
+| `@debugbundle/sdk-browser` | 0.1.8 | Shipped |
+| `debugbundle-python` | 0.1.6 | Shipped |
+| `debugbundle/sdk-php` | 0.1.7 | Shipped |
+| `debugbundle-wordpress` | 0.1.7 | Shipped via GitHub Releases |
+| `com.debugbundle:debugbundle-spring-boot-starter` | 0.1.0 | Shipped |
 
 ## Next Steps
 
