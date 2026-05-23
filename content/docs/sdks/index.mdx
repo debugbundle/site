@@ -35,21 +35,21 @@ All SDKs follow the same safety contract:
 
 ## V1 Parity Matrix
 
-| Capability | Node.js | Browser | Python | PHP | WordPress | Java |
-|---|---|---|---|---|---|---|
-| Status | Shipped | Shipped | Shipped | Shipped | Shipped via GitHub Releases | Shipped |
-| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | `debugbundle-wordpress` | `com.debugbundle:debugbundle-spring-boot-starter` |
-| Unhandled exceptions | Yes | Yes | Yes | Yes | Yes, through PHP SDK | Yes |
-| Handled exception capture | Yes | Yes | Yes | Yes | Yes, through PHP SDK | Yes |
-| Request 5xx incident capture | Yes | Yes | Yes | Yes | Yes | Yes |
-| Browser first-party 5xx promotion | N/A | Yes | N/A | N/A | Yes, through browser SDK | N/A |
-| Breadcrumbs | No | Yes | No | No | Yes, through browser SDK | No |
-| Relay support | Full relay handler + adapters | Relay client path | Full relay handler | Full relay handler | WordPress REST relay | Spring Boot relay route |
-| Remote config and capture policy | Yes | Yes | Yes | Yes | Yes, backend SDK path | Yes |
-| Probes | Yes | Yes | Yes | Yes | Yes, through bundled SDKs | Yes |
-| Redaction defaults | Yes | Yes | Yes | Yes | Yes | Yes |
-| Framework integrations | Express, Fastify, Next.js | Browser-native; works with React, Next.js client-side, Vue, Angular, Svelte, and vanilla apps | Django, Flask, FastAPI | Laravel, Symfony | WordPress plugin wrapper | Spring Boot MVC |
-| Local file transport | Yes | No | Yes | Yes | Relay spool for browser events | Yes |
+| Capability | Node.js | Browser | Python | PHP | WordPress | Java | Ruby |
+|---|---|---|---|---|---|---|---|
+| Status | Shipped | Shipped | Shipped | Shipped | Shipped via GitHub Releases | Shipped | Pre-release |
+| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | `debugbundle-wordpress` | `com.debugbundle:debugbundle-spring-boot-starter` | `debugbundle` |
+| Unhandled exceptions | Yes | Yes | Yes | Yes | Yes, through PHP SDK | Yes | Yes |
+| Handled exception capture | Yes | Yes | Yes | Yes | Yes, through PHP SDK | Yes | Yes |
+| Request 5xx incident capture | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| Browser first-party 5xx promotion | N/A | Yes | N/A | N/A | Yes, through browser SDK | N/A | N/A |
+| Breadcrumbs | No | Yes | No | No | Yes, through browser SDK | No | No |
+| Relay support | Full relay handler + adapters | Relay client path | Full relay handler | Full relay handler | WordPress REST relay | Spring Boot relay route | Rack middleware + Rails route |
+| Remote config and capture policy | Yes | Yes | Yes | Yes | Yes, backend SDK path | Yes | Yes |
+| Probes | Yes | Yes | Yes | Yes | Yes, through bundled SDKs | Yes | Yes |
+| Redaction defaults | Yes | Yes | Yes | Yes | Yes | Yes | Yes, with Rails filters |
+| Framework integrations | Express, Fastify, Next.js | Browser-native; works with React, Next.js client-side, Vue, Angular, Svelte, and vanilla apps | Django, Flask, FastAPI | Laravel, Symfony | WordPress plugin wrapper | Spring Boot MVC | Rails, Rack, Sidekiq |
+| Local file transport | Yes | No | Yes | Yes | Relay spool for browser events | Yes | Yes |
 
 Across all shipped SDKs, request failures with 5xx responses remain incident signals. On the Browser SDK, first-party 5xx `fetch` and `XMLHttpRequest` responses also stay in the breadcrumb trail while emitting standalone `request_event` signals for incident creation.
 
@@ -85,6 +85,7 @@ Combined with server-side **capture policy** (configurable presets: `minimal`, `
 - [Python SDK](/docs/sdks/python) — Django, Flask, FastAPI, and browser relay helpers
 - [PHP SDK](/docs/sdks/php) — Laravel, Symfony, Monolog, and browser relay setup
 - [Java SDK](/docs/sdks/java) — Spring Boot starter, Logback capture, and browser relay setup
+- [Ruby SDK](/docs/sdks/ruby) — Rails, Rack, Sidekiq, Logger, Semantic Logger, and browser relay setup
 - [WordPress Plugin](/docs/integrations/wordpress) — Installable plugin with backend capture, frontend capture, and a built-in browser relay
 - [Universal Interface](/docs/sdks/universal-interface) — Complete interface contract across all languages
 - [Browser Relay Setup](/docs/sdks/browser-relay) — How browser events reach DebugBundle through your backend

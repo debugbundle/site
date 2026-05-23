@@ -90,7 +90,7 @@ export function Notice({ title, children }: { title: string; children: ReactNode
 
 export function TerminalExample({ title, lines }: { title: string; lines: string[] }): ReactElement {
   return (
-    <section className="not-prose rounded-lg border border-[#d8d7cb] bg-[#f1f1eb] p-5 text-[#1f201b] dark:border-[#202420] dark:bg-[#0a0b0a] dark:text-[#f3f5ef]">
+    <section className="not-prose rounded-lg border border-[var(--site-code-border)] bg-[var(--site-code-bg)] p-5 text-[var(--site-code-text)]">
       <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">{title}</p>
       <pre className="overflow-x-auto text-sm leading-7">
         <code>{lines.join('\n')}</code>

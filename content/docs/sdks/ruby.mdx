@@ -1,0 +1,176 @@
+---
+title: "Ruby SDK"
+description: "Install DebugBundle in Ruby, Rails, Rack, and Sidekiq applications with request, exception, log, probe, and browser relay capture."
+icon: Gem
+---
+
+The Ruby SDK ships as the `debugbundle` gem and supports Rails, Rack, Sidekiq, Ruby `Logger`, Semantic Logger, local file transport, connected HTTP transport, remote capture policy, probes, and a full same-origin browser relay handler.
+
+## Installation
+
+```ruby
+gem "debugbundle"
+```
+
+Then install with Bundler:
+
+```bash
+bundle install
+```
+
+## Rails
+
+Configure the SDK in an initializer:
+
+```ruby
+# config/initializers/debugbundle.rb
+Rails.application.configure do
+  config.debugbundle.project_token = ENV["DEBUGBUNDLE_TOKEN"]
+  config.debugbundle.service = "patients-api"
+  config.debugbundle.environment = Rails.env
+  config.debugbundle.project_mode = :connected
+end
+```
+
+The Railtie inserts Rack request capture, preserves `X-Request-Id` and `X-DebugBundle-Trace-Id`, captures Rails route/controller/action metadata when available, wires Rails logger capture, reuses Rails `filter_parameters` as additional redaction keys, and mounts the browser relay route at `POST /debugbundle/browser` by default.
+
+You can adjust relay behavior in the same config block:
+
+```ruby
+Rails.application.configure do
+  config.debugbundle.relay_enabled = true
+  config.debugbundle.relay_path = "/debugbundle/browser"
+  config.debugbundle.relay_allowed_origins = ["https://app.example.com"]
+  config.debugbundle.relay_rate_limit_per_minute = 60
+  config.debugbundle.relay_rate_limit_store = Rails.cache
+end
+```
+
+## Rack
+
+Use the Rack middleware directly in non-Rails apps:
+
+```ruby
+require "debugbundle"
+
+DebugBundle.init(
+  project_token: ENV["DEBUGBUNDLE_TOKEN"],
+  service: "checkout-api",
+  environment: "production"
+)
+
+use DebugBundle::Rack::Middleware, client: DebugBundle.client
+```
+
+The middleware captures request method, path, sanitized allowlisted headers, response status, duration, request ID, trace ID, exceptions, and recent probe buffers. It preserves downstream responses and re-raises exceptions after capture.
+
+## Sidekiq
+
+Register the server middleware:
+
+```ruby
+require "debugbundle"
+require "debugbundle/sidekiq/server_middleware"
+
+DebugBundle.init(
+  project_token: ENV["DEBUGBUNDLE_TOKEN"],
+  service: "billing-worker",
+  environment: "production"
+)
+
+Sidekiq.configure_server do |config|
+  config.server_middleware do |chain|
+    chain.add DebugBundle::Sidekiq::ServerMiddleware
+  end
+end
+```
+
+Sidekiq events include job class, queue, jid, retry count, sanitized argument type summaries, exception details, runtime facts, and trace IDs when present on the job payload. The middleware never swallows job exceptions, so Sidekiq retry and failure behavior remains intact.
+
+## Vanilla Ruby
+
+```ruby
+require "debugbundle"
+
+DebugBundle.init(
+  project_token: ENV["DEBUGBUNDLE_TOKEN"],
+  service: "ruby-service",
+  environment: "production"
+)
+
+DebugBundle.capture_exception(RuntimeError.new("boom"))
+DebugBundle.capture_log("payment retry failed", level: :warning, context: { order_id: "ord_123" })
+DebugBundle.capture_message("worker started")
+DebugBundle.set_context(:account_id, "acct_123")
+DebugBundle.probe("checkout.cart", { item_count: 3 })
+DebugBundle.flush
+```
+
+`DebugBundle.init` arms best-effort Ruby exception capture through explicit at-exit and thread exception hooks. Ruby exception hooks cannot capture every hosting model; Rails, Rack, and Sidekiq integrations are the primary production capture paths.
+
+## Logger Integrations
+
+Ruby `Logger` capture is additive and preserves existing output:
+
+```ruby
+logger = Logger.new($stdout)
+DebugBundle.capture_logger(logger)
+
+logger.warn("retrying charge", order_id: "ord_123")
+```
+
+Semantic Logger is supported when the gem is present:
+
+```ruby
+DebugBundle.capture_semantic_logger
+```
+
+Rails logger capture is auto-registered by the Railtie.
+
+## Browser Relay
+
+The Ruby SDK includes a full browser relay handler for backend-owned browser event delivery:
+
+- `DebugBundle::Relay::Handler` for framework-neutral handling,
+- `DebugBundle::Rack::RelayMiddleware` for Rack apps,
+- the Rails Railtie-mounted route at `POST /debugbundle/browser`.
+
+The relay validates same-origin or configured origins, requires `Content-Type: application/json`, rejects bodies over `256 KB`, accepts only browser event types, strips browser-supplied credentials and trust fields, forces `sdk_name` to `@debugbundle/sdk-browser`, preserves browser correlation fields, rate limits per IP, writes local-only files, writes connected durable spool files by default, and forwards connected events with the server-side project token.
+
+## Transport Modes
+
+| Mode | Behavior |
+|---|---|
+| Local/development/test | Writes event batches to `.debugbundle/local/events/` |
+| `project_mode: :local_only` | Writes event batches to `.debugbundle/local/events/` |
+| Connected production/staging | Sends event batches to `POST /v1/events` and fetches `GET /v1/sdk/config` |
+
+Local files use owner-only permissions, canonical path validation, symlink checks, unpredictable temp names, and atomic temp-file rename.
+
+## Probes And Capture Policy
+
+The Ruby SDK fetches server-owned capture policy and probe configuration from `GET /v1/sdk/config` in connected production/staging environments. It supports ETag refreshes, minimal fallback when config fetch fails, always-on probe ring buffers, remote probe activations, heavy probes, and request-scoped trigger tokens via `_debug_probe` or `X-DebugBundle-Probe-Trigger`.
+
+```ruby
+DebugBundle.probe("checkout.tax", -> { expensive_tax_state }, heavy: true)
+```
+
+Heavy probes stay dormant unless a matching remote directive or trigger token is active.
+
+## Privacy Defaults
+
+Ruby defaults are conservative for healthcare, financial, and enterprise systems:
+
+- request and response bodies are off by default,
+- request headers are allowlisted,
+- sensitive fields are recursively redacted before buffering or transport,
+- Rails `filter_parameters` are merged into redaction rules,
+- existing request IDs are preserved,
+- `X-DebugBundle-Trace-Id` links browser and backend events,
+- SDK failures are swallowed internally and never raise into host application code.
+
+## Runtime Support
+
+The SDK supports Ruby 3.1 and newer. Ruby 3.1 compatibility is maintained for the Rails installed base, but current upstream-maintained Ruby branches are recommended for production security fixes.
+
+Validated compatibility lanes include Rails 7.0 and 7.1, Rack 2.2 and 3.x, and Sidekiq 7.x plus the current Sidekiq major where dependency compatibility permits.

@@ -1,8 +1,22 @@
 import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
+import {
+  Blocks,
+  Bot,
+  Braces,
+  CheckCircle2,
+  Code2,
+  FileJson,
+  GitBranch,
+  Network,
+  PackageCheck,
+  RotateCcw,
+  ShieldCheck,
+  Terminal,
+} from 'lucide-react';
 
-import { SectionTitle, SurfaceCard, SurfaceGrid, TerminalExample } from '@/components/content-blocks';
+import { SectionTitle, TerminalExample } from '@/components/content-blocks';
 import { JsonLdScript } from '@/components/json-ld';
 
 export const metadata: Metadata = {
@@ -20,6 +34,108 @@ export const metadata: Metadata = {
 };
 
 export default function HomePage(): ReactElement {
+  const workflowSteps = [
+    {
+      step: '1',
+      label: 'Capture',
+      detail: 'SDKs capture exceptions, requests, logs, breadcrumbs, and probes from your app.',
+      icon: PackageCheck,
+    },
+    {
+      step: '2',
+      label: 'Normalize',
+      detail: 'Events are redacted, fingerprinted, and grouped into incidents automatically.',
+      icon: GitBranch,
+    },
+    {
+      step: '3',
+      label: 'Bundle',
+      detail: 'DebugBundle assembles deterministic incident context with reproduction hints.',
+      icon: FileJson,
+    },
+    {
+      step: '4',
+      label: 'Resolve',
+      detail: 'Humans and agents inspect the same bundle through API, CLI, or MCP.',
+      icon: CheckCircle2,
+    },
+  ];
+
+  const installOptions = [
+    {
+      label: 'CLI',
+      command: 'npm install -g @debugbundle/cli',
+      href: '/docs/cli/',
+      icon: Terminal,
+    },
+    {
+      label: 'Node.js',
+      command: 'npm install @debugbundle/sdk-node',
+      href: '/docs/sdks/node/',
+      icon: Code2,
+    },
+    {
+      label: 'Browser',
+      command: 'npm install @debugbundle/sdk-browser',
+      href: '/docs/sdks/browser/',
+      icon: Network,
+    },
+    {
+      label: 'Python',
+      command: 'pip install debugbundle-python',
+      href: '/docs/sdks/python/',
+      icon: Braces,
+    },
+    {
+      label: 'PHP',
+      command: 'composer require debugbundle/sdk-php',
+      href: '/docs/sdks/php/',
+      icon: Blocks,
+    },
+    {
+      label: 'Java and WordPress',
+      command: 'Use the dedicated install guides',
+      href: '/docs/installation/',
+      icon: PackageCheck,
+    },
+  ];
+
+  const agentStrengths = [
+    {
+      title: 'Human and machine readable',
+      detail: 'Structured JSON bundles, llms.txt, OpenAPI, JSON Schemas, and stable examples.',
+      icon: FileJson,
+    },
+    {
+      title: 'Agent-native interfaces',
+      detail: 'API, CLI, and MCP expose the same workflows. No important capability is dashboard-only.',
+      icon: Bot,
+    },
+    {
+      title: 'Same source of truth',
+      detail: 'Docs and references are generated from the contracts that power the product.',
+      icon: Braces,
+    },
+  ];
+
+  const productionStrengths = [
+    {
+      title: 'Local-first by default',
+      detail: 'Capture, process, and inspect incidents locally before connecting hosted services.',
+      icon: Terminal,
+    },
+    {
+      title: 'Deterministic bundles',
+      detail: 'The same events produce byte-identical output with no random IDs or generation-time clocks.',
+      icon: RotateCcw,
+    },
+    {
+      title: 'SDK safety guarantee',
+      detail: 'SDKs do not throw uncaught exceptions, block requests, or crash the host process.',
+      icon: ShieldCheck,
+    },
+  ];
+
   const softwareJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -45,7 +161,7 @@ export default function HomePage(): ReactElement {
         <SectionTitle
           eyebrow="Production debugging for agents"
           title="The agent-native debugging layer for modern products"
-          description="DebugBundle captures production incidents, assembles deterministic debugging context, and delivers the result through API, CLI, MCP, and agent-friendly machine-readable artifacts — so both humans and AI agents can diagnose and fix failures faster."
+          description="DebugBundle captures production incidents, assembles deterministic debugging context, and delivers it through API, CLI, MCP, and machine-readable artifacts so humans and AI agents can diagnose failures from the same facts."
         />
         <div className="flex flex-wrap gap-3">
           <Link
@@ -70,45 +186,87 @@ export default function HomePage(): ReactElement {
           How DebugBundle works
         </h2>
         <div className="grid gap-4 md:grid-cols-4">
-          {[
-            { step: '1', label: 'Capture', detail: 'SDKs capture exceptions, requests, logs, and probes from your application.' },
-            { step: '2', label: 'Normalize', detail: 'Events are fingerprinted, grouped into incidents, and redacted automatically.' },
-            { step: '3', label: 'Bundle', detail: 'A deterministic debug bundle is assembled with full incident context.' },
-            { step: '4', label: 'Resolve', detail: 'Agents and humans retrieve bundles via API, CLI, or MCP and fix the issue.' },
-          ].map((s) => (
-            <div key={s.step} className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface)] p-5">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--site-accent)]">Step {s.step}</p>
-              <p className="mt-1 text-base font-semibold text-[var(--site-text)]">{s.label}</p>
+          {workflowSteps.map((s) => (
+            <div key={s.step} className="rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-5">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">
+                  Step {s.step}
+                </p>
+                <s.icon className="size-5 text-[var(--site-accent)]" aria-hidden="true" />
+              </div>
+              <p className="mt-3 text-base font-semibold text-[var(--site-text)]">{s.label}</p>
               <p className="mt-2 text-sm leading-6 text-[var(--site-text-muted)]">{s.detail}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Value propositions */}
-      <SurfaceGrid>
-        <SurfaceCard title="Human and machine readable">
-          Every bundle is a structured JSON artifact. The public site publishes llms.txt, OpenAPI, JSON Schemas, and examples under stable URLs.
-        </SurfaceCard>
-        <SurfaceCard title="Local-first by default">
-          Start with zero cloud dependencies. DebugBundle runs entirely on your machine — capture, process, and inspect incidents locally before connecting to hosted services.
-        </SurfaceCard>
-        <SurfaceCard title="Agent-native interfaces">
-          API, CLI, and MCP are first-class equals. No capability is dashboard-only. Agents can fetch bundles, run reproductions, and resolve incidents programmatically.
-        </SurfaceCard>
-      </SurfaceGrid>
+      {/* Install paths */}
+      <section className="space-y-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-2xl space-y-2">
+            <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">
+              Install the path that matches your stack
+            </h2>
+            <p className="text-base leading-7 text-[var(--site-text-muted)]">
+              Start with the CLI, then add the smallest SDK or ingestion path for your app.
+            </p>
+          </div>
+          <Link className="text-sm font-medium text-[var(--site-accent)] transition hover:opacity-80" href="/docs/installation/">
+            Full installation guide
+          </Link>
+        </div>
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {installOptions.map((option) => (
+            <Link
+              key={option.label}
+              className="group rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-4 transition hover:border-[var(--site-border-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--site-focus)]"
+              href={option.href}
+            >
+              <div className="flex items-center gap-3">
+                <option.icon className="size-5 text-[var(--site-accent)]" aria-hidden="true" />
+                <p className="font-semibold text-[var(--site-text)]">{option.label}</p>
+              </div>
+              <code className="mt-3 block overflow-x-auto whitespace-nowrap rounded-md border border-[var(--site-code-border)] bg-[var(--site-code-bg)] px-3 py-2 text-xs text-[var(--site-code-text)]">
+                {option.command}
+              </code>
+            </Link>
+          ))}
+        </div>
+      </section>
 
-      <SurfaceGrid>
-        <SurfaceCard title="Deterministic bundles">
-          Given the same events, DebugBundle produces byte-identical output. No random IDs, no wall-clock timestamps in generation. Reproducible debugging artifacts every time.
-        </SurfaceCard>
-        <SurfaceCard title="SDK safety guarantee">
-          SDKs never throw uncaught exceptions, block your request/response cycle, or crash the host process. Failures are caught internally and swallowed silently.
-        </SurfaceCard>
-        <SurfaceCard title="Same source of truth">
-          Docs, examples, schemas, and reference pages are generated from the same contracts that power the product. What you read is what the system enforces.
-        </SurfaceCard>
-      </SurfaceGrid>
+      {/* Product strengths */}
+      <section className="grid gap-8 lg:grid-cols-2">
+        <div className="rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-6">
+          <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">Built for agents</h2>
+          <ul className="mt-5 space-y-5">
+            {agentStrengths.map((item) => (
+              <li key={item.title} className="flex gap-4">
+                <item.icon className="mt-0.5 size-5 shrink-0 text-[var(--site-accent)]" aria-hidden="true" />
+                <div>
+                  <p className="font-semibold text-[var(--site-text)]">{item.title}</p>
+                  <p className="mt-1 text-sm leading-6 text-[var(--site-text-muted)]">{item.detail}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-6">
+          <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">Built for production apps</h2>
+          <ul className="mt-5 space-y-5">
+            {productionStrengths.map((item) => (
+              <li key={item.title} className="flex gap-4">
+                <item.icon className="mt-0.5 size-5 shrink-0 text-[var(--site-accent)]" aria-hidden="true" />
+                <div>
+                  <p className="font-semibold text-[var(--site-text)]">{item.title}</p>
+                  <p className="mt-1 text-sm leading-6 text-[var(--site-text-muted)]">{item.detail}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
       {/* Quick-start terminal example */}
       <TerminalExample
@@ -155,7 +313,7 @@ export default function HomePage(): ReactElement {
           Ready to debug smarter?
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-[var(--site-text-muted)]">
-          Start local-first with the free tier. Connect to hosted DebugBundle when you need cloud processing, team collaboration, and remote probes.
+          Start locally without a cloud account, or use the hosted free tier when you want cloud ingestion. Upgrade when you need team collaboration, longer retention, and remote probes.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link
