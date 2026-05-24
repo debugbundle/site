@@ -153,6 +153,21 @@ debugbundle doctor --check-relay
 
 This reports undelivered relay spool files and their age.
 
+### Java Deployment Checks
+
+For Java projects, setup and doctor distinguish the supported deployment shapes instead of treating every backend as Spring Boot:
+
+| Shape | Setup signals | Doctor expectations |
+|---|---|---|
+| Spring Boot | Maven or Gradle dependency on `debugbundle-spring-boot-starter`, Spring Boot manifests, `@SpringBootApplication`, and `application.yml` or `application.properties` | Starter dependency present, `debugbundle.project-token` or environment-backed token configured, relay route intended when browser SDK is present |
+| Servlet WAR | `web.xml`, servlet dependencies, WAR packaging, `debugbundle-java-servlet-jakarta` or `debugbundle-java-servlet-javax` | Listener and filter registered for each WAR, explicit service name available through context params or deployment mapping, local events directory writable |
+| JAX-RS or RESTEasy | `jakarta.ws.rs` or `javax.ws.rs` dependencies, `Application` or `ResourceConfig` classes, RESTEasy/WildFly markers | Matching JAX-RS filter and exception mapper registered, servlet context integration available when deployed inside a servlet container |
+| WildFly/JBoss | `standalone.sh`, `JAVA_OPTS`, container images, deployment descriptors, `javax.*` or `jakarta.*` namespace artifacts | Per-deployment service mappings present, namespace-specific adapter chosen correctly, local-only or connected transport configured |
+| Javaagent bootstrap | `-javaagent:debugbundle-java-agent`, `debugbundle.config`, or container startup scripts | Agent JAR path exists, properties file is readable, `capture-jul` and `capture-uncaught` settings are intentional |
+| Browser relay | Browser SDK endpoint points at `/debugbundle/browser`, servlet or Spring relay route configured | Origin validation configured or same-origin host is valid, relay spool has no stale undelivered files |
+
+The Javaagent currently bootstraps core SDK, uncaught exception, and JUL/JBoss LogManager-compatible logging hooks. Request and browser-relay capture are verified through the Spring starter or WAR-level servlet/JAX-RS adapters.
+
 ### JSON Output
 
 ```bash
