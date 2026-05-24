@@ -17,7 +17,7 @@ The CLI runs setup, local processing, incident inspection, token management, clo
 
 ## SDKs
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Ruby', 'Java', 'WordPress']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java', 'Go', 'Ruby', 'WordPress']}>
   <Tab>
 
 ```bash
@@ -98,25 +98,6 @@ Laravel, Symfony, and Monolog integrations are included. See [PHP SDK](/docs/sdk
   </Tab>
   <Tab>
 
-```ruby
-gem "debugbundle"
-```
-
-```ruby
-require "debugbundle"
-
-DebugBundle.init(
-  project_token: ENV["DEBUGBUNDLE_TOKEN"],
-  environment: "production",
-  service: "api"
-)
-```
-
-Rails, Rack, Sidekiq, Ruby Logger, Semantic Logger, local file transport, remote capture policy, probes, and browser relay handlers are included. See [Ruby SDK](/docs/sdks/ruby).
-
-  </Tab>
-  <Tab>
-
 ```xml
 <dependency>
   <groupId>com.debugbundle</groupId>
@@ -134,6 +115,43 @@ debugbundle:
 ```
 
 Spring Boot 3.x applications get servlet request capture, MVC exception capture, Logback capture, remote config, probes, and an optional same-origin browser relay. See [Java SDK](/docs/sdks/java).
+
+  </Tab>
+  <Tab>
+
+```bash
+go get github.com/debugbundle/debugbundle-go
+```
+
+```go
+client := debugbundle.New(debugbundle.Config{
+	ProjectToken: os.Getenv("DEBUGBUNDLE_PROJECT_TOKEN"),
+	Environment:  "production",
+	Service:      "api",
+})
+defer func() { _ = client.Flush(context.Background()) }()
+```
+
+net/http, Gin, Echo, slog, zap, zerolog, local file transport, remote capture policy, probes, and browser relay handlers are included. See [Go SDK](/docs/sdks/go).
+
+  </Tab>
+  <Tab>
+
+```ruby
+gem "debugbundle"
+```
+
+```ruby
+require "debugbundle"
+
+DebugBundle.init(
+  project_token: ENV["DEBUGBUNDLE_TOKEN"],
+  environment: "production",
+  service: "api"
+)
+```
+
+Rails, Rack, Sidekiq, Ruby Logger, Semantic Logger, local file transport, remote capture policy, probes, and browser relay handlers are included. See [Ruby SDK](/docs/sdks/ruby).
 
   </Tab>
   <Tab>
