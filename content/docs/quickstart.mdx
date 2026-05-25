@@ -260,6 +260,8 @@ debugbundle inspect inc_01HXYZ...
 
 `verify cloud --trigger-5xx` sends a synthetic request-failure event through hosted ingestion, polls for the incident and bundle, and reports whether the cloud path is ready.
 
+If you want to prove your real SDK wiring instead, trigger a known app-side event and run `debugbundle verify cloud --project-id proj_01HXYZ... --expect-app-event --service api-server --trace-id trace_123` so the CLI waits for the hosted incident and matches the resulting bundle with your correlation hint.
+
 ## What You Should See
 
 A cloud incident includes the same bundle context as local mode, plus hosted workflows:

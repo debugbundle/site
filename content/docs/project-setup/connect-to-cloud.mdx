@@ -114,6 +114,20 @@ debugbundle verify cloud --project-id proj_01HXYZ... --trigger-4xx 403
 
 The 4xx proof succeeds only when the target project's capture policy promotes that status, for example with `immediate_client_error_statuses` containing `403`.
 
+To prove your real app-side SDK wiring instead of the synthetic path, trigger a known browser or backend SDK event and let the CLI wait for hosted visibility:
+
+```bash
+debugbundle verify cloud \
+  --project-id proj_01HXYZ... \
+  --expect-app-event \
+  --service checkout-api \
+  --environment production \
+  --trace-id trace_123 \
+  --request-id req_456
+```
+
+Use `--trace-id` or `--request-id` when you have a correlation hint from the app or browser network trace. That keeps the verification scoped to the event you intentionally triggered instead of any unrelated recent incident.
+
 ### JSON Output
 
 ```bash

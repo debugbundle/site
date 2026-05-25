@@ -1,0 +1,143 @@
+---
+title: "Split Frontend & Backend"
+description: "Set up DebugBundle for repositories where the browser frontend and API backend live in separate services."
+icon: ArrowLeftRight
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Use this path when your repository has a browser frontend and a separate backend service that owns the DebugBundle relay route. The browser SDK should send events to the backend relay, and the project token should stay on the server.
+
+## Recommended Shape
+
+The safe default is:
+
+1. Run `debugbundle setup` from the repository root.
+2. Keep the browser SDK in the frontend service.
+3. Keep the project token only in the backend service.
+4. Expose `POST /debugbundle/browser` from the backend that fronts the browser app.
+5. Point the browser SDK `endpoint` at the backend relay URL, not at the DebugBundle ingestion API.
+
+<Callout type="info">
+  In TTY mode, `debugbundle setup` can show detected services and let you choose which targets to prepare first. In `--non-interactive --json` mode, it stays deterministic and returns `detected_services`, `selected_targets`, `relay_action`, and `relay_guidance` for automation.
+</Callout>
+
+## 1. Run Setup From The Repo Root
+
+```bash
+debugbundle setup
+debugbundle profile validate
+```
+
+Review `.debugbundle/profile.json` after setup and confirm:
+
+- the frontend service is marked as `kind: "frontend"`
+- the API or server service is marked as `kind: "backend"`
+- service names match the deployable units you actually own
+
+If you edit the profile by hand, `debugbundle profile validate` now shows concrete examples for `services`, `critical_paths`, and `developer_workflows` when those sections drift out of schema.
+
+## 2. Put The Token On The Backend
+
+The browser frontend should not carry a DebugBundle project token when you have a backend relay. Keep it in server-side configuration only.
+
+Typical examples:
+
+```bash
+# backend service environment
+DEBUGBUNDLE_PROJECT_TOKEN=dbundle_proj_...
+```
+
+For local development, load the token into the backend container or local server process that owns `/debugbundle/browser`.
+
+For production, inject the token through your normal secret manager or platform environment configuration. Do not bake it into frontend assets, Docker images checked into source control, or static runtime config shipped to the browser.
+
+## 3. Choose The Backend Relay Owner
+
+Pick the service that actually receives browser traffic. In most deployments that means the API service, BFF, or same-origin web server.
+
+Use these runtime-specific paths:
+
+- Node.js: Express, Fastify, and Next.js relay handlers from `@debugbundle/sdk-node`
+- Python: Django, Flask, and FastAPI relay helpers from `debugbundle-python`
+- PHP: Laravel middleware or Symfony controller adapters
+- WordPress: the built-in plugin-managed relay route
+
+If `debugbundle setup` can safely patch a supported Node.js insertion point, it will scaffold the relay route. Otherwise it emits exact runtime-specific guidance and verification steps.
+
+See [Browser Relay Setup](/docs/sdks/browser-relay) for the framework-specific handler examples.
+
+## 4. Point The Browser SDK At The Backend
+
+Configure the browser SDK to send to the backend relay URL:
+
+```ts
+import debugbundle from '@debugbundle/sdk-browser';
+
+debugbundle.init({
+  endpoint: 'https://api.example.com/debugbundle/browser'
+});
+```
+
+Use the API origin when the frontend and backend are on different hosts. Do not assume same-origin hosting when the browser app is on `www.example.com` and the backend relay is on `api.example.com`.
+
+<Callout type="warn">
+  Do not set `projectToken` in the Browser SDK when using a relay. The relay adds credentials server-side.
+</Callout>
+
+## 5. Lock Down The Relay
+
+Every split frontend/backend deployment should keep these controls in place:
+
+- explicit `allowedOrigins` for the frontend host names that can submit browser events
+- auth and CSRF exemptions only for the relay route itself
+- request body size limits and schema validation
+- credential stripping so browser cookies and app auth do not become relay auth
+- per-IP rate limiting on the relay path
+
+The route should stay outside browser-session CSRF checks, but it should still reject unexpected origins and malformed payloads.
+
+## 6. Local Container Workflow
+
+For Docker or Compose-based local work:
+
+1. Mount the repository so the backend can write `.debugbundle/local/events/` and `.debugbundle/local/browser-relay-spool/`.
+2. Keep `.debugbundle/local/connection.json` in `local-only` mode until you intentionally connect the project.
+3. Trigger a real browser event from the frontend.
+4. Run `debugbundle process --json` from the same repo checkout and confirm the event appears.
+5. Run `debugbundle doctor --check-relay` if the relay spool looks stuck.
+
+This proves the app-side SDK wiring, not just the hosted synthetic verify path.
+
+## 7. Production Notes
+
+For deployed split-host apps:
+
+- inject the project token only into the backend service that owns the relay route
+- keep `allowedOrigins` aligned with the real browser host names for each environment
+- put the relay spool on persistent storage if you rely on connected durable writes
+- validate trusted proxy or forwarded-host settings before relying on same-origin host checks
+- keep the relay route out of generic auth middleware that would reject browser-origin submissions before origin validation runs
+
+If you deploy multiple frontends against one API relay, make the origin allowlist explicit per environment instead of relying on host inference.
+
+## 8. Verify End To End
+
+Use both validation paths:
+
+```bash
+debugbundle profile validate
+debugbundle verify local
+```
+
+Then trigger one real browser-side event and confirm it reaches the local event directory or connected pipeline. For cloud-connected environments, follow with:
+
+```bash
+debugbundle verify cloud --project-id proj_xxxx --service api --environment production
+```
+
+## Next Steps
+
+- [Setup & Configuration](/docs/cli/setup) — CLI scaffold, doctor, validate, and verify
+- [Browser Relay Setup](/docs/sdks/browser-relay) — Framework-specific relay handlers and security controls
+- [Connect to Cloud](/docs/project-setup/connect-to-cloud) — Connected delivery configuration

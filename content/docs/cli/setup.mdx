@@ -24,6 +24,8 @@ The setup command:
 3. Updates `.gitignore` to exclude local runtime data
 4. Scaffolds a relay route when a supported backend framework is detected
 
+For split frontend/backend repositories, use the canonical [Split Frontend & Backend](/docs/project-setup/split-frontend-backend) guide after setup. It covers relay ownership, backend-only token placement, cross-origin browser endpoint configuration, container workflow, and production deployment notes.
+
 ## The `.debugbundle/` Directory
 
 After setup, your project contains:
@@ -176,6 +178,8 @@ debugbundle doctor --json
 
 Returns structured JSON with `status`, `checks`, `warnings`, `errors`, and `suggested_actions`.
 
+`debugbundle setup --json` also exposes `detected_services`, `selected_targets`, `relay_action`, and `relay_guidance` so CI and agent workflows can see which surfaces were prepared and whether relay setup was scaffolded or left as runtime-specific instructions.
+
 For connected projects, `debugbundle doctor` also validates the configured cloud or self-host API base URL. It checks `GET /health`, then verifies member-token auth against a lightweight retrieval request so misconfigured self-host endpoints fail early.
 
 ## Validate
@@ -239,5 +243,6 @@ The 4xx trigger succeeds only when the project capture policy promotes that stat
 
 ## Next Steps
 
+- [Split Frontend & Backend](/docs/project-setup/split-frontend-backend) — Canonical setup path for separate browser and API services
 - [Local Workflow](/docs/cli/local-workflow) — Processing events and inspecting incidents
 - [CLI Overview](/docs/cli) — Full command index and authentication

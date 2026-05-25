@@ -120,6 +120,19 @@ debugbundle verify cloud --project-id proj_01HXYZ... --trigger-4xx 403
 
 `--trigger-4xx` accepts an integer status from `400` through `499` and succeeds only when the project capture policy promotes that status, such as `403` in `immediate_client_error_statuses`. It cannot be combined with `--trigger-5xx`.
 
+When you want to prove the real application path instead of the synthetic CLI-generated event, trigger a known SDK event in your app and run:
+
+```bash
+debugbundle verify cloud \
+  --project-id proj_01HXYZ... \
+  --expect-app-event \
+  --service api-server \
+  --environment production \
+  --trace-id trace_123
+```
+
+`--expect-app-event` waits for a recent hosted incident from the requested app surface. Add `--trace-id` or `--request-id` when you have them so the CLI can match the resulting bundle deterministically instead of relying on timing alone.
+
 ### Options
 
 | Flag | Type | Default | Description |
@@ -127,8 +140,11 @@ debugbundle verify cloud --project-id proj_01HXYZ... --trigger-4xx 403
 | `--project-id` | `string` | — | **Required.** Cloud project ID. |
 | `--trigger-5xx` | `boolean` | `false` | Send a synthetic `503` request event and verify hosted incident plus bundle visibility. |
 | `--trigger-4xx` | `number` | — | Send a synthetic configured client-error request event for a `400`-`499` status and verify hosted incident plus bundle visibility. |
+| `--expect-app-event` | `boolean` | `false` | Wait for a real SDK-driven app event and verify hosted incident visibility for that run. |
 | `--service` | `string` | — | Filter by service name. |
 | `--environment` | `string` | — | Filter by environment. |
+| `--trace-id` | `string` | — | Optional correlation hint used to match the hosted bundle for an app-event verification run. |
+| `--request-id` | `string` | — | Optional correlation hint used to match the hosted bundle for an app-event verification run. |
 | `--max-age-minutes` | `number` | `30` | Time window for finding recent events. |
 | `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
 | `--json` | `boolean` | `false` | Output as JSON. |
