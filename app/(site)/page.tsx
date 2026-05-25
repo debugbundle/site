@@ -2,22 +2,33 @@ import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
 import {
-  Blocks,
   Bot,
+  BookOpen,
   Braces,
   CheckCircle2,
-  Code2,
+  Coffee,
   FileJson,
-  GitBranch,
-  Network,
-  PackageCheck,
+  Fingerprint,
+  Gem,
+  Hexagon,
+  Package,
+  PanelsTopLeft,
+  Radar,
   RotateCcw,
   ShieldCheck,
+  SquareTerminal,
   Terminal,
+  Workflow,
 } from 'lucide-react';
 
-import { SectionTitle, TerminalExample } from '@/components/content-blocks';
+import { SectionTitle, SurfaceCard } from '@/components/content-blocks';
 import { JsonLdScript } from '@/components/json-ld';
+import { QuickInstallGuide } from '@/components/quick-install-guide';
+
+const docsLinkClassName =
+  'text-sm font-medium !text-[var(--site-docs-link)] !underline !decoration-[var(--site-docs-link)] decoration-[0.08em] underline-offset-[0.16em] transition-[color,text-decoration-color,text-decoration-thickness] duration-200 hover:!text-[var(--site-docs-link-hover)] hover:!decoration-[var(--site-docs-link-hover)] hover:!decoration-[0.12em] focus-visible:rounded-sm focus-visible:[outline-color:var(--site-focus)] focus-visible:[outline-style:solid] focus-visible:[outline-width:2px] focus-visible:[outline-offset:2px]';
+const buttonFocusClassName =
+  'focus-visible:rounded-full focus-visible:[outline-color:var(--site-focus)] focus-visible:[outline-style:solid] focus-visible:[outline-width:2px] focus-visible:[outline-offset:2px]';
 
 export const metadata: Metadata = {
   title: 'DebugBundle — Production debugging for AI agents',
@@ -39,13 +50,13 @@ export default function HomePage(): ReactElement {
       step: '1',
       label: 'Capture',
       detail: 'SDKs capture exceptions, requests, logs, breadcrumbs, and probes from your app.',
-      icon: PackageCheck,
+      icon: Radar,
     },
     {
       step: '2',
       label: 'Normalize',
       detail: 'Events are redacted, fingerprinted, and grouped into incidents automatically.',
-      icon: GitBranch,
+      icon: Fingerprint,
     },
     {
       step: '3',
@@ -56,7 +67,7 @@ export default function HomePage(): ReactElement {
     {
       step: '4',
       label: 'Resolve',
-      detail: 'Humans and agents inspect the same bundle through API, CLI, or MCP.',
+      detail: 'Humans and agents inspect the same bundle through dashboards, API, CLI, or MCP.',
       icon: CheckCircle2,
     },
   ];
@@ -66,37 +77,55 @@ export default function HomePage(): ReactElement {
       label: 'CLI',
       command: 'npm install -g @debugbundle/cli',
       href: '/docs/cli/',
-      icon: Terminal,
+      icon: SquareTerminal,
     },
     {
       label: 'Node.js',
       command: 'npm install @debugbundle/sdk-node',
       href: '/docs/sdks/node/',
-      icon: Code2,
+      icon: Hexagon,
     },
     {
       label: 'Browser',
       command: 'npm install @debugbundle/sdk-browser',
       href: '/docs/sdks/browser/',
-      icon: Network,
+      icon: PanelsTopLeft,
     },
     {
       label: 'Python',
       command: 'pip install debugbundle-python',
       href: '/docs/sdks/python/',
-      icon: Braces,
+      icon: Package,
     },
     {
       label: 'PHP',
       command: 'composer require debugbundle/sdk-php',
       href: '/docs/sdks/php/',
-      icon: Blocks,
+      icon: Package,
     },
     {
-      label: 'Java and WordPress',
-      command: 'Use the dedicated install guides',
-      href: '/docs/installation/',
-      icon: PackageCheck,
+      label: 'Java / Spring',
+      command: 'com.debugbundle:debugbundle-spring-boot-starter',
+      href: '/docs/sdks/java/',
+      icon: Coffee,
+    },
+    {
+      label: 'Go',
+      command: 'go get github.com/debugbundle/debugbundle-go',
+      href: '/docs/sdks/go/',
+      icon: Package,
+    },
+    {
+      label: 'Ruby',
+      command: 'bundle add debugbundle',
+      href: '/docs/sdks/ruby/',
+      icon: Gem,
+    },
+    {
+      label: 'WordPress',
+      command: 'Install the DebugBundle plugin',
+      href: '/docs/integrations/wordpress/',
+      icon: Workflow,
     },
   ];
 
@@ -165,14 +194,15 @@ export default function HomePage(): ReactElement {
         />
         <div className="flex flex-wrap gap-3">
           <Link
-            className="rounded-full px-5 py-3 text-sm font-medium"
+            className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium ${buttonFocusClassName}`}
             href="/docs/"
             style={{ background: 'var(--site-accent)', color: 'var(--site-accent-foreground)' }}
           >
+            <BookOpen className="size-4" aria-hidden="true" />
             Read Docs
           </Link>
           <Link
-            className="rounded-full border border-[var(--site-border)] px-5 py-3 text-sm font-medium"
+            className={`rounded-full border border-[var(--site-border)] px-5 py-3 text-sm font-medium ${buttonFocusClassName}`}
             href="https://app.debugbundle.com"
           >
             Open App
@@ -183,7 +213,7 @@ export default function HomePage(): ReactElement {
       {/* How it works — high-level */}
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">
-          How DebugBundle works
+          How it works
         </h2>
         <div className="grid gap-4 md:grid-cols-4">
           {workflowSteps.map((s) => (
@@ -201,6 +231,9 @@ export default function HomePage(): ReactElement {
         </div>
       </section>
 
+      {/* Quick installation guide */}
+      <QuickInstallGuide />
+
       {/* Install paths */}
       <section className="space-y-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -212,9 +245,6 @@ export default function HomePage(): ReactElement {
               Start with the CLI, then add the smallest SDK or ingestion path for your app.
             </p>
           </div>
-          <Link className="text-sm font-medium text-[var(--site-accent)] transition hover:opacity-80" href="/docs/installation/">
-            Full installation guide
-          </Link>
         </div>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {installOptions.map((option) => (
@@ -268,19 +298,6 @@ export default function HomePage(): ReactElement {
         </div>
       </section>
 
-      {/* Quick-start terminal example */}
-      <TerminalExample
-        title="Get started in under 5 minutes"
-        lines={[
-          '$ npm install @debugbundle/sdk-node @debugbundle/cli',
-          '$ npx debugbundle setup',
-          '$ npx debugbundle doctor',
-          '# Trigger an error in your app, then:',
-          '$ npx debugbundle process',
-          '$ npx debugbundle incidents',
-        ]}
-      />
-
       {/* Interfaces overview */}
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">
@@ -291,18 +308,28 @@ export default function HomePage(): ReactElement {
         </p>
         <div className="grid gap-4 md:grid-cols-3">
           {[
-            { label: 'REST API', href: '/docs/v1/api/', detail: 'Ingestion, retrieval, management, webhooks, and billing.' },
-            { label: 'CLI', href: '/docs/v1/cli/', detail: 'Setup, capture, process, inspect, and manage from the terminal.' },
-            { label: 'MCP', href: '/docs/v1/mcp/', detail: 'Model Context Protocol tools for agent-driven workflows.' },
+            {
+              label: 'REST API',
+              href: '/docs/v1/api/',
+              detail: 'Ingestion, retrieval, management, webhooks, and billing.',
+              icon: Braces,
+            },
+            {
+              label: 'CLI',
+              href: '/docs/v1/cli/',
+              detail: 'Setup, capture, process, inspect, and manage from the terminal.',
+              icon: SquareTerminal,
+            },
+            {
+              label: 'MCP',
+              href: '/docs/v1/mcp/',
+              detail: 'Model Context Protocol tools for agent-driven workflows.',
+              icon: Bot,
+            },
           ].map((item) => (
-            <Link
-              key={item.label}
-              className="rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface)] p-5 transition hover:border-[var(--site-accent)]"
-              href={item.href}
-            >
-              <p className="text-base font-semibold text-[var(--site-text)]">{item.label}</p>
-              <p className="mt-2 text-sm leading-6 text-[var(--site-text-muted)]">{item.detail}</p>
-            </Link>
+            <SurfaceCard key={item.label} href={item.href} icon={item.icon} title={item.label}>
+              {item.detail}
+            </SurfaceCard>
           ))}
         </div>
       </section>
@@ -313,21 +340,22 @@ export default function HomePage(): ReactElement {
           Ready to debug smarter?
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-[var(--site-text-muted)]">
-          Start locally without a cloud account, or use the hosted free tier when you want cloud ingestion. Upgrade when you need team collaboration, longer retention, and remote probes.
+          Start locally, or use the hosted free tier when you want cloud ingestion. Upgrade when you need team collaboration, longer retention, and advanced features.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link
-            className="rounded-full px-6 py-3 text-sm font-medium"
+            className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium ${buttonFocusClassName}`}
             href="/docs/quickstart/"
             style={{ background: 'var(--site-accent)', color: 'var(--site-accent-foreground)' }}
           >
+            <BookOpen className="size-4" aria-hidden="true" />
             Quick Start Guide
           </Link>
           <Link
-            className="rounded-full border border-[var(--site-border)] px-6 py-3 text-sm font-medium"
-            href="/pricing/"
+            className={`rounded-full border border-[var(--site-border)] px-6 py-3 text-sm font-medium ${buttonFocusClassName}`}
+            href="https://app.debugbundle.com"
           >
-            View Pricing
+            Open App
           </Link>
         </div>
       </section>

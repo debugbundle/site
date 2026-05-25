@@ -77,7 +77,7 @@ Pick the path that matches your project.
 
 If you need frontend exceptions, breadcrumbs, and browser-to-backend trace correlation, add the Browser SDK too. Use it by itself for frontend-only cloud deployments, or pair it with a backend relay for full-stack apps.
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java', 'Go', 'Existing Logs']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -173,7 +173,7 @@ For Laravel, Symfony, and Monolog, see [PHP SDK](/docs/sdks/php).
 <dependency>
   <groupId>com.debugbundle</groupId>
   <artifactId>debugbundle-spring-boot-starter</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
@@ -185,7 +185,9 @@ debugbundle:
   project-mode: connected
 ```
 
-Spring Boot 3.x applications auto-configure servlet request capture, MVC exception capture, Logback capture, remote capture policy, probes, and the optional browser relay. See [Java SDK](/docs/sdks/java).
+Use this path for Spring Boot 3.x. For servlet WARs, JAX-RS services, WildFly, or JBoss deployments, use the broader [Java SDK](/docs/sdks/java) setup.
+
+Spring Boot 3.x applications auto-configure servlet request capture, MVC exception capture, Logback capture, remote capture policy, probes, and the optional browser relay.
 
   </Tab>
   <Tab>
@@ -204,6 +206,26 @@ defer func() { _ = client.Flush(context.Background()) }()
 ```
 
 For net/http, Gin, Echo, logging integrations, probes, and browser relay setup, see [Go SDK](/docs/sdks/go).
+
+  </Tab>
+  <Tab>
+
+```bash
+bundle add debugbundle
+```
+
+```ruby
+require "debugbundle"
+
+DebugBundle.init(
+  project_token: ENV["DEBUGBUNDLE_PROJECT_TOKEN"],
+  environment: "production",
+  service: "api",
+  project_mode: :connected
+)
+```
+
+For Rails, Rack, Sidekiq, logging integrations, probes, and browser relay setup, see [Ruby SDK](/docs/sdks/ruby).
 
   </Tab>
   <Tab>
@@ -313,7 +335,7 @@ Pick the path that matches your project.
 
 Local-only browser capture requires a same-origin relay so the browser SDK can hand events to your backend, which then writes them into `.debugbundle/local/events/` for `debugbundle process`.
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java', 'Existing Logs']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -408,7 +430,7 @@ For Laravel, Symfony, and Monolog, see [PHP SDK](/docs/sdks/php).
 <dependency>
   <groupId>com.debugbundle</groupId>
   <artifactId>debugbundle-spring-boot-starter</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
@@ -420,7 +442,49 @@ debugbundle:
   project-mode: local-only
 ```
 
-Spring Boot 3.x applications auto-configure servlet request capture, MVC exception capture, Logback capture, probes, and local file delivery. See [Java SDK](/docs/sdks/java).
+Use this path for Spring Boot 3.x. For servlet WARs, JAX-RS services, WildFly, or JBoss deployments, use the broader [Java SDK](/docs/sdks/java) setup.
+
+Spring Boot 3.x applications auto-configure servlet request capture, MVC exception capture, Logback capture, probes, and local file delivery.
+
+  </Tab>
+  <Tab>
+
+```bash
+go get github.com/debugbundle/debugbundle-go
+```
+
+```go
+client := debugbundle.New(debugbundle.Config{
+	ProjectToken:   "local",
+	Environment:    "development",
+	Service:        "api",
+	ProjectMode:    debugbundle.ProjectModeLocalOnly,
+	LocalEventsDir: ".debugbundle/local/events",
+})
+defer func() { _ = client.Flush(context.Background()) }()
+```
+
+For net/http, Gin, Echo, logging integrations, probes, and browser relay setup, see [Go SDK](/docs/sdks/go).
+
+  </Tab>
+  <Tab>
+
+```bash
+bundle add debugbundle
+```
+
+```ruby
+require "debugbundle"
+
+DebugBundle.init(
+  project_token: "local",
+  environment: "development",
+  service: "api",
+  project_mode: :local_only
+)
+```
+
+For Rails, Rack, Sidekiq, logging integrations, probes, and browser relay setup, see [Ruby SDK](/docs/sdks/ruby).
 
   </Tab>
   <Tab>
@@ -455,7 +519,7 @@ try {
 }
 ```
 
-For Python, PHP, or Java, use the equivalent language-specific capture method from the SDK guide.
+For Python, PHP, Java, Go, or Ruby, use the equivalent language-specific capture method from the SDK guide.
 
 ### 5. Process and Inspect
 

@@ -17,7 +17,7 @@ The CLI runs setup, local processing, incident inspection, token management, clo
 
 ## SDKs
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java', 'Go', 'Ruby', 'WordPress']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'WordPress']}>
   <Tab>
 
 ```bash
@@ -102,7 +102,7 @@ Laravel, Symfony, and Monolog integrations are included. See [PHP SDK](/docs/sdk
 <dependency>
   <groupId>com.debugbundle</groupId>
   <artifactId>debugbundle-spring-boot-starter</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
 </dependency>
 ```
 
@@ -114,7 +114,9 @@ debugbundle:
   project-mode: connected
 ```
 
-Spring Boot 3.x applications get servlet request capture, MVC exception capture, Logback capture, remote config, probes, and an optional same-origin browser relay. See [Java SDK](/docs/sdks/java).
+Use this path for Spring Boot 3.x. For servlet WARs, JAX-RS services, WildFly, or JBoss deployments, use the broader [Java SDK](/docs/sdks/java) setup.
+
+Spring Boot 3.x applications get servlet request capture, MVC exception capture, Logback capture, remote config, probes, and an optional same-origin browser relay.
 
   </Tab>
   <Tab>
@@ -145,7 +147,7 @@ gem "debugbundle"
 require "debugbundle"
 
 DebugBundle.init(
-  project_token: ENV["DEBUGBUNDLE_TOKEN"],
+  project_token: ENV["DEBUGBUNDLE_PROJECT_TOKEN"],
   environment: "production",
   service: "api"
 )

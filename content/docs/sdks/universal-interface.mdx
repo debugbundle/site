@@ -202,17 +202,17 @@ Custom fields are merged with defaults — you cannot disable default redaction.
 
 ## SDK Support Snapshot
 
-| Feature | Node.js | Browser | Python | PHP | Java |
-|---------|---------|---------|--------|-----|------|
-| Status | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped |
-| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | `com.debugbundle:debugbundle-spring-boot-starter` |
-| Framework integrations | Express, Fastify, Next.js | — | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot MVC |
-| Logger integrations | pino, winston, bunyan | — | logging, structlog, loguru | Monolog | JUL, Logback |
-| Safe backend runtime facts | Full process facts | — | Full process facts | Full process facts | Full process facts |
-| Breadcrumbs | — | ✅ | — | — | — |
-| Relay handler | Express, Fastify, Next.js | Relay client path | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot route |
-| Probes | ✅ | ✅ | ✅ | ✅ | ✅ |
-| File transport | ✅ | — | ✅ | ✅ | ✅ |
+| Feature | Node.js | Browser | Python | PHP | Java | Go | Ruby |
+|---------|---------|---------|--------|-----|------|----|------|
+| Status | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped |
+| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | Maven `com.debugbundle` modules | `github.com/debugbundle/debugbundle-go` | `debugbundle` |
+| Framework integrations | Express, Fastify, Next.js | — | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot, servlet, JAX-RS | `net/http`, Gin, Echo | Rails, Rack, Sidekiq |
+| Logger integrations | pino, winston, bunyan | — | logging, structlog, loguru | Monolog | JUL, Logback | slog, zap, zerolog | Logger, Semantic Logger |
+| Safe backend runtime facts | Full process facts | — | Full process facts | Full process facts | Full process facts | Full process facts | Full process facts |
+| Breadcrumbs | — | ✅ | — | — | — | — | — |
+| Relay handler | Express, Fastify, Next.js | Relay client path | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot, servlet, JAX-RS | `net/http`, Gin, Echo | Rack middleware + Rails route |
+| Probes | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| File transport | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 For the public V1 parity matrix, including 5xx request-failure behavior and relay support, see [SDKs](/docs/sdks).
 
@@ -222,5 +222,7 @@ For the public V1 parity matrix, including 5xx request-failure behavior and rela
 - [Browser SDK](/docs/sdks/browser) — Full Browser SDK setup with breadcrumbs and relay
 - [Python SDK](/docs/sdks/python) — Full Python setup and framework integrations
 - [PHP SDK](/docs/sdks/php) — Full PHP setup and framework integrations
-- [Java SDK](/docs/sdks/java) — Full Java and Spring Boot setup
+- [Java SDK](/docs/sdks/java) — Full Java setup across Spring Boot, servlet, JAX-RS, and app servers
+- [Go SDK](/docs/sdks/go) — Full Go setup with HTTP frameworks, logger integrations, and relay support
+- [Ruby SDK](/docs/sdks/ruby) — Full Ruby setup with Rails, Rack, Sidekiq, logger integrations, and relay support
 - [Browser Relay Setup](/docs/sdks/browser-relay) — Relay architecture and backend setup
