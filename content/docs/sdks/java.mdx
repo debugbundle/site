@@ -70,6 +70,30 @@ JAX-RS applications can add the matching namespace adapter when they want resour
 
 The Java SDK is published on Maven Central under `com.debugbundle` as `debugbundle-java-core`, `debugbundle-java-web`, servlet adapters, JAX-RS adapters, `debugbundle-java-agent`, and `debugbundle-spring-boot-starter`.
 
+If you install more than one DebugBundle Java artifact, import the BOM so every module stays on the same version:
+
+```xml
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>com.debugbundle</groupId>
+      <artifactId>debugbundle-java-parent</artifactId>
+      <version>0.1.1</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+```
+
+```kotlin
+dependencies {
+    implementation(platform("com.debugbundle:debugbundle-java-parent:0.1.1"))
+    implementation("com.debugbundle:debugbundle-java-core")
+    implementation("com.debugbundle:debugbundle-java-servlet-jakarta")
+}
+```
+
 ## Spring Boot
 
 ```yaml
@@ -232,7 +256,42 @@ debugbundle.project-mode=local-only
 debugbundle.local-events-dir=.debugbundle/local/events
 ```
 
-Browser relay delivery follows the same modes. Local-only relay writes browser events into `.debugbundle/local/events`; connected durable relay writes a spool record before forwarding; low-latency connected relay can forward without durable spool when configured.
+Local-only mode does not require a project token. Browser relay delivery follows the same modes. Local-only relay writes browser events into `.debugbundle/local/events`; connected durable relay writes a spool record before forwarding; low-latency connected relay can forward without durable spool when configured.
+
+By default the relay preserves the browser event's own `service.name` and `service.environment`. Set `debugbundle.relay.service` or `debugbundle.relay.environment` only when you intentionally want the backend relay to rewrite browser-owned identity.
+
+## Safe Startup
+
+`DebugBundle.status()` exposes the startup state without forcing host failures:
+
+- `healthy`: active and ready to write locally or deliver remotely,
+- `degraded`: delivery started but transport failures or rate limiting occurred,
+- `disconnected`: disabled, not initialized, or connected mode started without a usable project token.
+
+If connected mode starts without a project token, the SDK does not crash the host application or throw into request handling. Local-only mode remains usable without a token and reports a healthy local-write posture.
+
+## First Event Verification
+
+Use local-only mode for a no-cloud first-event check:
+
+```java
+import com.debugbundle.sdk.DebugBundle;
+import com.debugbundle.sdk.DebugBundleClient;
+import com.debugbundle.sdk.DebugBundleConfig;
+
+DebugBundleClient client = DebugBundle.create(DebugBundleConfig.builder()
+  .service("checkout-api")
+  .environment("development")
+  .projectMode("local-only")
+  .localEventsDir(".debugbundle/local/events")
+  .build());
+
+client.captureException(new IllegalStateException("java verify"));
+client.flush().join();
+System.out.println(client.status());
+```
+
+Confirm that a new event file appears in `.debugbundle/local/events`. The Java SDK repo also ships an app-driven smoke fixture that posts to a mock `/v1/events` endpoint and validates `service`, `environment`, SDK metadata, and request correlation before release.
 
 ## Zero-Install Fallback
 
