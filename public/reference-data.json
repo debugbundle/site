@@ -1084,6 +1084,11 @@
   ],
   "cliEntries": [
     {
+      "commandPath": "",
+      "usage": "debugbundle --version",
+      "group": ""
+    },
+    {
       "commandPath": "analyze",
       "usage": "debugbundle analyze [--type <improvement|failure|performance>] [--local] [--json]",
       "group": "analyze"

@@ -25,6 +25,9 @@ Capture and integration docs
 - Browser relay: https://debugbundle.com/docs/sdks/browser-relay/
 - Python SDK: https://debugbundle.com/docs/sdks/python/
 - PHP SDK: https://debugbundle.com/docs/sdks/php/
+- Java SDK: https://debugbundle.com/docs/sdks/java/
+- Go SDK: https://debugbundle.com/docs/sdks/go/
+- Ruby SDK: https://debugbundle.com/docs/sdks/ruby/
 - Universal SDK interface: https://debugbundle.com/docs/sdks/universal-interface/
 - WordPress integration: https://debugbundle.com/docs/integrations/wordpress/
 - Log ingestion: https://debugbundle.com/docs/cli/log-ingestion/
