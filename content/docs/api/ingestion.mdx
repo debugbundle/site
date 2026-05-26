@@ -151,20 +151,21 @@ Each plan includes a monthly event allowance. When the quota is exceeded:
 
 Check your quota via [Billing API](/docs/api/billing) or the web dashboard.
 
-## Capture Policy
+## Capture Policy and Rules
 
 Projects can configure a capture policy that filters events at ingestion time:
 
 | Preset | Behavior |
 |--------|----------|
-| `allow_all` | Accept all event types (default). |
-| `exclude_logs_above_warn` | Accept all events except `log_event` with level above `warn`. |
-| `errors_only` | Accept only exception and error events. |
-| `custom` | Custom per-event-type rules. |
+| `minimal` | Lower-volume defaults for Free tier and low-traffic projects. |
+| `balanced` | Default Solo/Team behavior for most applications. |
+| `investigative` | Higher-volume capture for active debugging. |
 
-Events filtered by capture policy are counted as `rejected` in the response with reason `"filtered_by_capture_policy"`.
+Events filtered by capture policy are counted as `rejected` in the response with reason `"capture_policy_rejected"`.
 
-Configure capture policies via the [Projects API](/docs/api/projects) or CLI.
+Active project capture rules are also evaluated during ingestion. Matching `drop` rules return `"capture_rule_dropped"`, matching sampled-out `sample` rules return `"capture_rule_sampled_out"`, and matching `demote` rules are accepted as context signals so they cannot open or reopen incidents.
+
+Configure capture policy and capture rules via the API, CLI, MCP, or dashboard.
 
 ## Processing Pipeline
 
@@ -172,7 +173,7 @@ After ingestion, events flow through the asynchronous processing pipeline:
 
 <WorkflowDiagram>
   <WorkflowStep title="Accept">
-    `POST /v1/events` validates auth, payload shape, rate limits, and capture policy.
+    `POST /v1/events` validates auth, payload shape, rate limits, capture policy, and capture rules.
   </WorkflowStep>
   <WorkflowStep title="Persist">
     Raw accepted events are written to object storage.

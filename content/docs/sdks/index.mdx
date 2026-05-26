@@ -46,6 +46,7 @@ All SDKs follow the same safety contract:
 | Breadcrumbs | No | Yes | No | No | Yes, through browser SDK | No | No | No |
 | Relay support | Full relay handler + adapters | Relay client path | Full relay handler | Full relay handler | WordPress REST relay | Spring Boot and servlet relay routes | Full relay handler | Rack middleware + Rails route |
 | Remote config and capture policy | Yes | Yes | Yes | Yes | Yes, backend SDK path | Yes | Yes | Yes |
+| Local capture-rule enforcement | Drop + sampled-out sample | Demote, sample, drop | Server backstop | Server backstop | Browser SDK path + server backstop | Server backstop | Server backstop | Server backstop |
 | Probes | Yes | Yes | Yes | Yes | Yes, through bundled SDKs | Yes | Yes | Yes |
 | Redaction defaults | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes, with Rails filters |
 | Framework integrations | Express, Fastify, Next.js | Browser-native; works with React, Next.js client-side, Vue, Angular, Svelte, and vanilla apps | Django, Flask, FastAPI | Laravel, Symfony | WordPress plugin wrapper | Spring Boot, servlet, JAX-RS/RESTEasy, WildFly/JBoss | net/http, Gin, Echo | Rails, Rack, Sidekiq |
@@ -76,7 +77,7 @@ All SDKs enforce automatic storm suppression to prevent runaway capture:
 | **Suppression checkpoints** | During suppression, one aggregate checkpoint event every 30 seconds |
 | **Auto-recovery** | 60 seconds of silence resets suppression |
 
-Combined with server-side **capture policy** (configurable presets: `minimal`, `balanced`, `investigative`), you always have full control over what gets captured and shipped.
+Combined with server-side **capture policy** (configurable presets: `minimal`, `balanced`, `investigative`) and project **capture rules** (`demote`, `sample`, `drop`), you can control what gets captured, what remains context-only, and what is discarded after known noisy patterns are identified.
 
 ## Next Steps
 

@@ -1,6 +1,6 @@
 ---
 title: Capture Policy
-description: Control what events your SDKs capture and send using presets and fine-grained controls.
+description: Control what events your SDKs capture, send, demote, sample, and drop using presets, fine-grained controls, and capture rules.
 icon: SlidersHorizontal
 ---
 
@@ -9,6 +9,10 @@ at what verbosity level, and how breadcrumbs and probes are handled. Each projec
 one capture policy that applies to all SDKs connecting to it. The same policy also controls
 which selected `4xx` responses open incidents immediately instead of waiting for repeated-anomaly
 thresholds.
+
+Capture rules sit on top of the policy for known noisy patterns. After an incident appears,
+you can create a project-level rule to `demote`, `sample`, or `drop` future matching events
+without changing the broader preset.
 
 ## Presets
 
@@ -88,6 +92,28 @@ Controls which HTTP `4xx` responses are promoted into immediate incident-opening
 Promoted client errors behave like any other request-failure incident: they can trigger alerts,
 webhooks, GitHub dispatch automation, bundle generation, retention, and usage accounting.
 
+## Capture Rules
+
+Capture rules are manual, project-level decisions for known noise. They are useful for cases like blocked third-party analytics scripts, repeated browser resource-load failures, or a noisy route that should be sampled after you have confirmed the pattern.
+
+| Action | Behavior |
+|--------|----------|
+| `demote` | Matching events are kept as context but cannot create, reopen, alert, or dispatch automation for incidents. |
+| `sample` | Matching events are kept or discarded using a deterministic sample rate. Kept events preserve their normal class unless the rule sets `sample_event_class: "context"`. |
+| `drop` | Matching events are discarded before persistence when the SDK or ingestion layer can evaluate the rule. |
+
+Rules use structured matchers such as event type, service, environment, runtime, first-party status, browser event kind, resource URL, request URL, status code, and exact fingerprint. The incident detail page can suggest narrow rules from an existing bundle, so most teams should start from an incident rather than writing matchers by hand.
+
+Current local SDK enforcement:
+
+| SDK | Local rule behavior |
+|-----|---------------------|
+| Browser | Applies `demote`, `sample`, and `drop` before upload when possible. |
+| Node.js | Applies `drop` and sampled-out `sample` before buffering. `demote` is enforced by ingestion and processing. |
+| Python, PHP, Java, Go, Ruby | Server-side ingestion and worker enforcement today. Local SDK parity can be added later without changing the project rule model. |
+
+Ingestion and worker processing enforce active rules again as a backstop, so rules still apply even when an SDK has not implemented local filtering.
+
 ## Managing the Policy
 
 ### API
@@ -102,6 +128,14 @@ curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-pol
   -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{ "preset": "investigative" }'
+
+# List capture rules
+curl https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-rules \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
+
+# Suggest rules from an incident bundle
+curl -X POST https://api.debugbundle.com/v1/incidents/inc_01HXYZ.../capture-rule-suggestion \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
 ```
 
 ### CLI
@@ -117,6 +151,10 @@ debugbundle capture-policy set --project proj_01HXYZ... --preset investigative
 debugbundle capture-policy set \
   --project proj_01HXYZ... \
   --client-error-incidents recommended
+
+# Suggest and create capture rules from a known noisy incident
+debugbundle capture-rule suggest inc_01HXYZ...
+debugbundle capture-rule create-from-suggestion inc_01HXYZ... --suggestion-id primary_resource_host_demote
 ```
 
 ## Override Behavior
@@ -160,7 +198,7 @@ means "explicitly promote no additional `4xx` statuses".
 
 ## SDK Behavior
 
-SDKs fetch the capture policy from the server during initialization and periodically
+SDKs fetch the capture policy and active capture rules from the server during initialization and periodically
 refresh it. When the policy changes, shipped Browser, Node.js, Python, PHP, Java, Go,
 and Ruby SDKs adjust their capture behavior without requiring a restart or redeploy,
 including the selected client error incident statuses.

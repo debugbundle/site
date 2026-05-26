@@ -26,7 +26,7 @@ Calling `init()` automatically:
 - Hooks browser `window` error and unhandled-rejection events
 - Registers `beforeunload` / `visibilitychange` for unload-safe flushing
 - Starts breadcrumb capture (clicks, route changes, console, network)
-- Fetches remote config once from the relay or API
+- Fetches remote config, including capture policy and active capture rules, from the relay or API
 
 ## Configuration
 
@@ -127,6 +127,10 @@ When `captureNetwork` is enabled, the SDK intercepts `fetch` and `XMLHttpRequest
 - Response status code
 - Duration (ms)
 - Request/response content length
+
+Rejected `fetch()` calls that never receive an HTTP response are captured as failed network breadcrumbs with `status_code: 0` plus `failure_kind` and `failure_reason` fields when available. This covers cases such as blocked domains, offline tabs, DNS failures, and CORS-level network errors without changing application behavior.
+
+Project capture rules can demote, sample, or drop known browser noise after you identify it from an incident. The Browser SDK applies active rules locally before upload when possible, so recurring third-party resource-load failures can become context-only or be discarded without opening new incidents.
 
 ### Network Filtering
 

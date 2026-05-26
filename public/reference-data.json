@@ -469,6 +469,32 @@
     },
     {
       "method": "POST",
+      "path": "/v1/incidents/{id}/capture-rule-suggestion",
+      "operationId": "suggestCaptureRule",
+      "summary": "Generate deterministic capture rule suggestions from an incident bundle",
+      "tags": [
+        "Capture Rules"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/incidents/{id}/capture-rules",
+      "operationId": "createCaptureRuleFromSuggestion",
+      "summary": "Create a project capture rule from an incident suggestion",
+      "tags": [
+        "Capture Rules"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
       "path": "/v1/incidents/{id}/reopen",
       "operationId": "reopenIncident",
       "summary": "Reopen an incident",
@@ -626,6 +652,58 @@
       "summary": "Update the capture policy for a project",
       "tags": [
         "Capture Policy"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/capture-rules",
+      "operationId": "listCaptureRules",
+      "summary": "List project capture rules",
+      "tags": [
+        "Capture Rules"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/projects/{id}/capture-rules",
+      "operationId": "createCaptureRule",
+      "summary": "Create a project capture rule",
+      "tags": [
+        "Capture Rules"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/projects/{id}/capture-rules/{ruleId}",
+      "operationId": "updateCaptureRule",
+      "summary": "Update a project capture rule",
+      "tags": [
+        "Capture Rules"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/projects/{id}/capture-rules/{ruleId}",
+      "operationId": "deleteCaptureRule",
+      "summary": "Delete a project capture rule",
+      "tags": [
+        "Capture Rules"
       ],
       "auth": [
         "Browser session",
@@ -1140,7 +1218,7 @@
     },
     {
       "commandPath": "verify cloud",
-      "usage": "debugbundle verify cloud --project-id <id> [--trigger-5xx | --trigger-4xx <400-499>] [--service <name>] [--environment <name>] [--max-age-minutes <n>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle verify cloud --project-id <id> [--trigger-5xx | --trigger-4xx <400-499> | --expect-app-event [--trace-id <id>] [--request-id <id>]] [--service <name>] [--environment <name>] [--max-age-minutes <n>] [--auth-file <path>] [--json]",
       "group": "verify"
     },
     {
@@ -1452,6 +1530,36 @@
       "commandPath": "capture-policy set",
       "usage": "debugbundle capture-policy set --project <id> [--preset <minimal|balanced|investigative>] [--override <key=value>] [--client-error-incidents <preset-default|none|recommended|custom>] [--client-error-statuses <400,401,...>] [--auth-file <path>] [--json]",
       "group": "capture-policy"
+    },
+    {
+      "commandPath": "capture-rule list",
+      "usage": "debugbundle capture-rule list --project-id <id> [--auth-file <path>] [--json]",
+      "group": "capture-rule"
+    },
+    {
+      "commandPath": "capture-rule suggest",
+      "usage": "debugbundle capture-rule suggest <incident-id> [--auth-file <path>] [--json]",
+      "group": "capture-rule"
+    },
+    {
+      "commandPath": "capture-rule create-from-suggestion",
+      "usage": "debugbundle capture-rule create-from-suggestion <incident-id> --suggestion-id <id> [--name <name>] [--description <text>] [--enabled <true|false>] [--expires-at <ISO8601>] [--auth-file <path>] [--json]",
+      "group": "capture-rule"
+    },
+    {
+      "commandPath": "capture-rule create",
+      "usage": "debugbundle capture-rule create --project-id <id> --name <name> --action <demote|sample|drop> --matcher-json <json> [--description <text>] [--enabled <true|false>] [--sample-rate <0-1>] [--sample-event-class <preserve|context>] [--expires-at <ISO8601>] [--auth-file <path>] [--json]",
+      "group": "capture-rule"
+    },
+    {
+      "commandPath": "capture-rule update",
+      "usage": "debugbundle capture-rule update <rule-id> --project-id <id> [--name <name>] [--description <text>] [--enabled <true|false>] [--action <demote|sample|drop>] [--matcher-json <json>] [--sample-rate <0-1>] [--sample-event-class <preserve|context>] [--expires-at <ISO8601>] [--auth-file <path>] [--json]",
+      "group": "capture-rule"
+    },
+    {
+      "commandPath": "capture-rule delete",
+      "usage": "debugbundle capture-rule delete <rule-id> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "capture-rule"
     },
     {
       "commandPath": "improvements list",
@@ -2273,6 +2381,71 @@
             "name",
             "slug"
           ]
+        }
+      ]
+    },
+    {
+      "group": "capture_rules",
+      "label": "Capture Rules",
+      "tools": [
+        {
+          "name": "create_capture_rule",
+          "description": "Create a project capture rule.",
+          "requiredArguments": [
+            "bearerToken",
+            "create",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "create_capture_rule_from_incident_suggestion",
+          "description": "Create a capture rule from an incident-derived suggestion.",
+          "requiredArguments": [
+            "bearerToken",
+            "create",
+            "incidentId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "delete_capture_rule",
+          "description": "Delete a project capture rule.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId",
+            "ruleId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_capture_rules",
+          "description": "List project capture rules.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "suggest_capture_rules_from_incident",
+          "description": "Generate deterministic capture rule suggestions from an incident bundle.",
+          "requiredArguments": [
+            "bearerToken",
+            "incidentId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "update_capture_rule",
+          "description": "Update a project capture rule.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId",
+            "ruleId",
+            "update"
+          ],
+          "optionalArguments": []
         }
       ]
     },

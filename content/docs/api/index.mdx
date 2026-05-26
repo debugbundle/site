@@ -211,7 +211,7 @@ Management endpoints (incidents, webhooks, tokens) are not rate-limited in the c
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/v1/sdk/config` | Project token | Get SDK config, including capture policy and active probe directives |
+| `GET` | `/v1/sdk/config` | Project token | Get SDK config, including capture policy, active capture rules, and active probe directives |
 | `GET` | `/v1/projects/:id/probes` | Member token | List active probes for a project |
 | `POST` | `/v1/projects/:id/probes/activate` | Member token | Activate a remote probe |
 | `POST` | `/v1/projects/:id/probes/deactivate` | Member token | Deactivate a remote probe |
@@ -222,6 +222,17 @@ Management endpoints (incidents, webhooks, tokens) are not rate-limited in the c
 |---|---|---|---|
 | `GET` | `/v1/projects/:id/capture-policy` | Member token | Get current capture policy for a project; plain members receive preview-only output |
 | `PATCH` | `/v1/projects/:id/capture-policy` | Member token (owner/admin) | Set capture policy for a project |
+
+### Capture Rules
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/projects/:id/capture-rules` | Member token | List project capture rules; plain members receive preview-only output |
+| `POST` | `/v1/projects/:id/capture-rules` | Member token (owner/admin) | Create a capture rule |
+| `PATCH` | `/v1/projects/:id/capture-rules/:ruleId` | Member token (owner/admin) | Update a capture rule |
+| `DELETE` | `/v1/projects/:id/capture-rules/:ruleId` | Member token (owner/admin) | Delete a capture rule |
+| `POST` | `/v1/incidents/:id/capture-rule-suggestion` | Member token | Suggest capture rules from an incident bundle |
+| `POST` | `/v1/incidents/:id/capture-rules` | Member token (owner/admin) | Create a capture rule from an incident suggestion |
 
 ### Authentication
 

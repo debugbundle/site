@@ -487,6 +487,67 @@ Update the capture policy for a project.
 
 ---
 
+## Capture Rules
+
+### list_capture_rules
+
+List project capture rules.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+
+### create_capture_rule
+
+Create a project capture rule.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+| `rule` | `object` | **Required.** Rule payload with `action`, `matcher`, and optional sample fields. |
+
+### update_capture_rule
+
+Update a project capture rule.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+| `ruleId` | `string` | **Required.** The capture rule ID. |
+| `update` | `object` | **Required.** Partial rule update. |
+
+### delete_capture_rule
+
+Delete a project capture rule.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** The project ID. |
+| `ruleId` | `string` | **Required.** The capture rule ID. |
+
+### suggest_capture_rules_from_incident
+
+Suggest capture rules from an incident bundle without changing project state.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incidentId` | `string` | **Required.** The incident ID. |
+
+### create_capture_rule_from_incident_suggestion
+
+Create a project capture rule from one of the incident suggestions.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incidentId` | `string` | **Required.** The incident ID. |
+| `suggestionId` | `string` | **Required.** The suggestion ID returned by `suggest_capture_rules_from_incident`. |
+| `name` | `string` | Optional override for the rule name. |
+| `description` | `string` | Optional override for the rule description. |
+| `enabled` | `boolean` | Optional initial enabled state. |
+| `expiresAt` | `string` | Optional ISO timestamp for automatic expiry. |
+
+---
+
 ## Billing
 
 ### get_billing_summary

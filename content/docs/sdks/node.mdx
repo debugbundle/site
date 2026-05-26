@@ -26,7 +26,7 @@ Calling `init()` automatically:
 - Hooks `process.on('uncaughtException')` and `process.on('unhandledRejection')`
 - Registers `SIGINT`/`SIGTERM`/`beforeExit` handlers for graceful flush
 - Auto-detects and attaches logger integrations (pino, winston, bunyan)
-- Starts remote probe config polling (connected mode, paid tiers)
+- Starts remote config polling for capture policy, capture rules, and probes
 
 Backend exception events include safe runtime process facts in `payload.runtime`: Node version, platform, architecture, process id, working directory, process uptime, hostname, and best-effort memory stats. The SDK does not read or emit environment variables for this block.
 
@@ -330,7 +330,7 @@ The SDK enforces automatic storm suppression:
 | **Suppression checkpoint** | Every 30s | One aggregate `error_suppressed` event |
 | **Auto-recovery** | 60s silence | Resets to normal capture |
 
-Combined with the server-side `sampleRate` and `logLevel` configuration, you always have layered control over event volume.
+Combined with server-side capture policy and project capture rules, you always have layered control over event volume. The Node.js SDK locally discards events matching `drop` rules and sampled-out `sample` rules before buffering. `demote` rules are enforced by ingestion and worker processing so matching backend events cannot create or reopen incidents.
 
 ---
 
