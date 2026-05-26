@@ -9,19 +9,16 @@ This directory contains all configuration, local event storage, and generated bu
 
 ## Directory Structure
 
-```
-.debugbundle/
-├── profile.json          # Project identity and service map
-├── local/
-│   ├── connection.json   # Cloud connection and delivery settings
-│   ├── events/           # Raw local event files
-│   ├── state.json        # Grouped local incident state
-│   └── browser-relay-spool/
-└── bundles/
-  ├── local/           # Generated local bundles
-  │   └── reproductions/
-  └── cloud/           # Downloaded cloud bundles
-```
+| Path | Purpose |
+|------|---------|
+| `.debugbundle/profile.json` | Project architecture and workflow profile |
+| `.debugbundle/local/connection.json` | Cloud connection and delivery settings |
+| `.debugbundle/local/events/` | Raw local event files |
+| `.debugbundle/local/state.json` | Grouped local incident state |
+| `.debugbundle/local/browser-relay-spool/` | Durable browser relay spool for connected mode |
+| `.debugbundle/bundles/local/` | Generated local bundles |
+| `.debugbundle/bundles/local/reproductions/` | Generated local reproduction artifacts |
+| `.debugbundle/bundles/cloud/` | Downloaded cloud bundles |
 
 ## Getting Started
 
@@ -38,7 +35,7 @@ structure and a `.debugbundle/local/connection.json` file defaulting to local-on
 
 | File | Purpose | Reference |
 |------|---------|-----------|
-| `profile.json` | Project identity, services, languages, deployment | [Profile](/docs/project-setup/profile) |
+| `profile.json` | Project architecture, services, infrastructure, workflows, and agent hints | [Profile](/docs/project-setup/profile) |
 | `local/connection.json` | Cloud mode, delivery settings, environment config | [Connect to Cloud](/docs/project-setup/connect-to-cloud) |
 
 If your browser frontend and backend API are separate services, follow the canonical [Split Frontend & Backend](/docs/project-setup/split-frontend-backend) setup path after the initial scaffold.
@@ -77,7 +74,7 @@ production events to the cloud for team visibility.
 ## Next Steps
 
 - [Split Frontend & Backend](/docs/project-setup/split-frontend-backend) — Relay ownership, browser endpoint, and deployment guidance
-- [Profile Configuration](/docs/project-setup/profile) — Service map and project identity
+- [Profile Configuration](/docs/project-setup/profile) — Full project schema and validation
 - [Local-Only Mode](/docs/project-setup/local-only) — Offline-first development
 - [Connect to Cloud](/docs/project-setup/connect-to-cloud) — Enable cloud delivery
 - [Capture Policy](/docs/capture-policy) — Control what events are captured

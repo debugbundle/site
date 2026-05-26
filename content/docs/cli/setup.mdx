@@ -30,30 +30,21 @@ For split frontend/backend repositories, use the canonical [Split Frontend & Bac
 
 After setup, your project contains:
 
-```
-.debugbundle/
-├── profile.json              # Project profile (services, frameworks, workflows)
-├── local/
-│   ├── connection.json       # Connection mode (local-only or connected)
-│   ├── events/               # Raw event files from SDK / CLI ingestion
-│   └── browser-relay-spool/  # Browser relay event spool
-└── bundles/
-    ├── local/
-    │   └── reproductions/    # Generated repro artifacts
-    └── cloud/                # Cached cloud bundles
-
-.agents/
-└── skills/
-    └── debugbundle/
-        ├── SKILL.md                  # Agent skill definition
-        ├── evals/
-        │   └── evals.json            # Evaluation fixtures
-        └── references/
-            ├── cli.md                # CLI command reference
-            ├── mcp.md                # MCP tool reference
-            ├── bundle-schema.md      # Bundle JSON schema
-            └── profile-enrichment.md # Profile guide
-```
+| Path | Purpose |
+|------|---------|
+| `.debugbundle/profile.json` | Project profile with services, infrastructure, workflows, and review metadata |
+| `.debugbundle/local/connection.json` | Connection mode and environment delivery settings |
+| `.debugbundle/local/events/` | Raw event files from SDK or CLI ingestion |
+| `.debugbundle/local/browser-relay-spool/` | Browser relay durable spool |
+| `.debugbundle/bundles/local/` | Generated local bundles |
+| `.debugbundle/bundles/local/reproductions/` | Generated reproduction artifacts |
+| `.debugbundle/bundles/cloud/` | Cached cloud bundles |
+| `.agents/skills/debugbundle/SKILL.md` | Agent skill definition |
+| `.agents/skills/debugbundle/evals/evals.json` | Evaluation fixtures |
+| `.agents/skills/debugbundle/references/cli.md` | CLI command reference |
+| `.agents/skills/debugbundle/references/mcp.md` | MCP tool reference |
+| `.agents/skills/debugbundle/references/bundle-schema.md` | Bundle JSON schema reference |
+| `.agents/skills/debugbundle/references/profile-enrichment.md` | Profile enrichment guide |
 
 **Git tracking:**
 - `.debugbundle/profile.json` and `.debugbundle/local/connection.json` are tracked (committed)
@@ -62,31 +53,70 @@ After setup, your project contains:
 
 ## Profile
 
-The profile (`profile.json`) describes your project to DebugBundle:
+The profile (`profile.json`) is a full repository profile, not just a service list. It
+covers project identity, services, infrastructure, critical paths, repository layout,
+developer workflows, and DebugBundle review metadata:
 
 ```json
 {
+  "profile_version": "v1",
   "project": {
     "name": "my-api",
-    "repo_url": "https://github.com/org/my-api"
+    "repo_url": "https://github.com/org/my-api",
+    "primary_languages": ["TypeScript"],
+    "package_managers": ["pnpm"],
+    "deployment_targets": ["docker-compose"]
   },
   "services": [
     {
       "name": "api",
       "kind": "backend",
-      "runtime": "node",
-      "framework": "express"
+      "runtime": "Node.js",
+      "framework": "Express",
+      "paths": ["apps/api"],
+      "owns_routes": ["POST /checkout"],
+      "depends_on": ["postgres", "redis"]
     },
     {
       "name": "worker",
       "kind": "worker",
-      "runtime": "node",
-      "framework": "none"
+      "runtime": "Node.js",
+      "framework": "none",
+      "paths": ["apps/worker"],
+      "owns_routes": [],
+      "depends_on": ["redis"]
     }
   ],
+  "infrastructure": {
+    "databases": ["postgres"],
+    "queues": ["redis"],
+    "object_storage": [],
+    "external_services": []
+  },
+  "critical_paths": [
+    {
+      "name": "checkout",
+      "owner_service": "api",
+      "notes": "Creates the order and enqueues fulfillment."
+    }
+  ],
+  "repo": {
+    "root_paths": ["apps", "packages"],
+    "generated_paths": ["dist"],
+    "do_not_edit_paths": []
+  },
+  "developer_workflows": {
+    "install": "pnpm install",
+    "build": "pnpm build",
+    "test": "pnpm test",
+    "lint": "pnpm lint"
+  },
   "debugbundle": {
+    "profile_owner": "team-debugging",
     "last_reviewed_at": "2025-01-15T00:00:00.000Z",
-    "validation_status": "static-analysis-only"
+    "validation_status": "static-analysis-only",
+    "skill_path": ".agents/skills/debugbundle/SKILL.md",
+    "notes": "Review after setup and update when architecture changes."
   }
 }
 ```

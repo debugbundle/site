@@ -12,18 +12,12 @@ from scratch.
 
 ## File Location
 
-```
-your-project/
-├── .agents/
-│   └── skills/
-│       └── debugbundle/
-│           └── SKILL.md
-├── .debugbundle/
-│   ├── profile.json
-│   └── local/
-│       └── connection.json
-└── AGENTS.md          ← references the skill
-```
+| Path | Purpose |
+|------|---------|
+| `.agents/skills/debugbundle/SKILL.md` | The generated DebugBundle skill file |
+| `.debugbundle/profile.json` | Repository profile the skill refers to during investigation |
+| `.debugbundle/local/connection.json` | Local-only versus connected delivery configuration |
+| `AGENTS.md` | References the skill and tells agents when to use DebugBundle workflows |
 
 The skill file is generated automatically by `debugbundle setup` and kept in sync
 by `debugbundle validate --fix`.

@@ -1,12 +1,13 @@
 ---
 title: Profile Configuration
-description: Configure your project identity, services, and repository metadata in profile.json.
+description: Configure the full repository profile used by DebugBundle in profile.json.
 icon: UserCog
 ---
 
-The `profile.json` file lives at `.debugbundle/profile.json` and describes your project's
-identity, services, languages, and deployment targets. It's created automatically by
-`debugbundle setup` and can be edited manually.
+The `profile.json` file lives at `.debugbundle/profile.json` and is the full repository
+profile used by DebugBundle. It describes project identity, services, infrastructure,
+critical paths, repository layout, developer workflows, and DebugBundle review metadata.
+It's created automatically by `debugbundle setup` and can be edited manually.
 
 ## Schema
 
@@ -39,9 +40,43 @@ identity, services, languages, and deployment targets. It's created automaticall
       "owns_routes": [],
       "depends_on": ["api"]
     }
-  ]
+  ],
+  "infrastructure": {
+    "databases": ["postgres"],
+    "queues": ["redis"],
+    "object_storage": ["s3"],
+    "external_services": ["stripe"]
+  },
+  "critical_paths": [
+    {
+      "name": "checkout",
+      "owner_service": "api",
+      "notes": "Creates the order, charges the card, and enqueues fulfillment."
+    }
+  ],
+  "repo": {
+    "root_paths": ["apps", "packages"],
+    "generated_paths": ["dist", ".next"],
+    "do_not_edit_paths": ["site/public/openapi.json"]
+  },
+  "developer_workflows": {
+    "install": "pnpm install",
+    "build": "pnpm build",
+    "test": "pnpm test",
+    "lint": "pnpm lint"
+  },
+  "debugbundle": {
+    "profile_owner": "team-debugging",
+    "last_reviewed_at": "2026-03-14T00:00:00.000Z",
+    "validation_status": "agent-validated",
+    "skill_path": ".agents/skills/debugbundle/SKILL.md",
+    "notes": "Profile reviewed after the latest architecture change."
+  }
 }
 ```
+
+The source of truth for the full machine-readable schema is
+[`/schemas/profile.json`](/schemas/profile.json).
 
 ## Project Fields
 
@@ -49,7 +84,7 @@ identity, services, languages, and deployment targets. It's created automaticall
 |-------|------|-------------|
 | `profile_version` | `string` | Schema version. Currently `"v1"`. |
 | `project.name` | `string` | Human-readable project name. Used as the default cloud project name during `debugbundle connect`. |
-| `project.repo_url` | `string` | Repository URL. Optional but useful for linking incidents to source. |
+| `project.repo_url` | `string` | Repository URL used for source context and documentation linkage. |
 | `project.primary_languages` | `string[]` | Languages used in the project. |
 | `project.package_managers` | `string[]` | Package managers (`npm`, `pnpm`, `yarn`, `pip`, `composer`). |
 | `project.deployment_targets` | `string[]` | Deployment targets (`docker-compose`, `kubernetes`, `vercel`, `aws`). |
@@ -61,12 +96,22 @@ Each entry in the `services` array describes a service in your project:
 | Field | Type | Description |
 |-------|------|-------------|
 | `name` | `string` | Service identifier. Must be unique within the project. |
-| `kind` | `string` | Service type: `backend`, `frontend`, `worker`, `cli`. |
+| `kind` | `string` | Service type: `backend`, `frontend`, or `worker`. |
 | `runtime` | `string` | Runtime environment: `Node.js`, `Python`, `PHP`, `Java`, `Browser`. |
 | `framework` | `string` | Framework: `Fastify`, `Express`, `Next.js`, `React`, `Django`, `Laravel`. |
 | `paths` | `string[]` | Relative paths to the service's source code. |
 | `owns_routes` | `string[]` | API routes this service is responsible for. |
 | `depends_on` | `string[]` | Other services this service depends on (for dependency health checks). |
+
+## Other Top-Level Sections
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `infrastructure` | `object` | Shared databases, queues, object storage, and external services used by the project. |
+| `critical_paths` | `object[]` | Important user or system flows. Each entry must include `name`, `owner_service`, and `notes`. |
+| `repo` | `object` | Repository layout hints for agents: root paths, generated paths, and paths that should not be edited manually. |
+| `developer_workflows` | `object` | Canonical install, build, test, and lint commands for the repository. |
+| `debugbundle` | `object` | Profile ownership, review timestamp, validation status, skill path, and local notes. |
 
 ## Auto-Detection
 
@@ -84,13 +129,16 @@ You can always edit the generated profile to add or correct services.
 Validate your profile at any time:
 
 ```bash
-debugbundle doctor
+debugbundle profile validate
 ```
 
-The doctor command checks that:
+The profile validator checks that:
 - `profile.json` is valid JSON and conforms to the schema
-- All service paths exist on disk
-- The profile version is supported
+- required sections such as `critical_paths`, `repo`, `developer_workflows`, and `debugbundle` are present
+- service entries use the supported `kind` values and expected object fields
+
+`debugbundle doctor` also includes a profile check, but `debugbundle profile validate`
+is the dedicated schema-validation command.
 
 ## Next Steps
 

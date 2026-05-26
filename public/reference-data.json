@@ -1167,6 +1167,16 @@
       "group": ""
     },
     {
+      "commandPath": "-v",
+      "usage": "debugbundle -v",
+      "group": "-v"
+    },
+    {
+      "commandPath": "-h",
+      "usage": "debugbundle -h",
+      "group": "-h"
+    },
+    {
       "commandPath": "analyze",
       "usage": "debugbundle analyze [--type <improvement|failure|performance>] [--local] [--json]",
       "group": "analyze"

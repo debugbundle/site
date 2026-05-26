@@ -21,31 +21,29 @@ Improvement bundles are a first-class hosted artifact for Solo+, not just a foot
 
 A bundle aggregates data from multiple events into a single coherent debugging artifact:
 
-```
-Bundle
-├── Metadata (ID, version, timestamps, generator)
-├── SDK info (name, version)
-├── Project (ID, slug, environment)
-├── Service (name, runtime, framework, version, region)
-├── Signal (type, severity, fingerprint, occurrences)
-├── Summary (title, description, likely cause, confidence)
-├── Impact (affected users/requests, business criticality)
-├── Context
-│   ├── Error (name, message, stack, top frames)
-│   ├── Request (method, path, headers, body)
-│   ├── Response (status, duration, headers, body)
-│   ├── Logs (timestamped log entries)
-│   ├── Frontend (route changes, clicks, network, console, DOM)
-│   ├── Environment (OS, host, container)
-│   ├── Deploy (commit, version, branch, regression window)
-│   ├── Runtime (process state, memory, framework)
-│   ├── Git (commit, branch, repo, dirty state)
-│   ├── Dependencies (service health checks)
-│   ├── Probe Data (dynamically collected diagnostic data)
-│   └── Device (browser, OS, screen, viewport)
-├── Reproduction (cURL, HTTPie, JSON spec, confidence)
-└── Verification (test results, verification commands)
-```
+| Section | Contents |
+|---------|----------|
+| Metadata | ID, version, timestamps, generator |
+| SDK info | SDK name and version |
+| Project | Project ID, slug, and environment |
+| Service | Service name, runtime, framework, version, and region |
+| Signal | Signal type, severity, fingerprint, and occurrences |
+| Summary | Title, description, likely cause, and confidence |
+| Impact | Affected users or requests and business criticality |
+| Context: Error | Error name, message, stack, and top frames |
+| Context: Request | Method, path, headers, and body |
+| Context: Response | Status, duration, headers, and body |
+| Context: Logs | Timestamped log entries |
+| Context: Frontend | Route changes, clicks, network, console, and DOM context |
+| Context: Environment | OS, host, and container details |
+| Context: Deploy | Commit, version, branch, and regression window |
+| Context: Runtime | Process state, memory, and framework details |
+| Context: Git | Commit, branch, repo, and dirty state |
+| Context: Dependencies | Service health checks |
+| Context: Probe Data | Dynamically collected diagnostic data |
+| Context: Device | Browser, OS, screen, and viewport |
+| Reproduction | cURL, HTTPie, JSON spec, and confidence |
+| Verification | Test results and verification commands |
 
 All context blocks are optional — bundles work with partial data. Missing blocks are
 simply absent, not null-padded.

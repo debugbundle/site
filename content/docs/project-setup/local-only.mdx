@@ -85,22 +85,13 @@ debugbundle watch ./logs/app.log --format debugbundle-ndjson
 
 ## Local Storage Layout
 
-```
-.debugbundle/local/
-├── events/           # Raw event NDJSON files
-│   ├── 2026-03-24T10-00-00-000Z_batch_001.ndjson
-│   └── ...
-├── incidents/        # Grouped incident state
-│   ├── inc_local_01H.../
-│   │   ├── incident.json
-│   │   └── events/
-│   └── ...
-└── bundles/
-    └── local/        # Generated debug bundles
-        ├── bnd_local_42.json
-        └── reproductions/
-            └── bnd_local_42_repro.json
-```
+| Path | Purpose |
+|------|---------|
+| `.debugbundle/local/events/` | Raw event NDJSON files captured locally |
+| `.debugbundle/local/events/<timestamp>_batch_<n>.ndjson` | Individual local event batches written by the SDK or CLI |
+| `.debugbundle/local/state.json` | Grouped local incident state and processing metadata |
+| `.debugbundle/bundles/local/` | Generated local debug bundles |
+| `.debugbundle/bundles/local/reproductions/` | Generated local reproduction artifacts |
 
 ## Limitations
 
