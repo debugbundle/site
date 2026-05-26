@@ -18,6 +18,65 @@ Then install with Bundler:
 bundle install
 ```
 
+## Configuration Reference
+
+Configuration precedence is intentionally explicit:
+
+1. Values passed to `DebugBundle.init(...)`, `DebugBundle::Client.new(...)`, or `DebugBundle::Relay::Handler.new(...)`.
+2. Rails `config.debugbundle.*` values when the Railtie configures the default client or relay route.
+3. Environment variables only when your application passes them into those Ruby calls.
+4. Server-owned capture policy and remote probe directives fetched from `GET /v1/sdk/config`.
+
+Capture policy fields are server-owned. Do not set local SDK config fields for capture policy; configure capture policy in DebugBundle and let the SDK poll it.
+
+| Option | Default | Purpose |
+|---|---|---|
+| `project_token` | required for connected capture | Write-only DebugBundle project token. |
+| `service` | `ruby-service` | Service name in event envelopes. |
+| `environment` | `development` | Runtime environment label. |
+| `endpoint` | `https://api.debugbundle.com/v1/events` | Connected ingestion endpoint. |
+| `enabled` | `true` | Capture kill switch. |
+| `project_mode` | `connected` | `connected` or `local_only`. |
+| `local_events_dir` | `.debugbundle/local/events` | Local event file destination. |
+| `spool_dir` | `.debugbundle/local/browser-relay-spool` | Browser relay durable spool destination. |
+| `redact_fields` | `[]` | Additional sensitive field names merged with built-in redaction defaults. |
+| `batch_size` | `25` | Max events per flush batch. |
+| `flush_interval` | `5` | Flush interval in seconds. |
+| `sample_rate` | `1.0` | Per-event sampling rate. |
+| `log_level` | `warning` | Minimum captured log severity. |
+| `relay_enabled` | `true` | Enable the Rails relay route. |
+| `relay_rate_limit_per_minute` | `60` | Per-IP browser relay rate limit. |
+| `relay_durable_write` | `true` | Write relay batches to spool before connected forwarding. |
+| `max_probe_labels` | `50` | Max distinct probe labels retained in memory. |
+| `max_probe_entries_per_label` | `10` | Ring buffer capacity per probe label. |
+| `probe_flush_on_error` | `true` | Attach probe buffers to captured exceptions. |
+| `probes_poll_interval` | `60` | Remote config poll interval in seconds. |
+
+## Install Examples By Mode
+
+Connected mode:
+
+```ruby
+DebugBundle.init(
+  project_token: ENV.fetch("DEBUGBUNDLE_TOKEN"),
+  service: "checkout-api",
+  environment: "production",
+  endpoint: "https://api.debugbundle.com/v1/events"
+)
+```
+
+Local-only mode:
+
+```ruby
+DebugBundle.init(
+  project_token: ENV.fetch("DEBUGBUNDLE_TOKEN"),
+  service: "checkout-api",
+  environment: "development",
+  project_mode: :local_only,
+  local_events_dir: ".debugbundle/local/events"
+)
+```
+
 ## Rails
 
 Configure the SDK in an initializer:
@@ -137,6 +196,8 @@ The Ruby SDK includes a full browser relay handler for backend-owned browser eve
 
 The relay validates same-origin or configured origins, requires `Content-Type: application/json`, rejects bodies over `256 KB`, accepts only browser event types, strips browser-supplied credentials and trust fields, forces `sdk_name` to `@debugbundle/sdk-browser`, preserves browser correlation fields, rate limits per IP, writes local-only files, writes connected durable spool files by default, and forwards connected events with the server-side project token.
 
+For split frontend/backend hosts, set explicit allowed origins. For connected relay delivery, a missing token means forwarding cannot succeed; keep the route disabled until server-side credentials are configured. To disable the relay, leave the route unmounted or set `relay_enabled = false`.
+
 ## Transport Modes
 
 | Mode | Behavior |
@@ -171,6 +232,66 @@ Ruby defaults are conservative for healthcare, financial, and enterprise systems
 
 ## Runtime Support
 
-The SDK supports Ruby 3.1 and newer. Ruby 3.1 compatibility is maintained for the Rails installed base, but current upstream-maintained Ruby branches are recommended for production security fixes.
+| Surface | Minimum compatibility version | Recommended production version | Installed-base compatibility lane | Rolling CI lane | Out of scope |
+|---|---|---|---|---|---|
+| Ruby runtime | 3.1 | current maintained Ruby 3.4.x patch line | 3.1 and 3.2 remain supported for installed-base coverage | 3.1, 3.2, 3.3, 3.4 | 3.0 and older |
+| Rails | 7.0 | latest 7.1 patch line | 7.0 compatibility support | 7.0 and 7.1 | 6.x and older |
+| Rack | 2.2 | latest 3.x patch line | 2.2 compatibility support | 2.2 and 3.x | 2.1 and older |
+| Sidekiq | 7.x | latest 8.x patch line | 7.x compatibility support | 7.x and 8.x | 6.x and older |
 
-Validated compatibility lanes include Rails 7.0 and 7.1, Rack 2.2 and 3.x, and Sidekiq 7.x plus the current Sidekiq major where dependency compatibility permits.
+Ruby 3.1 compatibility is maintained for the Rails installed base, but current upstream-maintained Ruby branches are recommended for production security fixes.
+
+Post-V1 integrations remain out of scope here: Resque, Delayed Job, GoodJob, Sneakers, Shoryuken, Sinatra, Hanami, and deep ActiveRecord or SQL auto-instrumentation.
+
+## Dependency Alignment
+
+`debugbundle` ships as one gem in V1, so there is no multi-package version-alignment surface.
+
+- Pin one `debugbundle` version across Ruby web apps and worker repos when you want identical SDK behavior everywhere.
+- Keep Rack, Rails, and Sidekiq inside the supported lanes above.
+- Do not mix unsupported framework majors into deployment examples.
+
+## Service Naming
+
+Use distinct service names when one DebugBundle project receives events from multiple deployables:
+
+- Browser frontend: `checkout-web`
+- Rails or Rack API: `checkout-api`
+- Sidekiq worker: `checkout-worker`
+
+The Ruby relay preserves the browser-provided service name and environment by default. Only override relay-level `service` or `environment` when you intentionally want the backend relay host to rewrite browser event identity.
+
+## Safe Startup And Status
+
+The SDK never raises host-facing exceptions because of missing config, bad transport responses, or malformed remote config payloads.
+
+- `DebugBundle.init(project_token: "")` leaves capture disabled and `DebugBundle.status` reports `:degraded`.
+- `DebugBundle.init(enabled: false)` keeps the SDK as a no-op and `DebugBundle.status` reports `:disconnected`.
+- `DebugBundle.last_event_at` stays `nil` until a successful flush completes.
+- `DebugBundle.flush` is a no-op when the SDK has no buffered events, no transport, or is still waiting out a retry window.
+
+Status values:
+
+- `:healthy` means idle or the last flush succeeded.
+- `:degraded` means missing token or a temporary rate-limit window is preventing immediate delivery.
+- `:disconnected` means the SDK is disabled or repeated transport failures exhausted the connection path.
+
+## First-Event Verification
+
+Use an explicit test message or exception during setup:
+
+```ruby
+require "debugbundle"
+
+DebugBundle.init(
+  project_token: ENV.fetch("DEBUGBUNDLE_TOKEN"),
+  service: "debugbundle-first-event",
+  environment: "staging"
+)
+
+DebugBundle.capture_message("debugbundle first-event verification", level: :error)
+DebugBundle.flush
+puts [DebugBundle.status, DebugBundle.last_event_at].inspect
+```
+
+Then confirm receipt through your mock ingestion endpoint, a staging project, or the DebugBundle CLI verification flow. The Ruby SDK repository also ships `make smoke` and `make smoke-published VERSION=...` to verify the built and published gem paths with a Rack app event plus browser relay batch.

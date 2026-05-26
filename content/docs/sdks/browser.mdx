@@ -23,7 +23,7 @@ DebugBundle.init({
 ```
 
 Calling `init()` automatically:
-- Hooks `window.onerror` and `window.onunhandledrejection`
+- Hooks browser `window` error and unhandled-rejection events
 - Registers `beforeunload` / `visibilitychange` for unload-safe flushing
 - Starts breadcrumb capture (clicks, route changes, console, network)
 - Fetches remote config once from the relay or API
@@ -66,6 +66,26 @@ If you have a static-only site with no backend relay, create a dedicated project
 When `allowed_origins` is set, DebugBundle rejects direct `POST /v1/events` and `GET /v1/sdk/config` calls unless the request includes a matching `Origin` header. Server SDKs and backend relay forwards usually do not send `Origin`, so do not reuse an allowlisted browser token for those paths. The allowlist blocks normal browser requests from other origins, but it does not make the token secret because non-browser clients can spoof `Origin`.
 
 Content Security Policy is a browser-side concern. If the Browser SDK sends directly to DebugBundle cloud, your CSP must allow the endpoint in `connect-src`. If you use a same-origin relay such as `/debugbundle/browser`, your CSP usually only needs to allow your own origin.
+
+---
+
+## Opaque Browser Errors
+
+Sometimes a bundle shows a Browser SDK frame such as `onError` with a message like `Window error` or `Browser resource load error`. That usually means the SDK observed a browser-level `window` error event, but the browser did not expose a normal JavaScript `Error` object or application stack.
+
+Common causes:
+- A script, stylesheet, image, or other resource failed to load.
+- A cross-origin script threw without CORS and `crossorigin` configured, so the browser hid the real stack.
+- Code dispatched a bare `error` event or threw a non-`Error` value.
+- The SDK was installed after a framework-level error boundary, so only the degraded global browser signal remained.
+
+For these captures, DebugBundle includes `payload.browser_event` on the `frontend_exception` event. Use `kind`, `file_name`, `line_number`, `column_number`, and `target.source_url` to inspect the browser's best available clue. When `opaque` is `true`, do not treat the SDK listener frame as the application source.
+
+To improve fidelity:
+- Initialize the Browser SDK as early as possible, before application bundles run.
+- Capture framework-native errors with `DebugBundle.captureException(error)` from error boundaries or global framework hooks.
+- For cross-origin scripts, serve the script with CORS and use `crossorigin="anonymous"` on the script tag.
+- Publish source maps for application bundles so real stacks can be symbolicated when the browser provides them.
 
 ---
 

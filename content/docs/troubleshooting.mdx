@@ -122,6 +122,18 @@ Fix the underlying delivery issue first, then re-enable.
 3. **Check ad blockers:** Ad blockers may block requests to `api.debugbundle.com`. Use the relay transport to route through your own backend.
 4. **Check CSP headers:** If your Content Security Policy blocks the DebugBundle endpoint, add it to `connect-src`. This applies to browser delivery only, not to Node.js, Python, or PHP SDKs.
 
+### Bundle points at `debugbundle-browser-sdk.js`
+
+If a frontend bundle shows `Window error` or `Browser resource load error` with the first frame inside `debugbundle-browser-sdk.js`, the SDK usually observed an opaque browser-level error rather than causing the failure. The browser did not provide a usable application stack, so DebugBundle records the global hook metadata in `payload.browser_event`.
+
+Check these fields first:
+
+1. **`browser_event.kind`:** `resource_error` points to a failed script, stylesheet, image, or similar browser resource. `window_error` means a global error event reached the SDK without a normal `Error` object.
+2. **`browser_event.target.source_url`:** The best clue for resource-load failures.
+3. **`browser_event.file_name`, `line_number`, `column_number`:** The browser's source-location fields when available.
+
+To improve future captures, initialize the Browser SDK before app code, add framework-level `captureException(error)` calls for error boundaries, publish source maps, and configure CORS plus `crossorigin="anonymous"` for cross-origin scripts.
+
 ### Relay not working
 
 1. **Verify the relay handler is registered:** Check your Express/Fastify/Next.js route handles POST to `/debugbundle/browser` (or your configured relay path).

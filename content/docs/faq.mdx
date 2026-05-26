@@ -105,6 +105,12 @@ The most common causes are configuration and delivery rules rather than the SDK 
 
 If you are unsure which case applies, start with [Troubleshooting](/docs/troubleshooting) and then verify the project's [Capture Policy](/docs/capture-policy).
 
+### Does a browser bundle pointing at `debugbundle-browser-sdk.js` mean the SDK broke my app?
+
+Not usually. For opaque browser `window` errors, the SDK may need to synthesize a fallback error such as `Window error` or `Browser resource load error` because the browser did not expose the original JavaScript `Error` object. The stack can then point at the SDK listener that captured the event, even though the underlying failure came from the page, a resource load, or a cross-origin script.
+
+Inspect `payload.browser_event` on the `frontend_exception` event. `target.source_url`, `file_name`, `line_number`, and `column_number` are the best available browser clues. If `opaque` is `true`, improve setup fidelity by loading the SDK early, capturing framework error-boundary exceptions explicitly, serving source maps, and configuring CORS plus `crossorigin="anonymous"` for cross-origin scripts.
+
 ---
 
 ## CLI
