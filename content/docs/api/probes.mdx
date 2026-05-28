@@ -6,8 +6,7 @@ icon: Radar
 
 import { Callout } from 'fumadocs-ui/components/callout';
 
-Debug probes request additional diagnostic data from SDKs without code changes or redeployment.
-When you activate a probe, matching SDK instances begin collecting extra context automatically.
+Debug probes request additional diagnostic data from SDKs without code changes or redeployment. Always-on probes buffer locally in SDKs on every tier. The API endpoints below manage paid-tier remote activations that can also emit standalone `probe_event` records.
 
 Probe endpoints accept member token authentication via the `Authorization` header or an authenticated browser session from the web app.
 
@@ -19,29 +18,28 @@ Probe endpoints accept member token authentication via the `Authorization` heade
 
 ## How Probes Work
 
-1. You activate a probe with a label pattern, service filter, and TTL.
-2. The API returns a `trigger_token` — shown once at creation time.
-3. SDKs periodically check for active probes via `probe_directives` in ingestion responses.
-4. Matching SDK instances collect the requested data until the probe expires.
-5. Enriched data arrives with subsequent events and is included in bundles.
+1. You activate a probe with a label pattern, service filter, environment filter, and TTL.
+2. The API creates a passive activation and returns a `trigger_token` shown once at creation time.
+3. Backend SDKs receive directives through `GET /v1/sdk/config`; browser and mobile SDKs use startup/lifecycle config checks plus `probe_directives` piggybacked on successful ingestion responses.
+4. Matching SDK instances emit standalone `probe_event` records when capture policy allows remote probe events, while always-on probe buffers continue to flush with errors.
+5. Related probe data is merged into `context.probe_data` in bundles.
 
 ## Activate Probe
 
 ```
-POST /v1/probes
+POST /v1/projects/{projectId}/probes/activate
 ```
 
 ```bash
-curl -X POST https://api.debugbundle.com/v1/probes \
+curl -X POST https://api.debugbundle.com/v1/projects/proj_01HXYZ/probes/activate \
   -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
   -H "Content-Type: application/json" \
   -d '{
-    "project_id": "proj_01HXYZ...",
     "label_pattern": "auth.*",
     "service": "api-gateway",
     "environment": "production",
-    "ttl_seconds": 3600,
-    "trigger_ttl_seconds": 300
+    "ttl_seconds": 300,
+    "trigger_ttl_seconds": 86400
   }'
 ```
 
@@ -49,125 +47,130 @@ curl -X POST https://api.debugbundle.com/v1/probes \
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `project_id` | `string` | Yes | Project UUID. |
-| `label_pattern` | `string` | Yes | Glob pattern matching incident labels (e.g., `auth.*`, `payment.checkout`). |
-| `service` | `string` | No | Scope to a specific service name. |
-| `environment` | `string` | No | Scope to a specific environment. |
-| `ttl_seconds` | `number` | No | Probe lifetime in seconds. Default: `3600` (1 hour). Max: `86400` (24 hours). |
-| `trigger_ttl_seconds` | `number` | No | How long the trigger token is valid. Default: `300` (5 minutes). |
-
-**Response (201):**
-
-```json
-{
-  "probe": {
-    "probe_id": "prb_01H9KL...",
-    "project_id": "proj_01HXYZ...",
-    "label_pattern": "auth.*",
-    "service": "api-gateway",
-    "environment": "production",
-    "ttl_seconds": 3600,
-    "trigger_token": "prbt_01H9MNOP...",
-    "expires_at": "2026-03-24T12:00:00Z",
-    "created_at": "2026-03-24T11:00:00Z"
-  }
-}
-```
-
-<Callout type="warn">
-The `trigger_token` is only returned once at creation time. Store it immediately; it cannot be
-retrieved again.
-</Callout>
-
-## List Active Probes
-
-```
-GET /v1/probes?project_id={projectId}
-```
-
-```bash
-curl https://api.debugbundle.com/v1/probes?project_id=proj_01HXYZ... \
-  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
-```
-
-**Query Parameters:**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `project_id` | `string` | — | **Required.** Project UUID. |
-| `service` | `string` | — | Filter by service name. |
-| `environment` | `string` | — | Filter by environment. |
+| `label_pattern` | `string` | Yes | Dot-notation label or wildcard, such as `auth.*` or `*`. |
+| `service` | `string` | No | Scope to a specific service. Defaults to `*`. |
+| `environment` | `string` | No | Scope to a specific environment. Defaults to `*`. |
+| `ttl_seconds` | `number` | Yes | Passive activation lifetime in seconds. Max: `3600` (1 hour). |
+| `trigger_ttl_seconds` | `number` | No | Trigger token validity window. Defaults to `ttl_seconds`. Max: `86400` (24 hours). |
+| `sample_rate` | `number` | No | Reserved sampling control, `0.0` through `1.0`. Defaults to `1.0`. |
 
 **Response (200):**
 
 ```json
 {
-  "probes": [
+  "activation_id": "550e8400-e29b-41d4-a716-446655440000",
+  "label_pattern": "auth.*",
+  "service": "api-gateway",
+  "environment": "production",
+  "expires_at": "2026-05-28T12:00:00.000Z",
+  "trigger_expires_at": "2026-05-29T11:00:00.000Z",
+  "created_at": "2026-05-28T11:00:00.000Z",
+  "trigger_token": "dbundle_probe_..."
+}
+```
+
+<Callout type="warn">
+The `trigger_token` is returned only once at activation time. Store it immediately; it cannot be retrieved later.
+</Callout>
+
+`expires_at` controls the passive directive window. `trigger_expires_at` controls how long the trigger token remains valid. Attach the token to a specific request with `?_debug_probe=dbundle_probe_...` or `X-DebugBundle-Probe-Trigger: dbundle_probe_...`.
+
+## List Active Probes
+
+```
+GET /v1/projects/{projectId}/probes
+```
+
+```bash
+curl https://api.debugbundle.com/v1/projects/proj_01HXYZ/probes \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
+```
+
+**Response (200):**
+
+```json
+{
+  "activations": [
     {
-      "probe_id": "prb_01H9KL...",
-      "project_id": "proj_01HXYZ...",
+      "activation_id": "550e8400-e29b-41d4-a716-446655440000",
       "label_pattern": "auth.*",
       "service": "api-gateway",
       "environment": "production",
-      "ttl_seconds": 3600,
-      "expires_at": "2026-03-24T12:00:00Z",
-      "created_at": "2026-03-24T11:00:00Z"
+      "expires_at": "2026-05-28T12:00:00.000Z",
+      "activated_by": "user@example.com",
+      "created_at": "2026-05-28T11:00:00.000Z"
     }
   ]
 }
 ```
 
-Active probes list does _not_ include `trigger_token` — it was only shown at creation time.
+Active probe lists do not include `trigger_token`; it is shown only at activation time.
 
 ## Deactivate Probe
 
 ```
-DELETE /v1/probes/{id}
+POST /v1/projects/{projectId}/probes/deactivate
 ```
 
 ```bash
-curl -X DELETE https://api.debugbundle.com/v1/probes/prb_01H9KL... \
-  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..."
+curl -X POST https://api.debugbundle.com/v1/projects/proj_01HXYZ/probes/deactivate \
+  -H "Authorization: Bearer dbundle_mem_a1b2c3d4..." \
+  -H "Content-Type: application/json" \
+  -d '{ "activation_id": "550e8400-e29b-41d4-a716-446655440000" }'
 ```
 
-**Response (204):** No content.
+**Response (200):**
 
-The probe is immediately deactivated. SDKs will stop collecting probe data on their next
-check-in cycle.
+```json
+{
+  "deactivated": {
+    "activation_id": "550e8400-e29b-41d4-a716-446655440000",
+    "deactivated_at": "2026-05-28T11:10:00.000Z"
+  }
+}
+```
+
+The activation stops appearing in SDK config and ingestion-response directives after deactivation.
 
 ## Limits
 
-| Constraint | Limit |
-|------------|-------|
-| Max concurrent probes per project | 10 |
-| Max TTL | 24 hours |
-| Probe directives refresh interval | ~60 seconds (SDK-side) |
+| Constraint | Free | Solo/Team |
+|------------|------|-----------|
+| Always-on probes | Available | Available |
+| Remote activation | Not available | Available |
+| Max concurrent remote activations per project | N/A | 5 |
+| Passive activation TTL | N/A | 1 hour max |
+| Trigger token TTL | N/A | 24 hours max |
 
 ## Probe Directives in Ingestion
 
-When SDKs send events to `POST /v1/events`, the response includes a `probe_directives` array
-containing any active probes matching the event's context:
+When active probes exist for a paid-tier project, successful `POST /v1/events` responses may include piggybacked directives:
 
 ```json
 {
   "accepted": 1,
   "rejected": 0,
   "errors": [],
-  "probe_directives": [
-    {
-      "probe_id": "prb_01H9KL...",
-      "label_pattern": "auth.*",
-      "expires_at": "2026-03-24T12:00:00Z"
-    }
-  ]
+  "probe_directives": {
+    "active_probes": [
+      {
+        "activation_id": "550e8400-e29b-41d4-a716-446655440000",
+        "label_pattern": "auth.*",
+        "service": "api-gateway",
+        "environment": "production",
+        "expires_at": "2026-05-28T12:00:00.000Z",
+        "trigger_expires_at": "2026-05-29T11:00:00.000Z"
+      }
+    ]
+  }
 }
 ```
 
-SDKs use these directives to collect additional data (heap snapshots, extended stack traces,
-local variable dumps) and include them in subsequent events.
+Browser and mobile SDKs use these piggybacked directives to avoid aggressive polling. Backend SDKs primarily use `GET /v1/sdk/config` with ETags.
 
 ## Next Steps
 
 - [CLI Cloud Workflow](/docs/cli/cloud-workflow) — Manage probes via the CLI
+- [Probes](/docs/probes) — Probe behavior, limits, and trigger-token usage
 - [Bundles](/docs/bundles) — How probes enrich bundle data
 - [Universal SDK Interface](/docs/sdks/universal-interface) — SDK probe support

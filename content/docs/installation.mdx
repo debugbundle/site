@@ -17,7 +17,7 @@ The CLI runs setup, local processing, incident inspection, token management, clo
 
 ## SDKs
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'WordPress']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Android', 'WordPress']}>
   <Tab>
 
 ```bash
@@ -154,6 +154,30 @@ DebugBundle.init(
 ```
 
 Rails, Rack, Sidekiq, Ruby Logger, Semantic Logger, local file transport, remote capture policy, probes, and browser relay handlers are included. See [Ruby SDK](/docs/sdks/ruby).
+
+  </Tab>
+  <Tab>
+
+```kotlin
+dependencies {
+    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.0-SNAPSHOT"))
+    implementation("com.debugbundle:debugbundle-android")
+    implementation("com.debugbundle:debugbundle-android-okhttp")
+}
+```
+
+```kotlin
+DebugBundle.init(
+    application = this,
+    config = DebugBundleConfig(
+        projectToken = BuildConfig.DEBUGBUNDLE_PROJECT_TOKEN,
+        environment = "production",
+        service = "android-app",
+    ),
+)
+```
+
+The Android SDK is pre-release and covers native runtime capture, crash/ANR replay, WorkManager flushing, offline queueing, OkHttp, Ktor client, Navigation, Compose, Timber, and probes. See [Android SDK](/docs/sdks/android).
 
   </Tab>
   <Tab>

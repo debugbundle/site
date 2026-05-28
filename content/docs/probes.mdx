@@ -37,10 +37,12 @@ collect extra context and include it in subsequent events.
 
 1. **Activate** — You create a probe via API, CLI, or MCP with a label pattern, service
    filter, and TTL.
-2. **Distribute** — The API returns probe directives in `POST /v1/events` responses.
-   SDKs poll these directives approximately every 60 seconds.
-3. **Collect** — Matching SDK instances begin collecting the requested extra data
-   (extended stack traces, heap snapshots, local variables).
+2. **Distribute** — Backend SDKs poll `GET /v1/sdk/config` with ETags; browser and
+   mobile SDKs use a bounded startup/lifecycle config check plus `probe_directives`
+   piggybacked on successful `POST /v1/events` responses.
+3. **Collect** — Matching SDK instances emit standalone `probe_event` records for
+   active remote probes and continue buffering always-on probe data locally for
+   error flushes.
 4. **Enrich** — Enriched data arrives with subsequent events and is included in the
    `context.probe_data` section of bundles.
 5. **Expire** — The probe automatically deactivates after its TTL expires.
@@ -52,15 +54,15 @@ collect extra context and include it in subsequent events.
 | `label_pattern` | Glob pattern matching incident labels (e.g., `auth.*`, `payment.checkout`) | — (required) |
 | `service` | Scope to a specific service name | All services |
 | `environment` | Scope to a specific environment | All environments |
-| `ttl_seconds` | Probe lifetime | 3600 (1 hour) |
-| `trigger_ttl_seconds` | Trigger token validity window | 300 (5 minutes) |
+| `ttl_seconds` | Passive remote activation lifetime, max 3600 seconds | — (required) |
+| `trigger_ttl_seconds` | Trigger token validity window | Same as `ttl_seconds` |
 
 ### Label Pattern Matching
 
 | Pattern | Matches |
 |---------|---------|
 | `*` | All incidents |
-| `auth.*` | `auth`, `auth.login`, `auth.token.expired`, etc. |
+| `auth.*` | `auth.login`, `auth.token.expired`, etc. |
 | `payment.checkout` | Exactly `payment.checkout` |
 
 ## Probe Data in Bundles
@@ -93,18 +95,20 @@ Probe-collected data appears in the `context.probe_data` section of the bundle:
 
 | Constraint | Limit |
 |------------|-------|
-| Max concurrent probes per project | 10 |
-| Max TTL | 24 hours (86,400 seconds) |
-| Probe directive refresh interval | ~60 seconds (SDK-side) |
-| Trigger token validity | Configurable (default: 300 seconds) |
+| Max concurrent remote activations per project | 5 |
+| Passive probe activation TTL | 1 hour max |
+| Probe directive refresh interval | Backend default 60 seconds; browser zero-polling; mobile bounded lifecycle refresh |
+| Trigger token validity | Configurable up to 24 hours |
 
 ## Trigger Token
 
 When you activate a probe, the API returns a `trigger_token`. This token is shown
 **exactly once** at creation time — store it immediately.
 
-The trigger token allows SDKs to authenticate their probe data collection. It expires
-after `trigger_ttl_seconds`.
+The trigger token lets SDKs activate matching probes for a specific request or session
+without waiting for passive directive refresh. SDKs validate `dbundle_probe_...` tokens
+locally with the `trigger_token_key` from `GET /v1/sdk/config`, check expiry, and silently
+ignore invalid tokens.
 
 ## Managing Probes
 

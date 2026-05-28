@@ -9,6 +9,7 @@ import {
   Hexagon,
   Package,
   PanelsTopLeft,
+  Smartphone,
   SquareTerminal,
   Workflow,
 } from 'lucide-react';
@@ -254,6 +255,39 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
       ),
     },
     {
+      value: 'android',
+      label: 'Android',
+      icon: Smartphone,
+      installLang: 'kotlin',
+      installCode: [
+        'dependencies {',
+        '    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.0-SNAPSHOT"))',
+        '    implementation("com.debugbundle:debugbundle-android")',
+        '    implementation("com.debugbundle:debugbundle-android-okhttp")',
+        '}',
+      ].join('\n'),
+      setupLang: 'kotlin',
+      setupCode: [
+        'DebugBundle.init(',
+        '    application = this,',
+        '    config = DebugBundleConfig(',
+        '        projectToken = BuildConfig.DEBUGBUNDLE_PROJECT_TOKEN,',
+        '        environment = "production",',
+        '        service = "android-app",',
+        '    ),',
+        ')',
+      ].join('\n'),
+      description: (
+        <>
+          Android runtime capture, crash/ANR replay, WorkManager flushing, OkHttp, Ktor client, Navigation, Compose, Timber, offline queueing, and probes are included in the pre-release Android SDK. See{' '}
+          <Link className={linkClassName} href="/docs/sdks/android/">
+            Android SDK
+          </Link>
+          .
+        </>
+      ),
+    },
+    {
       value: 'wordpress',
       label: 'WordPress',
       icon: Workflow,
@@ -267,7 +301,7 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
             , then upload it in WordPress under <span className="font-medium">Plugins -&gt; Add New -&gt; Upload Plugin</span>.
           </p>
           <div>
-                  <a className={ctaButtonClassName} href="https://github.com/debugbundle/debugbundle-wordpress/releases" target="_blank">
+            <a className={ctaButtonClassName} href="https://github.com/debugbundle/debugbundle-wordpress/releases" target="_blank">
               Get WordPress plugin
               <ArrowUpRight className="size-4" aria-hidden="true" />
             </a>

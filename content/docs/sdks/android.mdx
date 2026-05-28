@@ -1,0 +1,219 @@
+---
+title: "Android SDK"
+description: "Install DebugBundle in Android apps with crash replay, ANR/process-exit capture, offline queueing, OkHttp, Ktor, Navigation, Compose, Timber, and probes."
+icon: Smartphone
+---
+
+The Android SDK is the Kotlin mobile SDK for native Android applications. It captures handled exceptions, fatal crashes on next launch, ANR/process-exit signals, lifecycle breadcrumbs, network request failures, logs, and diagnostic probes without throwing back into app code.
+
+This SDK is pre-release. The module names below are the intended Maven artifacts; use the `0.1.0-SNAPSHOT` version only from local development builds until Maven Central publishing is complete.
+
+## Installation
+
+Import the BOM and the runtime module:
+
+```kotlin
+dependencies {
+    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.0-SNAPSHOT"))
+    implementation("com.debugbundle:debugbundle-android")
+}
+```
+
+Add optional integrations as needed:
+
+```kotlin
+dependencies {
+    implementation("com.debugbundle:debugbundle-android-okhttp")
+    implementation("com.debugbundle:debugbundle-android-ktor-client")
+    implementation("com.debugbundle:debugbundle-android-navigation")
+    implementation("com.debugbundle:debugbundle-android-compose")
+    implementation("com.debugbundle:debugbundle-android-timber")
+}
+```
+
+The SDK supports Android minSdk 23 and uses Java 17 bytecode with core-library desugaring.
+
+## Initialize
+
+Initialize once from your `Application`:
+
+```kotlin
+import android.app.Application
+import com.debugbundle.android.DebugBundle
+import com.debugbundle.android.DebugBundleConfig
+
+class CheckoutApplication : Application() {
+    override fun onCreate() {
+        super.onCreate()
+
+        DebugBundle.init(
+            application = this,
+            config = DebugBundleConfig(
+                projectToken = "dbundle_proj_...",
+                service = "checkout-android",
+                environment = "production",
+                appVersion = BuildConfig.VERSION_NAME,
+                buildNumber = BuildConfig.VERSION_CODE.toString(),
+            ),
+        )
+    }
+}
+```
+
+Android initialization installs runtime defaults, device context, fatal-crash replay, `ApplicationExitInfo` ANR/process-exit replay where available, activity screen breadcrumbs, process foreground/background breadcrumbs, and WorkManager-backed deferred flushing.
+
+## Capture
+
+```kotlin
+try {
+    checkout()
+} catch (error: Throwable) {
+    DebugBundle.captureException(
+        error,
+        context = mapOf("cart_id" to cartId),
+    )
+}
+
+DebugBundle.captureLog(
+    message = "checkout retry",
+    level = DebugBundleLogLevel.Warning,
+    context = mapOf("attempt" to attempt),
+)
+
+DebugBundle.setContext("tenant", tenantId)
+DebugBundle.flush()
+```
+
+SDK capture calls are no-throw. If transport, queueing, redaction, or config refresh fails, the SDK swallows the failure and keeps app execution isolated.
+
+## Network Capture
+
+OkHttp requests are instrumented only when they match an explicit propagation target:
+
+```kotlin
+import com.debugbundle.android.network.DebugBundleOkHttpInterceptor
+import com.debugbundle.android.network.DebugBundleTracePropagationTarget
+import okhttp3.OkHttpClient
+
+val httpClient = OkHttpClient.Builder()
+    .addInterceptor(
+        DebugBundleOkHttpInterceptor(
+            tracePropagationTargets = listOf(
+                DebugBundleTracePropagationTarget.host("api.example.com"),
+            ),
+        ),
+    )
+    .build()
+```
+
+Ktor client support uses the same target matcher:
+
+```kotlin
+import com.debugbundle.android.network.DebugBundleKtorClientPlugin
+import com.debugbundle.android.network.DebugBundleTracePropagationTarget
+import io.ktor.client.HttpClient
+
+val client = HttpClient {
+    install(DebugBundleKtorClientPlugin) {
+        tracePropagationTargets = listOf(
+            DebugBundleTracePropagationTarget.hostSuffix("example.com"),
+        )
+    }
+}
+```
+
+Matching requests receive `X-DebugBundle-Trace-Id`, network breadcrumbs, and policy-driven `request_event` promotion for failed responses. The SDK captures allowlisted headers only and leaves request/response bodies disabled by default.
+
+## Screens And Logs
+
+Navigation and Compose helpers record screen breadcrumbs:
+
+```kotlin
+navController.installDebugBundleNavigationListener()
+```
+
+```kotlin
+@Composable
+fun CheckoutScreen() {
+    DebugBundleScreen("checkout")
+}
+```
+
+Timber support captures structured logs at the SDK's configured threshold:
+
+```kotlin
+Timber.plant(DebugBundleTimberTree())
+```
+
+## Offline Queue And Crash Replay
+
+The Android runtime writes a bounded file-backed offline queue under app-private storage by default. Queue limits are controlled by `offlineQueueMaxEvents`, `offlineQueueMaxBytes`, and `offlineQueueTtl`.
+
+Fatal crashes are captured by a chained uncaught-exception handler and replayed on the next launch. ANR/process-exit events are read from `ApplicationExitInfo` when the OS exposes a pending exit reason. WorkManager schedules deferred flushes so queued events can be sent without blocking the foreground path.
+
+## Probes
+
+Always-on probes buffer redacted diagnostic data locally and attach contract-shaped inline data to exception payloads:
+
+```kotlin
+DebugBundle.probe(
+    label = "checkout.tax",
+    data = mapOf("amount" to amount, "country" to country),
+)
+```
+
+Inline probe data is sent as:
+
+```json
+{
+  "probe_data": {
+    "version": 1,
+    "items": [
+      {
+        "label": "checkout.tax",
+        "data": { "amount": 42, "country": "SI" },
+        "timestamp": "2026-05-28T10:15:30Z",
+        "activation_id": null
+      }
+    ]
+  }
+}
+```
+
+Heavy probes stay dormant until a matching remote directive or trigger token is active:
+
+```kotlin
+DebugBundle.probe("checkout.expensive_state", ProbeOptions(heavy = true)) {
+    collectExpensiveDiagnostics()
+}
+```
+
+Remote probe directives come from `GET /v1/sdk/config` and from piggybacked `probe_directives` in successful ingestion responses. When the server capture policy allows `standalone_when_activated`, matching probes emit standalone `probe_event` records with the activation ID.
+
+OkHttp and Ktor integrations also read `X-DebugBundle-Probe-Trigger` from instrumented requests. The SDK validates `dbundle_probe_...` trigger tokens locally with the `trigger_token_key` from config and silently ignores invalid or expired tokens.
+
+## Privacy Defaults
+
+Sensitive fields such as passwords, tokens, cookies, authorization headers, card fields, verification codes, and SSNs are redacted before buffering or transport. Header capture is allowlist-based, and request/response bodies remain off by default.
+
+For app-specific identifiers, prefer explicit low-cardinality context:
+
+```kotlin
+DebugBundle.setContext("account_tier", "team")
+DebugBundle.setContext("region", "eu")
+```
+
+Avoid sending raw PII, access tokens, full request bodies, or unbounded collections in probe payloads.
+
+## Modules
+
+| Module | Purpose |
+|---|---|
+| `debugbundle-android-core` | Core client, facade, event envelopes, redaction, transport, capture policy, queues, and probes |
+| `debugbundle-android` | Android runtime bootstrap, lifecycle/process hooks, device context, crash/ANR replay, and WorkManager flushing |
+| `debugbundle-android-okhttp` | OkHttp trace injection, request capture, failed-response promotion, and trigger-token header extraction |
+| `debugbundle-android-ktor-client` | Ktor client trace injection, request capture, failed-response promotion, and trigger-token header extraction |
+| `debugbundle-android-navigation` | Navigation screen transition capture with previous-screen context |
+| `debugbundle-android-compose` | Compose screen recorder helpers and Navigation bridge |
+| `debugbundle-android-timber` | Timber tree for structured log capture |
+| `debugbundle-android-testkit` | Fake transports and batch inspection helpers |

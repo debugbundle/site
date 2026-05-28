@@ -16264,18 +16264,17 @@
           "ttl_seconds": {
             "type": "integer",
             "minimum": 60,
-            "maximum": 3600,
-            "default": 3600
+            "maximum": 3600
           },
           "trigger_ttl_seconds": {
             "type": "integer",
             "minimum": 60,
-            "maximum": 86400,
-            "default": 86400
+            "maximum": 86400
           }
         },
         "required": [
-          "label_pattern"
+          "label_pattern",
+          "ttl_seconds"
         ],
         "additionalProperties": false
       },

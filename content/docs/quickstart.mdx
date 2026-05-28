@@ -77,7 +77,7 @@ Pick the path that matches your project.
 
 If you need frontend exceptions, breadcrumbs, and browser-to-backend trace correlation, add the Browser SDK too. Use it by itself for frontend-only cloud deployments, or pair it with a backend relay for full-stack apps.
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Existing Logs']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Android', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -230,6 +230,30 @@ For Rails, Rack, Sidekiq, logging integrations, probes, and browser relay setup,
   </Tab>
   <Tab>
 
+```kotlin
+dependencies {
+    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.0-SNAPSHOT"))
+    implementation("com.debugbundle:debugbundle-android")
+    implementation("com.debugbundle:debugbundle-android-okhttp")
+}
+```
+
+```kotlin
+DebugBundle.init(
+    application = this,
+    config = DebugBundleConfig(
+        projectToken = BuildConfig.DEBUGBUNDLE_PROJECT_TOKEN,
+        environment = "production",
+        service = "android-app",
+    ),
+)
+```
+
+For Android crash replay, ANR/process-exit capture, offline queueing, OkHttp, Ktor client, Navigation, Compose, Timber, and probes, see [Android SDK](/docs/sdks/android).
+
+  </Tab>
+  <Tab>
+
 Use log ingestion when you cannot add an SDK yet.
 
 ```bash
@@ -337,7 +361,7 @@ Pick the path that matches your project.
 
 Local-only browser capture requires a same-origin relay so the browser SDK can hand events to your backend, which then writes them into `.debugbundle/local/events/` for `debugbundle process`.
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Existing Logs']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Android', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -491,6 +515,30 @@ For Rails, Rack, Sidekiq, logging integrations, probes, and browser relay setup,
   </Tab>
   <Tab>
 
+```kotlin
+dependencies {
+    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.0-SNAPSHOT"))
+    implementation("com.debugbundle:debugbundle-android")
+    implementation("com.debugbundle:debugbundle-android-okhttp")
+}
+```
+
+```kotlin
+DebugBundle.init(
+    application = this,
+    config = DebugBundleConfig(
+        projectToken = "local",
+        environment = "development",
+        service = "android-app",
+    ),
+)
+```
+
+The Android SDK writes through its app-private offline queue in local/development paths and can flush through the normal ingestion endpoint when connected. For runtime setup and local limitations, see [Android SDK](/docs/sdks/android).
+
+  </Tab>
+  <Tab>
+
 Use log ingestion when you cannot add an SDK yet.
 
 ```bash
@@ -521,7 +569,7 @@ try {
 }
 ```
 
-For Python, PHP, Java, Go, or Ruby, use the equivalent language-specific capture method from the SDK guide.
+For Python, PHP, Java, Go, Ruby, or Android, use the equivalent language-specific capture method from the SDK guide.
 
 ### 5. Process and Inspect
 

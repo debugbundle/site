@@ -55,16 +55,27 @@ Member tokens can access all projects within the member's organization scope.
 
 ### Probe Trigger Tokens
 
-Probe trigger tokens are **single-purpose** tokens that can only activate probes.
-They are designed for CI/CD pipelines and automation where you need to trigger
-data collection without granting broader access.
+Probe trigger tokens are **single-purpose request/session triggers** returned
+when a member-token-authenticated probe activation is created. They are designed
+for CI/CD pipelines and automation where you need to request richer probe data
+for a targeted request without granting broader API access.
 
 ```bash
-# Activate a probe from CI
-curl -X POST https://api.debugbundle.com/v1/probes/activate \
-  -H "Authorization: Bearer dbundle_probe_m3n4o5p6q7r8..." \
+# First create a remote activation with a member token.
+curl -X POST https://api.debugbundle.com/v1/projects/proj_01HXYZ/probes/activate \
+  -H "Authorization: Bearer dbundle_mem_x9y8z7w6v5u4..." \
   -H "Content-Type: application/json" \
-  -d '{ "labels": ["service:payments", "env:staging"] }'
+  -d '{
+    "label_pattern": "payment.*",
+    "service": "payments",
+    "environment": "staging",
+    "ttl_seconds": 300,
+    "trigger_ttl_seconds": 3600
+  }'
+
+# Then attach the returned trigger token to the request you want enriched.
+curl https://payments.example.internal/checkout \
+  -H "X-DebugBundle-Probe-Trigger: dbundle_probe_m3n4o5p6q7r8..."
 ```
 
 ## Token Security
@@ -113,7 +124,7 @@ debugbundle token project create proj_01HXYZ... \
 debugbundle token member create --label "CI pipeline"
 ```
 
-The first member token is usually created from the web app after email-code or GitHub browser sign-in, or bootstrapped through `debugbundle login`, `--github`, `--github-cli`, or `--github-device`. Probe trigger tokens are returned by probe activation, for example `debugbundle probe activate ... --trigger-ttl-seconds ...`.
+The first member token is usually created from the web app after email-code or GitHub browser sign-in, or bootstrapped through `debugbundle login`, `--github`, `--github-cli`, or `--github-device`. Probe trigger tokens are returned by probe activation, for example `debugbundle probe activate ... --trigger-ttl-seconds ...`; they are not bearer auth tokens for the probe-management API.
 
 ### API
 

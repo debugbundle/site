@@ -4,7 +4,7 @@ description: The complete interface contract shared by every DebugBundle SDK —
 icon: FileCode
 ---
 
-Every DebugBundle SDK implements this universal interface contract. Language-specific naming conventions differ (camelCase for JavaScript/PHP, snake_case for Python), but the semantics, behavior guarantees, and volume control rules are identical.
+Every DebugBundle SDK implements this universal interface contract. Language-specific naming conventions differ (camelCase for JavaScript/PHP/Java/Kotlin, snake_case for Python/Ruby), but the semantics, behavior guarantees, and volume control rules are identical.
 
 ## Core Methods
 
@@ -29,6 +29,10 @@ Every SDK exposes these methods:
 | Browser | camelCase | `debugbundle.captureException(err)` |
 | Python | snake_case | `debugbundle.capture_exception(err)` |
 | PHP | camelCase (PSR) | `DebugBundle::captureException($e)` |
+| Java | camelCase | `client.captureException(error)` |
+| Go | PascalCase methods | `client.CaptureException(ctx, err)` |
+| Ruby | snake_case | `DebugBundle.capture_exception(error)` |
+| Android | Kotlin camelCase | `DebugBundle.captureException(error)` |
 
 ## Configuration Fields
 
@@ -66,13 +70,14 @@ All SDKs accept these common configuration fields:
 
 | Mode | SDK | Description |
 |------|-----|-------------|
-| `http` | All | Direct HTTPS to ingestion API. Default for connected projects. |
-| `file` | Node, Python, PHP | Write events to local filesystem for CLI processing. Default for local-only projects. |
+| `http` | Server and mobile SDKs | Direct HTTPS to ingestion API. Default for connected projects. |
+| `file` | Node, Python, PHP, Java, Go, Ruby | Write events to local filesystem for CLI processing. Default for local-only server projects. |
+| `offline queue` | Android | Bounded app-private queue with deferred WorkManager flushing. Used for offline, background, and local/development paths. |
 | `relay` | Browser | Send events through your backend relay endpoint instead of directly to DebugBundle. |
 
 Transport is automatically selected based on your `.debugbundle/local/connection.json` mode:
-- **Local-only** → `file` transport (server SDKs), `relay` or `http` (browser)
-- **Connected** → `http` transport
+- **Local-only** → `file` transport (server SDKs), app-private offline queue (Android), `relay` or `http` (browser)
+- **Connected** → `http` transport with SDK-specific buffering or offline retry
 
 ## Event Envelope
 
@@ -202,17 +207,17 @@ Custom fields are merged with defaults — you cannot disable default redaction.
 
 ## SDK Support Snapshot
 
-| Feature | Node.js | Browser | Python | PHP | Java | Go | Ruby |
-|---------|---------|---------|--------|-----|------|----|------|
-| Status | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped |
-| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | Maven `com.debugbundle` modules | `github.com/debugbundle/debugbundle-go` | `debugbundle` |
-| Framework integrations | Express, Fastify, Next.js | — | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot, servlet, JAX-RS | `net/http`, Gin, Echo | Rails, Rack, Sidekiq |
-| Logger integrations | pino, winston, bunyan | — | logging, structlog, loguru | Monolog | JUL, Logback | slog, zap, zerolog | Logger, Semantic Logger |
-| Safe backend runtime facts | Full process facts | — | Full process facts | Full process facts | Full process facts | Full process facts | Full process facts |
-| Breadcrumbs | — | ✅ | — | — | — | — | — |
-| Relay handler | Express, Fastify, Next.js | Relay client path | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot, servlet, JAX-RS | `net/http`, Gin, Echo | Rack middleware + Rails route |
-| Probes | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| File transport | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Feature | Node.js | Browser | Python | PHP | Java | Go | Ruby | Android |
+|---------|---------|---------|--------|-----|------|----|------|---------|
+| Status | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | ✅ Shipped | Pre-release |
+| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | Maven `com.debugbundle` modules | `github.com/debugbundle/debugbundle-go` | `debugbundle` | Maven `com.debugbundle` Android modules |
+| Framework integrations | Express, Fastify, Next.js | — | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot, servlet, JAX-RS | `net/http`, Gin, Echo | Rails, Rack, Sidekiq | Android runtime, OkHttp, Ktor, Navigation, Compose |
+| Logger integrations | pino, winston, bunyan | — | logging, structlog, loguru | Monolog | JUL, Logback | slog, zap, zerolog | Logger, Semantic Logger | Timber |
+| Safe backend/runtime facts | Full process facts | — | Full process facts | Full process facts | Full process facts | Full process facts | Full process facts | Android app/device context |
+| Breadcrumbs | — | ✅ | — | — | — | — | — | ✅ |
+| Relay handler | Express, Fastify, Next.js | Relay client path | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot, servlet, JAX-RS | `net/http`, Gin, Echo | Rack middleware + Rails route | N/A |
+| Probes | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| File transport | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | Offline queue |
 
 For the public V1 parity matrix, including 5xx request-failure behavior and relay support, see [SDKs](/docs/sdks).
 
@@ -225,4 +230,5 @@ For the public V1 parity matrix, including 5xx request-failure behavior and rela
 - [Java SDK](/docs/sdks/java) — Full Java setup across Spring Boot, servlet, JAX-RS, and app servers
 - [Go SDK](/docs/sdks/go) — Full Go setup with HTTP frameworks, logger integrations, and relay support
 - [Ruby SDK](/docs/sdks/ruby) — Full Ruby setup with Rails, Rack, Sidekiq, logger integrations, and relay support
+- [Android SDK](/docs/sdks/android) — Full Android setup with crash replay, ANR capture, offline queueing, native HTTP instrumentation, and probes
 - [Browser Relay Setup](/docs/sdks/browser-relay) — Relay architecture and backend setup

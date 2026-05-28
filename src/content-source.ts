@@ -65,6 +65,7 @@ import * as docsSecurityPage from '../content/docs/security.mdx';
 import * as docsSecurityRedactionPage from '../content/docs/security/redaction.mdx';
 import * as docsSecurityTokensPage from '../content/docs/security/tokens.mdx';
 import * as docsSelfHostingPage from '../content/docs/self-hosting.mdx';
+import * as docsSdksAndroidPage from '../content/docs/sdks/android.mdx';
 import * as docsSdksBrowserPage from '../content/docs/sdks/browser.mdx';
 import * as docsSdksBrowserRelayPage from '../content/docs/sdks/browser-relay.mdx';
 import * as docsSdksGoPage from '../content/docs/sdks/go.mdx';
@@ -148,7 +149,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   },
   './sdks/meta.json': {
     title: 'SDKs',
-    pages: ['index', 'node', 'browser', 'browser-relay', 'python', 'php', 'java', 'go', 'ruby', 'universal-interface'],
+    pages: ['index', 'node', 'browser', 'browser-relay', 'python', 'php', 'java', 'go', 'ruby', 'android', 'universal-interface'],
   },
   './integrations/meta.json': {
     title: 'Integrations',
@@ -237,6 +238,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './cli/setup.mdx': docsCliSetupPage,
   './cli/tokens.mdx': docsCliTokensPage,
   './cli/webhooks.mdx': docsCliWebhooksPage,
+  './sdks/android.mdx': docsSdksAndroidPage,
   './sdks/browser.mdx': docsSdksBrowserPage,
   './sdks/browser-relay.mdx': docsSdksBrowserRelayPage,
   './sdks/go.mdx': docsSdksGoPage,

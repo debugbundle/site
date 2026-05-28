@@ -16,6 +16,7 @@ import {
   Radar,
   RotateCcw,
   ShieldCheck,
+  Smartphone,
   SquareTerminal,
   Terminal,
   Workflow,
@@ -120,6 +121,12 @@ export default function HomePage(): ReactElement {
       command: 'bundle add debugbundle',
       href: '/docs/sdks/ruby/',
       icon: Gem,
+    },
+    {
+      label: 'Android',
+      command: 'com.debugbundle:debugbundle-android',
+      href: '/docs/sdks/android/',
+      icon: Smartphone,
     },
     {
       label: 'WordPress',
