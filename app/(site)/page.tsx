@@ -183,18 +183,18 @@ export default function HomePage(): ReactElement {
   };
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-12 sm:space-y-16">
       <JsonLdScript id="software-jsonld" data={softwareJsonLd} />
       {/* Hero */}
-      <section className="space-y-8 rounded-[2rem] border border-[var(--site-border)] bg-[var(--site-surface)] p-8 sm:p-12">
+      <section className="space-y-6 rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface)] px-5 py-6 sm:space-y-8 sm:p-12">
         <SectionTitle
           eyebrow="Production debugging for agents"
           title="The agent-native debugging layer for modern products"
           description="DebugBundle captures production incidents, assembles deterministic debugging context, and delivers it through API, CLI, MCP, dashboards, and machine-readable artifacts so humans and AI agents can diagnose failures faster."
         />
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link
-            className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium ${buttonFocusClassName}`}
+            className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium sm:justify-start ${buttonFocusClassName}`}
             href="/docs/"
             style={{ background: 'var(--site-accent)', color: 'var(--site-accent-foreground)' }}
           >
@@ -202,7 +202,7 @@ export default function HomePage(): ReactElement {
             Read Docs
           </Link>
           <Link
-            className={`rounded-full border border-[var(--site-border)] px-5 py-3 text-sm font-medium ${buttonFocusClassName}`}
+            className={`inline-flex items-center justify-center rounded-full border border-[var(--site-border)] px-5 py-3 text-sm font-medium ${buttonFocusClassName}`}
             href="https://app.debugbundle.com"
           >
             Open App
@@ -250,14 +250,14 @@ export default function HomePage(): ReactElement {
           {installOptions.map((option) => (
             <Link
               key={option.label}
-              className="group rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-4 transition hover:border-[var(--site-border-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--site-focus)]"
+              className="group min-w-0 rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-4 transition hover:border-[var(--site-border-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--site-focus)]"
               href={option.href}
             >
               <div className="flex items-center gap-3">
                 <option.icon className="size-5 text-[var(--site-accent)]" aria-hidden="true" />
                 <p className="font-semibold text-[var(--site-text)]">{option.label}</p>
               </div>
-              <code className="mt-3 block overflow-x-auto whitespace-nowrap rounded-md border border-[var(--site-code-border)] bg-[var(--site-code-bg)] px-3 py-2 text-xs text-[var(--site-code-text)]">
+              <code className="mt-3 block overflow-hidden whitespace-normal break-all rounded-md border border-[var(--site-code-border)] bg-[var(--site-code-bg)] px-3 py-2 text-xs leading-5 text-[var(--site-code-text)]">
                 {option.command}
               </code>
             </Link>
@@ -335,16 +335,16 @@ export default function HomePage(): ReactElement {
       </section>
 
       {/* CTA */}
-      <section className="rounded-[2rem] border border-[var(--site-border-strong)] bg-[var(--site-surface-muted)] p-8 text-center sm:p-12">
+      <section className="rounded-[1.75rem] border border-[var(--site-border-strong)] bg-[var(--site-surface-muted)] p-6 text-center sm:p-12">
         <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">
           Ready to debug smarter?
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-[var(--site-text-muted)]">
           Start locally, or use the hosted free tier when you want cloud ingestion. Upgrade when you need team collaboration, longer retention, and advanced features.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
+        <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
           <Link
-            className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium ${buttonFocusClassName}`}
+            className={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium ${buttonFocusClassName}`}
             href="/docs/quickstart/"
             style={{ background: 'var(--site-accent)', color: 'var(--site-accent-foreground)' }}
           >
@@ -352,7 +352,7 @@ export default function HomePage(): ReactElement {
             Quick Start Guide
           </Link>
           <Link
-            className={`rounded-full border border-[var(--site-border)] px-6 py-3 text-sm font-medium ${buttonFocusClassName}`}
+            className={`inline-flex items-center justify-center rounded-full border border-[var(--site-border)] px-6 py-3 text-sm font-medium ${buttonFocusClassName}`}
             href="https://app.debugbundle.com"
           >
             Open App

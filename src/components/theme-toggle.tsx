@@ -21,13 +21,33 @@ export function ThemeToggle(): ReactElement {
     setMounted(true);
   }, []);
 
-  const activeTheme = mounted ? ((theme as ThemeMode | undefined) ?? 'system') : 'system';
-  const resolvedLabel = mounted ? `Current theme: ${resolvedTheme ?? activeTheme}` : 'Current theme';
+  if (!mounted) {
+    return (
+      <div
+        aria-label="Theme toggle"
+        className="inline-flex items-center gap-0.5 rounded-full border border-[var(--site-border)] bg-[var(--site-surface)] p-0.5"
+        role="group"
+      >
+        {themeOptions.map((option) => (
+          <span
+            key={option.value}
+            aria-hidden="true"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--site-text-muted)]"
+          >
+            <option.icon className="h-3.5 w-3.5" strokeWidth={1.9} />
+          </span>
+        ))}
+      </div>
+    );
+  }
+
+  const activeTheme = (theme as ThemeMode | undefined) ?? 'system';
+  const resolvedLabel = `Current theme: ${resolvedTheme ?? activeTheme}`;
 
   return (
     <div
       aria-label={resolvedLabel}
-      className="inline-flex items-center gap-0.5 rounded-full border border-[var(--site-border)] bg-[var(--site-surface)] p-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)]"
+      className="inline-flex items-center gap-0.5 rounded-full border border-[var(--site-border)] bg-[var(--site-surface)] p-0.5"
       role="group"
     >
       {themeOptions.map((option) => {
@@ -41,7 +61,7 @@ export function ThemeToggle(): ReactElement {
             aria-pressed={isActive}
             className={`flex h-8 w-8 items-center justify-center rounded-full transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--site-focus)] ${
               isActive
-                ? 'shadow-sm'
+                ? ''
                 : 'text-[var(--site-text-muted)] hover:bg-[var(--site-surface-muted)] hover:text-[var(--site-text)]'
             }`}
             onClick={() => setTheme(option.value)}
