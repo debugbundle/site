@@ -4,6 +4,8 @@ description: "Choose a cloud or local-only DebugBundle path, capture your first 
 icon: Rocket
 ---
 
+import { AgentInstallPromptBlock } from '@/components/agent-install-prompt-block';
+
 <Tabs items={['Cloud', 'Local-only']} data-toc-scope="quickstart-path">
   <Tab>
 
@@ -13,29 +15,7 @@ Use Cloud when you are preparing a hosted deployment or already running in produ
 
 Copy this prompt into your coding agent:
 
-```text
-Set up DebugBundle for this repository with DebugBundle Cloud.
-
-First inspect the project language, framework, package manager, entry points, and logging setup.
-Then read the relevant DebugBundle docs:
-- https://debugbundle.com/docs/installation
-- https://debugbundle.com/docs/project-setup/connect-to-cloud
-- https://debugbundle.com/docs/cli/cloud-workflow
-- https://debugbundle.com/docs/sdks
-- https://debugbundle.com/docs/agent-workflows/skill-file
-
-Run `debugbundle setup`, then read `.agents/skills/debugbundle/SKILL.md` and follow
-the generated DebugBundle skill guidance for this repository.
-
-Authenticate with `debugbundle login`, connect the project with `debugbundle connect`,
-and configure `DEBUGBUNDLE_PROJECT_TOKEN` for the hosted environment.
-
-Choose the smallest safe SDK, browser relay, WordPress plugin, or log-ingestion path
-that matches this project. Trigger or capture one intentional test error through the
-real ingestion path, then verify cloud ingestion with `debugbundle verify cloud`.
-End by showing the hosted incident with `debugbundle incidents --source cloud` and
-the bundle with `debugbundle inspect <incident-id>`.
-```
+<AgentInstallPromptBlock />
 
 The agent should end with a connected cloud project, a verified hosted incident, and a bundle visible from `debugbundle inspect <incident-id>`.
 
@@ -324,37 +304,17 @@ A cloud incident includes the same bundle context as local mode, plus hosted wor
 
 - [Connect to Cloud](/docs/project-setup/connect-to-cloud) — Understand project tokens and delivery modes
 - [CLI Cloud Workflow](/docs/cli/cloud-workflow) — Verify, inspect, resolve, and manage cloud incidents
-- [Alerts](/docs/alerts) — Notify teams when incidents change
-- [Webhooks](/docs/webhooks) — Send signed lifecycle events to automation systems
-- [GitHub Automation](/docs/agent-workflows/automation-recipes) — Connect repository dispatch and follow-up actions
 
 </Tab>
 <Tab>
 
-Use local-only mode when you want to evaluate DebugBundle without a cloud account or keep all investigation data on your machine. It writes events to `.debugbundle/local/events/`, processes them locally, and keeps bundles under `.debugbundle/bundles/`.
+Use local-only when you want DebugBundle to process incidents on this machine without a hosted account. Browser capture still needs a backend relay so the browser SDK can hand events to your backend for local processing.
 
 ## Agent Path
 
 Copy this prompt into your coding agent:
 
-```text
-Set up DebugBundle for this repository in local-only mode.
-
-First inspect the project language, framework, package manager, entry points, and logging setup.
-Then read the relevant DebugBundle docs:
-- https://debugbundle.com/docs/installation
-- https://debugbundle.com/docs/project-setup/local-only
-- https://debugbundle.com/docs/cli/local-workflow
-- https://debugbundle.com/docs/sdks
-- https://debugbundle.com/docs/agent-workflows/skill-file
-
-Run `debugbundle setup`, then read `.agents/skills/debugbundle/SKILL.md` and follow
-the generated DebugBundle skill guidance for this repository.
-
-Choose the smallest safe SDK, browser relay, WordPress plugin, or log-ingestion path
-that matches this project. Trigger or capture one intentional test error, run
-`debugbundle process`, then show the latest bundle with `debugbundle inspect`.
-```
+<AgentInstallPromptBlock mode="local-only" />
 
 The agent should end with a processed local incident and a bundle visible from `debugbundle inspect`.
 

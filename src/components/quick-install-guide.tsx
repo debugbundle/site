@@ -2,6 +2,7 @@ import type { ReactElement, ReactNode } from 'react';
 import Link from 'next/link';
 import type { LucideIcon } from 'lucide-react';
 import {
+  Bot,
   ArrowRight,
   ArrowUpRight,
   Coffee,
@@ -16,6 +17,7 @@ import {
 import { CodeBlockTab, CodeBlockTabs, CodeBlockTabsList } from 'fumadocs-ui/components/codeblock';
 import { ServerCodeBlock } from 'fumadocs-ui/components/codeblock.rsc';
 
+import { AgentInstallPromptBlock } from './agent-install-prompt-block';
 import { QuickInstallInteractionScope, QuickInstallTabTrigger } from './quick-install-interaction-scope';
 
 const focusOutlineClassName =
@@ -364,13 +366,24 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
         <div className="max-w-2xl space-y-2">
           <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">Quick installation guide</h2>
           <p className="text-base leading-7 text-[var(--site-text-muted)]">
-            Install the CLI first, then add the SDK or ingestion path that matches your runtime.
+            Start with the agent path when you use a coding agent. Otherwise install the CLI manually, then add the SDK or ingestion path that matches your runtime.
           </p>
         </div>
         <Link className={sectionLinkClassName} href="/docs/installation/" style={{ outlineColor: 'var(--site-focus)' }}>
           Full installation guide
           <ArrowRight className="size-4" aria-hidden="true" />
         </Link>
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <Bot className="size-5 text-[var(--site-accent)]" aria-hidden="true" />
+          <h3 className="text-xl font-semibold tracking-tight text-[var(--site-text)]">Agent Path</h3>
+        </div>
+        <AgentInstallPromptBlock compact />
+        <p className="text-sm leading-7 text-[var(--site-text-muted)]">
+          Use this prompt to let your coding agent set up and choose the right DebugBundle mode.
+        </p>
       </div>
 
       <div className="space-y-4">

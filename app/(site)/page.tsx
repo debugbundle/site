@@ -130,7 +130,7 @@ export default function HomePage(): ReactElement {
     },
     {
       label: 'Swift',
-      command: 'https://github.com/debugbundle/debugbundle-swift',
+      command: 'github.com/debugbundle/debugbundle-swift',
       href: '/docs/sdks/swift/',
       icon: Smartphone,
     },
@@ -223,6 +223,9 @@ export default function HomePage(): ReactElement {
         </div>
       </section>
 
+      {/* Quick installation guide */}
+      <QuickInstallGuide />
+
       {/* How it works — high-level */}
       <section className="space-y-6">
         <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">
@@ -243,9 +246,6 @@ export default function HomePage(): ReactElement {
           ))}
         </div>
       </section>
-
-      {/* Quick installation guide */}
-      <QuickInstallGuide />
 
       {/* Install paths */}
       <section className="space-y-6">
@@ -296,7 +296,7 @@ export default function HomePage(): ReactElement {
         </div>
 
         <div className="rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-6">
-          <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">Built for production apps</h2>
+          <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">Production ready</h2>
           <ul className="mt-5 space-y-5">
             {productionStrengths.map((item) => (
               <li key={item.title} className="flex gap-4">

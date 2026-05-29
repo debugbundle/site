@@ -180,3 +180,23 @@ code {
   word-break: break-word;
   overflow-wrap: anywhere;
 }
+
+figure.shiki > div[class*='backdrop-blur-lg'] {
+  background-color: var(--site-surface) !important;
+  border: 1px solid var(--site-border) !important;
+  border-radius: 0.5rem !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+figure.shiki > div[class*='backdrop-blur-lg'] :is(button[aria-label='Copy Text'], button[aria-label='Copied Text']) {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+figure.shiki > div[class*='backdrop-blur-lg'] :is(button[aria-label='Copy Text'], button[aria-label='Copied Text']):hover {
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
