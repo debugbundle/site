@@ -6,7 +6,7 @@ icon: Smartphone
 
 The Android SDK is the Kotlin mobile SDK for native Android applications. It captures handled exceptions, fatal crashes on next launch, ANR/process-exit signals, lifecycle breadcrumbs, network request failures, logs, and diagnostic probes without throwing back into app code.
 
-This SDK is pre-release. The module names below are the intended Maven artifacts; use the `0.1.0-SNAPSHOT` version only from local development builds until Maven Central publishing is complete.
+This SDK is pre-release and published on Maven Central. Use the `0.1.0` package family for the current public release.
 
 ## Installation
 
@@ -14,7 +14,7 @@ Import the BOM and the runtime module:
 
 ```kotlin
 dependencies {
-    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.0-SNAPSHOT"))
+    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.0"))
     implementation("com.debugbundle:debugbundle-android")
 }
 ```
