@@ -288,6 +288,37 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
       ),
     },
     {
+      value: 'swift',
+      label: 'Swift',
+      icon: Smartphone,
+      installLang: 'swift',
+      installCode: [
+        '.package(',
+        '    url: "https://github.com/debugbundle/debugbundle-swift",',
+        '    from: "0.1.0"',
+        ')',
+      ].join('\n'),
+      setupLang: 'swift',
+      setupCode: [
+        'DebugBundle.initialize(',
+        '    DebugBundleConfig(',
+        '        projectToken: Bundle.main.debugBundleProjectToken,',
+        '        environment: "production",',
+        '        service: "ios-app"',
+        '    )',
+        ')',
+      ].join('\n'),
+      description: (
+        <>
+          Swift runtime capture, UIKit and SwiftUI breadcrumbs, URLSession, Alamofire, SwiftLog, crash replay, offline queueing, and probes are included in the Swift SDK. See{' '}
+          <Link className={linkClassName} href="/docs/sdks/swift/">
+            Swift SDK
+          </Link>
+          .
+        </>
+      ),
+    },
+    {
       value: 'wordpress',
       label: 'WordPress',
       icon: Workflow,

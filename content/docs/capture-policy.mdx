@@ -111,7 +111,7 @@ Current local SDK enforcement:
 | Browser | Applies `demote`, `sample`, and `drop` before upload when possible. |
 | Node.js | Applies `drop` and sampled-out `sample` before buffering. `demote` is enforced by ingestion and processing. |
 | Python, PHP, Java, Go, Ruby | Server-side ingestion and worker enforcement today. Local SDK parity can be added later without changing the project rule model. |
-| Android | Enforces server-owned capture policy locally and relies on ingestion/worker backstops for project capture rules that are not evaluated on-device. |
+| Android, Swift | Enforce server-owned capture policy locally and rely on ingestion/worker backstops for project capture rules that are not evaluated on-device. |
 
 Ingestion and worker processing enforce active rules again as a backstop, so rules still apply even when an SDK has not implemented local filtering.
 
@@ -201,7 +201,7 @@ means "explicitly promote no additional `4xx` statuses".
 
 SDKs fetch the capture policy and active capture rules from the server during initialization and periodically
 refresh it. When the policy changes, shipped Browser, Node.js, Python, PHP, Java, Go,
-Ruby, and Android SDKs adjust their capture behavior without requiring a restart or redeploy,
+Ruby, Android, and Swift SDKs adjust their capture behavior without requiring a restart or redeploy,
 including the selected client error incident statuses.
 
 In local-only mode, SDKs use built-in defaults (equivalent to the `balanced` preset).

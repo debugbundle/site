@@ -1,0 +1,243 @@
+---
+title: "Swift SDK"
+description: "Install DebugBundle in UIKit and SwiftUI apps with URLSession trace injection, offline queueing, SwiftLog, crash replay, and remote probes."
+icon: Smartphone
+---
+
+The Swift SDK is the native Apple-platform client SDK for iOS and iPadOS applications. It captures handled exceptions, next-launch crash evidence, UIKit and SwiftUI lifecycle breadcrumbs, first-party network request failures, structured logs, and always-on diagnostic probes without throwing back into app code.
+
+The SDK is available as `debugbundle-swift` `v0.1.0` through Swift Package Manager. The repository is live at `https://github.com/debugbundle/debugbundle-swift`.
+
+## Installation
+
+Add the package to your app target:
+
+```swift
+// Package.swift
+.dependencies: [
+    .package(url: "https://github.com/debugbundle/debugbundle-swift", from: "0.1.0")
+],
+.targets: [
+    .target(
+        name: "CheckoutApp",
+        dependencies: [
+            .product(name: "DebugBundle", package: "debugbundle-swift"),
+            .product(name: "DebugBundleURLSession", package: "debugbundle-swift"),
+            .product(name: "DebugBundleUIKit", package: "debugbundle-swift"),
+            .product(name: "DebugBundleSwiftUI", package: "debugbundle-swift"),
+            .product(name: "DebugBundleSwiftLog", package: "debugbundle-swift")
+        ]
+    )
+]
+```
+
+In Xcode, you can also use **File -> Add Package Dependencies...** with the repository URL `https://github.com/debugbundle/debugbundle-swift` and select version `0.1.0` or a compatible version range.
+
+The package currently supports iOS 15+ and exposes focused products for core capture, URLSession, Alamofire, UIKit, SwiftUI, SwiftLog, crash reporting, and test support.
+
+## Initialize
+
+### SwiftUI
+
+```swift
+import DebugBundle
+import DebugBundleSwiftUI
+
+@main
+struct CheckoutApp: App {
+    init() {
+        DebugBundle.initialize(
+            DebugBundleConfig(
+                projectToken: Bundle.main.debugBundleProjectToken,
+                service: "checkout-ios",
+                environment: "production",
+                releaseChannel: "app-store"
+            )
+        )
+    }
+
+    var body: some Scene {
+        WindowGroup {
+            CheckoutRootView()
+                .debugBundleScreen("CheckoutRoot")
+        }
+    }
+}
+```
+
+### UIKit
+
+```swift
+import DebugBundle
+import DebugBundleUIKit
+import UIKit
+
+final class AppDelegate: UIResponder, UIApplicationDelegate {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+    ) -> Bool {
+        DebugBundle.initialize(
+            DebugBundleConfig(
+                projectToken: Bundle.main.debugBundleProjectToken,
+                service: "checkout-ios",
+                environment: "production"
+            )
+        )
+
+        DebugBundleUIKit.install(application: application)
+        return true
+    }
+}
+```
+
+`DebugBundle.initialize` is fail-open. If the project token or endpoint is missing, the SDK degrades to a no-op capture path and reports that state through `DebugBundle.status` instead of crashing the host app or pretending capture is healthy.
+
+## Capture
+
+```swift
+import DebugBundle
+
+DebugBundle.captureMessage("checkout_started")
+DebugBundle.captureLog("payment retry", level: .warning, context: ["attempt": attempt])
+DebugBundle.setContext("tenant", value: tenantID)
+
+Task {
+    do {
+        try await DebugBundle.captureAsync(context: ["screen": "Checkout"]) {
+            try await checkout()
+        }
+    } catch {
+        DebugBundle.captureException(error, context: ["flow": "checkout"])
+    }
+
+    await DebugBundle.flush()
+}
+```
+
+SDK capture calls are no-throw by default. `captureAsync` is the explicit wrapper when you want to capture an application error and rethrow it to your own calling code.
+
+## Network Capture
+
+URLSession instrumentation is explicit and scoped to first-party targets:
+
+```swift
+import DebugBundleURLSession
+
+let configuration = URLSessionConfiguration.default
+configuration.debugBundleInstrumented(
+    tracePropagationTargets: ["https://api.example.com"]
+)
+
+let session = URLSession(configuration: configuration)
+```
+
+If you want a small wrapper around request execution and `request_event` recording, use the instrumented session helper:
+
+```swift
+import DebugBundleURLSession
+
+let instrumentedSession = DebugBundleInstrumentedURLSession(
+    session: .shared,
+    tracePropagationTargets: [.host("api.example.com")]
+)
+```
+
+Alamofire support uses the same target model:
+
+```swift
+import Alamofire
+import DebugBundleAlamofire
+
+let session = Session.debugBundleInstrumented(
+    tracePropagationTargets: ["https://api.example.com"]
+)
+```
+
+Matching requests receive `X-DebugBundle-Trace-Id`, network breadcrumbs, and policy-driven `request_event` promotion for failed responses. The SDK captures allowlisted headers only and leaves request and response bodies disabled by default.
+
+## Screens And Logs
+
+SwiftUI helpers record screen and action breadcrumbs without introspecting view state:
+
+```swift
+CheckoutView()
+    .debugBundleScreen("Checkout")
+    .debugBundleAction("tap", targetType: "button", resourceName: "place-order")
+```
+
+UIKit helpers support explicit screen naming from view controllers:
+
+```swift
+override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    DebugBundleUIKit.recordViewControllerAppear(self, screenName: "Checkout", animated: animated)
+}
+```
+
+SwiftLog support is additive and preserves existing logger output:
+
+```swift
+import DebugBundleSwiftLog
+import Logging
+
+LoggingSystem.bootstrap { label in
+    DebugBundleLogHandler(label: label)
+}
+```
+
+## Offline Queue And Crash Replay
+
+The Swift runtime writes a bounded file-backed offline queue under app-private Application Support storage by default. Queue limits are controlled by `offlineQueueMaxEvents`, `offlineQueueMaxBytes`, and `offlineQueueTtl`, and queue files use an explicit file protection class.
+
+`DebugBundleCrashReporter` provides bounded fatal-crash evidence persistence for next-launch replay and bridges Objective-C exceptions through the shim target. Foreground, interval, batch-size, and lifecycle triggers all schedule flushes, while reachability changes defer delivery until the device can send again. Deeper automatic crash evidence collection and larger iOS background delivery strategies remain intentionally constrained by Apple's lifecycle rules and are not presented as guaranteed delivery.
+
+## Probes
+
+Always-on probes buffer redacted diagnostic data locally and attach inline probe data to exception payloads:
+
+```swift
+DebugBundle.probe("checkout.tax", data: ["amount": amount, "country": country])
+
+DebugBundle.probe("checkout.expensive_state", options: ProbeOptions(heavy: true)) {
+    expensiveDiagnostics()
+}
+```
+
+Heavy probes remain dormant until a matching remote directive or trigger token is active. Remote directives are fetched through `GET /v1/sdk/config` and ingestion-response piggybacking.
+
+## Privacy Defaults
+
+Swift defaults are conservative for healthcare, finance, enterprise, and consumer apps:
+
+- request and response bodies are disabled by default
+- header capture is allowlist-based
+- screenshots, text fields, clipboard, contacts, keychain values, photos, precise location, IDFV, and advertising IDs are not captured by default
+- redaction happens before queue persistence or transport
+
+Prefer explicit low-cardinality context values instead of raw user data:
+
+```swift
+DebugBundle.setContext("account_tier", value: "team")
+DebugBundle.setContext("region", value: "eu")
+```
+
+## Modules
+
+| Product | Purpose |
+|---|---|
+| `DebugBundle` | Core client, facade, event envelopes, redaction, transport, queueing, capture policy, and probes |
+| `DebugBundleURLSession` | URLSession instrumentation, trace propagation, and request capture |
+| `DebugBundleAlamofire` | Alamofire adapter for trace injection and request capture |
+| `DebugBundleUIKit` | UIApplication, UIScene, view-controller, and navigation helpers |
+| `DebugBundleSwiftUI` | SwiftUI screen, scene-phase, navigation, and action breadcrumbs |
+| `DebugBundleCrashReporter` | Next-launch crash evidence replay and Objective-C exception bridging |
+| `DebugBundleSwiftLog` | SwiftLog `LogHandler` integration |
+| `DebugBundleTestSupport` | Fake transports, queue inspection helpers, and mock ingestion support |
+
+## Next Steps
+
+- [Universal SDK Interface](/docs/sdks/universal-interface) — Shared capture behavior and guarantees across every SDK
+- [Capture Policy](/docs/capture-policy) — Server-owned policy and capture-rule behavior
+- [Quickstart](/docs/quickstart) — Cloud and local-only setup flows
+- [Installation](/docs/installation) — Side-by-side install paths for every runtime

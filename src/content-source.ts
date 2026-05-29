@@ -75,6 +75,7 @@ import * as docsSdksNodePage from '../content/docs/sdks/node.mdx';
 import * as docsSdksPhpPage from '../content/docs/sdks/php.mdx';
 import * as docsSdksPythonPage from '../content/docs/sdks/python.mdx';
 import * as docsSdksRubyPage from '../content/docs/sdks/ruby.mdx';
+import * as docsSdksSwiftPage from '../content/docs/sdks/swift.mdx';
 import * as docsPricingPage from '../content/docs/pricing.mdx';
 import * as docsSdksUniversalInterfacePage from '../content/docs/sdks/universal-interface.mdx';
 import * as docsTroubleshootingPage from '../content/docs/troubleshooting.mdx';
@@ -149,7 +150,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   },
   './sdks/meta.json': {
     title: 'SDKs',
-    pages: ['index', 'node', 'browser', 'browser-relay', 'python', 'php', 'java', 'go', 'ruby', 'android', 'universal-interface'],
+    pages: ['index', 'node', 'browser', 'browser-relay', 'python', 'php', 'java', 'go', 'ruby', 'android', 'swift', 'universal-interface'],
   },
   './integrations/meta.json': {
     title: 'Integrations',
@@ -248,6 +249,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './sdks/php.mdx': docsSdksPhpPage,
   './sdks/python.mdx': docsSdksPythonPage,
   './sdks/ruby.mdx': docsSdksRubyPage,
+  './sdks/swift.mdx': docsSdksSwiftPage,
   './sdks/universal-interface.mdx': docsSdksUniversalInterfacePage,
   './troubleshooting.mdx': docsTroubleshootingPage,
   './what-is-debugbundle.mdx': docsWhatIsPage,

@@ -17,7 +17,7 @@ The CLI runs setup, local processing, incident inspection, token management, clo
 
 ## SDKs
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Android', 'WordPress']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Android', 'Swift', 'WordPress']}>
   <Tab>
 
 ```bash
@@ -178,6 +178,28 @@ DebugBundle.init(
 ```
 
 The Android SDK is pre-release and covers native runtime capture, crash/ANR replay, WorkManager flushing, offline queueing, OkHttp, Ktor client, Navigation, Compose, Timber, and probes. See [Android SDK](/docs/sdks/android).
+
+  </Tab>
+  <Tab>
+
+```swift
+.package(
+    url: "https://github.com/debugbundle/debugbundle-swift",
+  from: "0.1.0"
+)
+```
+
+```swift
+DebugBundle.initialize(
+    DebugBundleConfig(
+        projectToken: Bundle.main.debugBundleProjectToken,
+        environment: "production",
+        service: "ios-app"
+    )
+)
+```
+
+The Swift SDK covers native iOS/iPadOS runtime capture, crash replay helpers, offline queueing, URLSession, Alamofire, UIKit, SwiftUI, SwiftLog, and probes. See [Swift SDK](/docs/sdks/swift).
 
   </Tab>
   <Tab>

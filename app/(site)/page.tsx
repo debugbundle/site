@@ -129,6 +129,12 @@ export default function HomePage(): ReactElement {
       icon: Smartphone,
     },
     {
+      label: 'Swift',
+      command: 'https://github.com/debugbundle/debugbundle-swift',
+      href: '/docs/sdks/swift/',
+      icon: Smartphone,
+    },
+    {
       label: 'WordPress',
       command: 'Install the DebugBundle plugin',
       href: '/docs/integrations/wordpress/',
