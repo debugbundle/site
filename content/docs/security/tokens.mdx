@@ -32,7 +32,7 @@ DebugBundle.init({
 Project tokens are scoped to a single project. You can create multiple tokens per
 project for different environments or services.
 
-Browser SDK deployments should use a same-origin relay when a backend is available, so the project token stays server-side. Static-only sites may embed a dedicated public write-only project token and set allowed browser origins in the dashboard, CLI, API, or MCP. Allowlisted tokens reject ingestion and SDK config requests without a matching `Origin`, so they should not be reused for server SDKs or relay forwarding. The allowlist blocks normal browser requests from other origins, but non-browser clients can spoof `Origin`, so it does not make the token secret.
+Browser SDK deployments should use a backend relay when a backend is available, so the project token stays server-side. Same-origin relay paths are simplest; split frontend/backend apps can use explicit browser relay mode with relay preflight handling and relay `allowedOrigins`. Static-only sites may embed a dedicated public write-only project token and set allowed browser origins in the dashboard, CLI, API, or MCP. Allowlisted tokens reject ingestion and SDK config requests without a matching `Origin`, so they should not be reused for server SDKs or relay forwarding. The allowlist blocks normal browser requests from other origins, but non-browser clients can spoof `Origin`, so it does not make the token secret.
 
 ### Member Tokens
 

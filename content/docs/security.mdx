@@ -85,7 +85,7 @@ The signing secret is shown once at webhook creation and never again. If comprom
 | Path | Protocol | Encryption |
 |---|---|---|
 | SDK → API | HTTPS | TLS 1.2+ |
-| SDK → Relay → API | HTTPS | TLS 1.2+ (same-origin relay avoids CORS) |
+| SDK → Relay → API | HTTPS | TLS 1.2+ (same-origin relay avoids CORS; cross-origin relay requires preflight handling) |
 | SDK → Local Disk | File I/O | Filesystem permissions |
 | API → Worker | Internal queue | Encrypted at rest (S3 + Postgres) |
 | API → Webhook endpoint | HTTPS | TLS 1.2+ required |

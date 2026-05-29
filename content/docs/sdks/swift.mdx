@@ -6,6 +6,8 @@ icon: Smartphone
 
 The Swift SDK is the native Apple-platform client SDK for iOS and iPadOS applications. It captures handled exceptions, next-launch crash evidence, UIKit and SwiftUI lifecycle breadcrumbs, first-party network request failures, structured logs, and always-on diagnostic probes without throwing back into app code.
 
+Swift is a mobile client SDK, not a browser relay host. It sends mobile events to the configured ingestion endpoint and uses explicit first-party URLSession or Alamofire instrumentation for trace correlation; browser relay settings such as `transportMode`, `allowedOrigins`, and CORS preflight handling belong to the Browser SDK plus a backend/server SDK relay.
+
 The SDK is available as `debugbundle-swift` `v0.1.0` through Swift Package Manager. The repository is live at `https://github.com/debugbundle/debugbundle-swift`.
 
 ## Installation

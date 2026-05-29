@@ -116,7 +116,7 @@ DebugBundle.init({
 });
 ```
 
-For frontend-only apps, the Browser SDK can send directly to DebugBundle Cloud with a public write-only project token; create a dedicated token with `--allowed-origin https://your-site.example` for browser abuse reduction. For full-stack apps, prefer a same-origin relay at `/debugbundle/browser` and omit `projectToken` on the client. See [Browser SDK](/docs/sdks/browser) and [Browser Relay Setup](/docs/sdks/browser-relay).
+For frontend-only apps, the Browser SDK can send directly to DebugBundle Cloud with a public write-only project token; create a dedicated token with `--allowed-origin https://your-site.example` for browser abuse reduction. For full-stack apps, prefer a backend relay and omit `projectToken` on the client. Same-origin relay paths such as `/debugbundle/browser` are simplest; split frontend/backend apps can use explicit relay mode with an absolute backend relay URL. See [Browser SDK](/docs/sdks/browser) and [Browser Relay Setup](/docs/sdks/browser-relay).
 
   </Tab>
   <Tab>
@@ -381,7 +381,7 @@ This creates `.debugbundle/profile.json`, `.debugbundle/local/connection.json`, 
 
 Pick the path that matches your project.
 
-Local-only browser capture requires a same-origin relay so the browser SDK can hand events to your backend, which then writes them into `.debugbundle/local/events/` for `debugbundle process`.
+Local-only browser capture requires a backend relay so the browser SDK can hand events to your backend, which then writes them into `.debugbundle/local/events/` for `debugbundle process`.
 
 <Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Android', 'Swift', 'Existing Logs']}>
   <Tab>
@@ -416,13 +416,14 @@ npm install @debugbundle/sdk-browser
 import DebugBundle from '@debugbundle/sdk-browser';
 
 DebugBundle.init({
+  transportMode: 'relay',
   endpoint: '/debugbundle/browser',
   environment: 'development',
   service: 'web',
 });
 ```
 
-Use the Browser SDK with a same-origin relay mounted on your backend in local-only mode. If your app has no backend, use the cloud quickstart instead because local-only browser capture needs a relay target. See [Browser SDK](/docs/sdks/browser) and [Browser Relay Setup](/docs/sdks/browser-relay).
+Use the Browser SDK with a relay mounted on your backend in local-only mode. If your app has no backend, use the cloud quickstart instead because local-only browser capture needs a relay target. See [Browser SDK](/docs/sdks/browser) and [Browser Relay Setup](/docs/sdks/browser-relay).
 
   </Tab>
   <Tab>

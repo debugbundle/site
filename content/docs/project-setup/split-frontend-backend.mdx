@@ -75,6 +75,7 @@ Configure the browser SDK to send to the backend relay URL:
 import debugbundle from '@debugbundle/sdk-browser';
 
 debugbundle.init({
+  transportMode: 'relay',
   endpoint: 'https://api.example.com/debugbundle/browser'
 });
 ```
@@ -90,6 +91,7 @@ Use the API origin when the frontend and backend are on different hosts. Do not 
 Every split frontend/backend deployment should keep these controls in place:
 
 - explicit `allowedOrigins` for the frontend host names that can submit browser events
+- relay-provided CORS preflight support for `OPTIONS /debugbundle/browser` when the relay URL is cross-origin
 - auth and CSRF exemptions only for the relay route itself
 - request body size limits and schema validation
 - credential stripping so browser cookies and app auth do not become relay auth

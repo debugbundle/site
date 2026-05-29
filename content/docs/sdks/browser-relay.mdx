@@ -30,7 +30,7 @@ The browser relay lets your Browser SDK send events through your own backend ins
 
 <WorkflowDiagram>
   <WorkflowStep title="Browser SDK" meta="Client">
-    Sends frontend events to your same-origin relay route.
+    Sends frontend events to your backend relay route.
   </WorkflowStep>
   <WorkflowStep title="Relay Handler" meta="Backend">
     Validates origin, applies body limits, rate-limits by IP, and attaches the project token.
@@ -51,6 +51,11 @@ The browser relay lets your Browser SDK send events through your own backend ins
 | Python | `BrowserRelayHandler` plus Django, Flask, and FastAPI helpers from `debugbundle-python` |
 | PHP | `DebugBundle\Relay\BrowserRelayHandler` plus Laravel middleware and Symfony controller adapters |
 | WordPress | Built-in WordPress REST relay route through the DebugBundle WordPress plugin |
+| Java | Spring Boot route plus servlet/JAX-RS relay adapters from the Java SDK |
+| Go | `net/http` relay handler plus Gin and Echo mounting paths from the Go SDK |
+| Ruby | Rack middleware plus Rails route mounting from the Ruby SDK |
+
+Planned server SDKs, including C#/.NET, must implement the same relay contract before public docs describe them as full relay-handler compatible. Client/mobile SDKs such as Android, Swift, and React Native do not host browser relay routes.
 
 The Browser SDK is the relay client path. It sends browser events to one of the backend handlers above; it is not itself a backend relay handler.
 
@@ -95,7 +100,7 @@ const { debugBundleRelay } = require('@debugbundle/sdk-node');
 
 const app = express();
 
-app.post('/debugbundle/browser', debugBundleRelay({
+app.use('/debugbundle/browser', debugBundleRelay({
   projectToken: process.env.DEBUGBUNDLE_PROJECT_TOKEN,
   allowedOrigins: ['https://myapp.com', 'https://staging.myapp.com'],
 }));
@@ -103,7 +108,7 @@ app.post('/debugbundle/browser', debugBundleRelay({
 app.listen(3000);
 ```
 
-The Express relay handler parses the request body, validates the origin, applies rate limiting, and forwards accepted events to the ingestion API.
+The Express relay handler parses the request body, validates the origin, applies rate limiting, forwards accepted events to the ingestion API, and answers allowed `OPTIONS` preflight requests when mounted with `app.use`.
 
 ### Fastify
 
@@ -120,7 +125,7 @@ await fastify.register(debugBundleRelayPlugin, {
 await fastify.listen({ port: 3000 });
 ```
 
-The Fastify plugin registers as a standard route plugin. Pass `routePath` to customize the endpoint path (default: `/debugbundle/browser`).
+The Fastify plugin registers `POST` and `OPTIONS` routes. Pass `routePath` to customize the endpoint path (default: `/debugbundle/browser`).
 
 ### Next.js (App Router)
 
@@ -136,9 +141,13 @@ const handler = createNextjsRelayHandler({
 export async function POST(request: Request): Promise<Response> {
   return handler(request);
 }
+
+export async function OPTIONS(request: Request): Promise<Response> {
+  return handler(request);
+}
 ```
 
-The Next.js handler uses the Web `Request`/`Response` APIs. It extracts the client IP from `X-Forwarded-For` or `X-Real-IP` headers.
+The Next.js handler uses the Web `Request`/`Response` APIs. It extracts the client IP from `X-Forwarded-For` or `X-Real-IP` headers and can be exported for both `POST` and `OPTIONS`.
 
 ## Python
 
@@ -210,12 +219,26 @@ import debugbundle from '@debugbundle/sdk-browser';
 
 debugbundle.init({
   // No projectToken needed on the client — the relay adds it
+  transportMode: 'relay',
   endpoint: '/debugbundle/browser',
+});
+```
+
+For split frontend/backend deployments, keep `transportMode: 'relay'` and use the backend relay URL:
+
+```javascript
+debugbundle.init({
+  transportMode: 'relay',
+  endpoint: 'https://api.example.com/debugbundle/browser',
 });
 ```
 
 <Callout type="warn">
   When using relay transport, do **not** set `projectToken` in the Browser SDK config. The relay handler adds the token server-side.
+</Callout>
+
+<Callout type="info">
+  Cross-origin relay URLs require the relay route to answer browser CORS preflight for `OPTIONS /debugbundle/browser`. Keep the relay's `allowedOrigins` allowlist aligned with the frontend origins that may submit events.
 </Callout>
 
 ## Static-Only Direct Transport

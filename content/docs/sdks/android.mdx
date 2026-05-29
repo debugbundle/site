@@ -6,6 +6,8 @@ icon: Smartphone
 
 The Android SDK is the Kotlin mobile SDK for native Android applications. It captures handled exceptions, fatal crashes on next launch, ANR/process-exit signals, lifecycle breadcrumbs, network request failures, logs, and diagnostic probes without throwing back into app code.
 
+Android is a mobile client SDK, not a browser relay host. It sends mobile events to the configured ingestion endpoint and uses explicit first-party network instrumentation for trace correlation; browser relay settings such as `transportMode`, `allowedOrigins`, and CORS preflight handling belong to the Browser SDK plus a backend/server SDK relay.
+
 This SDK is pre-release and published on Maven Central. Use the `0.1.0` package family for the current public release.
 
 ## Installation
