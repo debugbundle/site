@@ -141,6 +141,12 @@ export default function HomePage(): ReactElement {
       icon: Smartphone,
     },
     {
+      label: 'React Native',
+      command: 'npm install @debugbundle/sdk-react-native',
+      href: '/docs/sdks/react-native/',
+      icon: Smartphone,
+    },
+    {
       label: 'WordPress',
       command: 'Install the DebugBundle plugin',
       href: '/docs/integrations/wordpress/',

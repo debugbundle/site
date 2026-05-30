@@ -75,6 +75,7 @@ import * as docsSdksJavaPage from '../content/docs/sdks/java.mdx';
 import * as docsSdksNodePage from '../content/docs/sdks/node.mdx';
 import * as docsSdksPhpPage from '../content/docs/sdks/php.mdx';
 import * as docsSdksPythonPage from '../content/docs/sdks/python.mdx';
+import * as docsSdksReactNativePage from '../content/docs/sdks/react-native.mdx';
 import * as docsSdksRubyPage from '../content/docs/sdks/ruby.mdx';
 import * as docsSdksSwiftPage from '../content/docs/sdks/swift.mdx';
 import * as docsPricingPage from '../content/docs/pricing.mdx';
@@ -151,7 +152,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   },
   './sdks/meta.json': {
     title: 'SDKs',
-    pages: ['index', 'node', 'browser', 'browser-relay', 'python', 'php', 'java', 'dotnet', 'go', 'ruby', 'android', 'swift', 'universal-interface'],
+    pages: ['index', 'node', 'browser', 'browser-relay', 'python', 'php', 'java', 'dotnet', 'go', 'ruby', 'android', 'swift', 'react-native', 'universal-interface'],
   },
   './integrations/meta.json': {
     title: 'Integrations',
@@ -250,6 +251,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './sdks/node.mdx': docsSdksNodePage,
   './sdks/php.mdx': docsSdksPhpPage,
   './sdks/python.mdx': docsSdksPythonPage,
+  './sdks/react-native.mdx': docsSdksReactNativePage,
   './sdks/ruby.mdx': docsSdksRubyPage,
   './sdks/swift.mdx': docsSdksSwiftPage,
   './sdks/universal-interface.mdx': docsSdksUniversalInterfacePage,

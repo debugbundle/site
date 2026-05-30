@@ -57,7 +57,7 @@ Pick the path that matches your project.
 
 If you need frontend exceptions, breadcrumbs, and browser-to-backend trace correlation, add the Browser SDK too. Use it by itself for frontend-only cloud deployments, or pair it with a backend relay for full-stack apps.
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', '.NET', 'Go', 'Ruby', 'Android', 'Swift', 'Existing Logs']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', '.NET', 'Go', 'Ruby', 'Android', 'Swift', 'React Native', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -236,7 +236,7 @@ For Rails, Rack, Sidekiq, logging integrations, probes, and browser relay setup,
 
 ```kotlin
 dependencies {
-    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.0"))
+    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.2"))
     implementation("com.debugbundle:debugbundle-android")
     implementation("com.debugbundle:debugbundle-android-okhttp")
 }
@@ -261,7 +261,7 @@ For Android crash replay, ANR/process-exit capture, offline queueing, OkHttp, Kt
 ```swift
 .package(
     url: "https://github.com/debugbundle/debugbundle-swift",
-    from: "0.1.0"
+    from: "0.1.1"
 )
 ```
 
@@ -276,6 +276,27 @@ DebugBundle.initialize(
 ```
 
 For SwiftUI/UIKit lifecycle breadcrumbs, URLSession, Alamofire, SwiftLog, crash replay, offline queueing, and probes, see [Swift SDK](/docs/sdks/swift).
+
+  </Tab>
+  <Tab>
+
+```bash
+npm install @debugbundle/sdk-react-native
+cd ios && pod install
+```
+
+```typescript
+import { DebugBundle } from '@debugbundle/sdk-react-native';
+
+DebugBundle.init({
+  projectToken: process.env.EXPO_PUBLIC_DEBUGBUNDLE_TOKEN,
+  environment: __DEV__ ? 'development' : 'production',
+  service: 'mobile-app',
+  tracePropagationTargets: ['https://api.example.com'],
+});
+```
+
+For React error-boundary capture, React Navigation breadcrumbs, fetch/XHR trace propagation, Expo development builds, native offline queueing, and Expo Go caveats, see [React Native SDK](/docs/sdks/react-native).
 
   </Tab>
   <Tab>
@@ -367,7 +388,7 @@ Pick the path that matches your project.
 
 Local-only browser capture requires a backend relay so the browser SDK can hand events to your backend, which then writes them into `.debugbundle/local/events/` for `debugbundle process`.
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', '.NET', 'Go', 'Ruby', 'Android', 'Swift', 'Existing Logs']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', '.NET', 'Go', 'Ruby', 'Android', 'Swift', 'React Native', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -549,7 +570,7 @@ For Rails, Rack, Sidekiq, logging integrations, probes, and browser relay setup,
 
 ```kotlin
 dependencies {
-    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.0"))
+    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.2"))
     implementation("com.debugbundle:debugbundle-android")
     implementation("com.debugbundle:debugbundle-android-okhttp")
 }
@@ -574,7 +595,7 @@ The Android SDK writes through its app-private offline queue in local/developmen
 ```swift
 .package(
     url: "https://github.com/debugbundle/debugbundle-swift",
-  from: "0.1.0"
+    from: "0.1.1"
 )
 ```
 
@@ -583,13 +604,35 @@ DebugBundle.initialize(
     DebugBundleConfig(
         projectToken: "local",
         environment: "development",
-      service: "ios-app",
-      endpoint: URL(string: "http://127.0.0.1:9001/v1/events")!
+        service: "ios-app",
+        endpoint: URL(string: "http://127.0.0.1:9001/v1/events")!
     )
 )
 ```
 
 The Swift SDK writes through its app-private offline queue in local/development paths and can flush through a mock, staging, or self-hosted ingestion endpoint reachable from the simulator or device. Use the simulator loopback host, LAN IP, or self-hosted URL that your target device can actually reach. For runtime setup and local limitations, see [Swift SDK](/docs/sdks/swift).
+
+  </Tab>
+  <Tab>
+
+```bash
+npm install @debugbundle/sdk-react-native
+cd ios && pod install
+```
+
+```typescript
+import { DebugBundle } from '@debugbundle/sdk-react-native';
+
+DebugBundle.init({
+  projectToken: 'local',
+  environment: 'development',
+  service: 'mobile-app',
+  endpoint: 'http://127.0.0.1:9001/v1/events',
+  tracePropagationTargets: ['http://127.0.0.1:3000'],
+});
+```
+
+React Native writes through the native Android/iOS offline queues and can flush to a mock, staging, self-hosted, or cloud endpoint reachable from the simulator or device. It does not write `.debugbundle/local/events` directly. For runtime setup and local limitations, see [React Native SDK](/docs/sdks/react-native).
 
   </Tab>
   <Tab>
@@ -624,7 +667,7 @@ try {
 }
 ```
 
-For Python, PHP, Java, .NET, Go, Ruby, Android, or Swift, use the equivalent language-specific capture method from the SDK guide.
+For Python, PHP, Java, .NET, Go, Ruby, Android, Swift, or React Native, use the equivalent language-specific capture method from the SDK guide.
 
 ### 5. Process and Inspect
 

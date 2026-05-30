@@ -1,0 +1,252 @@
+---
+title: "React Native SDK"
+description: "Install DebugBundle in React Native apps with TypeScript APIs, React helpers, navigation breadcrumbs, fetch/XHR trace propagation, native offline queueing, and Expo development-build support."
+icon: Smartphone
+---
+
+The React Native SDK is the cross-platform mobile client SDK for iOS and Android React Native applications. It captures React error-boundary exceptions, global JavaScript errors, unhandled promise rejections where the active runtime exposes a safe hook, screen breadcrumbs, first-party network request failures, logs, messages, and probes without throwing back into app code.
+
+React Native is a mobile direct-ingestion SDK, not a browser relay host. It sends mobile events to the configured ingestion endpoint using a write-only project token and uses scoped fetch/XHR instrumentation for backend correlation. Browser relay settings such as `transportMode`, `allowedOrigins`, CORS preflight handling, and `/debugbundle/browser` routes belong to the Browser SDK plus a backend relay.
+
+The SDK is published on npm as `@debugbundle/sdk-react-native` and lives at `https://github.com/debugbundle/debugbundle-react-native`.
+
+## Installation
+
+Install the package:
+
+```bash
+npm install @debugbundle/sdk-react-native
+```
+
+For iOS, install pods after the package is added:
+
+```bash
+cd ios
+pod install
+```
+
+The React Native podspec depends on the native `DebugBundle` CocoaPod from the Swift SDK. That pod is published as `DebugBundle` `0.1.1`.
+
+Android apps must enable core library desugaring because the native Android SDK dependency uses Java APIs that need desugaring on the minimum API level:
+
+```text
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+}
+```
+
+Expo prebuild and development-build apps can use the included config plugin:
+
+```json
+{
+  "expo": {
+    "plugins": ["@debugbundle/sdk-react-native"]
+  }
+}
+```
+
+Expo Go cannot load custom native modules, so the SDK reports degraded status there and does not claim durable native queueing, native crash evidence, native device context, or remote-probe parity.
+
+## Runtime Support
+
+| Lane | Support |
+|---|---|
+| Minimum compatibility | React Native 0.76+, React 18.2+, iOS 15+, Android minSdk 23 |
+| Recommended production | Current stable React Native 0.85.x with Hermes; enable the New Architecture when your app supports it |
+| Installed-base compatibility | React Native 0.76 through current stable, including legacy bridge apps |
+| Rolling CI | TypeScript/package smoke, Android bridge compile on RN 0.76.9, 0.82.1, and 0.85.3, plus current-stable Android and iOS clean-app smokes |
+| JavaScript engines | Hermes is the primary tested engine; JSC is best-effort where the selected RN lane supports it |
+| Native dependency floors | Android SDK `com.debugbundle:debugbundle-android-bom:0.1.2`; Swift CocoaPod `DebugBundle ~> 0.1.1` |
+
+The npm peer dependency accepts `react-native >=0.76 <1.0` and `react >=18.2 <20`. Older React Native lanes are compatibility support for installed-base reach, not the recommended production posture.
+
+## Initialize
+
+Initialize once near app startup:
+
+```ts
+import { DebugBundle } from "@debugbundle/sdk-react-native";
+
+DebugBundle.init({
+  projectToken: process.env.EXPO_PUBLIC_DEBUGBUNDLE_TOKEN,
+  service: "checkout-mobile",
+  environment: __DEV__ ? "development" : "production",
+  releaseChannel: "app-store",
+  tracePropagationTargets: ["https://api.example.com"],
+});
+```
+
+Project tokens are write-only ingestion tokens, but mobile app tokens are extractable from the app binary or JavaScript bundle. Do not treat them as a secret boundary and never use member tokens in mobile apps.
+
+If the native module is unavailable, the project token is missing, or initialization fails, SDK methods degrade safely and `DebugBundle.status` reports `degraded` or `disconnected` instead of crashing the app or pretending capture is healthy.
+
+## Capture
+
+```ts
+try {
+  await checkout();
+} catch (error) {
+  DebugBundle.captureException(error, { screen: "Checkout" });
+}
+
+DebugBundle.captureLog("payment retry", "warning", { attempt });
+DebugBundle.captureMessage("checkout started");
+DebugBundle.setContext("account_tier", "team");
+DebugBundle.probe("checkout.cart", { items: itemCount });
+await DebugBundle.flush();
+```
+
+The universal facade also exposes `captureError`, `captureRequest`, `status`, `lastEventAt`, and `activateProbeTriggerToken`.
+
+## React Error Boundary
+
+Wrap your app or a critical subtree:
+
+```tsx
+import { DebugBundleErrorBoundary } from "@debugbundle/sdk-react-native/react";
+
+export function App() {
+  return (
+    <DebugBundleErrorBoundary>
+      <CheckoutRoot />
+    </DebugBundleErrorBoundary>
+  );
+}
+```
+
+The boundary captures the error and React component stack, then renders your fallback if provided. It does not swallow application errors outside the documented boundary behavior.
+
+## React Navigation
+
+React Navigation helpers record sanitized screen breadcrumbs:
+
+```tsx
+import { NavigationContainer } from "@react-navigation/native";
+import {
+  createDebugBundleNavigationRef,
+  onDebugBundleNavigationReady,
+  onDebugBundleNavigationStateChange,
+} from "@debugbundle/sdk-react-native/navigation";
+
+export const navigationRef = createDebugBundleNavigationRef();
+
+export function AppNavigation() {
+  return (
+    <NavigationContainer
+      ref={navigationRef}
+      onReady={() => onDebugBundleNavigationReady(navigationRef)}
+      onStateChange={() => onDebugBundleNavigationStateChange(navigationRef)}
+    >
+      {/* navigators */}
+    </NavigationContainer>
+  );
+}
+```
+
+Screen names are sanitized and bounded. Route params, props, view text, form values, and raw state are not captured by default.
+
+## Network Capture
+
+Install fetch/XHR instrumentation once after initialization:
+
+```ts
+import { instrumentDebugBundleNetwork } from "@debugbundle/sdk-react-native/network";
+
+instrumentDebugBundleNetwork({
+  tracePropagationTargets: ["https://api.example.com"],
+});
+```
+
+Trace headers are added only to relative URLs and explicitly configured first-party targets. Matching requests receive `X-DebugBundle-Trace-Id`, network breadcrumbs, and `request_event` capture for failed responses. Third-party absolute URLs are not instrumented by default.
+
+Request and response bodies are off by default. Header capture is allowlist-based and redacted before the event crosses into native queueing.
+
+## Offline Queue And Native Foundations
+
+The React Native package delegates durable mobile primitives to the native SDKs:
+
+| Platform | Native foundation |
+|---|---|
+| Android | `com.debugbundle:debugbundle-android` for queueing, transport, lifecycle, crash/ANR replay, capture policy, and probes |
+| iOS | `DebugBundle` Swift SDK CocoaPod for queueing, transport, config/status, crash/error capture handoff, and probes |
+
+Queued events survive app restart while offline and flush with platform-aware retry/backoff when connectivity and lifecycle allow. Fatal-crash evidence is handled by the native SDK paths and uploaded on the next safe launch where supported.
+
+## Probes
+
+Always-on probes buffer redacted diagnostic data locally and attach it to exception payloads:
+
+```ts
+DebugBundle.probe("checkout.tax", {
+  amount,
+  country,
+});
+```
+
+Heavy probes stay dormant until a remote directive or trigger token activates them:
+
+```ts
+DebugBundle.probe(
+  "checkout.expensive_state",
+  () => collectExpensiveDiagnostics(),
+  { heavy: true },
+);
+```
+
+Trigger tokens can be activated explicitly when you receive a `dbundle_probe_...` token from the probe API, CLI, or MCP:
+
+```ts
+await DebugBundle.activateProbeTriggerToken(token);
+```
+
+## Privacy Defaults
+
+React Native defaults are conservative for consumer, finance, healthcare, and enterprise apps:
+
+- request and response bodies are disabled by default
+- raw view hierarchy, screenshots, text content, props, state, clipboard, contacts, photos, precise location, advertising IDs, Android ID, IDFV, and keychain/keystore values are not captured by default
+- route params and screen names are sanitized and bounded
+- JS-originated payloads are redacted before native queue persistence
+- project tokens are used only for write-only ingestion
+
+Prefer explicit low-cardinality context values:
+
+```ts
+DebugBundle.setContext("account_tier", "team");
+DebugBundle.setContext("region", "eu");
+```
+
+Avoid raw PII, access tokens, full request bodies, or unbounded objects in context and probe payloads.
+
+## First-Event Verification
+
+After installation, trigger one explicit test event and flush:
+
+```ts
+DebugBundle.captureException(new Error("debugbundle react native smoke"));
+await DebugBundle.flush();
+```
+
+For cloud projects, run:
+
+```bash
+debugbundle verify cloud --project-id proj_01HXYZ... --expect-app-event --service checkout-mobile
+```
+
+For local mobile development, use a mock, staging, self-hosted, or cloud endpoint reachable from the simulator or device. React Native does not write `.debugbundle/local/events` directly.
+
+## Next Steps
+
+- [Universal SDK Interface](/docs/sdks/universal-interface) — Shared behavior and guarantees across every SDK
+- [Android SDK](/docs/sdks/android) — Native Android foundation used by the RN Android bridge
+- [Swift SDK](/docs/sdks/swift) — Native iOS foundation and CocoaPods dependency used by the RN iOS bridge
+- [Capture Policy](/docs/capture-policy) — Server-owned policy and capture-rule behavior
+- [Quickstart](/docs/quickstart) — Cloud and local-only setup flows

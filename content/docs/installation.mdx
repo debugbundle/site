@@ -17,7 +17,7 @@ The CLI runs setup, local processing, incident inspection, token management, clo
 
 ## SDKs
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', '.NET', 'Go', 'Ruby', 'Android', 'Swift', 'WordPress']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', '.NET', 'Go', 'Ruby', 'Android', 'Swift', 'React Native', 'WordPress']}>
   <Tab>
 
 ```bash
@@ -185,7 +185,7 @@ Rails, Rack, Sidekiq, Ruby Logger, Semantic Logger, local file transport, remote
 
 ```kotlin
 dependencies {
-    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.0"))
+    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.2"))
     implementation("com.debugbundle:debugbundle-android")
     implementation("com.debugbundle:debugbundle-android-okhttp")
 }
@@ -202,7 +202,7 @@ DebugBundle.init(
 )
 ```
 
-The Android SDK is pre-release and covers native runtime capture, crash/ANR replay, WorkManager flushing, offline queueing, OkHttp, Ktor client, Navigation, Compose, Timber, and probes. See [Android SDK](/docs/sdks/android).
+The Android SDK covers native runtime capture, crash/ANR replay, WorkManager flushing, offline queueing, OkHttp, Ktor client, Navigation, Compose, Timber, and probes. See [Android SDK](/docs/sdks/android).
 
   </Tab>
   <Tab>
@@ -210,7 +210,7 @@ The Android SDK is pre-release and covers native runtime capture, crash/ANR repl
 ```swift
 .package(
     url: "https://github.com/debugbundle/debugbundle-swift",
-  from: "0.1.0"
+    from: "0.1.1"
 )
 ```
 
@@ -225,6 +225,27 @@ DebugBundle.initialize(
 ```
 
 The Swift SDK covers native iOS/iPadOS runtime capture, crash replay helpers, offline queueing, URLSession, Alamofire, UIKit, SwiftUI, SwiftLog, and probes. See [Swift SDK](/docs/sdks/swift).
+
+  </Tab>
+  <Tab>
+
+```bash
+npm install @debugbundle/sdk-react-native
+cd ios && pod install
+```
+
+```typescript
+import { DebugBundle } from '@debugbundle/sdk-react-native';
+
+DebugBundle.init({
+  projectToken: process.env.EXPO_PUBLIC_DEBUGBUNDLE_TOKEN,
+  environment: __DEV__ ? 'development' : 'production',
+  service: 'mobile-app',
+  tracePropagationTargets: ['https://api.example.com'],
+});
+```
+
+React Native supports iOS and Android through a TypeScript facade, React error boundary, React Navigation breadcrumbs, scoped fetch/XHR trace propagation, Expo development builds, and native queueing foundations. Minimum compatibility is React Native 0.76+, with current-stable 0.85.x recommended for production. See [React Native SDK](/docs/sdks/react-native).
 
   </Tab>
   <Tab>

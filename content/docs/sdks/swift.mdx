@@ -8,7 +8,7 @@ The Swift SDK is the native Apple-platform client SDK for iOS and iPadOS applica
 
 Swift is a mobile client SDK, not a browser relay host. It sends mobile events to the configured ingestion endpoint and uses explicit first-party URLSession or Alamofire instrumentation for trace correlation; browser relay settings such as `transportMode`, `allowedOrigins`, and CORS preflight handling belong to the Browser SDK plus a backend/server SDK relay.
 
-The SDK is available as `debugbundle-swift` `v0.1.0` through Swift Package Manager. The repository is live at `https://github.com/debugbundle/debugbundle-swift`.
+The SDK is available as `debugbundle-swift` `v0.1.1` through Swift Package Manager and as the core `DebugBundle` pod on CocoaPods. The repository is live at `https://github.com/debugbundle/debugbundle-swift`.
 
 ## Installation
 
@@ -17,7 +17,7 @@ Add the package to your app target:
 ```swift
 // Package.swift
 .dependencies: [
-    .package(url: "https://github.com/debugbundle/debugbundle-swift", from: "0.1.0")
+    .package(url: "https://github.com/debugbundle/debugbundle-swift", from: "0.1.1")
 ],
 .targets: [
     .target(
@@ -33,9 +33,19 @@ Add the package to your app target:
 ]
 ```
 
-In Xcode, you can also use **File -> Add Package Dependencies...** with the repository URL `https://github.com/debugbundle/debugbundle-swift` and select version `0.1.0` or a compatible version range.
+In Xcode, you can also use **File -> Add Package Dependencies...** with the repository URL `https://github.com/debugbundle/debugbundle-swift` and select version `0.1.1` or a compatible version range.
 
 The package currently supports iOS 15+ and exposes focused products for core capture, URLSession, Alamofire, UIKit, SwiftUI, SwiftLog, crash reporting, and test support.
+
+For CocoaPods-based iOS apps or React Native autolinking, install the core pod:
+
+```ruby
+target "CheckoutApp" do
+  pod "DebugBundle", "~> 0.1.1"
+end
+```
+
+The CocoaPods package currently publishes the core `DebugBundle` native client. Use Swift Package Manager when you need the optional Swift package products listed below.
 
 ## Initialize
 

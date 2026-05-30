@@ -294,7 +294,7 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
       installLang: 'kotlin',
       installCode: [
         'dependencies {',
-        '    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.0"))',
+        '    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.2"))',
         '    implementation("com.debugbundle:debugbundle-android")',
         '    implementation("com.debugbundle:debugbundle-android-okhttp")',
         '}',
@@ -312,7 +312,7 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
       ].join('\n'),
       description: (
         <>
-          Android runtime capture, crash/ANR replay, WorkManager flushing, OkHttp, Ktor client, Navigation, Compose, Timber, offline queueing, and probes are included in the pre-release Android SDK. See{' '}
+          Android runtime capture, crash/ANR replay, WorkManager flushing, OkHttp, Ktor client, Navigation, Compose, Timber, offline queueing, and probes are included in the published Android SDK. See{' '}
           <Link className={linkClassName} href="/docs/sdks/android/">
             Android SDK
           </Link>
@@ -328,7 +328,7 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
       installCode: [
         '.package(',
         '    url: "https://github.com/debugbundle/debugbundle-swift",',
-        '    from: "0.1.0"',
+        '    from: "0.1.1"',
         ')',
       ].join('\n'),
       setupLang: 'swift',
@@ -346,6 +346,33 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
           Swift runtime capture, UIKit and SwiftUI breadcrumbs, URLSession, Alamofire, SwiftLog, crash replay, offline queueing, and probes are included in the Swift SDK. See{' '}
           <Link className={linkClassName} href="/docs/sdks/swift/">
             Swift SDK
+          </Link>
+          .
+        </>
+      ),
+    },
+    {
+      value: 'react-native',
+      label: 'React Native',
+      icon: Smartphone,
+      installLang: 'bash',
+      installCode: ['npm install @debugbundle/sdk-react-native', 'cd ios && pod install'].join('\n'),
+      setupLang: 'typescript',
+      setupCode: [
+        'import { DebugBundle } from "@debugbundle/sdk-react-native";',
+        '',
+        'DebugBundle.init({',
+        '  projectToken: process.env.EXPO_PUBLIC_DEBUGBUNDLE_TOKEN,',
+        '  environment: __DEV__ ? "development" : "production",',
+        '  service: "mobile-app",',
+        '  tracePropagationTargets: ["https://api.example.com"],',
+        '});',
+      ].join('\n'),
+      description: (
+        <>
+          React Native apps get a TypeScript facade, React error boundary, React Navigation breadcrumbs, scoped fetch/XHR trace propagation, Expo development-build support, and Android/iOS native queueing foundations. See{' '}
+          <Link className={linkClassName} href="/docs/sdks/react-native/">
+            React Native SDK
           </Link>
           .
         </>

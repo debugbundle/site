@@ -35,22 +35,22 @@ All SDKs follow the same safety contract:
 
 ## V1 Parity Matrix
 
-| Capability | Node.js | Browser | Python | PHP | WordPress | Java | .NET | Go | Ruby | Android | Swift |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| Status | Shipped | Shipped | Shipped | Shipped | Shipped via GitHub Releases | Shipped | Released v0.1.1 | Shipped | Shipped | Pre-release | Released v0.1.0 |
-| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | `debugbundle-wordpress` | Maven `com.debugbundle` modules | NuGet `DebugBundle.Sdk` plus `DebugBundle.*` integrations | `github.com/debugbundle/debugbundle-go` | `debugbundle` | Maven `com.debugbundle` Android modules | `https://github.com/debugbundle/debugbundle-swift` |
-| Unhandled exceptions | Yes | Yes | Yes | Yes | Yes, through PHP SDK | Yes | Yes | Yes | Yes | Yes, next-launch crash replay | Bounded next-launch crash replay helpers |
-| Handled exception capture | Yes | Yes | Yes | Yes | Yes, through PHP SDK | Yes | Yes | Yes | Yes | Yes | Yes |
-| Request 5xx incident capture | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes, OkHttp/Ktor | Yes, URLSession/Alamofire |
-| Browser first-party 5xx promotion | N/A | Yes | N/A | N/A | Yes, through browser SDK | N/A | N/A | N/A | N/A | N/A | N/A |
-| Breadcrumbs | No | Yes | No | No | Yes, through browser SDK | No | No | No | No | Yes, screen/app/network | Yes, screen/app/network |
-| Relay support | Full relay handler + adapters | Relay client path | Full relay handler | Full relay handler | WordPress REST relay | Spring Boot and servlet relay routes | ASP.NET Core endpoint mapping | Full relay handler | Rack middleware + Rails route | N/A, direct mobile client | N/A, direct mobile client |
-| Remote config and capture policy | Yes | Yes | Yes | Yes | Yes, backend SDK path | Yes | Yes | Yes | Yes | Yes | Yes |
-| Local capture-rule enforcement | Drop + sampled-out sample | Demote, sample, drop | Server backstop | Server backstop | Browser SDK path + server backstop | Server backstop | Capture policy locally, ingestion backstop | Server backstop | Server backstop | Server backstop | Server backstop |
-| Probes | Yes | Yes | Yes | Yes | Yes, through bundled SDKs | Yes | Yes | Yes | Yes | Yes | Yes |
-| Redaction defaults | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes, with Rails filters | Yes | Yes |
-| Framework integrations | Express, Fastify, Next.js | Browser-native; works with React, Next.js client-side, Vue, Angular, Svelte, and vanilla apps | Django, Flask, FastAPI | Laravel, Symfony | WordPress plugin wrapper | Spring Boot, servlet, JAX-RS/RESTEasy, WildFly/JBoss | ASP.NET Core, gRPC, Worker Service, Hangfire, Azure Functions isolated worker, Microsoft.Extensions.Logging, Serilog, NLog, log4net | net/http, Gin, Echo | Rails, Rack, Sidekiq | Android runtime, OkHttp, Ktor, Navigation, Compose, Timber | iOS runtime, URLSession, Alamofire, UIKit, SwiftUI, SwiftLog |
-| Local file transport | Yes | No | Yes | Yes | Relay spool for browser events | Yes | Yes | Yes | Yes | Offline queue | Offline queue |
+| Capability | Node.js | Browser | Python | PHP | WordPress | Java | .NET | Go | Ruby | Android | Swift | React Native |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Status | Shipped | Shipped | Shipped | Shipped | Shipped via GitHub Releases | Shipped | Released v0.1.1 | Shipped | Shipped | Released v0.1.2 | Released v0.1.1 | Released v0.1.1 |
+| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | `debugbundle-wordpress` | Maven `com.debugbundle` modules | NuGet `DebugBundle.Sdk` plus `DebugBundle.*` integrations | `github.com/debugbundle/debugbundle-go` | `debugbundle` | Maven `com.debugbundle` Android modules | `https://github.com/debugbundle/debugbundle-swift` / CocoaPods `DebugBundle` | `@debugbundle/sdk-react-native` |
+| Unhandled exceptions | Yes | Yes | Yes | Yes | Yes, through PHP SDK | Yes | Yes | Yes | Yes | Yes, next-launch crash replay | Bounded next-launch crash replay helpers | Yes, global JS hooks plus native crash handoff |
+| Handled exception capture | Yes | Yes | Yes | Yes | Yes, through PHP SDK | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| Request 5xx incident capture | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes, OkHttp/Ktor | Yes, URLSession/Alamofire | Yes, fetch/XHR |
+| Browser first-party 5xx promotion | N/A | Yes | N/A | N/A | Yes, through browser SDK | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
+| Breadcrumbs | No | Yes | No | No | Yes, through browser SDK | No | No | No | No | Yes, screen/app/network | Yes, screen/app/network | Yes, React Navigation/app/network/action |
+| Relay support | Full relay handler + adapters | Relay client path | Full relay handler | Full relay handler | WordPress REST relay | Spring Boot and servlet relay routes | ASP.NET Core endpoint mapping | Full relay handler | Rack middleware + Rails route | N/A, direct mobile client | N/A, direct mobile client | N/A, direct mobile client |
+| Remote config and capture policy | Yes | Yes | Yes | Yes | Yes, backend SDK path | Yes | Yes | Yes | Yes | Yes | Yes | Yes, through native foundations |
+| Local capture-rule enforcement | Drop + sampled-out sample | Demote, sample, drop | Server backstop | Server backstop | Browser SDK path + server backstop | Server backstop | Capture policy locally, ingestion backstop | Server backstop | Server backstop | Server backstop | Server backstop | Native SDK enforcement plus ingestion backstop |
+| Probes | Yes | Yes | Yes | Yes | Yes, through bundled SDKs | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| Redaction defaults | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes, with Rails filters | Yes | Yes | Yes |
+| Framework integrations | Express, Fastify, Next.js | Browser-native; works with React, Next.js client-side, Vue, Angular, Svelte, and vanilla apps | Django, Flask, FastAPI | Laravel, Symfony | WordPress plugin wrapper | Spring Boot, servlet, JAX-RS/RESTEasy, WildFly/JBoss | ASP.NET Core, gRPC, Worker Service, Hangfire, Azure Functions isolated worker, Microsoft.Extensions.Logging, Serilog, NLog, log4net | net/http, Gin, Echo | Rails, Rack, Sidekiq | Android runtime, OkHttp, Ktor, Navigation, Compose, Timber | iOS runtime, URLSession, Alamofire, UIKit, SwiftUI, SwiftLog | React error boundary, React Navigation, Expo development builds |
+| Local file transport | Yes | No | Yes | Yes | Relay spool for browser events | Yes | Yes | Yes | Yes | Offline queue | Offline queue | Offline queue |
 
 Across all shipped SDKs, request failures with 5xx responses remain incident signals. On the Browser SDK, first-party 5xx `fetch` and `XMLHttpRequest` responses also stay in the breadcrumb trail while emitting standalone `request_event` signals for incident creation.
 
@@ -61,11 +61,11 @@ SDKs automatically select the right transport based on your configuration:
 | Mode | Destination | When |
 |---|---|---|
 | **File** | `.debugbundle/local/events/` | Server-side local-only mode, or `development`/`local` environment in connected mode |
-| **Offline queue** | App-private mobile storage | Android and Swift offline, background, local, and deferred-flush paths |
+| **Offline queue** | App-private mobile storage | Android, Swift, and React Native offline, background, local, and deferred-flush paths |
 | **HTTP** | `POST /v1/events` | Connected mode in `staging`/`production` |
 | **Relay** | Same-origin `POST /debugbundle/browser` | Browser SDK (always relays through your backend) |
 
-File transport uses atomic temp-file + rename to prevent partial writes. Android and Swift use bounded app-private queues instead of writing directly to `.debugbundle/local/events/`.
+File transport uses atomic temp-file + rename to prevent partial writes. Android, Swift, and React Native use bounded app-private queues instead of writing directly to `.debugbundle/local/events/`.
 
 ## Volume Control
 
@@ -92,6 +92,7 @@ Combined with server-side **capture policy** (configurable presets: `minimal`, `
 - [Ruby SDK](/docs/sdks/ruby) — Rails, Rack, Sidekiq, Logger, Semantic Logger, and browser relay setup
 - [Android SDK](/docs/sdks/android) — Crash replay, ANR/process-exit capture, offline queueing, OkHttp, Ktor, Navigation, Compose, Timber, and probes
 - [Swift SDK](/docs/sdks/swift) — SwiftUI, UIKit, URLSession, Alamofire, SwiftLog, crash replay, offline queueing, and probes
+- [React Native SDK](/docs/sdks/react-native) — TypeScript API, React helpers, React Navigation, fetch/XHR trace propagation, Expo development builds, and native queues
 - [WordPress Plugin](/docs/integrations/wordpress) — Installable plugin with backend capture, frontend capture, and a built-in browser relay
 - [Universal Interface](/docs/sdks/universal-interface) — Complete interface contract across all languages
 - [Browser Relay Setup](/docs/sdks/browser-relay) — How browser events reach DebugBundle through your backend

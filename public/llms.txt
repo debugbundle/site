@@ -30,6 +30,8 @@ Capture and integration docs
 - Go SDK: https://debugbundle.com/docs/sdks/go/
 - Ruby SDK: https://debugbundle.com/docs/sdks/ruby/
 - Android SDK: https://debugbundle.com/docs/sdks/android/
+- Swift SDK: https://debugbundle.com/docs/sdks/swift/
+- React Native SDK: https://debugbundle.com/docs/sdks/react-native/
 - Universal SDK interface: https://debugbundle.com/docs/sdks/universal-interface/
 - WordPress integration: https://debugbundle.com/docs/integrations/wordpress/
 - Log ingestion: https://debugbundle.com/docs/cli/log-ingestion/

@@ -35,6 +35,7 @@ Every SDK exposes these methods:
 | Ruby | snake_case | `DebugBundle.capture_exception(error)` |
 | Android | Kotlin camelCase | `DebugBundle.captureException(error)` |
 | Swift | Swift camelCase | `DebugBundle.captureException(error)` |
+| React Native | camelCase | `DebugBundle.captureException(error)` |
 
 ## Configuration Fields
 
@@ -74,7 +75,7 @@ All SDKs accept these common configuration fields:
 |------|-----|-------------|
 | `http` | Server and mobile SDKs | Direct HTTPS to ingestion API. Default for connected projects. |
 | `file` | Node, Python, PHP, Java, .NET, Go, Ruby | Write events to local filesystem for CLI processing. Default for local-only server projects. |
-| `offline queue` | Android, Swift | Bounded app-private queue with platform-aware deferred flushing. Used for offline, background, and local/development paths. |
+| `offline queue` | Android, Swift, React Native | Bounded app-private queue with platform-aware deferred flushing. Used for offline, background, and local/development paths. |
 | `relay` | Browser | Send events through your backend relay endpoint instead of directly to DebugBundle. |
 
 Transport is automatically selected based on your `.debugbundle/local/connection.json` mode:
@@ -115,10 +116,10 @@ Current shipped scope: the Node.js SDK captures the full safe process-fact set. 
 | Type | Source | Description |
 |------|--------|-------------|
 | `backend_exception` | Server SDKs | Unhandled or manually captured exceptions. |
-| `frontend_exception` | Browser SDK | JavaScript errors and promise rejections. |
-| `request_event` | Server SDKs; Browser SDK for first-party 5xx network failures | HTTP request/response pairs. |
+| `frontend_exception` | Browser and mobile client SDKs | JavaScript, React Native, Android, or iOS client errors. |
+| `request_event` | Server SDKs; Browser SDK for first-party 5xx network failures; mobile SDKs for scoped first-party requests | HTTP request/response pairs. |
 | `log_event` | All SDKs | Structured log entries. |
-| `frontend_breadcrumb` | Browser SDK | User interaction breadcrumbs (clicks, navigation, network). |
+| `frontend_breadcrumb` | Browser and mobile client SDKs | User interaction, navigation, app lifecycle, and network breadcrumbs. |
 | `deploy_metadata` | CLI / API | Deployment information. |
 | `error_suppressed` | All SDKs | Aggregated duplicate errors from volume control. |
 | `probe_event` | All SDKs | Diagnostic ring buffer snapshots. |
@@ -209,17 +210,17 @@ Custom fields are merged with defaults — you cannot disable default redaction.
 
 ## SDK Support Snapshot
 
-| Feature | Node.js | Browser | Python | PHP | Java | .NET | Go | Ruby | Android | Swift |
-|---------|---------|---------|--------|-----|------|------|----|------|---------|-------|
-| Status | Shipped | Shipped | Shipped | Shipped | Shipped | Released v0.1.1 | Shipped | Shipped | Pre-release | Released v0.1.0 |
-| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | Maven `com.debugbundle` modules | NuGet `DebugBundle.Sdk` plus `DebugBundle.*` integrations | `github.com/debugbundle/debugbundle-go` | `debugbundle` | Maven `com.debugbundle` Android modules | `https://github.com/debugbundle/debugbundle-swift` |
-| Framework integrations | Express, Fastify, Next.js | — | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot, servlet, JAX-RS | ASP.NET Core, gRPC, Worker Service, Hangfire, Azure Functions isolated worker | `net/http`, Gin, Echo | Rails, Rack, Sidekiq | Android runtime, OkHttp, Ktor, Navigation, Compose | iOS runtime, URLSession, Alamofire, UIKit, SwiftUI |
-| Logger integrations | pino, winston, bunyan | — | logging, structlog, loguru | Monolog | JUL, Logback | Microsoft.Extensions.Logging, Serilog, NLog, log4net | slog, zap, zerolog | Logger, Semantic Logger | Timber | SwiftLog |
-| Safe backend/runtime facts | Full process facts | — | Full process facts | Full process facts | Full process facts | .NET runtime and hosting facts | Full process facts | Full process facts | Android app/device context | iOS app/device context |
-| Breadcrumbs | — | Yes | — | — | — | — | — | — | Yes | Yes |
-| Relay handler | Express, Fastify, Next.js | Relay client path | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot, servlet, JAX-RS | ASP.NET Core endpoint mapping | `net/http`, Gin, Echo | Rack middleware + Rails route | N/A | N/A |
-| Probes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
-| File transport | Yes | — | Yes | Yes | Yes | Yes | Yes | Yes | Offline queue | Offline queue |
+| Feature | Node.js | Browser | Python | PHP | Java | .NET | Go | Ruby | Android | Swift | React Native |
+|---------|---------|---------|--------|-----|------|------|----|------|---------|-------|--------------|
+| Status | Shipped | Shipped | Shipped | Shipped | Shipped | Released v0.1.1 | Shipped | Shipped | Released v0.1.2 | Released v0.1.1 | Released v0.1.1 |
+| Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | Maven `com.debugbundle` modules | NuGet `DebugBundle.Sdk` plus `DebugBundle.*` integrations | `github.com/debugbundle/debugbundle-go` | `debugbundle` | Maven `com.debugbundle` Android modules | `https://github.com/debugbundle/debugbundle-swift` / CocoaPods `DebugBundle` | `@debugbundle/sdk-react-native` |
+| Framework integrations | Express, Fastify, Next.js | — | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot, servlet, JAX-RS | ASP.NET Core, gRPC, Worker Service, Hangfire, Azure Functions isolated worker | `net/http`, Gin, Echo | Rails, Rack, Sidekiq | Android runtime, OkHttp, Ktor, Navigation, Compose | iOS runtime, URLSession, Alamofire, UIKit, SwiftUI | React error boundary, React Navigation, Expo development builds |
+| Logger integrations | pino, winston, bunyan | — | logging, structlog, loguru | Monolog | JUL, Logback | Microsoft.Extensions.Logging, Serilog, NLog, log4net | slog, zap, zerolog | Logger, Semantic Logger | Timber | SwiftLog | JS console/log facade plus native foundations |
+| Safe backend/runtime facts | Full process facts | — | Full process facts | Full process facts | Full process facts | .NET runtime and hosting facts | Full process facts | Full process facts | Android app/device context | iOS app/device context | React Native app/device context through native foundations |
+| Breadcrumbs | — | Yes | — | — | — | — | — | — | Yes | Yes | Yes |
+| Relay handler | Express, Fastify, Next.js | Relay client path | Django, Flask, FastAPI | Laravel, Symfony | Spring Boot, servlet, JAX-RS | ASP.NET Core endpoint mapping | `net/http`, Gin, Echo | Rack middleware + Rails route | N/A | N/A | N/A |
+| Probes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes | Yes |
+| File transport | Yes | — | Yes | Yes | Yes | Yes | Yes | Yes | Offline queue | Offline queue | Offline queue |
 
 For the public V1 parity matrix, including 5xx request-failure behavior and relay support, see [SDKs](/docs/sdks).
 
@@ -235,4 +236,5 @@ For the public V1 parity matrix, including 5xx request-failure behavior and rela
 - [Ruby SDK](/docs/sdks/ruby) — Full Ruby setup with Rails, Rack, Sidekiq, logger integrations, and relay support
 - [Android SDK](/docs/sdks/android) — Full Android setup with crash replay, ANR capture, offline queueing, native HTTP instrumentation, and probes
 - [Swift SDK](/docs/sdks/swift) — Full Swift setup with SwiftUI, UIKit, URLSession, Alamofire, SwiftLog, offline queueing, crash replay helpers, and probes
+- [React Native SDK](/docs/sdks/react-native) — Full React Native setup with TypeScript APIs, React helpers, navigation, network capture, Expo development builds, and native queues
 - [Browser Relay Setup](/docs/sdks/browser-relay) — Relay architecture and backend setup

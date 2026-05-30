@@ -35,9 +35,9 @@ SDKs intercept errors and context at runtime. No manual instrumentation required
 | HTTP requests & responses | Method, URL, headers, body (redacted) |
 | Logs | Structured log entries via logger integrations (pino, winston, bunyan, structlog, loguru, Monolog) |
 | Browser activity | Console, navigation, DOM errors, network requests, breadcrumbs |
-| Mobile activity | Android and Swift lifecycle, screens, process foreground/background, crash replay where supported, ANR/process-exit capture on Android, and native HTTP breadcrumbs |
+| Mobile activity | Android, Swift, and React Native lifecycle, screens, process foreground/background, crash replay where supported, ANR/process-exit capture on Android, React Navigation breadcrumbs, and native HTTP breadcrumbs |
 | Probes | Always-on diagnostic ring buffer data (all tiers) |
-| Device context | Browser OS/screen/viewport/language preferences plus Android and Swift app/device/runtime facts, with sensitive values redacted before transmission |
+| Device context | Browser OS/screen/viewport/language preferences plus Android, Swift, and React Native app/device/runtime facts, with sensitive values redacted before transmission |
 
 **Capture policy** controls what gets shipped. The server-side capture policy (fetched by the SDK on init) defines three presets:
 
@@ -61,7 +61,7 @@ The SDK batches captured events, applies redaction, and sends them to their dest
 |---|---|---|
 | **File transport** | Server SDKs write events as JSON files to `.debugbundle/local/events/` (atomic temp-file + rename) | Server-side local development, local-only mode |
 | **HTTP transport** | SDK batches and POSTs events to `POST /v1/events` | Staging, production, connected mode |
-| **Mobile offline queue** | Android and Swift store bounded app-private event batches and flush when platform lifecycle and connectivity allow | Mobile offline, background, local/development, and retry paths |
+| **Mobile offline queue** | Android, Swift, and React Native store bounded app-private event batches and flush when platform lifecycle and connectivity allow | Mobile offline, background, local/development, and retry paths |
 
 In connected `staging` and `production`, backend SDK delivery does not depend on container-local disk. Ephemeral containers and pods are fine as long as they can reach the ingestion API and have enough graceful shutdown time to flush buffered events. In local-only mode, and in connected development, events are written to local disk, so use a mounted volume if you need those files to survive container replacement.
 
@@ -148,7 +148,7 @@ All three interfaces call the same domain services — no capability is exclusiv
 
 <WorkflowDiagram>
   <WorkflowStep title="SDKs and Logs" meta="Input">
-    Node.js, Browser, Python, PHP, Java, Go, Ruby, Android, Swift, WordPress, or existing log files.
+    Node.js, Browser, Python, PHP, Java, Go, Ruby, Android, Swift, React Native, WordPress, or existing log files.
   </WorkflowStep>
   <WorkflowStep title="Local Queues" meta="Local-only">
     Server events land in `.debugbundle/local/events/`; mobile SDKs use app-private offline queues before flush.
