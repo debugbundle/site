@@ -366,7 +366,7 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
         <div className="max-w-2xl space-y-2">
           <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">Quick installation guide</h2>
           <p className="text-base leading-7 text-[var(--site-text-muted)]">
-            Start with the agent path when you use a coding agent. Otherwise install the CLI manually, then add the SDK or ingestion path that matches your runtime.
+            Choose the agent path, or install the CLI and integration manually.
           </p>
         </div>
         <Link className={sectionLinkClassName} href="/docs/installation/" style={{ outlineColor: 'var(--site-focus)' }}>
