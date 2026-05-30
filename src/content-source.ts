@@ -68,6 +68,7 @@ import * as docsSelfHostingPage from '../content/docs/self-hosting.mdx';
 import * as docsSdksAndroidPage from '../content/docs/sdks/android.mdx';
 import * as docsSdksBrowserPage from '../content/docs/sdks/browser.mdx';
 import * as docsSdksBrowserRelayPage from '../content/docs/sdks/browser-relay.mdx';
+import * as docsSdksDotnetPage from '../content/docs/sdks/dotnet.mdx';
 import * as docsSdksGoPage from '../content/docs/sdks/go.mdx';
 import * as docsSdksIndexPage from '../content/docs/sdks/index.mdx';
 import * as docsSdksJavaPage from '../content/docs/sdks/java.mdx';
@@ -150,7 +151,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   },
   './sdks/meta.json': {
     title: 'SDKs',
-    pages: ['index', 'node', 'browser', 'browser-relay', 'python', 'php', 'java', 'go', 'ruby', 'android', 'swift', 'universal-interface'],
+    pages: ['index', 'node', 'browser', 'browser-relay', 'python', 'php', 'java', 'dotnet', 'go', 'ruby', 'android', 'swift', 'universal-interface'],
   },
   './integrations/meta.json': {
     title: 'Integrations',
@@ -242,6 +243,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './sdks/android.mdx': docsSdksAndroidPage,
   './sdks/browser.mdx': docsSdksBrowserPage,
   './sdks/browser-relay.mdx': docsSdksBrowserRelayPage,
+  './sdks/dotnet.mdx': docsSdksDotnetPage,
   './sdks/go.mdx': docsSdksGoPage,
   './sdks/index.mdx': docsSdksIndexPage,
   './sdks/java.mdx': docsSdksJavaPage,

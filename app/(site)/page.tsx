@@ -111,6 +111,12 @@ export default function HomePage(): ReactElement {
       icon: Coffee,
     },
     {
+      label: '.NET',
+      command: 'dotnet add package DebugBundle.AspNetCore',
+      href: '/docs/sdks/dotnet/',
+      icon: Braces,
+    },
+    {
       label: 'Go',
       command: 'go get github.com/debugbundle/debugbundle-go',
       href: '/docs/sdks/go/',

@@ -26,6 +26,7 @@ Capture and integration docs
 - Python SDK: https://debugbundle.com/docs/sdks/python/
 - PHP SDK: https://debugbundle.com/docs/sdks/php/
 - Java SDK: https://debugbundle.com/docs/sdks/java/
+- .NET SDK: https://debugbundle.com/docs/sdks/dotnet/
 - Go SDK: https://debugbundle.com/docs/sdks/go/
 - Ruby SDK: https://debugbundle.com/docs/sdks/ruby/
 - Android SDK: https://debugbundle.com/docs/sdks/android/

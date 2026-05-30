@@ -1,0 +1,319 @@
+---
+title: ".NET SDK"
+description: "Install DebugBundle in ASP.NET Core, Worker Service, gRPC, Hangfire, Azure Functions isolated worker, and Microsoft.Extensions.Logging applications."
+icon: Braces
+---
+
+The .NET SDK ships as a focused NuGet package family for C# and other .NET applications. Use `DebugBundle.AspNetCore` for web services, `DebugBundle.Sdk` for manual capture, and the optional integration packages only where your application already uses those frameworks.
+
+## Installation
+
+For ASP.NET Core APIs, MVC, Razor Pages, Minimal APIs, Blazor Server, and browser relay support:
+
+```bash
+dotnet add package DebugBundle.AspNetCore
+dotnet add package DebugBundle.Extensions.Logging
+```
+
+For worker-only or console applications:
+
+```bash
+dotnet add package DebugBundle.Sdk
+dotnet add package DebugBundle.Worker
+```
+
+Optional integrations are published as separate packages so core consumers do not inherit framework dependencies:
+
+```bash
+dotnet add package DebugBundle.Grpc.AspNetCore
+dotnet add package DebugBundle.Hangfire
+dotnet add package DebugBundle.AzureFunctions.Worker
+dotnet add package DebugBundle.Serilog
+dotnet add package DebugBundle.NLog
+dotnet add package DebugBundle.Log4Net
+```
+
+Keep every `DebugBundle.*` package on the same version when pinning package versions.
+
+## ASP.NET Core
+
+```csharp
+builder.Services.AddDebugBundle(options =>
+{
+    options.ProjectToken = builder.Configuration["DEBUGBUNDLE_PROJECT_TOKEN"];
+    options.Service = "checkout-api";
+    options.Environment = builder.Environment.EnvironmentName;
+});
+builder.Logging.AddDebugBundle();
+
+var app = builder.Build();
+
+app.UseDebugBundle();
+app.MapDebugBundleBrowserRelay("/debugbundle/browser");
+
+app.MapGet("/checkout/{id}", () => Results.Ok());
+app.Run();
+```
+
+`UseDebugBundle()` captures request method, path, route template, endpoint display name, response status, duration, request ID, `System.Diagnostics.Activity` context, and `X-DebugBundle-Trace-Id` when present. Exceptions are captured and rethrown so ASP.NET Core error handling, status pages, and hosting behavior remain in control.
+
+For Blazor Server circuit exceptions, opt in after the core service registration:
+
+```csharp
+builder.Services.AddDebugBundleBlazorServer();
+```
+
+Blazor WebAssembly is browser/client-side .NET and is not covered by this server SDK. Use the Browser SDK for client-side runtime failures.
+
+## Browser Relay
+
+ASP.NET Core can host the token-safe browser relay route:
+
+```csharp
+using DebugBundle.AspNetCore.Relay;
+
+builder.Services.Configure<DebugBundleRelayOptions>(relay =>
+{
+    relay.AllowedOrigins.Add("https://app.example.com");
+});
+
+var app = builder.Build();
+app.MapDebugBundleBrowserRelay("/debugbundle/browser");
+```
+
+The relay accepts browser SDK batches, validates origin, answers allowed `OPTIONS` preflight requests, enforces `application/json` and body-size limits, strips browser-supplied credentials, rate-limits by IP, writes local-only event files, writes connected durable spool files, and forwards with the server-side project token.
+
+If ASP.NET Core authentication protects all routes, leave the relay route unauthenticated and rely on the relay's origin, content-type, body-size, schema, credential-stripping, and rate-limit controls:
+
+```csharp
+app.MapDebugBundleBrowserRelay("/debugbundle/browser")
+    .AllowAnonymous();
+```
+
+## Microsoft.Extensions.Logging
+
+```csharp
+builder.Services.AddDebugBundle(options =>
+{
+    options.ProjectToken = builder.Configuration["DEBUGBUNDLE_PROJECT_TOKEN"];
+    options.Service = "checkout-api";
+});
+
+builder.Logging.AddDebugBundle(options =>
+{
+    options.MinimumLevel = LogLevel.Warning;
+    options.IncludeScopes = true;
+});
+```
+
+The provider captures structured `log_event` records in process. It preserves existing providers, includes logger category, level, event ID, rendered message, message template when available, structured state, scopes, `Activity` IDs, and exception summary. SDK-owned categories are skipped to prevent recursive capture.
+
+Optional adapters are dependency-isolated:
+
+```csharp
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.DebugBundle(debugBundleClient)
+    .CreateLogger();
+
+var nlogTarget = new DebugBundle.NLog.DebugBundleTarget(debugBundleClient);
+var log4netAppender = new DebugBundle.Log4Net.DebugBundleAppender(debugBundleClient);
+```
+
+## Manual Capture
+
+```csharp
+DebugBundle.DebugBundle.Init(new DebugBundleOptions
+{
+    ProjectToken = Environment.GetEnvironmentVariable("DEBUGBUNDLE_PROJECT_TOKEN"),
+    Service = "checkout-worker",
+    Environment = "production"
+});
+
+try
+{
+    RunJob();
+}
+catch (Exception exception)
+{
+    DebugBundle.DebugBundle.CaptureException(exception, new Dictionary<string, object?>
+    {
+        ["job_id"] = jobId
+    });
+    throw;
+}
+
+await DebugBundle.DebugBundle.FlushAsync();
+```
+
+The static facade uses PascalCase methods to match the universal SDK interface: `Init`, `CaptureException`, `CaptureError`, `CaptureLog`, `CaptureRequest`, `CaptureMessage`, `SetContext`, `Probe`, `FlushAsync`, `Status`, and `LastEventAt`.
+
+## Vanilla Hooks
+
+Vanilla hooks are explicit and idempotent:
+
+```csharp
+DebugBundle.DebugBundle.CaptureUnhandledExceptions();
+DebugBundle.DebugBundle.CaptureConsoleLogs(includeStandardOutput: false);
+
+DebugBundle.DebugBundle.WithExceptionCapture(() =>
+{
+    RunJob();
+}, new Dictionary<string, object?> { ["job_id"] = jobId });
+```
+
+Unhandled exception hooks observe `TaskScheduler.UnobservedTaskException` and `AppDomain.CurrentDomain.UnhandledException` without changing runtime termination behavior. Wrapper helpers capture and rethrow.
+
+## Worker Service
+
+```csharp
+builder.Services.AddDebugBundle(options =>
+{
+    options.ProjectToken = builder.Configuration["DEBUGBUNDLE_PROJECT_TOKEN"];
+    options.Service = "billing-worker";
+});
+builder.Services.AddDebugBundleWorkerCapture();
+
+await debugBundleClient.CaptureOperationAsync(
+    "billing.reconcile",
+    async (operation, cancellationToken) =>
+    {
+        operation.Set("tenant_id", tenantId);
+        await ReconcileAsync(cancellationToken);
+    },
+    stoppingToken);
+```
+
+Operation wrappers capture job context and exceptions, then rethrow. Cancellation requested through the provided token is preserved without converting normal shutdown into an error signal.
+
+## gRPC, Hangfire, And Azure Functions
+
+ASP.NET Core gRPC:
+
+```csharp
+builder.Services.AddGrpc().AddDebugBundleInterceptor();
+```
+
+Hangfire:
+
+```csharp
+GlobalJobFilters.Filters.Add(
+    new DebugBundle.Hangfire.DebugBundleHangfireFilter(debugBundleClient));
+```
+
+Azure Functions isolated worker:
+
+```csharp
+builder.Services.AddSingleton<IDebugBundleClient>(_ =>
+    DebugBundleClient.Create(options));
+builder.UseDebugBundle();
+```
+
+These integrations capture framework metadata, status, exceptions, retry/job/invocation identifiers where available, and sanitized binding or argument summaries. They do not capture protobuf bodies, Blazor component state, Hangfire argument values, Azure binding payload values, form bodies, or SignalR payloads by default.
+
+## Delivery Modes
+
+Connected production and staging services send batches to `POST /v1/events` and poll `GET /v1/sdk/config` for server-owned capture policy and remote probe directives:
+
+```csharp
+builder.Services.AddDebugBundle(options =>
+{
+    options.ProjectMode = DebugBundleProjectMode.Connected;
+    options.ProjectToken = builder.Configuration["DEBUGBUNDLE_PROJECT_TOKEN"];
+    options.Endpoint = new Uri("https://api.debugbundle.com/v1/events");
+});
+```
+
+Local-only mode writes event batches to `.debugbundle/local/events/` for `debugbundle process`:
+
+```csharp
+DebugBundle.DebugBundle.Init(new DebugBundleOptions
+{
+    ProjectMode = DebugBundleProjectMode.LocalOnly,
+    LocalEventsDir = ".debugbundle/local/events",
+    Service = "checkout-api",
+    Environment = "development"
+});
+```
+
+## Probes And Capture Policy
+
+Connected clients fetch server-owned capture policy and probe directives. Local SDK configuration does not accept capture-policy fields.
+
+Always-on probes buffer diagnostic snapshots in memory and flush them with exception events:
+
+```csharp
+DebugBundle.DebugBundle.Probe("checkout.cart", new { itemCount = cart.Items.Count });
+```
+
+Heavy probes stay dormant unless a matching remote activation or signed request-scoped trigger token enables them:
+
+```csharp
+DebugBundle.DebugBundle.Probe(
+    "checkout.sql.plan",
+    () => expensiveExplainPlan,
+    new ProbeOptions { Heavy = true });
+```
+
+Trigger tokens are accepted from `_debug_probe` and `X-DebugBundle-Probe-Trigger`.
+
+## Runtime Support
+
+| Lane | Support |
+|---|---|
+| Recommended production | .NET 10 LTS for new services, or .NET 8 LTS while it remains supported by Microsoft. |
+| Full server integrations | ASP.NET Core, gRPC, Worker Service, Hangfire, Azure Functions isolated worker, and logger packages target `net8.0` assets and are clean-install smoked under .NET 8 and .NET 10 SDK lanes. |
+| Installed-base core/manual capture | `DebugBundle.Sdk` and `DebugBundle.Extensions.Logging` include `netstandard2.0` assets for .NET Framework 4.8/4.8.1 style manual capture where feasible. |
+| Non-LTS .NET | .NET 9 can consume the `net8.0` package assets while Microsoft supports it, but DebugBundle release gates prioritize LTS lanes. |
+| Not supported | .NET 6 and .NET 7 are upstream EOL and are not supported. Classic ASP.NET `System.Web`, ASP.NET MVC 5, Web API 2, WCF, MAUI, WPF, WinForms, Xamarin, Unity, and Blazor WebAssembly are not first-class V1 integrations. |
+
+See Microsoft's [.NET support policy](https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core) for current support windows and patch requirements.
+
+## Privacy Defaults
+
+.NET defaults are conservative for healthcare, financial, government, and enterprise systems:
+
+- request and response bodies are off by default,
+- request headers are allowlisted,
+- sensitive fields are recursively redacted before buffering or transport,
+- environment variables are never captured as runtime facts,
+- existing request IDs and `Activity` context are preserved,
+- `X-DebugBundle-Trace-Id` links browser and backend events,
+- SDK failures are swallowed internally and never throw into host application code.
+
+## First Event Verification
+
+Use local-only mode for a no-cloud smoke:
+
+```csharp
+DebugBundle.DebugBundle.Init(new DebugBundleOptions
+{
+    ProjectMode = DebugBundleProjectMode.LocalOnly,
+    LocalEventsDir = ".debugbundle/local/events",
+    Service = "checkout-api",
+    Environment = "development"
+});
+
+DebugBundle.DebugBundle.CaptureException(new InvalidOperationException(".NET verify"));
+await DebugBundle.DebugBundle.FlushAsync();
+Console.WriteLine(DebugBundle.DebugBundle.Status);
+```
+
+Then run:
+
+```bash
+debugbundle process
+debugbundle inspect
+```
+
+For cloud verification, deploy with `DEBUGBUNDLE_PROJECT_TOKEN` set and run:
+
+```bash
+debugbundle verify cloud --project-id proj_01HXYZ... --trigger-5xx
+```
+
+## Next Steps
+
+- [Browser Relay Setup](/docs/sdks/browser-relay) — Relay architecture and backend setup
+- [Universal SDK Interface](/docs/sdks/universal-interface) — Shared behavior and guarantees across every SDK
+- [Installation](/docs/installation) — Full install matrix
+- [Quickstart](/docs/quickstart) — Capture and inspect the first incident

@@ -5,6 +5,7 @@ import {
   Bot,
   ArrowRight,
   ArrowUpRight,
+  Braces,
   Coffee,
   Gem,
   Hexagon,
@@ -202,6 +203,36 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
             Java SDK
           </Link>{' '}
           setup.
+        </>
+      ),
+    },
+    {
+      value: 'dotnet',
+      label: '.NET',
+      icon: Braces,
+      installLang: 'bash',
+      installCode: ['dotnet add package DebugBundle.AspNetCore', 'dotnet add package DebugBundle.Extensions.Logging'].join('\n'),
+      setupLang: 'csharp',
+      setupCode: [
+        'builder.Services.AddDebugBundle(options =>',
+        '{',
+        '    options.ProjectToken = builder.Configuration["DEBUGBUNDLE_PROJECT_TOKEN"];',
+        '    options.Service = "api";',
+        '    options.Environment = builder.Environment.EnvironmentName;',
+        '});',
+        'builder.Logging.AddDebugBundle();',
+        '',
+        'var app = builder.Build();',
+        'app.UseDebugBundle();',
+        'app.MapDebugBundleBrowserRelay("/debugbundle/browser");',
+      ].join('\n'),
+      description: (
+        <>
+          ASP.NET Core, Microsoft.Extensions.Logging, gRPC, Worker Service, Hangfire, Azure Functions isolated worker, Serilog, NLog, log4net, and browser relay packages are published on NuGet. See{' '}
+          <Link className={linkClassName} href="/docs/sdks/dotnet/">
+            .NET SDK
+          </Link>
+          .
         </>
       ),
     },

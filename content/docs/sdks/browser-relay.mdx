@@ -52,10 +52,11 @@ The browser relay lets your Browser SDK send events through your own backend ins
 | PHP | `DebugBundle\Relay\BrowserRelayHandler` plus Laravel middleware and Symfony controller adapters |
 | WordPress | Built-in WordPress REST relay route through the DebugBundle WordPress plugin |
 | Java | Spring Boot route plus servlet/JAX-RS relay adapters from the Java SDK |
+| .NET | ASP.NET Core endpoint mapping and middleware from `DebugBundle.AspNetCore` |
 | Go | `net/http` relay handler plus Gin and Echo mounting paths from the Go SDK |
 | Ruby | Rack middleware plus Rails route mounting from the Ruby SDK |
 
-Planned server SDKs, including C#/.NET, must implement the same relay contract before public docs describe them as full relay-handler compatible. Client/mobile SDKs such as Android, Swift, and React Native do not host browser relay routes.
+Planned server SDKs, such as Kotlin server and Rust, must implement the same relay contract before public docs describe them as full relay-handler compatible. Client/mobile SDKs such as Android, Swift, and React Native do not host browser relay routes.
 
 The Browser SDK is the relay client path. It sends browser events to one of the backend handlers above; it is not itself a backend relay handler.
 
@@ -206,6 +207,29 @@ $relay = new BrowserRelayHandler([
 
 Laravel applications can use `DebugBundle\Framework\Laravel\DebugBundleRelayMiddleware`; Symfony applications can use `DebugBundle\Framework\Symfony\DebugBundleRelayController`.
 
+## .NET
+
+ASP.NET Core applications can host the relay through endpoint routing:
+
+```csharp
+using DebugBundle.AspNetCore.Relay;
+
+builder.Services.Configure<DebugBundleRelayOptions>(relay =>
+{
+    relay.AllowedOrigins.Add("https://myapp.com");
+});
+
+var app = builder.Build();
+app.MapDebugBundleBrowserRelay("/debugbundle/browser");
+```
+
+If authentication protects all routes, leave the relay endpoint unauthenticated and rely on the relay's origin validation, content type, body-size limit, schema validation, credential stripping, and rate limit controls:
+
+```csharp
+app.MapDebugBundleBrowserRelay("/debugbundle/browser")
+    .AllowAnonymous();
+```
+
 ## WordPress
 
 The DebugBundle WordPress plugin registers the WordPress REST relay route for you. Use the plugin settings screen to configure backend/frontend capture, relay delivery, and test events instead of wiring the PHP relay handler manually.
@@ -336,6 +360,7 @@ Relay handlers preserve browser correlation fields (`request_id`, `trace_id`, `s
 - [Node.js SDK](/docs/sdks/node) — Backend SDK with framework integrations
 - [Python SDK](/docs/sdks/python) — Django, Flask, FastAPI, and relay helpers
 - [PHP SDK](/docs/sdks/php) — Laravel, Symfony, Monolog, and relay setup
+- [.NET SDK](/docs/sdks/dotnet) — ASP.NET Core relay setup
 - [WordPress Plugin](/docs/integrations/wordpress) — WordPress REST relay integration
 - [API Authentication](/docs/api/authentication) — Token types and scope separation
 - [Security](/docs/security) — Token security and redaction

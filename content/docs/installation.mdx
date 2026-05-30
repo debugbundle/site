@@ -17,7 +17,7 @@ The CLI runs setup, local processing, incident inspection, token management, clo
 
 ## SDKs
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Android', 'Swift', 'WordPress']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', '.NET', 'Go', 'Ruby', 'Android', 'Swift', 'WordPress']}>
   <Tab>
 
 ```bash
@@ -118,6 +118,30 @@ debugbundle:
 Use this path for Spring Boot 3.x. For servlet WARs, JAX-RS services, WildFly, or JBoss deployments, use the broader [Java SDK](/docs/sdks/java) setup.
 
 Spring Boot 3.x applications get servlet request capture, MVC exception capture, Logback capture, remote config, probes, and an optional same-origin browser relay.
+
+  </Tab>
+  <Tab>
+
+```bash
+dotnet add package DebugBundle.AspNetCore
+dotnet add package DebugBundle.Extensions.Logging
+```
+
+```csharp
+builder.Services.AddDebugBundle(options =>
+{
+    options.ProjectToken = builder.Configuration["DEBUGBUNDLE_PROJECT_TOKEN"];
+    options.Environment = builder.Environment.EnvironmentName;
+    options.Service = "api";
+});
+builder.Logging.AddDebugBundle();
+
+var app = builder.Build();
+app.UseDebugBundle();
+app.MapDebugBundleBrowserRelay("/debugbundle/browser");
+```
+
+ASP.NET Core, Microsoft.Extensions.Logging, gRPC, Worker Service, Hangfire, Azure Functions isolated worker, Serilog, NLog, log4net, and browser relay packages are published on NuGet. See [.NET SDK](/docs/sdks/dotnet).
 
   </Tab>
   <Tab>
@@ -224,6 +248,7 @@ Browser SDKs should not hold project tokens. Add a relay on your backend, then p
 | Express | `@debugbundle/sdk-node/relay/express` |
 | Fastify | `@debugbundle/sdk-node/relay/fastify` |
 | Next.js API route | `@debugbundle/sdk-node/relay/nextjs` |
+| ASP.NET Core | `app.MapDebugBundleBrowserRelay("/debugbundle/browser")` |
 
 See [Browser Relay Setup](/docs/sdks/browser-relay).
 

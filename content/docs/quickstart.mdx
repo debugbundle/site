@@ -57,7 +57,7 @@ Pick the path that matches your project.
 
 If you need frontend exceptions, breadcrumbs, and browser-to-backend trace correlation, add the Browser SDK too. Use it by itself for frontend-only cloud deployments, or pair it with a backend relay for full-stack apps.
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Android', 'Swift', 'Existing Logs']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', '.NET', 'Go', 'Ruby', 'Android', 'Swift', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -168,6 +168,30 @@ debugbundle:
 Use this path for Spring Boot 3.x. For servlet WARs, JAX-RS services, WildFly, or JBoss deployments, use the broader [Java SDK](/docs/sdks/java) setup.
 
 Spring Boot 3.x applications auto-configure servlet request capture, MVC exception capture, Logback capture, remote capture policy, probes, and the optional browser relay.
+
+  </Tab>
+  <Tab>
+
+```bash
+dotnet add package DebugBundle.AspNetCore
+dotnet add package DebugBundle.Extensions.Logging
+```
+
+```csharp
+builder.Services.AddDebugBundle(options =>
+{
+    options.ProjectToken = builder.Configuration["DEBUGBUNDLE_PROJECT_TOKEN"];
+    options.Environment = builder.Environment.EnvironmentName;
+    options.Service = "api";
+});
+builder.Logging.AddDebugBundle();
+
+var app = builder.Build();
+app.UseDebugBundle();
+app.MapDebugBundleBrowserRelay("/debugbundle/browser");
+```
+
+For ASP.NET Core, gRPC, Worker Service, Hangfire, Azure Functions isolated worker, logging adapters, probes, and browser relay setup, see [.NET SDK](/docs/sdks/dotnet).
 
   </Tab>
   <Tab>
@@ -343,7 +367,7 @@ Pick the path that matches your project.
 
 Local-only browser capture requires a backend relay so the browser SDK can hand events to your backend, which then writes them into `.debugbundle/local/events/` for `debugbundle process`.
 
-<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', 'Go', 'Ruby', 'Android', 'Swift', 'Existing Logs']}>
+<Tabs items={['Node.js', 'Browser', 'Python', 'PHP', 'Java / Spring', '.NET', 'Go', 'Ruby', 'Android', 'Swift', 'Existing Logs']}>
   <Tab>
 
 ```bash
@@ -454,6 +478,31 @@ debugbundle:
 Use this path for Spring Boot 3.x. For servlet WARs, JAX-RS services, WildFly, or JBoss deployments, use the broader [Java SDK](/docs/sdks/java) setup.
 
 Spring Boot 3.x applications auto-configure servlet request capture, MVC exception capture, Logback capture, probes, and local file delivery.
+
+  </Tab>
+  <Tab>
+
+```bash
+dotnet add package DebugBundle.AspNetCore
+dotnet add package DebugBundle.Extensions.Logging
+```
+
+```csharp
+builder.Services.AddDebugBundle(options =>
+{
+    options.ProjectMode = DebugBundleProjectMode.LocalOnly;
+    options.LocalEventsDir = ".debugbundle/local/events";
+    options.Environment = "development";
+    options.Service = "api";
+});
+builder.Logging.AddDebugBundle();
+
+var app = builder.Build();
+app.UseDebugBundle();
+app.MapDebugBundleBrowserRelay("/debugbundle/browser");
+```
+
+.NET local-only mode writes ASP.NET Core request, exception, log, probe, and browser relay events into `.debugbundle/local/events/` for `debugbundle process`. See [.NET SDK](/docs/sdks/dotnet).
 
   </Tab>
   <Tab>
@@ -575,7 +624,7 @@ try {
 }
 ```
 
-For Python, PHP, Java, Go, Ruby, Android, or Swift, use the equivalent language-specific capture method from the SDK guide.
+For Python, PHP, Java, .NET, Go, Ruby, Android, or Swift, use the equivalent language-specific capture method from the SDK guide.
 
 ### 5. Process and Inspect
 

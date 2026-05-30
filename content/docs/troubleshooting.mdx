@@ -120,7 +120,7 @@ Fix the underlying delivery issue first, then re-enable.
 1. **Check `enabled`:** Verify it's not disabled.
 2. **Check `sessionSampleRate`:** A value of `0` drops all sessions.
 3. **Check ad blockers:** Ad blockers may block requests to `api.debugbundle.com`. Use the relay transport to route through your own backend.
-4. **Check CSP headers:** If your Content Security Policy blocks the DebugBundle endpoint, add it to `connect-src`. This applies to browser delivery only, not to Node.js, Python, or PHP SDKs.
+4. **Check CSP headers:** If your Content Security Policy blocks the DebugBundle endpoint, add it to `connect-src`. This applies to browser delivery only, not to Node.js, Python, PHP, or .NET server SDKs.
 
 ### Bundle points at `debugbundle-browser-sdk.js`
 
