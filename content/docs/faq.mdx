@@ -184,4 +184,4 @@ MCP is a protocol for AI agents to interact with tools. DebugBundle exposes its 
 
 ### How do I set up MCP?
 
-The MCP server reuses your CLI auth state. After running `debugbundle login`, configure your IDE's MCP settings to point to the DebugBundle MCP server. See the MCP documentation for details.
+The MCP server reuses your CLI auth state by default. After running `debugbundle login`, configure your IDE's MCP settings to point to the DebugBundle MCP server. Headless or marketplace-managed clients can set `DEBUGBUNDLE_MEMBER_TOKEN` in the MCP server environment instead. See the MCP documentation for details.

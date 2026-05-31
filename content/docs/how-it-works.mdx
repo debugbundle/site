@@ -134,7 +134,7 @@ The debug bundle and all related data are available through three equal interfac
 |---|---|---|
 | **API** | `GET /v1/incidents/{id}/bundle` | Member token or browser session |
 | **CLI** | `debugbundle inspect <incident-id>` | Member token (cloud) or local state (local-only) |
-| **MCP** | `get_bundle` tool | Reuses CLI auth state |
+| **MCP** | `get_bundle` tool | CLI auth state, `DEBUGBUNDLE_MEMBER_TOKEN`, or per-call `bearerToken` |
 
 All three interfaces call the same domain services — no capability is exclusive to any single interface.
 

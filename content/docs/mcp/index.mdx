@@ -21,11 +21,12 @@ Supported Node.js versions: 22.x through 26.x.
 
 ## Authentication
 
-The MCP server supports two authentication modes:
+The MCP server supports three authentication modes:
 
 | Mode | How it Works | Use Case |
 |------|-------------|----------|
 | **Local** | Uses CLI auth state from `~/.debugbundle/auth.json` | Default for local development |
+| **Environment token** | Reads `DEBUGBUNDLE_MEMBER_TOKEN` from the MCP server environment | Marketplace-managed, remote, and headless clients |
 | **Bearer Token** | Pass `bearerToken` parameter on tool calls | CI/CD, remote agents, headless environments |
 
 When running locally alongside the CLI, the MCP server automatically picks up your
@@ -42,7 +43,23 @@ debugbundle login --github-device
 
 `debugbundle login` with no flags opens an interactive chooser in a TTY. `--github` first tries an existing `gh auth token` for a fully headless agent flow, then falls back to GitHub device flow when browser approval is needed. Email-code signup and manual token creation remain available in the web app for users who do not use GitHub.
 
-For remote or headless environments, pass a member token as the `bearerToken`:
+For remote, marketplace-managed, or headless environments, prefer setting the member token in the MCP server environment:
+
+```json
+{
+  "mcpServers": {
+    "debugbundle": {
+      "command": "npx",
+      "args": ["@debugbundle/mcp"],
+      "env": {
+        "DEBUGBUNDLE_MEMBER_TOKEN": "dbundle_mem_a1b2c3d4..."
+      }
+    }
+  }
+}
+```
+
+Use `DEBUGBUNDLE_API_URL` in the same environment block only for self-hosted or non-production API hosts. Individual tool calls can still pass a member token as `bearerToken`:
 
 ```json
 {
@@ -53,6 +70,8 @@ For remote or headless environments, pass a member token as the `bearerToken`:
   }
 }
 ```
+
+The npm package ships MCP Registry metadata as `server.json` with server name `com.debugbundle/mcp`.
 
 ## Configuration
 
