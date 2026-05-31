@@ -294,7 +294,7 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
       installLang: 'kotlin',
       installCode: [
         'dependencies {',
-        '    implementation(platform("com.debugbundle:debugbundle-android-bom:0.1.2"))',
+        '    implementation(platform("com.debugbundle:debugbundle-android-bom:1.0.0"))',
         '    implementation("com.debugbundle:debugbundle-android")',
         '    implementation("com.debugbundle:debugbundle-android-okhttp")',
         '}',
