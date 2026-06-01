@@ -12,7 +12,7 @@ billing works, from checkout through ongoing subscription management.
 Billing follows a simple model:
 
 1. **Choose a plan** — Solo ($2.99/mo) or Team ($19/mo)
-2. **Complete checkout** — Stripe Checkout handles payment securely
+2. **Complete checkout** — Stripe Checkout handles payment securely and applies VAT or applicable taxes
 3. **Add capacity as needed** — Purchase extra capacity units from the billing page
 4. **Manage via portal** — Update payment methods and view invoices through Stripe
 
@@ -22,6 +22,7 @@ DebugBundle never stores credit card numbers or payment details. All payment
 processing is handled by Stripe:
 
 - **Checkout** — Stripe Checkout Session (hosted payment page)
+- **Tax** — Stripe Tax calculation and business tax ID collection during Checkout
 - **Portal** — Stripe Customer Portal (self-service subscription management)
 - **Webhooks** — Stripe notifies DebugBundle of subscription changes
 - **Invoicing** — Stripe handles all invoice generation and delivery

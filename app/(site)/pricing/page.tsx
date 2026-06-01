@@ -21,6 +21,7 @@ const tiers = [
     price: '$0',
     period: 'forever',
     description: 'Get started with debugging at no cost.',
+    footnote: '* No credit card required',
     cta: 'Get Started',
     ctaHref: '/docs/quickstart/',
     highlight: false,
@@ -52,6 +53,7 @@ const tiers = [
     price: '$2.99',
     period: '/month',
     description: 'Shared allowance for independent developers.',
+    footnote: '* VAT applied at checkout',
     cta: 'Start Solo',
     ctaHref: 'https://app.debugbundle.com',
     highlight: true,
@@ -83,6 +85,7 @@ const tiers = [
     price: '$19',
     period: '/month',
     description: 'Shared allowance and collaboration for teams.',
+    footnote: '* VAT applied at checkout',
     cta: 'Start Team',
     ctaHref: 'https://app.debugbundle.com',
     highlight: false,
@@ -220,6 +223,9 @@ export default function PricingPage(): ReactElement {
                 </li>
               ))}
             </ul>
+            <p className="mt-6 border-t border-[var(--site-border)] pt-4 text-xs leading-5 text-[var(--site-text-muted)]">
+              {tier.footnote}
+            </p>
           </section>
         ))}
       </div>
