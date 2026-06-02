@@ -48,7 +48,17 @@ export default function PrivacyPage(): ReactElement {
 
         <section className="space-y-2">
           <h2 className="text-base font-semibold text-[var(--site-text)]">Data retention</h2>
-          <p>Data retention follows your plan tier: Free (7 days), Solo (14–30 days), Team (30–90 days). Self-hosted instances control their own retention.</p>
+          <p>
+            Hosted DebugBundle uses tier-based retention. Raw event blobs are retained for 7 days on Free, 14 days on Solo, and 30 days on Team. Incidents,
+            bundles, and reproductions are retained for 7 days on Free, 30 days on Solo, and 90 days on Team. Self-hosted instances control their own
+            retention.
+          </p>
+          <p>
+            For a technical explanation of how cleanup works, see the{' '}
+            <Link className="text-[var(--site-accent)] underline" href="/docs/security/">
+              security documentation
+            </Link>.
+          </p>
         </section>
 
         <section className="space-y-2">

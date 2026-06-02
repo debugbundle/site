@@ -100,11 +100,40 @@ The Browser SDK supports relay transport (recommended) to avoid exposing your pr
 
 | Data | Storage | Encryption | Retention |
 |---|---|---|---|
-| Raw events | S3 (or compatible) | Encrypted at rest (SSE-S3) | Configurable |
-| Processed incidents | Postgres | Encrypted at rest | Configurable |
+| Raw events | S3 (or compatible) | Encrypted at rest (SSE-S3) | Tier-based in hosted DebugBundle: Free 7 days, Solo 14 days, Team 30 days. Self-hosted instances control their own retention. |
+| Processed incidents | Postgres | Encrypted at rest | Tier-based in hosted DebugBundle: Free 7 days, Solo 30 days, Team 90 days. Self-hosted instances control their own retention. |
 | Tokens | Postgres | SHA-256 hashed | Until revoked |
 | Session data | Redis | In-transit encryption | Session lifetime |
 | Local events | `.debugbundle/local/events/` | Filesystem permissions | Until `clean` |
+
+---
+
+## Retention
+
+Hosted DebugBundle uses fixed tier-based retention today. Retention is not user-configurable per project or per organization in the hosted product.
+
+### Hosted Tier Retention
+
+| Data type | Free | Solo | Team |
+|---|---|---|---|
+| Raw event blobs | 7 days | 14 days | 30 days |
+| Incidents, bundles, and reproductions | 7 days | 30 days | 90 days |
+
+### How Retention Works
+
+- Raw events are persisted in object storage and cleaned up according to the raw-event retention window for the owning tier.
+- Incident records, the current retained bundle artifact, and the current retained reproduction artifact follow the incident retention window for the owning tier and are cleaned up together when that incident expires.
+- Bundle history is not retained in V1. When a bundle is regenerated, DebugBundle keeps the latest version rather than storing historical snapshots.
+- Cleanup is enforced by scheduled worker jobs. Deletion is automatic rather than a manual support process.
+- Cleanup may lag slightly behind the exact cutoff time, but hosted retention is enforced within 24 hours of the tier limit.
+
+### Important Detail About Occurrences
+
+DebugBundle does not keep every raw occurrence forever inside the retention window. To control storage cost and noise, the system retains raw event blobs only for sampled occurrences that matter for debugging, such as first, latest, post-deploy, and highest-severity cases. Other occurrences can remain as summarized metadata for grouping, counting, and bundle logic without preserving every raw payload.
+
+### Self-Hosted Retention
+
+Self-hosted deployments control their own retention policy. DebugBundle does not currently provide a hosted-style per-project retention settings surface; in self-hosted environments, operators own the infrastructure and retention choices.
 
 ---
 
@@ -158,4 +187,5 @@ When self-hosting DebugBundle, your data never touches third-party infrastructur
 
 - [Webhooks](/docs/webhooks) — Webhook setup and signature verification
 - [Authentication](/docs/api/authentication) — Token management
+- [Pricing](/docs/pricing) — Tier limits, retention windows, and allowance differences
 - [Troubleshooting](/docs/troubleshooting) — Common issues and fixes
