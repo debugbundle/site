@@ -213,7 +213,7 @@ export default function HomePage(): ReactElement {
       {/* Hero */}
       <section className="space-y-6 rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface)] px-5 py-6 sm:space-y-8 sm:p-12">
         <SectionTitle
-          eyebrow="Production debugging for agents"
+          eyebrow="Production debugging for AI agents"
           title="The agent-native debugging layer for modern products"
           description="DebugBundle captures production incidents, assembles deterministic debugging context, and delivers it through API, CLI, MCP, dashboards, and machine-readable artifacts so humans and AI agents can diagnose failures faster."
         />
