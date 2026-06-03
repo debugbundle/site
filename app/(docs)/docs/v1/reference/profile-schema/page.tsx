@@ -1,8 +1,16 @@
+import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 
 import { SurfaceCard, SurfaceGrid } from '@/components/content-blocks';
 import { ReferencePage } from '@/components/reference-page';
 import { buildSchemaReferenceLinks } from '@/reference-content';
+import { createPageMetadata } from '@/seo';
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'Profile schema',
+  description: 'Published DebugBundle repository profile schema used by setup and validation workflows.',
+  path: '/docs/v1/reference/profile-schema',
+});
 
 export default function DocsProfileSchemaReferencePage(): ReactElement {
   const links = buildSchemaReferenceLinks().filter((entry) => entry.href === '/schemas/profile.json');

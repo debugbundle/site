@@ -25,25 +25,19 @@ import {
 import { SectionTitle, SurfaceCard } from '@/components/content-blocks';
 import { JsonLdScript } from '@/components/json-ld';
 import { QuickInstallGuide } from '@/components/quick-install-guide';
+import { absoluteSiteUrl, createPageMetadata } from '@/seo';
 
 const docsLinkClassName =
   'text-sm font-medium !text-[var(--site-docs-link)] !underline !decoration-[var(--site-docs-link)] decoration-[0.08em] underline-offset-[0.16em] transition-[color,text-decoration-color,text-decoration-thickness] duration-200 hover:!text-[var(--site-docs-link-hover)] hover:!decoration-[var(--site-docs-link-hover)] hover:!decoration-[0.12em] focus-visible:rounded-sm focus-visible:[outline-color:var(--site-focus)] focus-visible:[outline-style:solid] focus-visible:[outline-width:2px] focus-visible:[outline-offset:2px]';
 const buttonFocusClassName =
   'focus-visible:rounded-full focus-visible:[outline-color:var(--site-focus)] focus-visible:[outline-style:solid] focus-visible:[outline-width:2px] focus-visible:[outline-offset:2px]';
 
-export const metadata: Metadata = {
-  title: 'DebugBundle — Production debugging for AI agents',
+export const metadata: Metadata = createPageMetadata({
+  title: 'Production debugging for AI agents',
   description:
     'DebugBundle captures incidents, assembles deterministic debugging context, and delivers structured bundles through API, CLI, and MCP.',
-  openGraph: {
-    title: 'DebugBundle — Production debugging for AI agents',
-    description:
-      'Structured debug bundles for humans and AI agents. Capture incidents, reproduce failures, and resolve issues faster.',
-    url: 'https://debugbundle.com',
-    siteName: 'DebugBundle',
-    type: 'website',
-  },
-};
+  path: '/',
+});
 
 export default function HomePage(): ReactElement {
   const workflowSteps = [
@@ -196,7 +190,7 @@ export default function HomePage(): ReactElement {
     name: 'DebugBundle',
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Cross-platform',
-    url: 'https://debugbundle.com',
+    url: absoluteSiteUrl('/'),
     description:
       'AI-agent-first runtime debugging platform. Captures production failures, packages them into structured debug bundles, and delivers them through API, CLI, and MCP.',
     offers: {

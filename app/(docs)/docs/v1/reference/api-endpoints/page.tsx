@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
 
@@ -5,6 +6,13 @@ import { Notice } from '@/components/content-blocks';
 import { ReferencePage } from '@/components/reference-page';
 import { ReferenceTable } from '@/components/reference-table';
 import { buildApiReferenceGroups } from '@/reference-content';
+import { createPageMetadata } from '@/seo';
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'API endpoints',
+  description: 'Generated reference for the public DebugBundle OpenAPI endpoint surface.',
+  path: '/docs/v1/reference/api-endpoints',
+});
 
 export default function DocsApiEndpointsReferencePage(): ReactElement {
   const groups = buildApiReferenceGroups();

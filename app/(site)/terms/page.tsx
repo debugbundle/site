@@ -3,11 +3,13 @@ import type { ReactElement } from 'react';
 import Link from 'next/link';
 
 import { SectionTitle } from '@/components/content-blocks';
+import { createPageMetadata } from '@/seo';
 
-export const metadata: Metadata = {
-  title: 'Terms of Service — DebugBundle',
+export const metadata: Metadata = createPageMetadata({
+  title: 'Terms of Service',
   description: 'Terms governing the use of DebugBundle hosted services.',
-};
+  path: '/terms',
+});
 
 export default function TermsPage(): ReactElement {
   return (

@@ -1,9 +1,17 @@
+import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
 
 import { Notice, SurfaceCard, SurfaceGrid } from '@/components/content-blocks';
 import { ReferencePage } from '@/components/reference-page';
 import { buildWebhookReference } from '@/reference-content';
+import { createPageMetadata } from '@/seo';
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'Webhook events',
+  description: 'Generated reference for DebugBundle webhook event types and payload schema links.',
+  path: '/docs/v1/reference/webhook-events',
+});
 
 export default function DocsWebhookEventsReferencePage(): ReactElement {
   const reference = buildWebhookReference();

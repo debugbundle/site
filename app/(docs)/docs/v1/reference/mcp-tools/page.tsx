@@ -1,9 +1,17 @@
+import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 
 import { Notice } from '@/components/content-blocks';
 import { ReferencePage } from '@/components/reference-page';
 import { ReferenceTable } from '@/components/reference-table';
 import { buildMcpToolReferenceGroups } from '@/reference-content';
+import { createPageMetadata } from '@/seo';
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'MCP tools',
+  description: 'Generated reference for the implemented DebugBundle MCP tool catalog.',
+  path: '/docs/v1/reference/mcp-tools',
+});
 
 export default function DocsMcpToolsReferencePage(): ReactElement {
   const groups = buildMcpToolReferenceGroups();

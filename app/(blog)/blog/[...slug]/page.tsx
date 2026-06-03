@@ -7,6 +7,7 @@ import { createPageMdxComponents } from '@/content-components';
 import { JsonLdScript } from '@/components/json-ld';
 import { readBlogPageData } from '@/content-page-data';
 import { blogSource } from '@/content-source';
+import { absoluteSiteUrl, createPageMetadata, normalizePublishedTime } from '@/seo';
 
 type BlogPageParams = {
   slug: string[];
@@ -29,11 +30,15 @@ export async function generateMetadata({
   }
 
   const pageData = readBlogPageData(page);
+  const publishedTime = normalizePublishedTime(pageData.date);
 
-  return {
+  return createPageMetadata({
     title: pageData.title,
     description: pageData.description,
-  };
+    path: page.url,
+    openGraphType: 'article',
+    ...(publishedTime ? { publishedTime } : {}),
+  });
 }
 
 export default async function BlogPostPage({
@@ -51,18 +56,19 @@ export default async function BlogPostPage({
   const pageData = readBlogPageData(page);
   const Content = pageData.body;
   const dateStr = pageData.date;
+  const publishedTime = normalizePublishedTime(dateStr);
 
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: pageData.title,
     description: pageData.description,
-    url: `https://debugbundle.com${page.url}`,
-    ...(dateStr ? { datePublished: dateStr } : {}),
+    url: absoluteSiteUrl(page.url),
+    ...(publishedTime ? { datePublished: publishedTime } : {}),
     publisher: {
       '@type': 'Organization',
       name: 'DebugBundle',
-      url: 'https://debugbundle.com',
+      url: absoluteSiteUrl('/'),
     },
   };
 

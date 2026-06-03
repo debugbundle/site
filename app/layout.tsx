@@ -6,6 +6,7 @@ import { RootProvider } from 'fumadocs-ui/provider/next';
 import { DogfoodingBootstrap } from '@/components/dogfooding-bootstrap';
 import { DocsSearchDialog } from '@/components/docs-search-dialog';
 import { JsonLdScript } from '@/components/json-ld';
+import { absoluteSiteUrl } from '@/seo';
 import { siteConfig } from '@/site-config';
 
 import './globals.css';
@@ -22,9 +23,16 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.domain),
+  manifest: '/site.webmanifest',
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
+    icon: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon-32x32.png',
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   title: {
     default: 'DebugBundle',
@@ -50,8 +58,8 @@ export default function RootLayout({ children }: { children: ReactNode }): React
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'DebugBundle',
-    url: 'https://debugbundle.com',
-    logo: 'https://debugbundle.com/icon.svg',
+    url: absoluteSiteUrl('/'),
+    logo: absoluteSiteUrl('/icon-512.png'),
     description: siteConfig.description,
   };
 

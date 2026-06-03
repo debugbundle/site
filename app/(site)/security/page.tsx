@@ -3,11 +3,13 @@ import type { ReactElement } from 'react';
 import Link from 'next/link';
 
 import { SectionTitle, SurfaceCard, SurfaceGrid } from '@/components/content-blocks';
+import { createPageMetadata } from '@/seo';
 
-export const metadata: Metadata = {
-  title: 'Security — DebugBundle',
+export const metadata: Metadata = createPageMetadata({
+  title: 'Security',
   description: 'How DebugBundle protects your data: redaction, token management, and security architecture.',
-};
+  path: '/security',
+});
 
 export default function SecurityPage(): ReactElement {
   return (

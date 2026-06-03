@@ -4,16 +4,14 @@ import Link from 'next/link';
 
 import { Notice, SectionTitle } from '@/components/content-blocks';
 import { JsonLdScript } from '@/components/json-ld';
+import { createPageMetadata } from '@/seo';
 
-export const metadata: Metadata = {
-  title: 'Pricing — DebugBundle',
+export const metadata: Metadata = createPageMetadata({
+  title: 'Pricing',
   description:
     'Free, Solo ($2.99/mo), and Team ($19/mo) plans. Local-first debugging with optional hosted services, unlimited projects, and shared allowance capacity.',
-  openGraph: {
-    title: 'Pricing — DebugBundle',
-    description: 'Free, Solo, and Team plans for production debugging.',
-  },
-};
+  path: '/pricing',
+});
 
 const tiers = [
   {

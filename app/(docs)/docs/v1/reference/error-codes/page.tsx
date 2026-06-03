@@ -1,9 +1,17 @@
+import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 
 import { Notice } from '@/components/content-blocks';
 import { ReferencePage } from '@/components/reference-page';
 import { ReferenceTable } from '@/components/reference-table';
 import { buildErrorCodeReference } from '@/reference-content';
+import { createPageMetadata } from '@/seo';
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'Error codes',
+  description: 'Generated reference for public DebugBundle API error codes and categories.',
+  path: '/docs/v1/reference/error-codes',
+});
 
 export default function DocsErrorCodesReferencePage(): ReactElement {
   const reference = buildErrorCodeReference();

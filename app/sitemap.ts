@@ -1,11 +1,11 @@
 import type { MetadataRoute } from 'next';
 
 import { blogSource, docsSource } from '@/content-source';
+import { absoluteSiteUrl } from '@/seo';
 
 export const dynamic = 'force-static';
 
-const siteDomain = 'https://debugbundle.com';
-const lastModified = '2026-03-24T00:00:00.000Z';
+const lastModified = '2026-06-03T00:00:00.000Z';
 
 const staticRoutes = [
   '/',
@@ -18,24 +18,40 @@ const staticRoutes = [
   '/terms/',
 ];
 
+const referenceRoutes = [
+  '/docs/v1/reference/',
+  '/docs/v1/reference/api-endpoints/',
+  '/docs/v1/reference/bundle-schema/',
+  '/docs/v1/reference/cli-commands/',
+  '/docs/v1/reference/error-codes/',
+  '/docs/v1/reference/mcp-tools/',
+  '/docs/v1/reference/profile-schema/',
+  '/docs/v1/reference/webhook-events/',
+];
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticEntries = staticRoutes.map((route) => ({
-    url: `${siteDomain}${route}`,
+    url: absoluteSiteUrl(route),
     lastModified,
   }));
 
   const docsEntries = docsSource.getPages().map((page) => ({
-    url: `${siteDomain}${page.url}`,
+    url: absoluteSiteUrl(page.url),
+    lastModified,
+  }));
+
+  const referenceEntries = referenceRoutes.map((route) => ({
+    url: absoluteSiteUrl(route),
     lastModified,
   }));
 
   const blogEntries = [
-    { url: `${siteDomain}/blog/`, lastModified },
+    { url: absoluteSiteUrl('/blog/'), lastModified },
     ...blogSource.getPages().map((page) => ({
-      url: `${siteDomain}${page.url}`,
+      url: absoluteSiteUrl(page.url),
       lastModified,
     })),
   ];
 
-  return [...staticEntries, ...docsEntries, ...blogEntries];
+  return [...staticEntries, ...docsEntries, ...referenceEntries, ...blogEntries];
 }

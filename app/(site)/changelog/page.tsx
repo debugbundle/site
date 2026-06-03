@@ -2,11 +2,13 @@ import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 
 import { SectionTitle, SurfaceCard } from '@/components/content-blocks';
+import { createPageMetadata } from '@/seo';
 
-export const metadata: Metadata = {
-  title: 'Changelog — DebugBundle',
+export const metadata: Metadata = createPageMetadata({
+  title: 'Changelog',
   description: 'Product updates, releases, and notable changes to DebugBundle.',
-};
+  path: '/changelog',
+});
 
 const entries = [
   {

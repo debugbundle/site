@@ -1,9 +1,11 @@
+import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 import { Bot, Braces, CircleAlert, FileCode, Package, SquareTerminal, Webhook } from 'lucide-react';
 
 import { Notice, SurfaceCard, SurfaceGrid } from '@/components/content-blocks';
 import { ReferencePage } from '@/components/reference-page';
 import { referenceRouteEntries } from '@/reference-content';
+import { createPageMetadata } from '@/seo';
 
 const referenceIcons = {
   Bot,
@@ -14,6 +16,13 @@ const referenceIcons = {
   SquareTerminal,
   Webhook,
 } as const;
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'Generated reference docs',
+  description:
+    'Generated reference docs derived from shipped contracts and machine-readable DebugBundle artifacts.',
+  path: '/docs/v1/reference',
+});
 
 export default function DocsReferencePage(): ReactElement {
   return (

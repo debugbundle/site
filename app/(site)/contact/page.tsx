@@ -4,16 +4,18 @@ import Link from 'next/link';
 import { Mail } from 'lucide-react';
 
 import { SectionTitle, SurfaceCard, SurfaceGrid } from '@/components/content-blocks';
+import { createPageMetadata } from '@/seo';
 
 const supportEmail = 'support@debugbundle.com';
 const supportMailto = `mailto:${supportEmail}?subject=DebugBundle%20support`;
 const buttonFocusClassName =
   'focus-visible:rounded-full focus-visible:[outline-color:var(--site-focus)] focus-visible:[outline-style:solid] focus-visible:[outline-width:2px] focus-visible:[outline-offset:2px]';
 
-export const metadata: Metadata = {
-  title: 'Contact — DebugBundle',
+export const metadata: Metadata = createPageMetadata({
+  title: 'Contact',
   description: 'Get in touch with the DebugBundle team for support, security reports, or general questions.',
-};
+  path: '/contact',
+});
 
 export default function ContactPage(): ReactElement {
   return (

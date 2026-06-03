@@ -3,11 +3,13 @@ import type { ReactElement } from 'react';
 import Link from 'next/link';
 
 import { SectionTitle, SurfaceCard, SurfaceGrid } from '@/components/content-blocks';
+import { createPageMetadata } from '@/seo';
 
-export const metadata: Metadata = {
-  title: 'About — DebugBundle',
+export const metadata: Metadata = createPageMetadata({
+  title: 'About',
   description: 'DebugBundle is a production debugging tool designed for AI agents and human developers.',
-};
+  path: '/about',
+});
 
 export default function AboutPage(): ReactElement {
   return (

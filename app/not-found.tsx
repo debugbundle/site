@@ -1,7 +1,17 @@
+import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
 
 import { SiteShell } from '@/components/site-shell';
+
+export const metadata: Metadata = {
+  title: 'Page not found',
+  description: 'The requested DebugBundle page was not found.',
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function NotFound(): ReactElement {
   return (

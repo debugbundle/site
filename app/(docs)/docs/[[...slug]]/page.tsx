@@ -7,6 +7,7 @@ import { QuickstartDocsPage } from '@/components/quickstart-docs-page';
 import { createPageMdxComponents } from '@/content-components';
 import { readDocsPageData } from '@/content-page-data';
 import { docsSource } from '@/content-source';
+import { createPageMetadata } from '@/seo';
 
 type DocsPageParams = {
   slug?: string[];
@@ -30,10 +31,11 @@ export async function generateMetadata({
 
   const pageData = readDocsPageData(page);
 
-  return {
+  return createPageMetadata({
     title: pageData.title,
     description: pageData.description,
-  };
+    path: page.url,
+  });
 }
 
 export default async function DocsContentPage({

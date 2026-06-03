@@ -1,9 +1,18 @@
+import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
 import { DocsDescription, DocsTitle } from 'fumadocs-ui/layouts/docs/page';
 
 import { readBlogPageData } from '@/content-page-data';
 import { blogSource } from '@/content-source';
+import { createPageMetadata } from '@/seo';
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'Blog',
+  description:
+    'Product updates, implementation decisions, and operator-facing guidance from the DebugBundle docs surface.',
+  path: '/blog',
+});
 
 export default function BlogIndexPage(): ReactElement {
   const posts = blogSource.getPages();

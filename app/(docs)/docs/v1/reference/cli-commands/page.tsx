@@ -1,9 +1,17 @@
+import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 
 import { TerminalExample } from '@/components/content-blocks';
 import { ReferencePage } from '@/components/reference-page';
 import { ReferenceTable } from '@/components/reference-table';
 import { buildCliReferenceEntries, buildCliReferenceGroups } from '@/reference-content';
+import { createPageMetadata } from '@/seo';
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'CLI commands',
+  description: 'Generated reference for the shipped DebugBundle CLI command surface.',
+  path: '/docs/v1/reference/cli-commands',
+});
 
 export default function DocsCliCommandsReferencePage(): ReactElement {
   const entries = buildCliReferenceEntries();
