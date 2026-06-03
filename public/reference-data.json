@@ -1,6 +1,6 @@
 {
   "release": {
-    "coreVersion": "1.0.0"
+    "coreVersion": "1.0.1"
   },
   "apiEntries": [
     {
@@ -841,6 +841,19 @@
       ]
     },
     {
+      "method": "DELETE",
+      "path": "/v1/projects/{id}/membership",
+      "operationId": "leaveProject",
+      "summary": "Leave a shared project",
+      "tags": [
+        "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
       "method": "GET",
       "path": "/v1/projects/{id}/probes",
       "operationId": "listActiveProbes",
@@ -1443,12 +1456,12 @@
     },
     {
       "commandPath": "alert create",
-      "usage": "debugbundle alert create --project-id <id> --channel <channel> --condition <condition> [--service-id <id>] [--severity-min <level>] --config-json <json> [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle alert create --project-id <id> --channel <channel> --condition <condition> [--service-id <id>] [--severity-min <level>] [--cooldown <seconds>] --config-json <json> [--is-enabled <true|false>] [--auth-file <path>] [--json]",
       "group": "alert"
     },
     {
       "commandPath": "alert update",
-      "usage": "debugbundle alert update <alert-id> --project-id <id> [--service-id <id|null>] [--channel <channel>] [--condition <condition>] [--severity-min <level|null>] [--config-json <json|null>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle alert update <alert-id> --project-id <id> [--service-id <id|null>] [--channel <channel>] [--condition <condition>] [--severity-min <level|null>] [--cooldown <seconds>] [--config-json <json|null>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
       "group": "alert"
     },
     {
@@ -1654,6 +1667,11 @@
     {
       "commandPath": "project members remove",
       "usage": "debugbundle project members remove <user-id> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "project"
+    },
+    {
+      "commandPath": "project members leave",
+      "usage": "debugbundle project members leave --project-id <id> [--auth-file <path>] [--json]",
       "group": "project"
     }
   ],
@@ -2299,6 +2317,7 @@
             "projectId"
           ],
           "optionalArguments": [
+            "cooldownSeconds",
             "isEnabled",
             "serviceId",
             "severityMin"
@@ -2337,6 +2356,7 @@
             "channel",
             "conditionType",
             "config",
+            "cooldownSeconds",
             "isEnabled",
             "serviceId",
             "severityMin"
@@ -2611,6 +2631,15 @@
             "email",
             "projectId",
             "role"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "leave_project",
+          "description": "Leave a shared project as the authenticated collaborator.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
           ],
           "optionalArguments": []
         },

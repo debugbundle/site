@@ -70,13 +70,14 @@ List incidents for the active project.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `project_id` | `string` | Optional. Defaults to active project. |
 | `source` | `string` | Filter by source: `local`, `cloud`, or `all`. Default: `all`. |
-| `status` | `string` | Filter: `open`, `resolved`, `all`. Default: `open`. |
+| `projectId` | `string` | Optional project filter. |
+| `environment` | `string` | Optional environment filter. |
 | `service` | `string` | Filter by service name. |
-| `severity` | `string` | Minimum severity: `low`, `medium`, `high`, `critical`. |
+| `status` | `string` | Filter: `open`, `resolved`, or `regressed`. |
+| `severity` | `string` | Filter by severity: `low`, `medium`, `high`, or `critical`. |
+| `cursor` | `string` | Optional pagination cursor. |
 | `limit` | `number` | Max results. Default: `20`. |
-| `offset` | `number` | Pagination offset. |
 
 ### get_incident
 
@@ -141,7 +142,8 @@ List project tokens (SDK/ingestion tokens).
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `project_id` | `string` | Optional. Defaults to active project. |
+| `projectId` | `string` | **Required.** Project that owns the tokens. |
+| `limit` | `number` | Optional maximum number of tokens to return. |
 
 ### create_project_token
 
@@ -149,7 +151,7 @@ Create a new project token for SDK ingestion.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `project_id` | `string` | Optional. Defaults to active project. |
+| `projectId` | `string` | **Required.** Project that owns the token. |
 | `label` | `string` | **Required.** Human-readable token label. |
 | `allowedOrigins` | `string[]` | Optional origin allowlist for direct/static browser ingestion. |
 
@@ -265,7 +267,8 @@ List configured alert rules.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `project_id` | `string` | Optional. Defaults to active project. |
+| `projectId` | `string` | **Required.** Project that owns the alert rules. |
+| `limit` | `number` | Optional maximum number of alerts to return. |
 
 ### create_alert
 
@@ -273,11 +276,18 @@ Create a new alert rule.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `project_id` | `string` | Optional. Defaults to active project. |
+| `projectId` | `string` | **Required.** Project that owns the alert rule. |
+| `serviceId` | `string` | Optional service scope. |
 | `channel` | `string` | **Required.** Alert channel: `email`, `slack`, `discord`, `webhook`. |
-| `condition_type` | `string` | **Required.** Trigger: `new_incident`, `incident_regressed`, `error_spike`, `severity_threshold`, `regression_after_deploy`. |
-| `severity_min` | `string` | Minimum severity filter. |
+| `conditionType` | `string` | **Required.** Trigger: `new_incident`, `incident_regressed`, `error_spike`, `severity_threshold`, `regression_after_deploy`. |
+| `severityMin` | `string` | Minimum severity filter. |
+| `cooldownSeconds` | `number` | Optional notification cooldown in seconds. Defaults to `0`, accepts `0` to disable suppression, max `604800` (7 days). |
 | `config` | `object` | **Required.** Channel-specific configuration. |
+| `isEnabled` | `boolean` | Optional enabled state. Defaults to `true`. |
+
+`severityMin: "high"` does not match low-confidence opaque browser-native captures by
+default: opaque `window_error` infers `low`, and opaque `resource_error` infers
+`medium`.
 
 ### update_alert
 
@@ -285,9 +295,14 @@ Update an existing alert rule.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `alert_id` | `string` | **Required.** The alert ID. |
-| `severity_min` | `string` | Updated severity filter. |
-| `is_enabled` | `boolean` | Enable or disable the alert. |
+| `projectId` | `string` | **Required.** Project that owns the alert rule. |
+| `alertId` | `string` | **Required.** The alert ID. |
+| `serviceId` | `string \| null` | Update or clear service scope. |
+| `channel` | `string` | Updated channel type. |
+| `conditionType` | `string` | Updated trigger condition. |
+| `severityMin` | `string \| null` | Updated or cleared severity filter. |
+| `cooldownSeconds` | `number` | Updated notification cooldown in seconds. Use `0` to disable suppression. |
+| `isEnabled` | `boolean` | Enable or disable the alert. |
 | `config` | `object` | Updated channel configuration. |
 
 ### delete_alert

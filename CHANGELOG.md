@@ -6,6 +6,13 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-06-03
+
+### Changed
+
+- Refreshed alert, incident, bundle, API, CLI, and MCP documentation for alert cooldowns and the new opaque browser-native severity defaults.
+- Promoted the public-site dogfooding manifest to `@debugbundle/sdk-browser@1.0.1` after the published browser SDK release completed.
+
 ## [0.1.2] - 2026-05-19
 
 ### Changed

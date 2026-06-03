@@ -118,12 +118,14 @@ metadata is included in the webhook payload.
 | Level | Meaning | Auto-Assigned For |
 |-------|---------|-------------------|
 | `low` | Minor, informational. | Most event types (default). |
-| `medium` | Moderate impact. | `error_suppressed` events. |
-| `high` | Significant, needs attention. | `backend_exception`, `frontend_exception`. |
+| `medium` | Moderate impact. | `error_suppressed` events and opaque browser-native `resource_error` captures. |
+| `high` | Significant, needs attention. | `backend_exception`, non-opaque `frontend_exception`, immediate request-failure incident signals. |
 | `critical` | Severe, immediate action required. | Manually escalated. |
 
-Severity is automatically inferred from the event type at grouping time. It can be
-manually escalated but not downgraded.
+Severity is automatically inferred from event type and signal confidence at grouping
+time. Opaque browser-native `window_error` captures infer `low` because browsers did
+not expose enough application detail to justify paging-level severity by default.
+Severity can be manually escalated but not downgraded.
 
 ## Sources
 

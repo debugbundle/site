@@ -2978,6 +2978,86 @@
         }
       }
     },
+    "/v1/projects/{id}/membership": {
+      "delete": {
+        "operationId": "leaveProject",
+        "summary": "Leave a shared project",
+        "tags": [
+          "Projects"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Left project membership.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectMemberResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project membership was not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Owners cannot leave their own project.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/projects": {
       "get": {
         "operationId": "listProjects",
@@ -8013,6 +8093,13 @@
               "additionalProperties": {}
             }
           },
+          "github_marketplace_accounts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
           "project_github_repos": {
             "type": "array",
             "items": {
@@ -8042,6 +8129,13 @@
             }
           },
           "processed_billing_events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
+          "processed_github_marketplace_events": {
             "type": "array",
             "items": {
               "type": "object",
@@ -8153,11 +8247,13 @@
           "agent_webhooks",
           "webhook_deliveries",
           "github_installations",
+          "github_marketplace_accounts",
           "project_github_repos",
           "github_dispatch_rules",
           "github_dispatch_deliveries",
           "org_usage_counters",
           "processed_billing_events",
+          "processed_github_marketplace_events",
           "operational_email_deliveries",
           "audit_logs",
           "artifacts"
@@ -9641,6 +9737,36 @@
                                         "string",
                                         "null"
                                       ]
+                                    },
+                                    "attributes": {
+                                      "type": "object",
+                                      "properties": {
+                                        "rel": {
+                                          "type": "string"
+                                        },
+                                        "as": {
+                                          "type": "string"
+                                        },
+                                        "type": {
+                                          "type": "string"
+                                        },
+                                        "media": {
+                                          "type": "string"
+                                        },
+                                        "cross_origin": {
+                                          "type": "string"
+                                        },
+                                        "async": {
+                                          "type": "boolean"
+                                        },
+                                        "defer": {
+                                          "type": "boolean"
+                                        },
+                                        "integrity_present": {
+                                          "type": "boolean"
+                                        }
+                                      },
+                                      "additionalProperties": false
                                     }
                                   },
                                   "required": [
@@ -9653,6 +9779,61 @@
                                   "type": "null"
                                 }
                               ]
+                            },
+                            "page": {
+                              "type": "object",
+                              "properties": {
+                                "url": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "referrer": {
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                },
+                                "ready_state": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "loading",
+                                        "interactive",
+                                        "complete"
+                                      ]
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "visibility_state": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "enum": [
+                                        "visible",
+                                        "hidden",
+                                        "prerender",
+                                        "unloaded"
+                                      ]
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "url",
+                                "referrer",
+                                "ready_state",
+                                "visibility_state"
+                              ],
+                              "additionalProperties": false
                             },
                             "opaque": {
                               "type": "boolean"
@@ -14373,6 +14554,10 @@
                     }
                   ]
                 },
+                "cooldown_seconds": {
+                  "type": "integer",
+                  "minimum": 0
+                },
                 "config": {
                   "type": "object",
                   "additionalProperties": {}
@@ -14395,6 +14580,7 @@
                 "channel",
                 "condition_type",
                 "severity_min",
+                "cooldown_seconds",
                 "config",
                 "is_enabled",
                 "created_at",
@@ -14440,6 +14626,12 @@
                   "high",
                   "critical"
                 ]
+              },
+              "cooldown_seconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 604800,
+                "default": 0
               },
               "is_enabled": {
                 "type": "boolean",
@@ -14500,6 +14692,12 @@
                   "high",
                   "critical"
                 ]
+              },
+              "cooldown_seconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 604800,
+                "default": 0
               },
               "is_enabled": {
                 "type": "boolean",
@@ -14579,6 +14777,12 @@
                   "critical"
                 ]
               },
+              "cooldown_seconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 604800,
+                "default": 0
+              },
               "is_enabled": {
                 "type": "boolean",
                 "default": true
@@ -14639,6 +14843,12 @@
                   "high",
                   "critical"
                 ]
+              },
+              "cooldown_seconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 604800,
+                "default": 0
               },
               "is_enabled": {
                 "type": "boolean",
@@ -14729,6 +14939,10 @@
                   }
                 ]
               },
+              "cooldown_seconds": {
+                "type": "integer",
+                "minimum": 0
+              },
               "config": {
                 "type": "object",
                 "additionalProperties": {}
@@ -14751,6 +14965,7 @@
               "channel",
               "condition_type",
               "severity_min",
+              "cooldown_seconds",
               "config",
               "is_enabled",
               "created_at",
@@ -14805,6 +15020,11 @@
                     "type": "null"
                   }
                 ]
+              },
+              "cooldown_seconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 604800
               },
               "is_enabled": {
                 "type": "boolean"
@@ -14878,6 +15098,11 @@
                     "type": "null"
                   }
                 ]
+              },
+              "cooldown_seconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 604800
               },
               "is_enabled": {
                 "type": "boolean"
@@ -14970,6 +15195,11 @@
                   }
                 ]
               },
+              "cooldown_seconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 604800
+              },
               "is_enabled": {
                 "type": "boolean"
               },
@@ -15044,6 +15274,11 @@
                   }
                 ]
               },
+              "cooldown_seconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 604800
+              },
               "is_enabled": {
                 "type": "boolean"
               },
@@ -15117,6 +15352,11 @@
                     "type": "null"
                   }
                 ]
+              },
+              "cooldown_seconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 604800
               },
               "is_enabled": {
                 "type": "boolean"

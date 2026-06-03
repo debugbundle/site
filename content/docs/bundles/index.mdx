@@ -105,9 +105,12 @@ Improvement bundles commonly use `warning`, `performance_issue`, `request_failur
 | Severity | Meaning | Automatic Assignment |
 |----------|---------|---------------------|
 | `low` | Minor issue, informational. | Default for most event types. |
-| `medium` | Moderate impact, should be reviewed. | `error_suppressed` events. |
-| `high` | Significant impact, needs attention. | `backend_exception`, `frontend_exception`. |
+| `medium` | Moderate impact, should be reviewed. | `error_suppressed` events and opaque browser-native `resource_error` captures. |
+| `high` | Significant impact, needs attention. | `backend_exception`, non-opaque `frontend_exception`, immediate request-failure incident signals. |
 | `critical` | Severe impact, immediate action required. | Manually escalated. |
+
+Opaque browser-native `window_error` captures infer `low` by default because the browser
+did not provide enough application detail to classify them as high-confidence failures.
 
 ## Summary Section
 

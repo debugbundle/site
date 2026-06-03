@@ -13,7 +13,8 @@ notifications to the right people through the right channels.
 1. An event triggers in DebugBundle (new incident, regression, spike).
 2. The system evaluates all active alert rules for the project.
 3. Rules matching the event's conditions and filters fire.
-4. Notifications are delivered to the configured channel.
+4. Rule-level cooldowns suppress repeated notifications for the same notification key when configured.
+5. Notifications are delivered to the configured channel.
 
 ## Channels
 
@@ -97,10 +98,24 @@ low < medium < high < critical
 
 For example, `severity_min: "high"` fires for `high` and `critical` incidents only.
 
+Severity is inferred from signal confidence. Backend exceptions, non-opaque frontend
+exceptions, and immediate request-failure incident signals default to `high`. Opaque
+browser-native `window_error` captures default to `low`, and opaque `resource_error`
+captures default to `medium`, so a `severity_min: "high"` rule will not fire from
+those opaque browser signals alone.
+
 ## Service Scope
 
 Optionally scope an alert to a specific service using `service_id`. When set, the alert
 rule only evaluates events from that service.
+
+## Notification Cooldowns
+
+Alert rules can include `cooldown_seconds` to reduce repeated notifications for the same alert signal. The default is `0`, which preserves immediate delivery behavior. A positive value up to `604800` seconds (7 days) suppresses repeated notifications for the same computed notification key while leaving incident grouping unchanged.
+
+For low-information browser-native `window_error` signals, DebugBundle may use a broader notification key than the incident fingerprint so repeated opaque browser noise can be quieted without merging separate incidents.
+
+The web app shows this setting in whole days for human input. API, CLI, and MCP use seconds (`cooldown_seconds`, `--cooldown`, and `cooldownSeconds` respectively).
 
 ## Alert Lifecycle
 
