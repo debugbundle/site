@@ -37,12 +37,13 @@ GET /v1/billing
 {
   "billing": {
     "plan": "solo",
-    "stripe_customer_id": "cus_123",
+    "billing_state": "trialing",
+    "stripe_customer_id": null,
     "active_projects": 4,
     "capacity_units": {
-      "total": 6,
+      "total": 3,
       "included": 3,
-      "additional_purchased": 3,
+      "additional_purchased": 0,
       "pending_reduction": null
     },
     "usage_window": {
@@ -56,10 +57,23 @@ GET /v1/billing
       "monthly_remote_activations": { "used": 4, "limit": 150 },
       "monthly_alert_deliveries": { "used": 18, "limit": 450 },
       "monthly_webhook_deliveries": { "used": 40, "limit": 1500 }
+    },
+    "trial": {
+      "available": false,
+      "active": true,
+      "plan": "solo",
+      "started_at": "2025-01-02T00:00:00Z",
+      "ends_at": "2025-02-01T00:00:00Z",
+      "used_at": "2025-01-02T00:00:00Z",
+      "converted_at": null,
+      "expired_at": null,
+      "days_remaining": 12
     }
   }
 }
 ```
+
+`billing_state` may be `null`, `active`, `past_due`, `canceled`, `unpaid`, `incomplete`, `admin_override`, `trialing`, or `trial_expired`. The `trial` object is always present.
 
 When a capacity reduction is pending:
 
@@ -97,6 +111,30 @@ POST /v1/billing/checkout
 { "url": "https://checkout.stripe.com/c/pay/..." }
 ```
 
+### Start No-Card Trial
+
+Starts an eligible 30-day no-card Solo or Team trial.
+
+```
+POST /v1/billing/trial/start
+```
+
+**Request:**
+
+```json
+{ "target_plan": "team" }
+```
+
+**Response:**
+
+Returns the standard billing summary response with the updated `billing_state`
+and `trial` fields.
+
+**Notes:**
+- Only eligible Free organizations can start a trial
+- `target_plan` must be `solo` or `team`
+- Browser sessions and owner-scoped member tokens can both call this route
+
 ### Open Customer Portal
 
 Creates a Stripe Customer Portal session for managing payment methods and
@@ -116,6 +154,7 @@ POST /v1/billing/portal
 
 Adds extra capacity units immediately with prorated billing.
 The target extra-capacity quantity must be greater than the current purchased quantity and no greater than 99.
+Active no-card trials receive `409 trial_conversion_required` and must convert to paid first.
 
 ```
 POST /v1/billing/capacity/increase
@@ -147,6 +186,7 @@ POST /v1/billing/capacity/increase
 
 Schedules a capacity reduction for the next billing-period boundary.
 The target extra-capacity quantity must be lower than the current purchased quantity and no greater than 99.
+Active no-card trials receive `409 trial_conversion_required`.
 
 ```
 POST /v1/billing/capacity/scheduled-reduction
@@ -182,11 +222,16 @@ Cancels a pending capacity reduction and returns the updated billing summary.
 DELETE /v1/billing/capacity/scheduled-reduction
 ```
 
+Active no-card trials receive `409 trial_conversion_required`.
+
 ## CLI Usage
 
 ```bash
 # View billing summary
 debugbundle billing get
+
+# Start a no-card trial
+debugbundle billing trial start --plan team
 
 # Add capacity units
 debugbundle billing capacity increase --target-additional-capacity-units 2
@@ -204,7 +249,8 @@ All billing operations are available as MCP tools for AI agent workflows:
 
 | MCP Tool | Description |
 |----------|-------------|
-| `get_billing_summary` | Get plan, active-project counts, capacity units, and scheduled changes |
+| `get_billing_summary` | Get plan, billing state, trial state, active-project counts, capacity units, and scheduled changes |
+| `start_trial` | Start an eligible no-card Solo or Team trial |
 | `increase_capacity` | Add capacity units with prorated billing |
 | `schedule_capacity_reduction` | Schedule a capacity reduction for the next billing cycle |
 | `cancel_capacity_reduction` | Cancel a pending capacity reduction |

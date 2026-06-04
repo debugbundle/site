@@ -11,10 +11,11 @@ billing works, from checkout through ongoing subscription management.
 
 Billing follows a simple model:
 
-1. **Choose a plan** — Solo ($2.99/mo) or Team ($19/mo)
-2. **Complete checkout** — Stripe Checkout handles payment securely and applies VAT or applicable taxes
-3. **Add capacity as needed** — Purchase extra capacity units from the billing page
-4. **Manage via portal** — Update payment methods and view invoices through Stripe
+1. **Start on Free** — Every new organization begins on the Free baseline
+2. **Optionally start a no-card trial** — Eligible organizations can start a 30-day Solo or Team trial
+3. **Convert through checkout when ready** — Stripe Checkout handles payment securely and applies VAT or applicable taxes
+4. **Add capacity as needed** — Purchase extra capacity units from the billing page after paid conversion
+5. **Manage via portal** — Update payment methods and view invoices through Stripe
 
 ## Stripe Integration
 
@@ -27,17 +28,37 @@ processing is handled by Stripe:
 - **Webhooks** — Stripe notifies DebugBundle of subscription changes
 - **Invoicing** — Stripe handles all invoice generation and delivery
 
+## No-Card Trials
+
+Eligible Free organizations can start one 30-day no-card trial for:
+- **Solo**
+- **Team**
+
+Trial rules:
+- Every organization starts from the Free baseline first
+- Solo trial can convert to paid Solo or Team
+- Team trial can convert to paid Team only
+- Extra purchased capacity is unavailable during the trial
+- Unconverted trials expire back to Free automatically and cannot be restarted
+
+Trials can be started from:
+- pricing page signup CTA
+- billing page
+- `POST /v1/billing/trial/start`
+- `debugbundle billing trial start --plan solo|team`
+- MCP `start_trial`
+
 ## Checkout Flow
 
-When you upgrade from Free:
+When you upgrade directly from Free or convert from an active trial:
 
-1. Click **Upgrade** on the billing page
+1. Click **Upgrade** or **Convert to paid** on the billing page
 2. Redirected to Stripe Checkout with the selected plan
 3. Complete payment
 4. Redirected back to DebugBundle
 5. Stripe webhook updates your organization's entitlements
 
-The upgrade is effective immediately after payment.
+The paid upgrade is effective immediately after payment.
 
 ## Shared Allowances
 
@@ -70,6 +91,8 @@ debugbundle billing capacity increase --target-additional-capacity-units 2
 Or from the billing page in the dashboard — click **Manage capacity**.
 
 The prorated charge covers the remainder of the current billing period. Paid organizations can hold up to 99 purchased extra capacity units.
+
+During an active no-card trial, capacity purchase is blocked until you convert to a paid plan first.
 
 ### Reducing Capacity
 
@@ -117,11 +140,25 @@ Subscription was explicitly canceled or failed all retry attempts.
 - Existing data is retained per the original tier's retention period
 - You can resubscribe at any time
 
+### Trialing
+
+Internal no-card trial state. The organization temporarily uses Solo or Team
+entitlements without a Stripe customer or subscription.
+
+### Trial Expired
+
+The no-card trial ended without a paid conversion. The organization is back
+on Free, but trial history remains visible in the billing summary.
+
 ## Billing Emails
 
 | Event | Email |
 |-------|-------|
-| Subscription created | Welcome + receipt |
+| Trial started | Confirmation with selected plan and exact end date |
+| Trial ending soon | 7-day and 1-day reminders |
+| Trial expired | Downgrade back to Free confirmation |
+| Trial converted | Paid plan confirmation after trial |
+| Paid subscription created | Welcome + receipt |
 | Payment succeeded | Invoice receipt |
 | Payment failed | Action required notification |
 | Subscription canceled | Confirmation + data retention info |

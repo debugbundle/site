@@ -572,7 +572,15 @@ Get the billing summary for the organization.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| _(none beyond auth)_ | — | Returns plan, active-project counts, capacity units, and scheduled reduction info. |
+| _(none beyond auth)_ | — | Returns plan, billing state, trial state, active-project counts, capacity units, and scheduled reduction info. |
+
+### start_trial
+
+Start an eligible no-card trial for the organization.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `targetPlan` | `string` | **Required.** `solo` or `team`. |
 
 ### increase_capacity
 
@@ -580,7 +588,7 @@ Add extra capacity units with prorated billing.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `targetAdditionalCapacityUnits` | `number` | **Required.** Target number of additional capacity units. |
+| `targetAdditionalCapacityUnits` | `number` | **Required.** Target number of additional capacity units. Active no-card trials receive `trial_conversion_required`. |
 
 ### schedule_capacity_reduction
 
@@ -588,7 +596,7 @@ Schedule a capacity reduction at the end of the billing cycle.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `targetAdditionalCapacityUnits` | `number` | **Required.** Target number of additional capacity units after reduction. |
+| `targetAdditionalCapacityUnits` | `number` | **Required.** Target number of additional capacity units after reduction. Active no-card trials receive `trial_conversion_required`. |
 
 ### cancel_capacity_reduction
 
@@ -596,7 +604,7 @@ Cancel a scheduled capacity reduction.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| _(none beyond auth)_ | — | Cancels the pending reduction, keeping current capacity count. |
+| _(none beyond auth)_ | — | Cancels the pending reduction, keeping current capacity count. Active no-card trials receive `trial_conversion_required`. |
 
 ---
 

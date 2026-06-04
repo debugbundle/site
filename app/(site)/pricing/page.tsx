@@ -19,9 +19,9 @@ const tiers = [
     price: '$0',
     period: 'forever',
     description: 'Get started with debugging at no cost.',
-    footnote: '* No credit card required',
+    footnote: '* Free forever, no credit card required',
     cta: 'Get Started',
-    ctaHref: '/docs/quickstart/',
+    ctaHref: 'https://app.debugbundle.com/signup',
     highlight: false,
     features: [
       'Unlimited projects',
@@ -51,9 +51,9 @@ const tiers = [
     price: '$2.99',
     period: '/month',
     description: 'Shared allowance for independent developers.',
-    footnote: '* VAT applied at checkout',
-    cta: 'Start Solo',
-    ctaHref: 'https://app.debugbundle.com',
+    footnote: '30-day trial, no credit card required. Extra capacity requires paid conversion.',
+    cta: 'Start Solo trial',
+    ctaHref: 'https://app.debugbundle.com/signup?trial=solo',
     highlight: true,
     features: [
       'Unlimited projects',
@@ -83,9 +83,9 @@ const tiers = [
     price: '$19',
     period: '/month',
     description: 'Shared allowance and collaboration for teams.',
-    footnote: '* VAT applied at checkout',
-    cta: 'Start Team',
-    ctaHref: 'https://app.debugbundle.com',
+    footnote: '30-day trial, no credit card required. Extra capacity requires paid conversion.',
+    cta: 'Start Team trial',
+    ctaHref: 'https://app.debugbundle.com/signup?trial=team',
     highlight: false,
     features: [
       'Unlimited projects',
@@ -233,7 +233,7 @@ export default function PricingPage(): ReactElement {
         <h2 className="text-xl font-semibold text-[var(--site-text)]">Extra capacity units</h2>
         <p className="max-w-3xl text-sm leading-7 text-[var(--site-text-muted)]">
           Paid plans include a base number of capacity units. Add more at any time to expand shared allowance
-          capacity. Each extra unit adds more shared allowance for your plan.
+          capacity after paid conversion. Each extra unit adds more shared allowance for your plan.
         </p>
         <div className="grid max-w-2xl gap-4 md:grid-cols-2">
           {extraCapacityUnits.map((unit) => (

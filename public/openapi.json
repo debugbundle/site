@@ -7366,6 +7366,13 @@
           "accepted_terms": {
             "type": "boolean",
             "const": true
+          },
+          "requested_trial_plan": {
+            "type": "string",
+            "enum": [
+              "solo",
+              "team"
+            ]
           }
         },
         "required": [
@@ -7408,6 +7415,13 @@
           "code": {
             "type": "string",
             "pattern": "^\\d{6}$"
+          },
+          "requested_trial_plan": {
+            "type": "string",
+            "enum": [
+              "solo",
+              "team"
+            ]
           }
         },
         "required": [
@@ -14061,6 +14075,26 @@
                   "team"
                 ]
               },
+              "billing_state": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "past_due",
+                      "canceled",
+                      "unpaid",
+                      "incomplete",
+                      "admin_override",
+                      "trialing",
+                      "trial_expired"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "stripe_customer_id": {
                 "type": [
                   "string",
@@ -14261,15 +14295,94 @@
                   "monthly_webhook_deliveries"
                 ],
                 "additionalProperties": false
+              },
+              "trial": {
+                "type": "object",
+                "properties": {
+                  "available": {
+                    "type": "boolean"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "plan": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "solo",
+                          "team"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "started_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "ends_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "used_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "converted_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "expired_at": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "days_remaining": {
+                    "anyOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "available",
+                  "active",
+                  "plan",
+                  "started_at",
+                  "ends_at",
+                  "used_at",
+                  "converted_at",
+                  "expired_at",
+                  "days_remaining"
+                ],
+                "additionalProperties": false
               }
             },
             "required": [
               "plan",
+              "billing_state",
               "stripe_customer_id",
               "active_projects",
               "capacity_units",
               "usage_window",
-              "allowances"
+              "allowances",
+              "trial"
             ],
             "additionalProperties": false
           }

@@ -166,14 +166,19 @@ Manage project access and invitations without leaving the agent session.
 
 ## Billing Management
 
-Check billing state and manage project capacity.
+Check billing state, start an eligible no-card trial, and manage project capacity.
 
 ```
-1. get_billing_summary        → View plan, capacity usage, and scheduled changes
-2. increase_capacity          → Add capacity when the team needs more allowance
-3. schedule_capacity_reduction → Schedule a reduction for the next billing cycle
-4. cancel_capacity_reduction  → Cancel a pending reduction
+1. get_billing_summary         → View plan, billing state, trial state, and capacity usage
+2. start_trial                 → Start a Solo or Team no-card trial when eligible
+3. increase_capacity           → Add capacity when the team needs more allowance
+4. schedule_capacity_reduction → Schedule a reduction for the next billing cycle
+5. cancel_capacity_reduction   → Cancel a pending reduction
 ```
+
+Active no-card trials can use `get_billing_summary` and `start_trial`, but
+capacity tools return `trial_conversion_required` until the organization
+converts to a paid plan.
 
 ## Combining Patterns
 

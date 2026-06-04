@@ -209,7 +209,7 @@ export default function HomePage(): ReactElement {
         <SectionTitle
           eyebrow="Production debugging for AI agents"
           title="The agent-native debugging layer for modern products"
-          description="DebugBundle captures production incidents, assembles deterministic debugging context, and delivers it through API, CLI, MCP, dashboards, and machine-readable artifacts so humans and AI agents can diagnose failures faster."
+          description="DebugBundle captures production incidents, assembles deterministic debugging context, and delivers it through API, CLI, MCP, and machine-readable artifacts so humans and AI agents can diagnose failures faster."
         />
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Link

@@ -202,10 +202,11 @@ Management endpoints (incidents, webhooks, tokens) are not rate-limited in the c
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `GET` | `/v1/billing` | Member token (owner) | Get billing summary |
-| `POST` | `/v1/billing/capacity/increase` | Member token (owner) | Add capacity units |
-| `POST` | `/v1/billing/capacity/scheduled-reduction` | Member token (owner) | Schedule capacity reduction |
-| `DELETE` | `/v1/billing/capacity/scheduled-reduction` | Member token (owner) | Cancel pending reduction |
+| `GET` | `/v1/billing` | Browser session or member token (owner) | Get billing summary |
+| `POST` | `/v1/billing/trial/start` | Browser session or member token (owner) | Start an eligible no-card trial |
+| `POST` | `/v1/billing/capacity/increase` | Browser session or member token (owner) | Add capacity units |
+| `POST` | `/v1/billing/capacity/scheduled-reduction` | Browser session or member token (owner) | Schedule capacity reduction |
+| `DELETE` | `/v1/billing/capacity/scheduled-reduction` | Browser session or member token (owner) | Cancel pending reduction |
 
 ### Probes
 
