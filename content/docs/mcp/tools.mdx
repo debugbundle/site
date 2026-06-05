@@ -321,6 +321,9 @@ Delete an alert rule.
 
 List connected Slack destinations for a project organization.
 
+Saved destinations remain readable after a downgrade to Free so agents can inspect the
+paused setup before the owner upgrades again.
+
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `projectId` | `string` | **Required.** Project whose organization owns the destinations. |
@@ -345,7 +348,7 @@ Send a test message to a connected Slack destination.
 
 ### delete_slack_destination
 
-Delete a connected Slack destination when no alert rule or weekly report still references it.
+Delete a connected Slack destination when no alert rule or weekly report still references it. This cleanup action remains available after downgrade.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
@@ -466,6 +469,12 @@ Returns the probe object including a one-time `trigger_token`.
 ### list_active_probes
 
 List active probes for a project.
+
+Saved remote probe activations remain readable after a downgrade to Free so agents can
+inspect the paused setup before the owner upgrades again.
+
+Probe deactivation remains available as cleanup after downgrade; new remote activation
+requires the project to return to Solo or Team.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|

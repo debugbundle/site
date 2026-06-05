@@ -106,6 +106,13 @@ curl https://api.debugbundle.com/v1/projects/proj_01HXYZ/probes \
 
 Active probe lists do not include `trigger_token`; it is shown only at activation time.
 
+<Callout type="info">
+  If a project downgrades to Free, this list stays readable so preserved remote probe
+  activations remain visible. Activation still returns `upgrade_required` until the
+  project upgrades again, deactivation remains available as cleanup, and Free-tier
+  SDK config keeps `remote_probes_enabled: false`.
+</Callout>
+
 ## Deactivate Probe
 
 ```

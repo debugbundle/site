@@ -150,6 +150,12 @@ entitlements without a Stripe customer or subscription.
 The no-card trial ended without a paid conversion. The organization is back
 on Free, but trial history remains visible in the billing summary.
 
+When a trial expires or any paid plan is downgraded, DebugBundle pauses
+functionality that is no longer part of the target tier while preserving the
+saved setup. For example, Free downgrades stop paid-only remote probes, GitHub
+automation, Slack delivery, collaborator access, invite acceptance, and hosted
+improvement automation until the organization returns to an eligible plan.
+
 ## Billing Emails
 
 | Event | Email |

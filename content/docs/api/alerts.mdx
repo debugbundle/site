@@ -223,7 +223,7 @@ Sends a test message to the selected Slack channel and returns `{ "delivered": t
 DELETE /v1/projects/{projectId}/slack/destinations/{destinationId}
 ```
 
-Deletes the destination when no alert rule or weekly report still references it. If it is still in use, the API returns `409 slack_destination_in_use`.
+Deletes the destination when no alert rule or weekly report still references it. This cleanup action remains available after downgrade. If it is still in use, the API returns `409 slack_destination_in_use`.
 
 ## Next Steps
 

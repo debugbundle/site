@@ -255,6 +255,10 @@ debugbundle probe list --project-id proj_01HXYZ...
 debugbundle probe deactivate --project-id proj_01HXYZ... --activation-id prb_01H9KL...
 ```
 
+After a downgrade to Free, `probe list` remains readable and `probe deactivate` still
+works as cleanup for preserved activations. New remote probe activation stays paused
+until the project returns to Solo or Team.
+
 These commands have equivalent [MCP tools](/docs/mcp/tools#probes): `activate_probe`, `list_active_probes`, `deactivate_probe`.
 
 ## Project Member Management

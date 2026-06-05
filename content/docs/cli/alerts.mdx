@@ -213,7 +213,9 @@ debugbundle slack test 11111111-1111-4111-8111-111111111111 --project-id proj_01
 debugbundle slack delete 11111111-1111-4111-8111-111111111111 --project-id proj_01HXYZ...
 ```
 
-`slack connect-url` prints a browser URL for Slack OAuth and channel selection. `slack delete` only succeeds once no alert rule or weekly report still references the destination.
+`slack connect-url` prints a browser URL for Slack OAuth and channel selection. `slack delete` remains available after downgrade and only succeeds once no alert rule or weekly report still references the destination.
+`slack list` remains readable after a downgrade to Free so preserved destination setup
+is still visible while Slack delivery stays paused.
 
 ### Discord
 
