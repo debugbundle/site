@@ -134,6 +134,9 @@ Management endpoints (incidents, webhooks, tokens) are not rate-limited in the c
 | `GET` | `/v1/incidents` | Member token | List incidents |
 | `GET` | `/v1/incidents/:id` | Member token | Get incident detail |
 | `POST` | `/v1/incidents/:id/resolve` | Member token | Resolve an incident |
+| `POST` | `/v1/incidents/resolve` | Member token | Resolve incidents in bulk |
+| `POST` | `/v1/incidents/:id/reopen` | Member token | Reopen an incident |
+| `POST` | `/v1/incidents/reopen` | Member token | Reopen incidents in bulk |
 | `GET` | `/v1/incidents/:id/bundle` | Member token | Retrieve debug bundle |
 | `GET` | `/v1/incidents/:id/reproduction` | Member token | Retrieve reproduction artifacts |
 | `GET` | `/v1/incidents/:id/logs` | Member token | List event logs |

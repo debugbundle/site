@@ -93,8 +93,15 @@ Mark an incident as resolved.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `incident_id` | `string` | **Required.** The incident ID. |
-| `resolution_note` | `string` | Optional note describing the resolution. |
+| `incidentId` | `string` | **Required.** The incident ID. |
+
+### resolve_incidents
+
+Mark incidents as resolved in bulk.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incidentIds` | `string[]` | **Required.** Incident IDs to resolve. |
 
 ### reopen_incident
 
@@ -102,7 +109,15 @@ Reopen a previously resolved incident.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `incident_id` | `string` | **Required.** The incident ID. |
+| `incidentId` | `string` | **Required.** The incident ID. |
+
+### reopen_incidents
+
+Reopen incidents in bulk.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `incidentIds` | `string[]` | **Required.** Incident IDs to reopen. |
 
 ### get_bundle
 

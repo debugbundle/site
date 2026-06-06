@@ -1178,6 +1178,9 @@
         ],
         "security": [
           {
+            "browserSession": []
+          },
+          {
             "memberBearerToken": []
           }
         ],
@@ -1291,6 +1294,164 @@
         }
       }
     },
+    "/v1/incidents/resolve": {
+      "post": {
+        "operationId": "resolveIncidents",
+        "summary": "Resolve incidents in bulk",
+        "tags": [
+          "Incidents"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkIncidentMutationBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resolved incident details in request order.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkIncidentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Member token is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One or more incidents were not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Incident resolution is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/incidents/reopen": {
+      "post": {
+        "operationId": "reopenIncidents",
+        "summary": "Reopen incidents in bulk",
+        "tags": [
+          "Incidents"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkIncidentMutationBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reopened incident details in request order.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkIncidentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Member token is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "One or more incidents were not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Incident reopen is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/incidents/{id}": {
       "get": {
         "operationId": "getIncident",
@@ -1299,6 +1460,9 @@
           "Incidents"
         ],
         "security": [
+          {
+            "browserSession": []
+          },
           {
             "memberBearerToken": []
           }
@@ -1366,6 +1530,9 @@
           "Incidents"
         ],
         "security": [
+          {
+            "browserSession": []
+          },
           {
             "memberBearerToken": []
           }
@@ -2401,6 +2568,16 @@
               }
             }
           },
+          "403": {
+            "description": "Shared collaborator access is paused until the owner upgrades again.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Project was not found or collaboration is unavailable.",
             "content": {
@@ -3285,7 +3462,7 @@
             }
           },
           "403": {
-            "description": "Owner access is required.",
+            "description": "Owner access is required, and paused shared collaborator access cannot mutate the project.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3373,7 +3550,7 @@
             }
           },
           "403": {
-            "description": "Owner access is required.",
+            "description": "Owner access is required, and paused shared collaborator access cannot delete the project.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3462,7 +3639,7 @@
             }
           },
           "403": {
-            "description": "Owner access or Team tier is required.",
+            "description": "Owner access is required, or paused shared collaborator access cannot delete preserved Slack setup.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3595,7 +3772,7 @@
             }
           },
           "403": {
-            "description": "Team tier is required.",
+            "description": "Paused shared collaborator access cannot view preserved Slack destinations.",
             "content": {
               "application/json": {
                 "schema": {
@@ -3796,7 +3973,7 @@
             }
           },
           "403": {
-            "description": "Owner access or Team tier is required.",
+            "description": "Owner access is required, or paused shared collaborator access cannot delete preserved Slack setup.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5225,7 +5402,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Weekly report channels.",
+            "description": "Weekly report channels, including preserved Slack channels paused by downgrade.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5322,7 +5499,7 @@
             }
           },
           "403": {
-            "description": "Team tier is required for connected Slack destinations.",
+            "description": "Team tier is required for connected Slack destinations, and paused shared collaborator access cannot manage weekly reports.",
             "content": {
               "application/json": {
                 "schema": {
@@ -5422,7 +5599,7 @@
             }
           },
           "403": {
-            "description": "Team tier is required for connected Slack destinations.",
+            "description": "Team tier is required for connected Slack destinations, and paused shared collaborator access cannot manage weekly reports.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6186,7 +6363,7 @@
             }
           },
           "403": {
-            "description": "Remote probes are not available for the caller tier.",
+            "description": "Paused shared collaborator access cannot manage probes.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6291,7 +6468,7 @@
             }
           },
           "403": {
-            "description": "Remote probes are not available for the caller tier.",
+            "description": "Paused shared collaborator access cannot view preserved probe activations.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6378,7 +6555,7 @@
             }
           },
           "403": {
-            "description": "Remote probes are not available for the caller tier.",
+            "description": "Remote probes are not available for the caller tier, and paused shared collaborator access cannot manage probes.",
             "content": {
               "application/json": {
                 "schema": {
@@ -6538,7 +6715,7 @@
             }
           },
           "403": {
-            "description": "Owner/admin access is required.",
+            "description": "Owner/admin access is required, and paused shared collaborator access cannot create capture rules.",
             "content": {
               "application/json": {
                 "schema": {
@@ -8156,6 +8333,13 @@
               "additionalProperties": {}
             }
           },
+          "plan_cleanup_tasks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            }
+          },
           "operational_email_deliveries": {
             "type": "array",
             "items": {
@@ -8268,6 +8452,7 @@
           "org_usage_counters",
           "processed_billing_events",
           "processed_github_marketplace_events",
+          "plan_cleanup_tasks",
           "operational_email_deliveries",
           "audit_logs",
           "artifacts"
@@ -10713,6 +10898,181 @@
               "string",
               "null"
             ]
+          }
+        },
+        "required": [
+          "incidents"
+        ],
+        "additionalProperties": false
+      },
+      "BulkIncidentMutationBody": {
+        "type": "object",
+        "properties": {
+          "incident_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "minItems": 1,
+            "maxItems": 1000
+          }
+        },
+        "required": [
+          "incident_ids"
+        ],
+        "additionalProperties": false
+      },
+      "BulkIncidentResponse": {
+        "type": "object",
+        "properties": {
+          "incidents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "incident_id": {
+                  "type": "string"
+                },
+                "project_id": {
+                  "type": "string"
+                },
+                "project_name": {
+                  "type": "string"
+                },
+                "service_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "service_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "latest_deployment_id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "environment": {
+                  "type": "string"
+                },
+                "fingerprint": {
+                  "type": "string"
+                },
+                "fingerprint_version": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "first_seen_at": {
+                  "type": "string"
+                },
+                "last_seen_at": {
+                  "type": "string"
+                },
+                "occurrence_count": {
+                  "type": "integer"
+                },
+                "spike_detected_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "resolved_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "regressed_at": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "matched_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "incident_reason": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "backend_exception",
+                        "frontend_exception",
+                        "request_failure",
+                        "error_log"
+                      ]
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string",
+                      "enum": [
+                        "backend_exception",
+                        "frontend_exception",
+                        "request_event",
+                        "log_event"
+                      ]
+                    },
+                    "event_class": {
+                      "type": "string",
+                      "const": "incident_signal"
+                    },
+                    "matched_policy": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "description",
+                    "event_type",
+                    "event_class",
+                    "matched_policy"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "incident_id",
+                "project_id",
+                "project_name",
+                "service_id",
+                "service_name",
+                "latest_deployment_id",
+                "environment",
+                "fingerprint",
+                "fingerprint_version",
+                "title",
+                "severity",
+                "status",
+                "first_seen_at",
+                "last_seen_at",
+                "occurrence_count",
+                "spike_detected_at",
+                "regressed_at",
+                "matched_fields"
+              ],
+              "additionalProperties": false
+            }
           }
         },
         "required": [
@@ -13499,6 +13859,9 @@
                     "member"
                   ]
                 },
+                "shared_access_suspended": {
+                  "type": "boolean"
+                },
                 "name": {
                   "type": "string"
                 },
@@ -13650,6 +14013,9 @@
                   "member"
                 ]
               },
+              "shared_access_suspended": {
+                "type": "boolean"
+              },
               "name": {
                 "type": "string"
               },
@@ -13790,6 +14156,9 @@
                   "member"
                 ]
               },
+              "shared_access_suspended": {
+                "type": "boolean"
+              },
               "name": {
                 "type": "string"
               },
@@ -13907,6 +14276,9 @@
                   "admin",
                   "member"
                 ]
+              },
+              "shared_access_suspended": {
+                "type": "boolean"
               },
               "name": {
                 "type": "string"

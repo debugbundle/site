@@ -1,6 +1,6 @@
 ---
 title: "Incidents API"
-description: "List, inspect, resolve, and retrieve debug bundles and reproduction artifacts for incidents via the REST API."
+description: "List, inspect, resolve, reopen, and retrieve debug bundles and reproduction artifacts for incidents via the REST API."
 icon: Bug
 ---
 
@@ -133,6 +133,133 @@ curl -X POST -H "Authorization: Bearer dbundle_mem_xxx" \
     "status": "resolved",
     "resolved_at": "2025-01-15T11:00:00.000Z"
   }
+}
+```
+
+## Resolve Incidents In Bulk
+
+```
+POST /v1/incidents/resolve
+```
+
+**Auth:** Member token or browser session.
+
+Use this endpoint for resolving a selected set of hosted incidents in one request.
+
+### Request
+
+```json
+{
+  "incident_ids": [
+    "00000000-0000-0000-0000-000000000101",
+    "00000000-0000-0000-0000-000000000102"
+  ]
+}
+```
+
+`incident_ids` must contain 1-1000 hosted incident UUID strings. Duplicate ids are ignored before execution.
+
+### Example
+
+```bash
+curl -X POST -H "Authorization: Bearer dbundle_mem_xxx" \
+  -H "Content-Type: application/json" \
+  -d '{"incident_ids":["00000000-0000-0000-0000-000000000101","00000000-0000-0000-0000-000000000102"]}' \
+  "https://api.debugbundle.com/v1/incidents/resolve"
+```
+
+### Response
+
+```json
+{
+  "incidents": [
+    {
+      "incident_id": "00000000-0000-0000-0000-000000000101",
+      "status": "resolved",
+      "resolved_at": "2025-01-15T11:00:00.000Z"
+    },
+    {
+      "incident_id": "00000000-0000-0000-0000-000000000102",
+      "status": "resolved",
+      "resolved_at": "2025-01-15T11:00:00.000Z"
+    }
+  ]
+}
+```
+
+## Reopen Incident
+
+```
+POST /v1/incidents/:id/reopen
+```
+
+**Auth:** Member token or browser session.
+
+### Example
+
+```bash
+curl -X POST -H "Authorization: Bearer dbundle_mem_xxx" \
+  "https://api.debugbundle.com/v1/incidents/inc_abc123/reopen"
+```
+
+### Response
+
+```json
+{
+  "incident": {
+    "incident_id": "inc_abc123",
+    "status": "open",
+    "resolved_at": null
+  }
+}
+```
+
+## Reopen Incidents In Bulk
+
+```
+POST /v1/incidents/reopen
+```
+
+**Auth:** Member token or browser session.
+
+### Request
+
+```json
+{
+  "incident_ids": [
+    "00000000-0000-0000-0000-000000000101",
+    "00000000-0000-0000-0000-000000000102"
+  ]
+}
+```
+
+`incident_ids` must contain 1-1000 hosted incident UUID strings. Duplicate ids are ignored before execution.
+
+### Example
+
+```bash
+curl -X POST -H "Authorization: Bearer dbundle_mem_xxx" \
+  -H "Content-Type: application/json" \
+  -d '{"incident_ids":["00000000-0000-0000-0000-000000000101","00000000-0000-0000-0000-000000000102"]}' \
+  "https://api.debugbundle.com/v1/incidents/reopen"
+```
+
+### Response
+
+```json
+{
+  "incidents": [
+    {
+      "incident_id": "00000000-0000-0000-0000-000000000101",
+      "status": "open",
+      "resolved_at": null
+    },
+    {
+      "incident_id": "00000000-0000-0000-0000-000000000102",
+      "status": "open",
+      "resolved_at": null
+    }
+  ]
 }
 ```
 

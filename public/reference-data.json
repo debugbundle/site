@@ -440,6 +440,7 @@
         "Incidents"
       ],
       "auth": [
+        "Browser session",
         "Member bearer token"
       ]
     },
@@ -452,6 +453,7 @@
         "Incidents"
       ],
       "auth": [
+        "Browser session",
         "Member bearer token"
       ]
     },
@@ -526,6 +528,33 @@
         "Incidents"
       ],
       "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/incidents/reopen",
+      "operationId": "reopenIncidents",
+      "summary": "Reopen incidents in bulk",
+      "tags": [
+        "Incidents"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/incidents/resolve",
+      "operationId": "resolveIncidents",
+      "summary": "Resolve incidents in bulk",
+      "tags": [
+        "Incidents"
+      ],
+      "auth": [
+        "Browser session",
         "Member bearer token"
       ]
     },
@@ -1301,12 +1330,12 @@
     },
     {
       "commandPath": "resolve",
-      "usage": "debugbundle resolve <incident-id> [--source <local|cloud>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle resolve <incident-id> [incident-id ...] [--source <local|cloud>] [--auth-file <path>] [--json]",
       "group": "resolve"
     },
     {
       "commandPath": "reopen",
-      "usage": "debugbundle reopen <incident-id> [--source <local|cloud>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle reopen <incident-id> [incident-id ...] [--source <local|cloud>] [--auth-file <path>] [--json]",
       "group": "reopen"
     },
     {
@@ -1832,9 +1861,20 @@
         },
         {
           "name": "reopen_incident",
-          "description": "Reopen a locally stored resolved incident.",
+          "description": "Reopen an incident by incident id.",
           "requiredArguments": [
             "incidentId"
+          ],
+          "optionalArguments": [
+            "bearerToken",
+            "source"
+          ]
+        },
+        {
+          "name": "reopen_incidents",
+          "description": "Reopen incidents in bulk by incident id.",
+          "requiredArguments": [
+            "incidentIds"
           ],
           "optionalArguments": [
             "bearerToken",
@@ -1846,6 +1886,17 @@
           "description": "Resolve an incident by incident id.",
           "requiredArguments": [
             "incidentId"
+          ],
+          "optionalArguments": [
+            "bearerToken",
+            "source"
+          ]
+        },
+        {
+          "name": "resolve_incidents",
+          "description": "Resolve incidents in bulk by incident id.",
+          "requiredArguments": [
+            "incidentIds"
           ],
           "optionalArguments": [
             "bearerToken",
@@ -3022,6 +3073,12 @@
         "code": "rule_not_found",
         "statusCodes": [
           "404"
+        ]
+      },
+      {
+        "code": "shared_access_suspended",
+        "statusCodes": [
+          "403"
         ]
       },
       {

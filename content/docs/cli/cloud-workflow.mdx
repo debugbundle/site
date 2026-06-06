@@ -184,7 +184,14 @@ debugbundle resolve inc_01HXYZ...
 debugbundle reopen inc_01HXYZ...
 ```
 
-Resolving or reopening a cloud incident updates the status in the cloud database, visible to all team members.
+You can pass multiple incident ids to resolve or reopen a selected set in one hosted bulk request:
+
+```bash
+debugbundle resolve inc_01HXYZ... inc_01HABC...
+debugbundle reopen inc_01HXYZ... inc_01HABC...
+```
+
+Resolving or reopening cloud incidents updates the status in the cloud database, visible to all team members.
 
 ## Cloud Log Watching
 

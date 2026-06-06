@@ -74,7 +74,7 @@ If empty, your SDK or log ingestion hasn't written events yet. See [Local Workfl
 Treat `open` incidents as actionable work. After a fix is verified, or after an intentional smoke, dogfood, or verification incident has served its purpose, resolve it.
 
 1. **Review the open queue:** `debugbundle incidents --status open --json`
-2. **Resolve the intentional incidents:** `debugbundle resolve <incident-id>`
+2. **Resolve the intentional incidents:** `debugbundle resolve <incident-id> [incident-id ...]`
 3. **Re-check the queue:** `debugbundle incidents --status open --json`
 
 If you use `jq`, you can batch-resolve common synthetic titles:
@@ -82,7 +82,7 @@ If you use `jq`, you can batch-resolve common synthetic titles:
 ```bash
 debugbundle incidents --status open --json \
   | jq -r '.incidents[] | select(.title | test("smoke test|dogfood|verification|synthetic"; "i")) | .incident_id' \
-  | xargs -n1 debugbundle resolve
+  | xargs debugbundle resolve
 ```
 
 ---

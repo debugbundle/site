@@ -75,7 +75,7 @@ An incident is a fingerprint-grouped container of events. When the system sees a
 
 **Open** — Active incident receiving new occurrences.
 
-**Resolved** — Manually resolved via CLI (`debugbundle resolve`), API (`POST /v1/incidents/{id}/resolve`), or MCP (`resolve_incident`).
+**Resolved** — Manually resolved via CLI (`debugbundle resolve`), API (`POST /v1/incidents/{id}/resolve` or `POST /v1/incidents/resolve`), or MCP (`resolve_incident` / `resolve_incidents`).
 
 **Regressed** — A resolved incident that received a new matching event. Automatically transitions back and can trigger alerts and webhooks.
 
