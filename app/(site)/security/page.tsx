@@ -46,7 +46,7 @@ export default function SecurityPage(): ReactElement {
           All external inputs are validated with Zod schemas at system boundaries. Internal stack traces are never exposed to clients.
         </SurfaceCard>
         <SurfaceCard title="Local-first privacy">
-          In local-only mode, no data leaves your machine. All processing happens locally with zero network requests to DebugBundle servers.
+          In local-only mode, no data is sent to DebugBundle Cloud. Events and bundles stay on the machine or storage volume where you run the SDK and CLI.
         </SurfaceCard>
       </SurfaceGrid>
 

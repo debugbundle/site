@@ -169,7 +169,7 @@ export default function HomePage(): ReactElement {
   const productionStrengths = [
     {
       title: 'Local-first by default',
-      detail: 'Capture, process, and inspect incidents locally before connecting hosted services.',
+      detail: 'Capture, process, and inspect incidents wherever you control the filesystem and CLI.',
       icon: Terminal,
     },
     {
@@ -208,7 +208,7 @@ export default function HomePage(): ReactElement {
       <section className="space-y-6 rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface)] px-5 py-6 sm:space-y-8 sm:p-12">
         <SectionTitle
           eyebrow="Production debugging for AI agents"
-          title="The agent-native debugging layer for modern products"
+          title="Turn production errors into agent-ready debug bundles"
           description="DebugBundle captures production incidents, assembles deterministic debugging context, and delivers it through API, CLI, MCP, and machine-readable artifacts so humans and AI agents can diagnose failures faster."
         />
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">

@@ -1,17 +1,19 @@
 ---
 title: Local-Only Mode
-description: Run DebugBundle entirely on your machine with no cloud dependency.
+description: Run DebugBundle where your SDK writes files, with no DebugBundle Cloud dependency.
 icon: HardDrive
 ---
 
-Local-only mode processes all events, generates incidents, and builds debug bundles
-entirely on your machine. No data leaves your system, no network calls are made,
-and no account is required.
+Local-only mode processes events, generates incidents, and builds debug bundles
+on the machine or storage volume where the SDK writes files and the CLI runs.
+No data is sent to DebugBundle Cloud, no account is required, and no hosted
+service is needed.
 
 ## When to Use Local-Only
 
 - **Solo development** — you're the only developer on the project
 - **Air-gapped environments** — network access is restricted
+- **Self-managed servers** — operators can install the CLI and keep `.debugbundle/` on persistent storage
 - **Evaluation** — trying DebugBundle before connecting to cloud
 - **Privacy-sensitive projects** — data must not leave the machine
 - **Offline work** — no internet available
@@ -44,7 +46,7 @@ This creates `.debugbundle/local/connection.json` with:
 
 ### 1. Capture Events
 
-Run your application with an SDK configured. Events are written as NDJSON files to
+Run your application with an SDK configured. Events are written as event batch files to
 `.debugbundle/local/events/`:
 
 ```bash
@@ -62,6 +64,19 @@ debugbundle process
 
 This runs the full pipeline locally: normalize, fingerprint, group into incidents,
 and generate debug bundles.
+
+## Self-Managed Server Workflow
+
+Local-only can run on a production or staging server you control, but the workflow
+is server-local:
+
+1. Install the SDK in local-only/file-transport mode on the server.
+2. Install the CLI on the same server, or mount/sync `.debugbundle/` to a machine where the CLI can run.
+3. Keep `.debugbundle/local/events/`, `.debugbundle/local/state.json`, and `.debugbundle/bundles/local/` on persistent storage if the runtime is containerized.
+4. Run `debugbundle process` there to generate bundles.
+5. Let your agent inspect incidents through the local CLI, MCP local tools, or the generated bundle files.
+
+This gives you DebugBundle's core workflow without DebugBundle Cloud. Hosted cloud is still the recommended path when you need centralized production visibility, alerts, webhooks, remote probes, team access, or durable retention for ephemeral infrastructure.
 
 ### 3. View Incidents
 
@@ -87,7 +102,7 @@ debugbundle watch ./logs/app.log --format debugbundle-ndjson
 
 | Path | Purpose |
 |------|---------|
-| `.debugbundle/local/events/` | Raw event NDJSON files captured locally |
+| `.debugbundle/local/events/` | Raw event batch files captured locally |
 | `.debugbundle/local/events/<timestamp>_batch_<n>.ndjson` | Individual local event batches written by the SDK or CLI |
 | `.debugbundle/local/state.json` | Grouped local incident state and processing metadata |
 | `.debugbundle/bundles/local/` | Generated local debug bundles |

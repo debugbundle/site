@@ -28,7 +28,7 @@ export default function AboutPage(): ReactElement {
           DebugBundle captures production incidents, normalizes and groups events by fingerprint, assembles deterministic debug bundles, and delivers them through API, CLI, and MCP. The same bundle that a human developer reads in the terminal is the same artifact an AI agent processes programmatically.
         </p>
         <p>
-          The project is built with a local-first architecture. You can capture, process, and inspect incidents entirely on your machine with zero cloud dependency. The hosted platform adds team collaboration, longer retention, remote probes, and automated improvement analysis — but the core debugging workflow is always available locally.
+          The project is built with a local-first architecture. You can capture, process, and inspect incidents without DebugBundle Cloud anywhere you control the filesystem and can run the CLI, from a laptop to a self-managed server. The hosted platform adds team collaboration, longer retention, remote probes, and automated improvement analysis, but the core debugging workflow is not locked behind the hosted service.
         </p>
       </section>
 

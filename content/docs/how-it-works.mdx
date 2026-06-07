@@ -59,11 +59,11 @@ The SDK batches captured events, applies redaction, and sends them to their dest
 
 | Mode | How it works | When to use |
 |---|---|---|
-| **File transport** | Server SDKs write events as JSON files to `.debugbundle/local/events/` (atomic temp-file + rename) | Server-side local development, local-only mode |
+| **File transport** | Server SDKs write events as JSON files to `.debugbundle/local/events/` (atomic temp-file + rename) | Server-side local development and self-managed local-only servers |
 | **HTTP transport** | SDK batches and POSTs events to `POST /v1/events` | Staging, production, connected mode |
 | **Mobile offline queue** | Android, Swift, and React Native store bounded app-private event batches and flush when platform lifecycle and connectivity allow | Mobile offline, background, local/development, and retry paths |
 
-In connected `staging` and `production`, backend SDK delivery does not depend on container-local disk. Ephemeral containers and pods are fine as long as they can reach the ingestion API and have enough graceful shutdown time to flush buffered events. In local-only mode, and in connected development, events are written to local disk, so use a mounted volume if you need those files to survive container replacement.
+In connected `staging` and `production`, backend SDK delivery does not depend on container-local disk. Ephemeral containers and pods are fine as long as they can reach the ingestion API and have enough graceful shutdown time to flush buffered events. In local-only mode, and in connected development, events are written to local disk. For server-side local-only production, install the CLI where the files live and use persistent storage if you need events and bundles to survive replacement.
 
 **Browser SDK shipping:** Browser events are sent through a relay handler (`POST /debugbundle/browser`) hosted on your backend. Same-origin relay paths avoid CORS setup; split frontend/backend deployments can use explicit browser relay mode with relay preflight handling and `allowedOrigins`. The relay validates, sanitizes, and either writes to local events (local mode) or spools for forwarding (connected mode). This keeps project tokens off the client. If you rely on the relay spool for durability in containers or pods, place the spool directory on persistent storage.
 

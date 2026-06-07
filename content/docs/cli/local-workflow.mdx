@@ -6,13 +6,15 @@ icon: HardDrive
 
 ## Overview
 
-DebugBundle's local workflow gives you the full debugging experience on your machine:
+DebugBundle's local workflow gives you the full debugging experience wherever the SDK can write files and the CLI can process them:
 
 ```
 Capture → Process → Inspect → Resolve
 ```
 
-No cloud account, no network, no signup. Everything runs on disk.
+No cloud account, no signup, and no network requests to DebugBundle servers. Everything runs on disk.
+
+This can be a development machine or a self-managed server. For server-local use, keep `.debugbundle/` on persistent storage and run `debugbundle process` on that server or on a mounted/synced copy of the same directory.
 
 ---
 

@@ -93,7 +93,7 @@ Every bundle also includes a machine-generated **reproduction artifact** — a s
 
 DebugBundle works in two modes:
 
-- **Local-only** — No cloud account needed. The SDK writes events to disk, the CLI processes them into bundles locally, and you inspect everything on your machine. This is the default starting point.
+- **Local-only** — No cloud account needed. The SDK writes events to disk, the CLI processes them into bundles where those files live, and you inspect everything from the local store. This is the default starting point.
 - **Connected** — Events ship to the cloud ingestion API for team-wide visibility, alerting, webhooks, and paid automation features such as GitHub automation. An upgrade path from local-only.
 
 ## What Makes It Different

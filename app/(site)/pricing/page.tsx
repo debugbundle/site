@@ -114,7 +114,7 @@ const tiers = [
 const faqs = [
   {
     q: 'Can I use DebugBundle without paying?',
-    a: 'Yes. The Free tier gives you local-first debugging with zero cloud dependency, unlimited projects, and get-started hosted capacity.',
+    a: 'Yes. The Free tier gives you local-first debugging without DebugBundle Cloud, unlimited projects, and get-started hosted capacity.',
   },
   {
     q: 'Can I still get improvement analysis on the Free tier?',

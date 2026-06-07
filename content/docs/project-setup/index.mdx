@@ -46,7 +46,7 @@ DebugBundle supports two operating modes:
 
 | Mode | Description | Best For |
 |------|-------------|----------|
-| **Local-only** | All processing happens on your machine. No cloud, no network. | Solo development, air-gapped environments |
+| **Local-only** | Processing happens where the SDK writes files and the CLI runs. No DebugBundle Cloud. | Solo development, air-gapped environments, controlled servers |
 | **Connected** | Events can be sent to DebugBundle Cloud for team-wide visibility. | Teams, CI/CD, production monitoring |
 
 See [Local-Only Mode](/docs/project-setup/local-only) and
@@ -69,12 +69,12 @@ stay local:
 ```
 
 This lets you keep local and pre-production investigation fully offline while sending
-production events to the cloud for team visibility.
+production events to the cloud for team visibility. If you intentionally keep production local-only, run the CLI on the server or storage volume where `.debugbundle/local/events/` is written.
 
 ## Next Steps
 
 - [Split Frontend & Backend](/docs/project-setup/split-frontend-backend) — Relay ownership, browser endpoint, and deployment guidance
 - [Profile Configuration](/docs/project-setup/profile) — Full project schema and validation
-- [Local-Only Mode](/docs/project-setup/local-only) — Offline-first development
+- [Local-Only Mode](/docs/project-setup/local-only) — Offline-first development and self-managed server-local processing
 - [Connect to Cloud](/docs/project-setup/connect-to-cloud) — Enable cloud delivery
 - [Capture Policy](/docs/capture-policy) — Control what events are captured

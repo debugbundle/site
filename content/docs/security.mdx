@@ -106,6 +106,12 @@ The Browser SDK supports relay transport (recommended) to avoid exposing your pr
 | Session data | Redis | In-transit encryption | Session lifetime |
 | Local events | `.debugbundle/local/events/` | Filesystem permissions | Until `clean` |
 
+### Local-Only Storage
+
+In local-only mode, captured events, local incident state, bundles, and reproductions stay on the machine or storage volume where you run the SDK and CLI. DebugBundle Cloud does not receive those files, and connecting the project later does not backfill or upload existing local-only artifacts.
+
+For self-managed servers, treat `.debugbundle/local/` and `.debugbundle/bundles/local/` like operational debugging data: keep them on persistent storage if you need retention across restarts, restrict filesystem access, and run `debugbundle process` where those files are available.
+
 ---
 
 ## Retention

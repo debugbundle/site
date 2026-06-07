@@ -8,15 +8,15 @@ icon: LifeBuoy
 
 ### What is DebugBundle?
 
-DebugBundle is a debugging platform that captures exceptions, logs, HTTP context, and diagnostic data from your applications, processes them into structured debug bundles, and provides reproduction artifacts. It works locally without any cloud account, and optionally connects to a hosted service for team collaboration.
+DebugBundle is a debugging platform that captures exceptions, logs, HTTP context, and diagnostic data from your applications, processes them into structured debug bundles, and provides reproduction artifacts. It works without a cloud account wherever you can run the SDK and CLI against local files, and optionally connects to a hosted service for team collaboration.
 
 ### How is DebugBundle different from error tracking tools like Sentry?
 
-DebugBundle focuses on **actionable debugging context**, not just error alerts. Every incident includes a full debug bundle with reproduction commands (curl, httpie), probe data, breadcrumbs, and request/response context. It's also local-first — you get the full experience without creating an account or sending data anywhere.
+DebugBundle focuses on **actionable debugging context**, not just error alerts. Every incident includes a full debug bundle with reproduction commands (curl, httpie), probe data, breadcrumbs, and request/response context. It's also local-first: you get the core workflow without creating an account or sending data to DebugBundle Cloud.
 
 ### Do I need a cloud account to use DebugBundle?
 
-No. DebugBundle is fully functional in local-only mode. Run `debugbundle setup`, capture events with the SDK, run `debugbundle process`, and inspect incidents — all on your local machine. A cloud account adds team collaboration, hosted retention, and cloud ingestion from production environments.
+No. DebugBundle is fully functional in local-only mode. Run `debugbundle setup`, capture events with the SDK, run `debugbundle process`, and inspect incidents on the machine or storage volume where those files live. A cloud account adds team collaboration, hosted retention, and centralized ingestion from production environments.
 
 ---
 
@@ -92,7 +92,7 @@ Yes. By default, the SDK redacts values for fields named: `password`, `secret`, 
 
 | Mode | Storage |
 |---|---|
-| Local-only | `.debugbundle/local/events/` on your machine |
+| Local-only | `.debugbundle/local/events/` plus generated local state and bundles on the machine or storage volume where you run the CLI |
 | Connected (cloud) | DebugBundle cloud (S3 + Postgres, encrypted at rest) |
 | Self-hosted | Your own infrastructure (Docker Compose) |
 

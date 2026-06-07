@@ -73,7 +73,7 @@ export default function PrivacyPage(): ReactElement {
 
         <section className="space-y-2">
           <h2 className="text-base font-semibold text-[var(--site-text)]">Local-first mode</h2>
-          <p>When using DebugBundle in local-only mode, no data leaves your machine. All processing happens locally and no information is transmitted to DebugBundle servers.</p>
+          <p>When using DebugBundle in local-only mode, no data is transmitted to DebugBundle servers. Events and bundles remain on the machine or storage volume where you run the SDK and CLI.</p>
         </section>
 
         <section className="space-y-2">

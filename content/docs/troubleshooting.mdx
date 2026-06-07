@@ -18,7 +18,7 @@ icon: Wrench
 
 2. **Check the project token:** Use `'local'` for local-only mode or a valid `dbundle_proj_*` token for connected mode.
 
-3. **Check the `projectMode`:** In `local-only` mode, events write to disk. In `connected` mode with `development`, events also write to disk. In `connected` mode with `staging` or `production`, events send to the API instead of relying on local disk.
+3. **Check the `projectMode`:** In `local-only` mode, events write to disk on the current machine. In `connected` mode with `development`, events also write to disk. In `connected` mode with `staging` or `production`, events send to the API instead of relying on local disk.
 
 4. **Flush on exit:** The SDK flushes on process shutdown, but if your process is killed with `SIGKILL`, buffered events are lost. Call `DebugBundle.flush()` if you need to force a flush.
 
@@ -50,7 +50,7 @@ Events must exist in `.debugbundle/local/events/`. Verify:
 ls .debugbundle/local/events/
 ```
 
-If empty, your SDK or log ingestion hasn't written events yet. See [Local Workflow](/docs/cli/local-workflow) for capture steps.
+If empty, your SDK or log ingestion hasn't written events yet. On a server-local workflow, verify you are checking the same server or mounted volume where the application writes `.debugbundle/local/events/`. See [Local Workflow](/docs/cli/local-workflow) for capture steps.
 
 ### `debugbundle doctor` shows warnings
 
