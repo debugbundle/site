@@ -25,7 +25,7 @@ cd ios
 pod install
 ```
 
-The React Native podspec depends on the native `DebugBundle` CocoaPod from the Swift SDK. That pod is published as `DebugBundle` `0.1.1`.
+The React Native podspec depends on the native `DebugBundle` CocoaPod from the iOS SDK. That pod is published as `DebugBundle` `0.1.1`.
 
 Android apps must enable core library desugaring because the native Android SDK dependency uses Java APIs that need desugaring on the minimum API level:
 
@@ -64,7 +64,7 @@ Expo Go cannot load custom native modules, so the SDK reports degraded status th
 | Installed-base compatibility | React Native 0.76 through current stable, including legacy bridge apps |
 | Rolling CI | TypeScript/package smoke, Android bridge compile on RN 0.76.9, 0.82.1, and 0.85.3, plus current-stable Android and iOS clean-app smokes |
 | JavaScript engines | Hermes is the primary tested engine; JSC is best-effort where the selected RN lane supports it |
-| Native dependency floors | Android SDK `com.debugbundle:debugbundle-android-bom:0.1.2`; Swift CocoaPod `DebugBundle ~> 0.1.1` |
+| Native dependency floors | Android SDK `com.debugbundle:debugbundle-android-bom:0.1.2`; iOS CocoaPod `DebugBundle ~> 0.1.1` |
 
 The npm peer dependency accepts `react-native >=0.76 <1.0` and `react >=18.2 <20`. Older React Native lanes are compatibility support for installed-base reach, not the recommended production posture.
 
@@ -176,7 +176,7 @@ The React Native package delegates durable mobile primitives to the native SDKs:
 | Platform | Native foundation |
 |---|---|
 | Android | `com.debugbundle:debugbundle-android` for queueing, transport, lifecycle, crash/ANR replay, capture policy, and probes |
-| iOS | `DebugBundle` Swift SDK CocoaPod for queueing, transport, config/status, crash/error capture handoff, and probes |
+| iOS | `DebugBundle` iOS SDK CocoaPod for queueing, transport, config/status, crash/error capture handoff, and probes |
 
 Queued events survive app restart while offline and flush with platform-aware retry/backoff when connectivity and lifecycle allow. Fatal-crash evidence is handled by the native SDK paths and uploaded on the next safe launch where supported.
 
@@ -247,6 +247,6 @@ For local mobile development, use a mock, staging, self-hosted, or cloud endpoin
 
 - [Universal SDK Interface](/docs/sdks/universal-interface) — Shared behavior and guarantees across every SDK
 - [Android SDK](/docs/sdks/android) — Native Android foundation used by the RN Android bridge
-- [Swift SDK](/docs/sdks/swift) — Native iOS foundation and CocoaPods dependency used by the RN iOS bridge
+- [iOS SDK](/docs/sdks/swift) — Native iOS foundation and CocoaPods dependency used by the RN iOS bridge
 - [Capture Policy](/docs/capture-policy) — Server-owned policy and capture-rule behavior
 - [Quickstart](/docs/quickstart) — Cloud and local-only setup flows

@@ -75,7 +75,7 @@ All SDKs accept these common configuration fields:
 |------|-----|-------------|
 | `http` | Server and mobile SDKs | Direct HTTPS to ingestion API. Default for connected projects. |
 | `file` | Node, Python, PHP, Java, .NET, Go, Ruby | Write events to local filesystem for CLI processing. Default for local-only server projects. |
-| `offline queue` | Android, Swift, React Native | Bounded app-private queue with platform-aware deferred flushing. Used for offline, background, and local/development paths. |
+| `offline queue` | Android, iOS, React Native | Bounded app-private queue with platform-aware deferred flushing. Used for offline, background, and local/development paths. |
 | `relay` | Browser | Send events through your backend relay endpoint instead of directly to DebugBundle. |
 
 Transport is automatically selected based on your `.debugbundle/local/connection.json` mode:
@@ -210,7 +210,7 @@ Custom fields are merged with defaults — you cannot disable default redaction.
 
 ## SDK Support Snapshot
 
-| Feature | Node.js | Browser | Python | PHP | Java | .NET | Go | Ruby | Android | Swift | React Native |
+| Feature | Node.js | Browser | Python | PHP | Java | .NET | Go | Ruby | Android | iOS | React Native |
 |---------|---------|---------|--------|-----|------|------|----|------|---------|-------|--------------|
 | Status | Shipped | Shipped | Shipped | Shipped | Shipped | Released v0.1.1 | Shipped | Shipped | Released v0.1.2 | Released v0.1.1 | Released v0.1.1 |
 | Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | Maven `com.debugbundle` modules | NuGet `DebugBundle.Sdk` plus `DebugBundle.*` integrations | `github.com/debugbundle/debugbundle-go` | `debugbundle` | Maven `com.debugbundle` Android modules | `https://github.com/debugbundle/debugbundle-swift` / CocoaPods `DebugBundle` | `@debugbundle/sdk-react-native` |
@@ -235,6 +235,6 @@ For the public V1 parity matrix, including 5xx request-failure behavior and rela
 - [Go SDK](/docs/sdks/go) — Full Go setup with HTTP frameworks, logger integrations, and relay support
 - [Ruby SDK](/docs/sdks/ruby) — Full Ruby setup with Rails, Rack, Sidekiq, logger integrations, and relay support
 - [Android SDK](/docs/sdks/android) — Full Android setup with crash replay, ANR capture, offline queueing, native HTTP instrumentation, and probes
-- [Swift SDK](/docs/sdks/swift) — Full Swift setup with SwiftUI, UIKit, URLSession, Alamofire, SwiftLog, offline queueing, crash replay helpers, and probes
+- [iOS SDK](/docs/sdks/swift) — Full iOS and iPadOS setup with SwiftUI, UIKit, URLSession, Alamofire, SwiftLog, offline queueing, crash replay helpers, and probes
 - [React Native SDK](/docs/sdks/react-native) — Full React Native setup with TypeScript APIs, React helpers, navigation, network capture, Expo development builds, and native queues
 - [Browser Relay Setup](/docs/sdks/browser-relay) — Relay architecture and backend setup

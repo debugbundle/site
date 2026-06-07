@@ -56,7 +56,7 @@ The browser relay lets your Browser SDK send events through your own backend ins
 | Go | `net/http` relay handler plus Gin and Echo mounting paths from the Go SDK |
 | Ruby | Rack middleware plus Rails route mounting from the Ruby SDK |
 
-Planned server SDKs, such as Kotlin server and Rust, must implement the same relay contract before public docs describe them as full relay-handler compatible. Client/mobile SDKs such as Android, Swift, and React Native do not host browser relay routes.
+Planned server SDKs, such as Kotlin server and Rust, must implement the same relay contract before public docs describe them as full relay-handler compatible. Client/mobile SDKs such as Android, iOS, and React Native do not host browser relay routes.
 
 The Browser SDK is the relay client path. It sends browser events to one of the backend handlers above; it is not itself a backend relay handler.
 

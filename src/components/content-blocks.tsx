@@ -33,12 +33,14 @@ export function SurfaceCard({
   href,
   action,
   icon: Icon,
+  className,
 }: {
   title: string;
   children: ReactNode;
   href?: string;
   action?: string;
   icon?: LucideIcon;
+  className?: string;
 }): ReactElement {
   const content = (
     <>
@@ -63,18 +65,22 @@ export function SurfaceCard({
     </>
   );
 
-  const className =
-    'not-prose group flex h-full min-h-36 flex-col justify-between rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] transition hover:border-[var(--site-border-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--site-focus)]';
+  const surfaceClassName = [
+    'not-prose group flex h-full min-h-36 flex-col justify-between rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-6 shadow-[0_1px_0_rgba(0,0,0,0.04)] transition hover:border-[var(--site-border-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--site-focus)]',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   if (href) {
     return (
-      <Link className={className} href={href}>
+      <Link className={surfaceClassName} href={href}>
         {content}
       </Link>
     );
   }
 
-  return <section className={className}>{content}</section>;
+  return <section className={surfaceClassName}>{content}</section>;
 }
 
 export function Notice({ title, children }: { title: string; children: ReactNode }): ReactElement {

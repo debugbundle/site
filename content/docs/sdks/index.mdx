@@ -35,7 +35,7 @@ All SDKs follow the same safety contract:
 
 ## V1 Parity Matrix
 
-| Capability | Node.js | Browser | Python | PHP | WordPress | Java | .NET | Go | Ruby | Android | Swift | React Native |
+| Capability | Node.js | Browser | Python | PHP | WordPress | Java | .NET | Go | Ruby | Android | iOS | React Native |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Status | Shipped | Shipped | Shipped | Shipped | Shipped via GitHub Releases | Shipped | Released v0.1.1 | Shipped | Shipped | Released v0.1.2 | Released v0.1.1 | Released v0.1.1 |
 | Package | `@debugbundle/sdk-node` | `@debugbundle/sdk-browser` | `debugbundle-python` | `debugbundle/sdk-php` | `debugbundle-wordpress` | Maven `com.debugbundle` modules | NuGet `DebugBundle.Sdk` plus `DebugBundle.*` integrations | `github.com/debugbundle/debugbundle-go` | `debugbundle` | Maven `com.debugbundle` Android modules | `https://github.com/debugbundle/debugbundle-swift` / CocoaPods `DebugBundle` | `@debugbundle/sdk-react-native` |
@@ -61,11 +61,11 @@ SDKs automatically select the right transport based on your configuration:
 | Mode | Destination | When |
 |---|---|---|
 | **File** | `.debugbundle/local/events/` | Server-side local-only mode, or `development`/`local` environment in connected mode |
-| **Offline queue** | App-private mobile storage | Android, Swift, and React Native offline, background, local, and deferred-flush paths |
+| **Offline queue** | App-private mobile storage | Android, iOS, and React Native offline, background, local, and deferred-flush paths |
 | **HTTP** | `POST /v1/events` | Connected mode in `staging`/`production` |
 | **Relay** | Same-origin `POST /debugbundle/browser` | Browser SDK (always relays through your backend) |
 
-File transport uses atomic temp-file + rename to prevent partial writes. Android, Swift, and React Native use bounded app-private queues instead of writing directly to `.debugbundle/local/events/`.
+File transport uses atomic temp-file + rename to prevent partial writes. Android, iOS, and React Native use bounded app-private queues instead of writing directly to `.debugbundle/local/events/`.
 
 ## Volume Control
 
@@ -91,7 +91,7 @@ Combined with server-side **capture policy** (configurable presets: `minimal`, `
 - [Go SDK](/docs/sdks/go) — net/http, Gin, Echo, slog, zap, zerolog, and browser relay setup
 - [Ruby SDK](/docs/sdks/ruby) — Rails, Rack, Sidekiq, Logger, Semantic Logger, and browser relay setup
 - [Android SDK](/docs/sdks/android) — Crash replay, ANR/process-exit capture, offline queueing, OkHttp, Ktor, Navigation, Compose, Timber, and probes
-- [Swift SDK](/docs/sdks/swift) — SwiftUI, UIKit, URLSession, Alamofire, SwiftLog, crash replay, offline queueing, and probes
+- [iOS SDK](/docs/sdks/swift) — SwiftUI, UIKit, URLSession, Alamofire, SwiftLog, crash replay, offline queueing, and probes
 - [React Native SDK](/docs/sdks/react-native) — TypeScript API, React helpers, React Navigation, fetch/XHR trace propagation, Expo development builds, and native queues
 - [WordPress Plugin](/docs/integrations/wordpress) — Installable plugin with backend capture, frontend capture, and a built-in browser relay
 - [Universal Interface](/docs/sdks/universal-interface) — Complete interface contract across all languages

@@ -3,32 +3,26 @@ import type { ReactElement } from 'react';
 import Link from 'next/link';
 import {
   Bot,
+  BellRing,
   BookOpen,
   Braces,
-  CheckCircle2,
-  Coffee,
   FileJson,
-  Fingerprint,
-  Gem,
-  Hexagon,
-  Package,
-  PanelsTopLeft,
+  Lightbulb,
   Radar,
   RotateCcw,
   ShieldCheck,
-  Smartphone,
+  GitPullRequestArrow,
   SquareTerminal,
   Terminal,
   Workflow,
+  Siren,
 } from 'lucide-react';
 
-import { SectionTitle, SurfaceCard } from '@/components/content-blocks';
+import { SurfaceCard } from '@/components/content-blocks';
 import { JsonLdScript } from '@/components/json-ld';
 import { QuickInstallGuide } from '@/components/quick-install-guide';
 import { absoluteSiteUrl, createPageMetadata } from '@/seo';
 
-const docsLinkClassName =
-  'text-sm font-medium !text-[var(--site-docs-link)] !underline !decoration-[var(--site-docs-link)] decoration-[0.08em] underline-offset-[0.16em] transition-[color,text-decoration-color,text-decoration-thickness] duration-200 hover:!text-[var(--site-docs-link-hover)] hover:!decoration-[var(--site-docs-link-hover)] hover:!decoration-[0.12em] focus-visible:rounded-sm focus-visible:[outline-color:var(--site-focus)] focus-visible:[outline-style:solid] focus-visible:[outline-width:2px] focus-visible:[outline-offset:2px]';
 const buttonFocusClassName =
   'focus-visible:rounded-full focus-visible:[outline-color:var(--site-focus)] focus-visible:[outline-style:solid] focus-visible:[outline-width:2px] focus-visible:[outline-offset:2px]';
 
@@ -45,142 +39,83 @@ export default function HomePage(): ReactElement {
       step: '1',
       label: 'Capture',
       detail: 'SDKs capture exceptions, requests, logs, breadcrumbs, and probes from your app.',
-      icon: Radar,
     },
     {
       step: '2',
       label: 'Normalize',
       detail: 'Events are redacted, fingerprinted, and grouped into incidents automatically.',
-      icon: Fingerprint,
     },
     {
       step: '3',
       label: 'Bundle',
       detail: 'DebugBundle assembles deterministic incident context with reproduction hints.',
-      icon: FileJson,
     },
     {
       step: '4',
       label: 'Resolve',
       detail: 'Humans and agents inspect the same bundle through dashboards, API, CLI, or MCP.',
-      icon: CheckCircle2,
-    },
-  ];
-
-  const installOptions = [
-    {
-      label: 'CLI',
-      command: 'npm install -g @debugbundle/cli',
-      href: '/docs/cli/',
-      icon: SquareTerminal,
-    },
-    {
-      label: 'Node.js',
-      command: 'npm install @debugbundle/sdk-node',
-      href: '/docs/sdks/node/',
-      icon: Hexagon,
-    },
-    {
-      label: 'Browser',
-      command: 'npm install @debugbundle/sdk-browser',
-      href: '/docs/sdks/browser/',
-      icon: PanelsTopLeft,
-    },
-    {
-      label: 'Python',
-      command: 'pip install debugbundle-python',
-      href: '/docs/sdks/python/',
-      icon: Package,
-    },
-    {
-      label: 'PHP',
-      command: 'composer require debugbundle/sdk-php',
-      href: '/docs/sdks/php/',
-      icon: Package,
-    },
-    {
-      label: 'Java / Spring',
-      command: 'com.debugbundle:debugbundle-spring-boot-starter',
-      href: '/docs/sdks/java/',
-      icon: Coffee,
-    },
-    {
-      label: '.NET',
-      command: 'dotnet add package DebugBundle.AspNetCore',
-      href: '/docs/sdks/dotnet/',
-      icon: Braces,
-    },
-    {
-      label: 'Go',
-      command: 'go get github.com/debugbundle/debugbundle-go',
-      href: '/docs/sdks/go/',
-      icon: Package,
-    },
-    {
-      label: 'Ruby',
-      command: 'bundle add debugbundle',
-      href: '/docs/sdks/ruby/',
-      icon: Gem,
-    },
-    {
-      label: 'Android',
-      command: 'com.debugbundle:debugbundle-android',
-      href: '/docs/sdks/android/',
-      icon: Smartphone,
-    },
-    {
-      label: 'Swift',
-      command: 'github.com/debugbundle/debugbundle-swift',
-      href: '/docs/sdks/swift/',
-      icon: Smartphone,
-    },
-    {
-      label: 'React Native',
-      command: 'npm install @debugbundle/sdk-react-native',
-      href: '/docs/sdks/react-native/',
-      icon: Smartphone,
-    },
-    {
-      label: 'WordPress',
-      command: 'Install the DebugBundle plugin',
-      href: '/docs/integrations/wordpress/',
-      icon: Workflow,
     },
   ];
 
   const agentStrengths = [
     {
-      title: 'Human and machine readable',
-      detail: 'Structured JSON bundles, llms.txt, OpenAPI, JSON Schemas, and stable examples.',
+      title: 'Agent-ready artifacts',
+      detail: 'JSON bundles, schemas, and examples that agents can inspect reliably.',
       icon: FileJson,
     },
     {
-      title: 'Agent-native interfaces',
-      detail: 'API, CLI, and MCP expose the same workflows. No important capability is dashboard-only.',
-      icon: Bot,
+      title: 'Same workflow everywhere',
+      detail: 'API, CLI, and MCP expose the same capture, inspect, and resolve flow.',
+      icon: Workflow,
     },
     {
-      title: 'Same source of truth',
-      detail: 'Docs and references are generated from the contracts that power the product.',
-      icon: Braces,
-    },
-  ];
-
-  const productionStrengths = [
-    {
-      title: 'Local-first by default',
-      detail: 'Capture, process, and inspect incidents wherever you control the filesystem and CLI.',
-      icon: Terminal,
-    },
-    {
-      title: 'Deterministic bundles',
-      detail: 'The same events produce byte-identical output with no random IDs or generation-time clocks.',
+      title: 'Deterministic by design',
+      detail: 'The same incident produces stable, repeatable output.',
       icon: RotateCcw,
     },
     {
-      title: 'SDK safety guarantee',
-      detail: 'SDKs do not throw uncaught exceptions, block requests, or crash the host process.',
+      title: 'Safe in production',
+      detail: 'SDKs avoid blocking requests, crashing hosts, or throwing uncaught exceptions.',
       icon: ShieldCheck,
+    },
+  ];
+
+  const debugBenefits = [
+    {
+      title: 'Know when errors happen',
+      detail:
+        'Turn unexpected exceptions, request failures, and critical logs into incidents and alerts instead of waiting for someone to notice a log line.',
+      icon: BellRing,
+    },
+    {
+      title: 'Capture the full context',
+      detail:
+        'Keep the surrounding request, response, logs, breadcrumbs, deploy metadata, and runtime details with the incident so debugging starts with evidence, not guesswork.',
+      icon: FileJson,
+    },
+    {
+      title: 'Find hidden improvements',
+      detail:
+        'Promote repeated warnings, slow paths, and recurring request patterns into improvement opportunities before they grow into failures.',
+      icon: Lightbulb,
+    },
+    {
+      title: 'Alert on critical paths',
+      detail:
+        'Create custom alerts for high-value routes, jobs, and services that may never surface in user-facing dashboards but still matter to the business.',
+      icon: Siren,
+    },
+    {
+      title: 'Incident to PR',
+      detail:
+        'Send bundles through webhooks, API, CLI, or MCP so an agent can inspect the incident, reason over the codebase, and open a proposed fix.',
+      icon: GitPullRequestArrow,
+    },
+    {
+      title: 'Remote probes on demand',
+      detail:
+        'Enable remote probes temporarily to expose deeper runtime details on a running service without deploying new debugging code.',
+      icon: Radar,
     },
   ];
 
@@ -202,18 +137,24 @@ export default function HomePage(): ReactElement {
   };
 
   return (
-    <div className="space-y-12 sm:space-y-16">
+    <div className="space-y-12 sm:space-y-16 lg:space-y-32">
       <JsonLdScript id="software-jsonld" data={softwareJsonLd} />
       {/* Hero */}
-      <section className="space-y-6 rounded-[1.75rem] border border-[var(--site-border)] bg-[var(--site-surface)] px-5 py-6 sm:space-y-8 sm:p-12">
-        <SectionTitle
-          eyebrow="Production debugging for AI agents"
-          title="Turn production errors into agent-ready debug bundles"
-          description="DebugBundle captures production incidents, assembles deterministic debugging context, and delivers it through API, CLI, MCP, and machine-readable artifacts so humans and AI agents can diagnose failures faster."
-        />
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+      <section className="space-y-6 py-2 text-center sm:space-y-8 sm:py-4">
+        <div className="mx-auto max-w-4xl space-y-3">
+          <p className="text-sm font-medium uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">
+            Production debugging <span className="whitespace-nowrap">for AI agents</span>
+          </p>
+          <h1 className="mx-auto max-w-[700px] text-4xl font-semibold tracking-tight text-[var(--site-text)] sm:text-5xl">
+            Turn production errors into agent-ready debug bundles
+          </h1>
+          <p className="mx-auto max-w-3xl text-base leading-7 text-[var(--site-text-muted)] sm:text-lg">
+            DebugBundle turns production incidents into deterministic debugging context, available through API, CLI, MCP, and machine-readable artifacts, so humans and AI agents can diagnose and resolve failures faster.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-3">
           <Link
-            className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium sm:justify-start ${buttonFocusClassName}`}
+            className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium ${buttonFocusClassName}`}
             href="/docs/"
             style={{ background: 'var(--site-accent)', color: 'var(--site-accent-foreground)' }}
           >
@@ -230,90 +171,129 @@ export default function HomePage(): ReactElement {
       </section>
 
       {/* Quick installation guide */}
-      <QuickInstallGuide />
+      <QuickInstallGuide className="site-home-elevated" />
 
-      {/* How it works — high-level */}
+      {/* Why DebugBundle */}
       <section className="space-y-6">
-        <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">
-          How it works
-        </h2>
-        <div className="grid gap-4 md:grid-cols-4">
-          {workflowSteps.map((s) => (
-            <div key={s.step} className="rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-5">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">
-                  Step {s.step}
-                </p>
-                <s.icon className="size-5 text-[var(--site-accent)]" aria-hidden="true" />
-              </div>
-              <p className="mt-3 text-base font-semibold text-[var(--site-text)]">{s.label}</p>
-              <p className="mt-2 text-sm leading-6 text-[var(--site-text-muted)]">{s.detail}</p>
+        <div className="max-w-3xl space-y-3">
+          <div className="flex items-center gap-3">
+            <p className="text-sm font-medium uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">
+              Why use DebugBundle?
+            </p>
+          </div>
+          <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)] sm:text-3xl">
+            Logs tell you what happened.
+            <br />
+            DebugBundle tells you what to do next.
+          </h2>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {debugBenefits.map((item) => (
+            <div
+              key={item.title}
+              className="site-home-elevated rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-5"
+            >
+              <item.icon className="size-8 text-[var(--site-accent)]" aria-hidden="true" />
+              <h3 className="mt-4 text-base font-semibold leading-6 text-[var(--site-text)]">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--site-text-muted)]">{item.detail}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Install paths */}
-      <section className="space-y-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-2xl space-y-2">
-            <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">
-              Install the path that matches your stack
-            </h2>
-            <p className="text-base leading-7 text-[var(--site-text-muted)]">
-              Start with the CLI, then add the smallest SDK or ingestion path for your app.
-            </p>
-          </div>
+            {/* How it works — high-level */}
+      <section className="space-y-8 text-center">
+        <div className="mx-auto max-w-[600px] space-y-3">
+          <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)] sm:text-3xl">
+            How it works
+          </h2>
+          <p className="text-base leading-7 text-[var(--site-text-muted)]">
+            Capture the incident, normalize the signal, assemble the bundle, and inspect the same artifact everywhere.
+          </p>
         </div>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {installOptions.map((option) => (
-            <Link
-              key={option.label}
-              className="group min-w-0 rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-4 transition hover:border-[var(--site-border-strong)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--site-focus)]"
-              href={option.href}
+        <div className="mx-auto grid max-w-5xl gap-4 lg:max-w-[900px] md:grid-cols-2">
+          {workflowSteps.map((s) => (
+            <div
+              key={s.step}
+              className="site-home-elevated rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-5 text-left"
             >
               <div className="flex items-center gap-3">
-                <option.icon className="size-5 text-[var(--site-accent)]" aria-hidden="true" />
-                <p className="font-semibold text-[var(--site-text)]">{option.label}</p>
+                <div
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
+                  style={{
+                    background: 'var(--site-accent)',
+                    color: 'var(--site-accent-foreground)',
+                  }}
+                  aria-hidden="true"
+                >
+                  {s.step}
+                </div>
+                <p className="text-base font-semibold text-[var(--site-text)]">{s.label}</p>
               </div>
-              <code className="mt-3 block overflow-hidden whitespace-normal break-all rounded-md border border-[var(--site-code-border)] bg-[var(--site-code-bg)] px-3 py-2 text-xs leading-5 text-[var(--site-code-text)]">
-                {option.command}
-              </code>
-            </Link>
+              <p className="mt-3 text-sm leading-6 text-[var(--site-text-muted)]">{s.detail}</p>
+            </div>
           ))}
+        </div>
+        <div className="site-home-elevated mx-auto max-w-[1000px] overflow-hidden rounded-[1rem]">
+          <img
+            src="/images/how-it-works-light.jpg"
+            alt="DebugBundle workflow overview in light mode"
+            className="block w-full dark:hidden"
+          />
+          <img
+            src="/images/how-it-works-dark.jpg"
+            alt="DebugBundle workflow overview in dark mode"
+            className="hidden w-full dark:block"
+          />
         </div>
       </section>
 
-      {/* Product strengths */}
-      <section className="grid gap-8 lg:grid-cols-2">
-        <div className="rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-6">
-          <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">Built for agents</h2>
-          <ul className="mt-5 space-y-5">
-            {agentStrengths.map((item) => (
-              <li key={item.title} className="flex gap-4">
-                <item.icon className="mt-0.5 size-5 shrink-0 text-[var(--site-accent)]" aria-hidden="true" />
-                <div>
-                  <p className="font-semibold text-[var(--site-text)]">{item.title}</p>
-                  <p className="mt-1 text-sm leading-6 text-[var(--site-text-muted)]">{item.detail}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* Platform strengths */}
+      <section>
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-10">
+          <div className="space-y-4 lg:pr-6">
+            <p className="text-sm font-medium uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">
+              Platform strengths
+            </p>
+            <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)] sm:text-3xl">
+              Built for production AI debugging
+            </h2>
+            <p className="max-w-xl text-base leading-7 text-[var(--site-text-muted)]">
+              DebugBundle is shaped for real incident response: stable artifacts for agents, the same operational flow across interfaces, and runtime safety that does not fight your production stack.
+            </p>
+          </div>
 
-        <div className="rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-6">
-          <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">Production ready</h2>
-          <ul className="mt-5 space-y-5">
-            {productionStrengths.map((item) => (
-              <li key={item.title} className="flex gap-4">
-                <item.icon className="mt-0.5 size-5 shrink-0 text-[var(--site-accent)]" aria-hidden="true" />
-                <div>
-                  <p className="font-semibold text-[var(--site-text)]">{item.title}</p>
-                  <p className="mt-1 text-sm leading-6 text-[var(--site-text-muted)]">{item.detail}</p>
+          <div className="site-home-elevated rounded-[1.5rem] border border-[var(--site-border)] bg-[var(--site-surface)]">
+            <div className="grid lg:grid-cols-2">
+              {agentStrengths.map((item, index) => (
+                <div
+                  key={item.title}
+                  className={[
+                    'p-6 sm:p-7',
+                    index < agentStrengths.length - 1 ? 'border-b border-[var(--site-border)]' : '',
+                    index >= 2 ? 'lg:border-b-0' : '',
+                    index % 2 === 0 ? 'lg:border-r lg:border-[var(--site-border)]' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                >
+                  <div className="min-w-0">
+                    {/* <p className="text-xs font-medium uppercase tracking-[0.18em] text-[var(--site-text-subtle)]">
+                      {String(index + 1).padStart(2, '0')}
+                    </p> */}
+                    <h3 className="mt-2 text-base font-semibold leading-6 text-[var(--site-text)]">
+                      {item.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-[var(--site-text-muted)]">
+                      {item.detail}
+                    </p>
+                  </div>
                 </div>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -346,7 +326,13 @@ export default function HomePage(): ReactElement {
               icon: Bot,
             },
           ].map((item) => (
-            <SurfaceCard key={item.label} href={item.href} icon={item.icon} title={item.label}>
+            <SurfaceCard
+              key={item.label}
+              className="site-home-elevated"
+              href={item.href}
+              icon={item.icon}
+              title={item.label}
+            >
               {item.detail}
             </SurfaceCard>
           ))}
@@ -354,8 +340,8 @@ export default function HomePage(): ReactElement {
       </section>
 
       {/* CTA */}
-      <section className="rounded-[1.75rem] border border-[var(--site-border-strong)] bg-[var(--site-surface-muted)] p-6 text-center sm:p-12">
-        <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">
+      <section className="p-6 text-center sm:p-12">
+        <h2 className="text-4xl font-semibold tracking-tight text-[var(--site-text)] sm:text-5xl">
           Ready to debug smarter?
         </h2>
         <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-[var(--site-text-muted)]">

@@ -3,6 +3,7 @@
 import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 
 import { BrandLockup } from '@/components/brand-lockup';
@@ -18,6 +19,9 @@ const focusPillClassName =
 
 export function SiteHeader(): ReactElement {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
+  const isDocsOrBlog = pathname.startsWith('/docs') || pathname.startsWith('/blog');
 
   useEffect(() => {
     if (!mobileMenuOpen) {
@@ -42,7 +46,17 @@ export function SiteHeader(): ReactElement {
 
   return (
     <>
-      <header className="border-b border-[var(--site-border)] bg-[color:color-mix(in_srgb,var(--site-bg)_88%,transparent)] backdrop-blur">
+      <header
+        className={[
+          isHomePage
+            ? 'bg-transparent'
+            : isDocsOrBlog
+              ? 'border-b border-[var(--site-border)] bg-[color:color-mix(in_srgb,var(--site-bg)_88%,transparent)] backdrop-blur'
+              : 'bg-transparent',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div className="flex min-w-0 items-center gap-8">
             <BrandLockup className={focusLinkClassName} labelClassName="text-lg" />

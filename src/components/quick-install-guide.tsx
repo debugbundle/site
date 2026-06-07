@@ -51,6 +51,10 @@ type RuntimeGuide = RuntimeGuideDefinition & {
   setupBlock: ReactNode | null;
 };
 
+type QuickInstallGuideProps = {
+  className?: string;
+};
+
 async function renderHighlightedBlock(lang: string, code: string): Promise<ReactNode> {
   return ServerCodeBlock({
     lang,
@@ -59,7 +63,7 @@ async function renderHighlightedBlock(lang: string, code: string): Promise<React
   });
 }
 
-export async function QuickInstallGuide(): Promise<ReactElement> {
+export async function QuickInstallGuide({ className }: QuickInstallGuideProps = {}): Promise<ReactElement> {
   const cliBlock = await renderHighlightedBlock(
     'bash',
     ['npm install -g @debugbundle/cli', 'debugbundle --version'].join('\n'),
@@ -322,7 +326,7 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
     },
     {
       value: 'swift',
-      label: 'Swift',
+      label: 'iOS',
       icon: Smartphone,
       installLang: 'swift',
       installCode: [
@@ -343,9 +347,9 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
       ].join('\n'),
       description: (
         <>
-          Swift runtime capture, UIKit and SwiftUI breadcrumbs, URLSession, Alamofire, SwiftLog, crash replay, offline queueing, and probes are included in the Swift SDK. See{' '}
+          Native iOS and iPadOS runtime capture, UIKit and SwiftUI breadcrumbs, URLSession, Alamofire, SwiftLog, crash replay, offline queueing, and probes are included in the iOS SDK. See{' '}
           <Link className={linkClassName} href="/docs/sdks/swift/">
-            Swift SDK
+            iOS SDK
           </Link>
           .
         </>
@@ -461,7 +465,12 @@ export async function QuickInstallGuide(): Promise<ReactElement> {
           <h3 className="text-xl font-semibold tracking-tight text-[var(--site-text)]">SDKs</h3>
         </div>
         <CodeBlockTabs
-          className="mt-2 overflow-hidden rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface)] shadow-[0_1px_0_rgba(0,0,0,0.04)]"
+          className={[
+            'mt-2 overflow-hidden rounded-2xl border border-[var(--site-border)] bg-[var(--site-surface)] shadow-[0_1px_0_rgba(0,0,0,0.04)]',
+            className,
+          ]
+            .filter(Boolean)
+            .join(' ')}
           defaultValue="node-js"
         >
           <CodeBlockTabsList className="border-b border-[var(--site-border)] bg-[var(--site-surface)] px-4 pt-3">
