@@ -140,7 +140,7 @@ export default function HomePage(): ReactElement {
     <div className="space-y-12 sm:space-y-16 lg:space-y-32">
       <JsonLdScript id="software-jsonld" data={softwareJsonLd} />
       {/* Hero */}
-      <section className="space-y-6 py-2 text-center sm:space-y-8 sm:py-4">
+      <section className="space-y-6 py-2 text-center sm:space-y-8 sm:py-4 lg:pt-10">
         <div className="mx-auto max-w-4xl space-y-3">
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">
             Production debugging <span className="whitespace-nowrap">for AI agents</span>
@@ -149,7 +149,7 @@ export default function HomePage(): ReactElement {
             Turn production errors into agent-ready debug bundles
           </h1>
           <p className="mx-auto max-w-3xl text-base leading-7 text-[var(--site-text-muted)] sm:text-lg">
-            DebugBundle turns production incidents into deterministic debugging context, available through API, CLI, MCP, and machine-readable artifacts, so humans and AI agents can diagnose and resolve failures faster.
+            DebugBundle turns production incidents into deterministic debugging context, available through API, CLI, MCP, and the dashboard, so humans and AI agents can diagnose and resolve failures faster.
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-3">
@@ -303,7 +303,7 @@ export default function HomePage(): ReactElement {
           Every interface, same capabilities
         </h2>
         <p className="max-w-3xl text-base leading-7 text-[var(--site-text-muted)]">
-          DebugBundle enforces interface parity. If a capability matters for automation, it is available through API, CLI, and MCP — not locked behind a dashboard.
+          DebugBundle keeps the API, CLI, and MCP in sync, so every automation-critical capability is available wherever teams work, with the dashboard available for visual triage.
         </p>
         <div className="grid gap-4 md:grid-cols-3">
           {[
