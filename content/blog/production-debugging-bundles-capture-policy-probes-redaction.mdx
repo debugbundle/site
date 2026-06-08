@@ -1,0 +1,63 @@
+---
+title: "Production debugging bundles: capture policy, probes, and redaction in practice"
+description: "How capture policy, diagnostic probes, redaction, and volume controls keep production debugging bundles useful without becoming unsafe telemetry dumps."
+date: "4 June 2026"
+---
+
+A production debugging bundle has to balance two goals that often fight each other. It needs enough context to explain the failure, but it must not become an unsafe dump of every request body, header, token, user field, and internal state value.
+
+That balance comes from capture policy, probes, redaction, and volume controls. Those features are not secondary settings. They are what make structured incident bundles usable in real production systems.
+
+## Capture policy defines what becomes an incident
+
+Not every event deserves the same treatment. An unhandled exception, a 500 request, a warning log, a breadcrumb, and a probe snapshot all have different operational value.
+
+Capture policy lets a project decide what becomes incident-driving evidence, what remains context-only, what should be sampled, and what should be dropped after it is known noise.
+
+That matters for agents because the incident list is their starting point. If noisy events constantly create incidents, agents spend time triaging distractions. If important request failures are demoted too aggressively, agents miss real production symptoms.
+
+A good policy starts conservative, then changes based on observed incident quality.
+
+## Capture rules are better than code conditionals
+
+When one route, job, or third-party integration creates noisy known failures, it is tempting to add application-level conditionals around capture calls.
+
+That usually ages poorly. It scatters debugging policy through application code and makes it harder for operations teams or agents to understand what is being captured.
+
+Capture rules keep that policy in DebugBundle. You can demote, sample, or drop known patterns without editing every service. Agents can also inspect or suggest rules from incidents, which turns incident cleanup into a documented operational action.
+
+## Probes fill the gap between logs and full dumps
+
+Logs are permanent and noisy. Full request dumps are risky. Probes are the middle path.
+
+An always-on probe can record a small, redacted diagnostic snapshot in a ring buffer and flush it when an exception occurs. A heavy probe can stay dormant until remotely activated with a TTL or a signed request-scoped trigger token.
+
+That model is useful when the first incident bundle lacks the one piece of context needed to explain the bug: a feature flag branch, cache state summary, downstream response category, queue depth, or sanitized decision trace.
+
+The right probe is small, bounded, named clearly, and safe to attach to a production incident.
+
+## Redaction must happen before persistence
+
+Debugging tools should assume sensitive fields will eventually appear in events. Passwords, secrets, tokens, authorization headers, cookies, SSNs, and credit card fields need default redaction before data leaves the application process.
+
+Defense in depth means applying redaction again during ingestion and enforcing storage invariants so sensitive values do not become persistent incident data.
+
+Custom fields matter too. Teams should add application-specific keys such as `api_key`, `stripe_secret`, `private_key`, `session_id`, or internal credential names during SDK initialization or project setup.
+
+The goal is not to hide that redaction happened. Bundles should record which fields were redacted so developers can understand what context was removed without exposing the values.
+
+## Volume controls protect the signal
+
+Storm suppression, duplicate windows, loop detection, sampling, max buffer sizes, and session caps keep capture from turning a single bug into an event flood.
+
+This is especially important in browser and mobile SDKs where one user session or crash loop can generate many related events. It also matters on backend services where a bad deploy can cause the same exception to fire thousands of times.
+
+A production debugging bundle should represent the failure clearly, not amplify it endlessly.
+
+## The agent workflow depends on trust
+
+AI agents are only useful when the incident context is both complete enough and safe enough. If developers do not trust the capture path, they will disable it. If the bundle is too thin, agents will guess. If it is too noisy, agents will chase the wrong signal.
+
+Capture policy, probes, redaction, and volume controls are how DebugBundle keeps the artifact in the useful middle.
+
+Read the [capture policy docs](/docs/capture-policy/), [probes docs](/docs/probes/), and [redaction guide](/docs/security/redaction/) before enabling broader production capture.

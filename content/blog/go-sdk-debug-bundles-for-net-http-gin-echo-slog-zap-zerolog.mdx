@@ -1,0 +1,75 @@
+---
+title: "Go SDK debug bundles for net/http, Gin, Echo, slog, zap, and zerolog"
+description: "Capture Go production errors, 5xx request events, structured logs, probes, and browser relay data with the DebugBundle Go SDK."
+date: "20 April 2026"
+---
+
+Go services tend to be operationally clean, but production failures can still be difficult to reconstruct. A handler returns a 500, a panic is recovered, a structured logger emits an error, and a few request IDs appear across several systems. Without a structured incident artifact, the debugging path still becomes manual correlation.
+
+The [DebugBundle Go SDK](/docs/sdks/go/) is designed to capture Go service failures from `net/http`, Gin, Echo, structured logging, probes, and browser relay handlers into debug bundles that both humans and AI agents can inspect.
+
+## net/http capture should stay close to the handler chain
+
+A Go service usually has one obvious capture point: middleware around the HTTP handler tree.
+
+```go
+client := debugbundle.New(debugbundle.Config{
+    ProjectToken: os.Getenv("DEBUGBUNDLE_TOKEN"),
+    Service:      "checkout-api",
+    Environment:  "production",
+})
+defer client.Flush(context.Background())
+
+mux := http.NewServeMux()
+mux.HandleFunc("/checkout", checkoutHandler)
+mux.Handle("/debugbundle/browser", debugbundlehttp.RelayHandler(client, relay.Options{}))
+
+handler := debugbundlehttp.Middleware(client, debugbundlehttp.Options{
+    RecoverPanics: true,
+})(mux)
+
+http.ListenAndServe(":8080", handler)
+```
+
+The middleware should capture 5xx request events, request IDs, `X-DebugBundle-Trace-Id`, route patterns when provided, and panics. It should not turn normal Go handler behavior into something surprising. If panic recovery is enabled, that should be explicit.
+
+## Gin and Echo need route-aware incidents
+
+Gin and Echo both know the matched route pattern. That route is often more useful in a bundle than a raw URL with IDs or query values.
+
+For Gin, capture can include `c.FullPath()`, status code, duration, request correlation, Gin errors, and panic capture. For Echo, capture can include `c.Path()`, status, duration, request correlation, Echo errors, and panic capture.
+
+That route metadata makes grouping and agent analysis cleaner. `/users/:id/orders` is a better debugging key than thousands of individual `/users/123/orders` URLs.
+
+## Structured logs should remain structured
+
+Go teams often use `log/slog`, zap, or zerolog. The SDK should preserve structured fields instead of flattening everything into one message.
+
+```go
+logger := slog.New(debugbundleslog.NewHandler(
+    client,
+    slog.NewJSONHandler(os.Stdout, nil),
+))
+
+logger.ErrorContext(ctx, "checkout failed", "request_id", "req_123")
+```
+
+With structured logs attached to the same incident, an AI agent can see field names, request IDs, tenant or region context, and error details without parsing log text.
+
+## Probes are useful when logs are too late
+
+Always-on probes are small diagnostic snapshots stored in process and flushed alongside exceptions. Heavy probes stay dormant until remote activation or a signed trigger token enables them.
+
+That pattern is especially useful in Go services where teams avoid verbose logging for performance and noise reasons. A bounded probe can preserve the state that matters without turning every request into a log dump.
+
+## Browser relay for Go-backed frontends
+
+If a Go service backs a browser application, mount the relay handler. The browser can send frontend events to `/debugbundle/browser`, and the Go backend can validate, rate-limit, strip credentials, write local-only files or durable spool records, and forward with the server-side project token.
+
+That gives agents a full-stack trail: browser exception, failed frontend request, backend 5xx event, and Go handler context.
+
+## Why this improves production debugging
+
+A Go debug bundle should reduce the search space. It gives the agent the route, request, status, stack or panic, structured logs, probes, and correlation IDs in one artifact. That is much more useful than asking an agent to infer root cause from disconnected logs.
+
+Read the [Go SDK docs](/docs/sdks/go/) for `net/http`, Gin, Echo, logging, relay, and probe examples.

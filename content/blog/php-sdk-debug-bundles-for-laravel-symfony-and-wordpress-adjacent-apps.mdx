@@ -1,0 +1,65 @@
+---
+title: "PHP SDK debug bundles for Laravel, Symfony, and WordPress-adjacent apps"
+description: "Capture PHP production errors, Laravel and Symfony exceptions, Monolog events, and browser relay context as structured debug bundles."
+date: "7 April 2026"
+---
+
+PHP production debugging often starts with fragmented evidence: a PHP error log, a framework exception page, a Monolog record, a 500 response, and maybe a web server log with the request path.
+
+That is workable for a human who knows the application well. It is much less useful for an AI agent or a new developer trying to reason from incident context. A production debugging bundle needs to connect the exception, request lifecycle, log context, service metadata, and reproduction hints into one artifact.
+
+The [DebugBundle PHP SDK](/docs/sdks/php/) is the Composer package for Laravel, Symfony, and vanilla PHP applications. WordPress sites should usually use the [WordPress plugin](/docs/integrations/wordpress/) instead, because the plugin vendors the PHP SDK and handles frontend relay setup.
+
+## Install the SDK where PHP actually handles the request
+
+```bash
+composer require debugbundle/sdk-php
+```
+
+```php
+use DebugBundle\DebugBundle;
+
+DebugBundle::init([
+    'projectToken' => $_ENV['DEBUGBUNDLE_TOKEN'],
+    'service' => 'checkout-api',
+    'environment' => $_ENV['APP_ENV'] ?? 'production',
+]);
+```
+
+The vanilla PHP hooks cover PHP errors, uncaught exceptions, and shutdown-time fatal errors. Those are important because production PHP failures can leave very little structured evidence once the request terminates.
+
+```php
+DebugBundle::captureErrors();
+DebugBundle::captureExceptions();
+DebugBundle::captureShutdown();
+```
+
+## Laravel and Symfony should preserve their native behavior
+
+Debugging capture should not fight the framework. In Laravel, the SDK can use middleware, a service provider, a decorated exception handler, and a Monolog tap. The point is to capture the throwable and request context while still letting Laravel's normal reporting and response behavior run.
+
+In Symfony, the event subscriber and Monolog handler serve a similar purpose. The SDK should observe the request lifecycle, capture framework exceptions and logs, and keep existing response handling in control.
+
+For both frameworks, correlation headers matter. Preserving `X-Request-Id`, `X-Correlation-Id`, and `X-DebugBundle-Trace-Id` lets backend PHP events connect to browser events, gateway logs, and upstream service calls.
+
+## Where PHP debug bundles help most
+
+PHP applications often have long-lived operational surfaces: checkout flows, CMS plugins, webhooks, admin forms, background jobs, and third-party integrations. Bugs in these areas are hard to reproduce from a single stack trace because the failure depends on request state, external payload shape, deployment metadata, or a sequence of prior warnings.
+
+A structured incident bundle gives an agent or developer a stable starting point:
+
+- normalized exception and PHP stack,
+- route, method, status, and duration,
+- framework and service identity,
+- related logs above the configured level,
+- redacted request metadata,
+- probe data when configured,
+- reproduction artifact when DebugBundle can generate one.
+
+## A note on WordPress
+
+WordPress is PHP, but the operational constraints are different. Many sites do not have Composer, shell access, or a custom deployment pipeline. For those sites, the DebugBundle WordPress plugin is the better entry point because it bundles the backend PHP SDK, the Browser SDK, and the same-origin REST relay.
+
+Use Composer for Laravel, Symfony, and custom PHP services. Use the plugin for WordPress unless you are building a custom Composer-managed WordPress stack and know exactly why you want to wire the SDK yourself.
+
+Read the [PHP SDK docs](/docs/sdks/php/) for Laravel and Symfony examples, and the [WordPress plugin docs](/docs/integrations/wordpress/) for the CMS path.

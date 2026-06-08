@@ -1,14 +1,13 @@
+import { readFileSync } from 'node:fs';
+
 import { loader } from 'fumadocs-core/source';
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
+import { frontmatter as parseFrontmatter } from 'fumadocs-core/content/md/frontmatter';
 import { server } from 'fumadocs-mdx/runtime/server';
 import type { InternalTypeConfig } from 'fumadocs-mdx/runtime/types';
 
 import type * as Config from '../source.config';
-
-import * as blogLaunchPost from '../content/blog/launching-debugbundle.mdx';
-import * as blogWhyPost from '../content/blog/why-debugbundle.mdx';
-import * as blogAgentFirstPost from '../content/blog/agent-first-debugging.mdx';
-import * as blogLocalFirstPost from '../content/blog/local-first-development.mdx';
+import { blog as generatedBlogCollection } from '../.source/server';
 import * as docsAgentWorkflowsPage from '../content/docs/agent-workflows.mdx';
 import * as docsAgentWorkflowsSkillFilePage from '../content/docs/agent-workflows/skill-file.mdx';
 import * as docsAgentWorkflowsRecipesPage from '../content/docs/agent-workflows/automation-recipes.mdx';
@@ -276,18 +275,39 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './v1/webhooks.mdx': docsWebhooksPage,
 });
 
-const blogCollection = await create.docs('blog', 'content/blog', {}, {
-  './launching-debugbundle.mdx': blogLaunchPost,
-  './why-debugbundle.mdx': blogWhyPost,
-  './agent-first-debugging.mdx': blogAgentFirstPost,
-  './local-first-development.mdx': blogLocalFirstPost,
-});
-
 export const docsSource = loader(docsCollection.toFumadocsSource(), {
   baseUrl: '/docs',
   plugins: [lucideIconsPlugin()],
 });
 
-export const blogSource = loader(blogCollection.toFumadocsSource(), {
+const generatedBlogSource = generatedBlogCollection.toFumadocsSource();
+const blogSourceFiles = generatedBlogSource.files.map((file) => {
+  const absolutePath = file.absolutePath;
+
+  if (file.type !== 'page' || !absolutePath) {
+    return file;
+  }
+
+  // Fumadocs strips unknown frontmatter fields from docs collections, so recover `date` from the raw MDX file.
+  const raw = readFileSync(absolutePath, 'utf-8');
+  const parsed = parseFrontmatter(raw);
+  const data =
+    typeof parsed.data === 'object' && parsed.data !== null ? (parsed.data as Record<string, unknown>) : undefined;
+  const date = data?.['date'];
+
+  if (typeof date !== 'string') {
+    return file;
+  }
+
+  return {
+    ...file,
+    data: {
+      ...file.data,
+      date,
+    },
+  };
+});
+
+export const blogSource = loader({ files: blogSourceFiles }, {
   baseUrl: '/blog',
 });

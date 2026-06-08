@@ -1,0 +1,65 @@
+---
+title: "Java SDK debug bundles for Spring Boot, servlet, and JAX-RS services"
+description: "Capture Java production incidents from Spring Boot, servlet WARs, JAX-RS, WildFly, JBoss, Logback, and javaagent startup paths."
+date: "11 April 2026"
+---
+
+Java production systems rarely have one uniform runtime. A single organization may run Spring Boot services, servlet WARs, JAX-RS resources, WildFly deployments, JBoss applications, scheduled jobs, and old logging configurations that nobody wants to touch during an incident.
+
+A debugging tool for that environment has to fit the deployment shape instead of forcing everything through one integration. The [DebugBundle Java SDK](/docs/sdks/java/) is packaged as a set of Maven modules: core SDK, shared web helpers, servlet adapters, JAX-RS adapters, a Spring Boot starter, and a javaagent bootstrap.
+
+The goal is the same across those paths: produce a structured production debugging bundle that an engineer or AI agent can reason over without spelunking through app-server logs.
+
+## Spring Boot is the direct path
+
+For Spring MVC services, the starter is the usual install path.
+
+```xml
+<dependency>
+  <groupId>com.debugbundle</groupId>
+  <artifactId>debugbundle-spring-boot-starter</artifactId>
+  <version>0.1.1</version>
+</dependency>
+```
+
+```yaml
+debugbundle:
+  project-token: ${DEBUGBUNDLE_TOKEN}
+  service: checkout-api
+  environment: production
+  project-mode: connected
+  relay:
+    enabled: true
+```
+
+The starter can capture servlet requests, MVC exceptions, Logback events, capture-policy updates, probes, local file transport, connected HTTP transport, and the browser relay route.
+
+That matters because a Spring incident is often not just an exception. It is a route, status code, request ID, service name, active profile, deployment version, log trail, and sometimes a browser request that triggered the backend failure.
+
+## Servlet and JAX-RS support matters for enterprise Java
+
+Not every Java service is a modern Spring Boot executable JAR. Servlet WARs and JAX-RS deployments still run large parts of production infrastructure.
+
+For servlet deployments, choose the adapter that matches the namespace: `jakarta.servlet` for Jakarta EE 9+ and `javax.servlet` for classic Java EE. Register the context listener once per WAR so each deployment keeps its own service identity, request context, probe buffers, and suppression state.
+
+For JAX-RS and RESTEasy, register the matching filter and exception mapper. The useful detail here is route metadata: when available, mapped resource information gives the bundle more than a raw URI string.
+
+## WildFly, JBoss, and javaagent bootstrap
+
+App-server JVMs often host multiple deployments. If those deployments share one process, use explicit per-deployment service names so incidents do not collapse into a single generic “java-service.”
+
+The javaagent helps when you need early SDK initialization, uncaught-exception capture, or Java Util Logging capture from the JVM startup script. It is not a replacement for request capture; servlet and JAX-RS adapters still do that work. The javaagent is the bridge for early runtime and logging capture.
+
+## Why this is useful for AI agent debugging
+
+AI agents do poorly with unstructured Java logs because a single incident may involve framework wrappers, container frames, retry logs, and several exceptions that are symptoms rather than causes.
+
+A DebugBundle incident gives the agent a narrower artifact: service, environment, route, request metadata, stack, selected logs, probe context, and reproduction evidence. The agent can inspect the bundle through MCP or CLI and then move to the code path with a much smaller search space.
+
+## Privacy defaults should stay conservative
+
+Java is common in healthcare, finance, and enterprise systems, so request and response bodies should not be treated as normal debugging metadata. Prefer allowlisted headers, existing request IDs, MDC values, explicit low-cardinality context, and redacted probes.
+
+That is the practical difference between “collect everything” and “build a production-safe debug bundle.” The second one is much easier to trust during a real incident.
+
+Start with the [Java SDK docs](/docs/sdks/java/) and choose the module that matches how the service is deployed today.

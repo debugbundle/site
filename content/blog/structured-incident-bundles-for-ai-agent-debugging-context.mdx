@@ -1,0 +1,71 @@
+---
+title: "Structured incident bundles for AI agent debugging context"
+description: "Why structured incident bundles give AI agents better debugging context than raw logs, stack traces, dashboard screenshots, or alert text."
+date: "23 May 2026"
+---
+
+Raw logs are a poor interface for AI agent debugging. They are verbose, repetitive, under-structured, and usually detached from the request, deployment, service, and reproduction context that explains the failure.
+
+That does not mean logs are useless. It means logs should be attached to an incident, not treated as the incident.
+
+A structured incident bundle is a better handoff format. It is compact enough for an agent to inspect, deterministic enough for repeatable analysis, and specific enough to point at the failing path.
+
+## What a bundle should contain
+
+A useful production debugging bundle should include the evidence a senior developer would ask for first:
+
+- the triggering event: exception, request failure, critical log, or probe signal,
+- normalized stack frames and service metadata,
+- request method, route, status, duration, request ID, and trace ID when available,
+- related logs and breadcrumbs from the same context,
+- environment, release, runtime, and deploy information,
+- redaction metadata showing what was removed,
+- reproduction artifact or replay hints,
+- schema-valid JSON that tools can validate and agents can parse.
+
+The point is not to collect everything. The point is to preserve the smallest complete shape of the failure.
+
+## Why agents need structure
+
+An AI coding agent can reason over code, but production debugging asks it to reason over evidence. If that evidence arrives as scattered logs, dashboard screenshots, Slack alerts, and partial stack traces, the agent has to spend most of its effort reconstructing context.
+
+Structured incident bundles remove that reconstruction step. The agent can ask:
+
+```txt
+What failed?
+Where did it fail?
+Which request or job triggered it?
+What logs and breadcrumbs are attached?
+Can I reproduce it?
+Which code path owns this behavior?
+```
+
+Those questions map cleanly to bundle fields, CLI output, API responses, and MCP tools.
+
+## Determinism matters
+
+For human dashboard workflows, nondeterministic presentation is annoying but survivable. For agents, nondeterminism makes debugging harder. If the same incident produces different context ordering, unstable IDs, or missing artifacts, the agent may reach different conclusions from the same failure.
+
+A deterministic bundle gives the same input to the same analysis path. That improves reproducibility, makes test fixtures easier, and lets humans review what the agent actually saw when it proposed a fix.
+
+## Reproduction artifacts make bundles operational
+
+A stack trace explains where the failure surfaced. A reproduction artifact explains how to trigger it again.
+
+For HTTP incidents, that may mean cURL or HTTPie commands with sanitized headers and body shape. For other incidents, it may mean a JSON specification, command sequence, or local reproduction hint.
+
+This is especially important for agents. Without reproduction, an agent may generate a plausible fix and stop. With reproduction, it can run or reason through the failure condition, make a change, and validate that the incident path is addressed.
+
+## The bundle is shared across interfaces
+
+The same incident bundle should be readable from the dashboard, CLI, API, and MCP. That interface parity is what makes agent-native debugging practical.
+
+A human can inspect formatted output in the terminal. An agent can call `get_bundle` through MCP. A CI workflow can fetch the same artifact through the API. A repository-owned action can attach the bundle to an issue or use it as input for an automated fix proposal.
+
+## Logs still belong in the workflow
+
+Structured incident bundles do not replace logs. They give logs a useful boundary. Instead of handing an agent every log line from a pod, attach the relevant log events to the incident that triggered the investigation.
+
+That makes debugging faster and safer. The agent sees enough evidence to reason, while capture policy, redaction, and bundle schema keep the artifact from becoming an unbounded dump.
+
+Read the [bundle schema reference](/docs/v1/reference/bundle-schema/) and [agent workflows guide](/docs/agent-workflows/) for how DebugBundle structures incident evidence.

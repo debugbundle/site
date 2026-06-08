@@ -1,0 +1,79 @@
+---
+title: "React Native SDK debug bundles for mobile AI agent debugging"
+description: "Capture React Native errors, error boundaries, navigation breadcrumbs, fetch and XHR failures, Expo development builds, native queues, and probes."
+date: "8 May 2026"
+---
+
+React Native incidents sit between two worlds. The failure might be a JavaScript exception, a React component stack, a native crash handoff, a fetch failure, a navigation issue, or a mobile offline delivery problem.
+
+That makes raw error capture incomplete. A useful incident should carry the JavaScript context, native mobile context, screen breadcrumbs, network correlation, and safe diagnostic state in one bundle.
+
+The [DebugBundle React Native SDK](/docs/sdks/react-native/) is the cross-platform SDK for React Native iOS and Android apps. It captures React error-boundary exceptions, global JavaScript errors, unhandled promise rejections when the runtime exposes a safe hook, navigation breadcrumbs, first-party network failures, logs, messages, probes, and native offline queueing.
+
+## Initialize near app startup
+
+```ts
+import { DebugBundle } from '@debugbundle/sdk-react-native';
+
+DebugBundle.init({
+  projectToken: process.env.EXPO_PUBLIC_DEBUGBUNDLE_TOKEN,
+  service: 'checkout-mobile',
+  environment: __DEV__ ? 'development' : 'production',
+  releaseChannel: 'app-store',
+  tracePropagationTargets: ['https://api.example.com'],
+});
+```
+
+React Native project tokens are write-only ingestion tokens, but they are still extractable from the JavaScript bundle or mobile binary. Do not treat them as a secret boundary, and never use member tokens in mobile apps.
+
+If the native module is unavailable, the token is missing, or initialization fails, SDK methods should degrade safely and report `degraded` or `disconnected` status instead of crashing the app.
+
+## Error boundaries are the highest-signal React path
+
+Wrap the app or a critical subtree with the DebugBundle error boundary.
+
+```tsx
+import { DebugBundleErrorBoundary } from '@debugbundle/sdk-react-native/react';
+
+export function App() {
+  return (
+    <DebugBundleErrorBoundary>
+      <CheckoutRoot />
+    </DebugBundleErrorBoundary>
+  );
+}
+```
+
+A React boundary can capture the error and component stack while letting your fallback UI behave normally. That gives an AI agent a much clearer starting point than a global JavaScript error alone.
+
+## Navigation breadcrumbs explain how the user got there
+
+React Navigation helpers record sanitized screen breadcrumbs. Screen names are bounded and route params, props, view text, form values, and raw state are not captured by default.
+
+This is the right privacy posture. Agents need to know the user moved from `Cart` to `Checkout` to `PaymentFailure`; they usually do not need form values or raw navigation state.
+
+## Fetch and XHR instrumentation should be scoped
+
+Install network instrumentation after initialization and configure first-party targets.
+
+```ts
+import { instrumentDebugBundleNetwork } from '@debugbundle/sdk-react-native/network';
+
+instrumentDebugBundleNetwork({
+  tracePropagationTargets: ['https://api.example.com'],
+});
+```
+
+Trace headers should be added only to relative URLs and explicitly configured first-party targets. Matching requests can receive `X-DebugBundle-Trace-Id`, network breadcrumbs, and request-event capture for failed responses. Third-party absolute URLs should not be instrumented by default.
+
+## Expo support needs the right expectation
+
+Expo prebuild and development-build apps can use the included config plugin. Expo Go cannot load custom native modules, so the SDK should report degraded status there and avoid claiming native queue, native crash evidence, or remote-probe parity.
+
+That honesty is useful during setup. A degraded status tells the developer and the agent what capture path is actually available.
+
+## Why this is useful for agent debugging
+
+A React Native debug bundle can connect the pieces an AI agent needs: JS exception, React component stack, screen trail, network failure, native queue status, release channel, and mobile runtime context. That makes the incident actionable without turning the mobile app into an unbounded telemetry stream.
+
+Read the [React Native SDK docs](/docs/sdks/react-native/) for current runtime support, Expo notes, native foundation details, and integration examples.

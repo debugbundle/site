@@ -1,0 +1,61 @@
+---
+title: "Ruby SDK debug bundles for Rails, Rack, and Sidekiq"
+description: "Capture Ruby and Rails production incidents, Rack request context, Sidekiq job failures, logs, probes, and browser relay events."
+date: "24 April 2026"
+---
+
+Ruby production incidents often include more context than the first exception shows. A Rails route, controller action, filtered parameters, Sidekiq job, request ID, background retry, or logger line may be the clue that makes the failure understandable.
+
+The [DebugBundle Ruby SDK](/docs/sdks/ruby/) captures Rails, Rack, Sidekiq, Ruby `Logger`, Semantic Logger, browser relay events, probes, local file transport, and connected HTTP transport into structured debug bundles.
+
+## Rails capture should use Rails conventions
+
+Rails applications already have strong conventions for request IDs, route/controller/action metadata, logger setup, and filtered parameters. A debugging SDK should reuse those conventions instead of forcing a parallel model.
+
+```rb
+# config/initializers/debugbundle.rb
+Rails.application.configure do
+  config.debugbundle.project_token = ENV["DEBUGBUNDLE_TOKEN"]
+  config.debugbundle.service = "checkout-web"
+  config.debugbundle.environment = Rails.env
+  config.debugbundle.project_mode = :connected
+end
+```
+
+The Railtie can insert Rack request capture, preserve `X-Request-Id` and `X-DebugBundle-Trace-Id`, capture route/controller/action metadata, wire Rails logger capture, reuse `filter_parameters` as redaction keys, and mount the browser relay route at `/debugbundle/browser`.
+
+That last point matters for Rails apps with frontend code. Browser exceptions and first-party request failures can flow through the Rails backend without exposing the server-side project token to client JavaScript.
+
+## Rack keeps non-Rails Ruby apps covered
+
+Not every Ruby web app is Rails. Rack middleware gives Sinatra, Hanami-style, and custom Rack services a capture point for request method, path, sanitized headers, response status, duration, request ID, trace ID, exceptions, and recent probe buffers.
+
+The key behavior is preservation. The middleware should capture and then re-raise exceptions so the downstream framework and hosting stack remain responsible for the final response.
+
+## Sidekiq needs a job-first incident shape
+
+Background job failures are different from HTTP failures. A useful Sidekiq bundle should identify the worker, queue, retry context, job ID, service name, environment, and any safe job metadata that helps reproduce or reason about the failure.
+
+```rb
+Sidekiq.configure_server do |config|
+  config.server_middleware do |chain|
+    chain.add DebugBundle::Sidekiq::ServerMiddleware
+  end
+end
+```
+
+For AI agents, this is a big improvement over reading a retry log and guessing which worker state mattered.
+
+## Logs and probes should be bounded
+
+Ruby applications can produce a lot of application logs. The SDK should capture useful log events at the configured threshold while avoiding recursive capture and unbounded payloads.
+
+Probes are a better fit for short-lived diagnostic state. For example, a checkout flow can record a redacted cart shape, a feature flag branch, or a payment provider decision without adding a permanent log line to every request.
+
+## Why Ruby debug bundles are useful for agents
+
+An AI agent working from a Rails or Sidekiq incident needs the same facts a senior developer would ask for: route or worker, request ID or job ID, exception, filtered context, relevant logs, recent probes, deployment/environment metadata, and reproduction hints.
+
+A structured bundle gives the agent those facts in one place. It reduces blind code search and makes the incident easier to connect to the responsible controller, service object, job, or dependency.
+
+Read the [Ruby SDK docs](/docs/sdks/ruby/) for Rails, Rack, Sidekiq, logging, relay, and local-only examples.

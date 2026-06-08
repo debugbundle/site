@@ -5,7 +5,7 @@ import { DocsDescription, DocsTitle } from 'fumadocs-ui/layouts/docs/page';
 
 import { readBlogPageData } from '@/content-page-data';
 import { blogSource } from '@/content-source';
-import { createPageMetadata } from '@/seo';
+import { createPageMetadata, normalizePublishedTime } from '@/seo';
 
 export const metadata: Metadata = createPageMetadata({
   title: 'Blog',
@@ -15,7 +15,26 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 export default function BlogIndexPage(): ReactElement {
-  const posts = blogSource.getPages();
+  const posts = [...blogSource.getPages()].sort((left, right) => {
+    const leftData = readBlogPageData(left);
+    const rightData = readBlogPageData(right);
+    const leftTime = normalizePublishedTime(leftData.date);
+    const rightTime = normalizePublishedTime(rightData.date);
+
+    if (leftTime && rightTime && leftTime !== rightTime) {
+      return rightTime.localeCompare(leftTime);
+    }
+
+    if (leftTime && !rightTime) {
+      return -1;
+    }
+
+    if (!leftTime && rightTime) {
+      return 1;
+    }
+
+    return leftData.title.localeCompare(rightData.title);
+  });
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8">
