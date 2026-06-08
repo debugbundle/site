@@ -6,6 +6,13 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-06-08
+
+### Changed
+
+- Updated the capture-policy, projects API, and MCP tool documentation for path-scoped client-error incident rules and the rule-management surfaces added in this release train.
+- Promoted the public-site dogfooding manifest to `@debugbundle/sdk-browser@1.1.0` after the published browser SDK release completed.
+
 ## [1.1.0] - 2026-06-04
 
 ### Changed

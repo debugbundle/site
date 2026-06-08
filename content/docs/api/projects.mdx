@@ -161,14 +161,16 @@ curl https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-policy \
     "capture_request_events": "failures_only",
     "capture_breadcrumbs": "exception_only",
     "capture_probe_events": "buffer_only",
-    "immediate_client_error_statuses": []
+    "immediate_client_error_statuses": [],
+    "immediate_client_error_path_rules": []
   },
   "overrides": {
     "capture_logs": null,
     "capture_request_events": null,
     "capture_breadcrumbs": null,
     "capture_probe_events": null,
-    "immediate_client_error_statuses": null
+    "immediate_client_error_statuses": null,
+    "immediate_client_error_path_rules": null
   }
 }
 ```
@@ -188,7 +190,10 @@ curl -X PATCH https://api.debugbundle.com/v1/projects/proj_01HXYZ.../capture-pol
   -H "Content-Type: application/json" \
   -d '{
     "preset": "investigative",
-    "immediate_client_error_statuses": [401, 403, 409, 422]
+    "immediate_client_error_statuses": [401, 403, 409, 422],
+    "immediate_client_error_path_rules": [
+      { "status_code": 404, "path_pattern": "/checkout/*", "methods": ["GET", "POST"] }
+    ]
   }'
 ```
 
@@ -206,6 +211,8 @@ Setting a preset changes the resolved defaults. Individual fields remain overrid
 - `null` clears an override and returns that field to the preset default.
 - `immediate_client_error_statuses: []` means explicit `none`.
 - `immediate_client_error_statuses: [401,403,409,422]` promotes those `4xx` statuses into immediate incidents.
+- `immediate_client_error_path_rules` promotes only matching `4xx` status+path+method combinations, for example `404` under `/checkout/*`, without promoting every `404`.
+- Unpromoted `4xx` responses remain request telemetry/context when captured; they do not open incidents merely because they repeat.
 
 ## Next Steps
 

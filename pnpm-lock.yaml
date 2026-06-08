@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@debugbundle/sdk-browser':
-        specifier: 1.0.1
-        version: 1.0.1
+        specifier: 1.1.0
+        version: 1.1.0
       '@orama/orama':
         specifier: ^3.1.18
         version: 3.1.18
@@ -70,14 +70,14 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
-  '@debugbundle/redaction@1.0.1':
-    resolution: {integrity: sha512-Z3/iLvoaxwN4dODJ45wqjW7NzKqd8IPNH5AaXut72cobelqZkosEY5rNtgncHbNF7xnSWD6SzOgvBG3nA4kGEg==}
+  '@debugbundle/redaction@1.1.0':
+    resolution: {integrity: sha512-qWLZZXM9J013fYCfnHBOtX98EsbIDZ/FFQ1Uum6tAktkhrFE47TJRGjbqSTJqqEpaTtlhgex9cMp478n1A2kMw==}
 
-  '@debugbundle/sdk-browser@1.0.1':
-    resolution: {integrity: sha512-qrtA5wq25ycBWqjxXkoqOGRPB2WhViI7TO0flYlA9ACXF84cg7obuxyYjUWouJKKH1ODAjs/lspWsVPAJgbi+g==}
+  '@debugbundle/sdk-browser@1.1.0':
+    resolution: {integrity: sha512-hX1lm9HsHsNLziQQC80Hgx9N2ZX4pQiXzulH+o3TqWrqMxTKtx4mIA9NJuyu+WKaG2WjTk8Z0xW8gB+quOJCLA==}
 
-  '@debugbundle/shared-types@1.0.1':
-    resolution: {integrity: sha512-41VN1BA2P6YRkexNvyQq2VXmstwZ0DUfTRmOXNVwRl5mZfBGf9g09mSN1mspwSI++xUzMfhnYBf7m+W5+5pFXA==}
+  '@debugbundle/shared-types@1.1.0':
+    resolution: {integrity: sha512-T+xXPdpIyFOWrx9USppozgE1pLM/bt07AdoSjX2cswQ2+zZ7LDguo5pteH/UGyVoP+M8FUl/hOsYFcHvSTvB/g==}
 
   '@emnapi/runtime@1.10.0':
     resolution: {integrity: sha512-ewvYlk86xUoGI0zQRNq/mC+16R1QeDlKQy21Ki3oSYXNgLb45GV1P6A0M+/s6nyCuNDqe5VpaY84BzXGwVbwFA==}
@@ -2134,14 +2134,14 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@debugbundle/redaction@1.0.1': {}
+  '@debugbundle/redaction@1.1.0': {}
 
-  '@debugbundle/sdk-browser@1.0.1':
+  '@debugbundle/sdk-browser@1.1.0':
     dependencies:
-      '@debugbundle/redaction': 1.0.1
-      '@debugbundle/shared-types': 1.0.1
+      '@debugbundle/redaction': 1.1.0
+      '@debugbundle/shared-types': 1.1.0
 
-  '@debugbundle/shared-types@1.0.1':
+  '@debugbundle/shared-types@1.1.0':
     dependencies:
       zod: 3.25.76
 

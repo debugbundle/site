@@ -7,8 +7,9 @@ icon: SlidersHorizontal
 The capture policy controls how your SDKs behave — what types of events they capture,
 at what verbosity level, and how breadcrumbs and probes are handled. Each project has
 one capture policy that applies to all SDKs connecting to it. The same policy also controls
-which selected `4xx` responses open incidents immediately instead of waiting for repeated-anomaly
-thresholds.
+which selected `4xx` responses open incidents immediately. Unpromoted `4xx` responses, including
+generic `404` traffic, stay as request telemetry/context when captured and do not open incidents by
+repetition.
 
 Capture rules sit on top of the policy for known noisy patterns. After an incident appears,
 you can create a project-level rule to `demote`, `sample`, or `drop` future matching events
@@ -53,7 +54,7 @@ Controls which HTTP request/response pairs are captured.
 | Value | Behavior |
 |-------|----------|
 | `off` | Standalone request events are dropped unless they match the active preset's immediate request-failure statuses or the project's selected client error incidents; those immediate request failures are still captured as incident signals. |
-| `failures_only` | Immediate request failures for the active preset plus selected client error incidents are captured as incident signals: `minimal` = `5xx`; `balanced` = `5xx`, `408`, `423`, `424`, `425`, `429`; `investigative` = balanced plus `409`. Balanced and investigative also capture preset-enabled request-anomaly candidates (`400`, `401`, `403`, `404`, `409`, `410`, `422`) as context signals so repeated failures can open request-anomaly incidents. |
+| `failures_only` | Immediate request failures for the active preset plus selected client error incidents are captured as incident signals: `minimal` = `5xx`; `balanced` = `5xx`, `408`, `423`, `424`, `425`, `429`; `investigative` = balanced plus `409`. Unpromoted `4xx` responses such as generic `404` are not incident signals in this mode. |
 | `filtered` | Requests matching configured filters; until custom filters are configured, SDKs keep only immediate request failures and do not ship additional filtered request context. |
 | `all` | All requests captured. |
 
@@ -91,6 +92,21 @@ Controls which HTTP `4xx` responses are promoted into immediate incident-opening
 
 Promoted client errors behave like any other request-failure incident: they can trigger alerts,
 webhooks, GitHub dispatch automation, bundle generation, retention, and usage accounting.
+
+For routes that should never return `404`, use a path-scoped rule instead of promoting all `404`
+responses. Path rules combine a `4xx` status, a path pattern, and optional HTTP methods:
+
+```json
+{
+  "immediate_client_error_path_rules": [
+    { "status_code": 404, "path_pattern": "/checkout/*", "methods": ["GET", "POST"] }
+  ]
+}
+```
+
+The path must start with `/` and may use a terminal `*` wildcard. A rule like `/checkout/*`
+promotes `/checkout/order-missing`, but leaves scanner traffic such as `/robots.txt` or
+`/wp-config.php_old2024` as non-incident telemetry.
 
 ## Capture Rules
 
@@ -153,6 +169,11 @@ debugbundle capture-policy set \
   --project proj_01HXYZ... \
   --client-error-incidents recommended
 
+# Promote only 404s under a real application path
+debugbundle capture-policy set \
+  --project proj_01HXYZ... \
+  --client-error-path-rule '404=/checkout/*@GET,POST'
+
 # Suggest and create capture rules from a known noisy incident
 debugbundle capture-rule suggest inc_01HXYZ...
 debugbundle capture-rule create-from-suggestion inc_01HXYZ... --suggestion-id primary_resource_host_demote
@@ -197,12 +218,28 @@ means "use the preset default", while:
 
 means "explicitly promote no additional `4xx` statuses".
 
+Path-scoped client error rules follow the same override model:
+
+```json
+{ "immediate_client_error_path_rules": null }
+```
+
+means "use the preset default", while:
+
+```json
+{ "immediate_client_error_path_rules": [] }
+```
+
+means "explicitly promote no path-scoped `4xx` rules".
+
 ## SDK Behavior
 
 SDKs fetch the capture policy and active capture rules from the server during initialization and periodically
 refresh it. When the policy changes, shipped Browser, Node.js, Python, PHP, Java, Go,
 Ruby, Android, iOS, and React Native SDKs adjust their capture behavior without requiring a restart or redeploy,
 including the selected client error incident statuses.
+Path-scoped client error rules are delivered in the same config response and are enforced locally
+by SDKs that support request capture before ingestion applies the same policy as a backstop.
 
 In local-only mode, SDKs use built-in defaults (equivalent to the `balanced` preset).
 

@@ -523,7 +523,7 @@ Update the capture policy for a project.
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `projectId` | `string` | **Required.** The project ID. |
-| `update` | `object` | **Required.** Policy update with optional fields: `preset`, `capture_logs`, `capture_request_events`, `capture_breadcrumbs`, `capture_probe_events`. |
+| `update` | `object` | **Required.** Policy update with optional fields: `preset`, `capture_logs`, `capture_request_events`, `capture_breadcrumbs`, `capture_probe_events`, `immediate_client_error_statuses`, and `immediate_client_error_path_rules`. Path rules use `status_code`, `path_pattern`, and optional `methods` to promote only matching `4xx` combinations, such as `404` under `/checkout/*`. |
 
 ---
 
