@@ -44,7 +44,7 @@
   --site-code-bg: oklch(0.97 0 0);
   --site-code-border: oklch(0.922 0 0);
   --site-code-text: oklch(0.205 0 0);
-  --site-home-glow: rgba(90, 106, 133, 0.10);
+  --site-home-glow: rgba(90, 106, 133, 0.08);
   --site-home-card-shadow: 0 18px 40px -30px rgba(15, 23, 42, 0.18), 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
@@ -90,7 +90,7 @@ html.dark {
   --site-code-bg: oklch(0.12 0 0);
   --site-code-border: oklch(1 0 0 / 10%);
   --site-code-text: oklch(0.985 0 0);
-  --site-home-glow: rgba(148, 163, 184, 0.08);
+  --site-home-glow: rgba(148, 163, 184, 0.10);
   --site-home-card-shadow: 0 18px 40px -30px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 

@@ -32,7 +32,7 @@ const sectionLinkClassName =
 const ctaButtonClassName =
   `inline-flex items-center gap-2 rounded-full bg-fd-primary px-4 py-2 text-sm font-medium !text-fd-primary-foreground transition hover:bg-fd-primary/80 hover:!text-fd-primary-foreground ${focusButtonClassName}`;
 const tabTriggerClassName =
-  'relative inline-flex items-center gap-2 text-nowrap rounded-lg border border-transparent px-2 pt-1.5 pb-3 text-sm font-medium leading-none text-[var(--site-text-muted)] transition-[border-color,color] hover:text-[var(--site-text)] focus-visible:[border-color:var(--site-focus)] focus-visible:outline-none data-[state=active]:text-[var(--site-text)] after:absolute after:inset-x-2 after:bottom-0 after:h-px after:bg-transparent data-[state=active]:after:bg-[var(--site-text)] [&_svg]:size-3.5 [&_svg]:shrink-0';
+  'relative inline-flex items-center gap-2 text-nowrap rounded-lg border border-transparent px-2 pt-1.5 pb-3 text-sm font-medium leading-none text-[var(--site-text-muted)] transition-[border-color,color] hover:text-[var(--site-text)] focus-visible:[border-color:var(--site-focus)] focus-visible:outline-none data-[state=active]:text-[var(--site-text)] after:absolute after:inset-x-2 after:bottom-[-1px] after:h-px after:bg-transparent data-[state=active]:after:bg-[var(--site-text)] [&_svg]:size-3.5 [&_svg]:shrink-0';
 
 type RuntimeGuideDefinition = {
   value: string;
