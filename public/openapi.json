@@ -10049,6 +10049,38 @@
                           ],
                           "additionalProperties": false
                         },
+                        "rejection_reason": {
+                          "type": "object",
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "enum": [
+                                "error",
+                                "string",
+                                "object",
+                                "null",
+                                "undefined",
+                                "unknown"
+                              ]
+                            },
+                            "name": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "message": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "preview": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "required": [
+                            "kind"
+                          ],
+                          "additionalProperties": false
+                        },
                         "dom_context": {
                           "anyOf": [
                             {
@@ -17292,6 +17324,22 @@
                             "resource_error"
                           ]
                         },
+                        "browser_event_opaque": {
+                          "type": "boolean"
+                        },
+                        "client_kind": {
+                          "type": "string",
+                          "enum": [
+                            "human",
+                            "bot",
+                            "unknown"
+                          ]
+                        },
+                        "bot_family": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
                         "resource_url": {
                           "type": "object",
                           "properties": {
@@ -17675,6 +17723,22 @@
                       "resource_error"
                     ]
                   },
+                  "browser_event_opaque": {
+                    "type": "boolean"
+                  },
+                  "client_kind": {
+                    "type": "string",
+                    "enum": [
+                      "human",
+                      "bot",
+                      "unknown"
+                    ]
+                  },
+                  "bot_family": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
                   "resource_url": {
                     "type": "object",
                     "properties": {
@@ -18038,6 +18102,22 @@
                         "resource_error"
                       ]
                     },
+                    "browser_event_opaque": {
+                      "type": "boolean"
+                    },
+                    "client_kind": {
+                      "type": "string",
+                      "enum": [
+                        "human",
+                        "bot",
+                        "unknown"
+                      ]
+                    },
+                    "bot_family": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
                     "resource_url": {
                       "type": "object",
                       "properties": {
@@ -18393,6 +18473,22 @@
                   "resource_error"
                 ]
               },
+              "browser_event_opaque": {
+                "type": "boolean"
+              },
+              "client_kind": {
+                "type": "string",
+                "enum": [
+                  "human",
+                  "bot",
+                  "unknown"
+                ]
+              },
+              "bot_family": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
               "resource_url": {
                 "type": "object",
                 "properties": {
@@ -18696,6 +18792,22 @@
                   "resource_error"
                 ]
               },
+              "browser_event_opaque": {
+                "type": "boolean"
+              },
+              "client_kind": {
+                "type": "string",
+                "enum": [
+                  "human",
+                  "bot",
+                  "unknown"
+                ]
+              },
+              "bot_family": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
               "resource_url": {
                 "type": "object",
                 "properties": {
@@ -18906,6 +19018,48 @@
                   "maximum": 499
                 },
                 "maxItems": 12
+              },
+              "immediate_client_error_path_rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "integer",
+                      "minimum": 400,
+                      "maximum": 499
+                    },
+                    "path_pattern": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "methods": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "GET",
+                          "POST",
+                          "PUT",
+                          "PATCH",
+                          "DELETE",
+                          "HEAD",
+                          "OPTIONS"
+                        ]
+                      },
+                      "maxItems": 7,
+                      "default": []
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "path_pattern"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 25,
+                "default": []
               }
             },
             "required": [
@@ -18997,6 +19151,55 @@
                     "type": "null"
                   }
                 ]
+              },
+              "immediate_client_error_path_rules": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "status_code": {
+                          "type": "integer",
+                          "minimum": 400,
+                          "maximum": 499
+                        },
+                        "path_pattern": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 256
+                        },
+                        "methods": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "GET",
+                              "POST",
+                              "PUT",
+                              "PATCH",
+                              "DELETE",
+                              "HEAD",
+                              "OPTIONS"
+                            ]
+                          },
+                          "maxItems": 7,
+                          "default": []
+                        }
+                      },
+                      "required": [
+                        "status_code",
+                        "path_pattern"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "maxItems": 25
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
               }
             },
             "required": [
@@ -19098,6 +19301,54 @@
                   "maximum": 499
                 },
                 "maxItems": 12
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "immediate_client_error_path_rules": {
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "integer",
+                      "minimum": 400,
+                      "maximum": 499
+                    },
+                    "path_pattern": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "methods": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "GET",
+                          "POST",
+                          "PUT",
+                          "PATCH",
+                          "DELETE",
+                          "HEAD",
+                          "OPTIONS"
+                        ]
+                      },
+                      "maxItems": 7,
+                      "default": []
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "path_pattern"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 25
               },
               {
                 "type": "null"
@@ -19269,6 +19520,48 @@
                   "maximum": 499
                 },
                 "maxItems": 12
+              },
+              "immediate_client_error_path_rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "status_code": {
+                      "type": "integer",
+                      "minimum": 400,
+                      "maximum": 499
+                    },
+                    "path_pattern": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 256
+                    },
+                    "methods": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "GET",
+                          "POST",
+                          "PUT",
+                          "PATCH",
+                          "DELETE",
+                          "HEAD",
+                          "OPTIONS"
+                        ]
+                      },
+                      "maxItems": 7,
+                      "default": []
+                    }
+                  },
+                  "required": [
+                    "status_code",
+                    "path_pattern"
+                  ],
+                  "additionalProperties": false
+                },
+                "maxItems": 25,
+                "default": []
               }
             },
             "required": [
@@ -19392,6 +19685,22 @@
                         "window_error",
                         "resource_error"
                       ]
+                    },
+                    "browser_event_opaque": {
+                      "type": "boolean"
+                    },
+                    "client_kind": {
+                      "type": "string",
+                      "enum": [
+                        "human",
+                        "bot",
+                        "unknown"
+                      ]
+                    },
+                    "bot_family": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
                     },
                     "resource_url": {
                       "type": "object",

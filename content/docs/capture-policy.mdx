@@ -118,7 +118,68 @@ Capture rules are manual, project-level decisions for known noise. They are usef
 | `sample` | Matching events are kept or discarded using a deterministic sample rate. Kept events preserve their normal class unless the rule sets `sample_event_class: "context"`. |
 | `drop` | Matching events are discarded before persistence when the SDK or ingestion layer can evaluate the rule. |
 
-Rules use structured matchers such as event type, service, environment, runtime, first-party status, browser event kind, resource URL, request URL, status code, and exact fingerprint. The incident detail page can suggest narrow rules from an existing bundle, so most teams should start from an incident rather than writing matchers by hand.
+Rules use structured matchers. The incident detail page and `debugbundle capture-rule suggest` can suggest narrow rules from an existing bundle, so most teams should start from an incident rather than writing matchers by hand.
+
+| Matcher | Applies to | Example |
+|---|---|---|
+| `event_types` | All events | `["frontend_exception"]` |
+| `services` | All events | `["checkout-web"]` |
+| `environments` | All events | `["production"]` |
+| `runtime` | All events | `["browser"]` |
+| `browser_event_kind` | Browser exceptions | `"window_error"` or `"resource_error"` |
+| `browser_event_opaque` | Browser exceptions | `true` when the browser hid the real `Error` object |
+| `client_kind` | Events with device/user-agent context | `"human"`, `"bot"`, or `"unknown"` |
+| `bot_family` | Known bot traffic | `"Googlebot"` |
+| `message_equals` / `message_contains` | Exceptions and logs | `"Window error"` |
+| `error_name` | Exceptions | `"ChunkLoadError"` |
+| `resource_url` | Browser resource/window errors | `{ "host": "cdn.example.com" }` |
+| `request_url` | Request events and network breadcrumbs | `{ "path_prefix": "/checkout" }` |
+| `status_codes` / `status_ranges` | Request events and network breadcrumbs | `[404, 429]` |
+| `first_party` | Browser/resource/request events | `false` for third-party noise |
+| `fingerprint` | Existing incident fingerprints | `{ "version": "v1", "value": "..." }` |
+
+### Browser Noise Examples
+
+Demote generic opaque browser `Window error` noise after confirming it is not a real application exception:
+
+```json
+{
+  "event_types": ["frontend_exception"],
+  "runtime": ["browser"],
+  "services": ["checkout-web"],
+  "environments": ["production"],
+  "browser_event_kind": "window_error",
+  "browser_event_opaque": true,
+  "message_equals": "Window error"
+}
+```
+
+Drop repeated third-party resource-load errors from a known analytics host:
+
+```json
+{
+  "event_types": ["frontend_exception"],
+  "browser_event_kind": "resource_error",
+  "first_party": false,
+  "resource_url": { "host": "analytics.example.com" }
+}
+```
+
+Demote bot-scoped generic unhandled rejections without hiding the same message from human users:
+
+```json
+{
+  "event_types": ["frontend_exception"],
+  "runtime": ["browser"],
+  "services": ["checkout-web"],
+  "environments": ["production"],
+  "client_kind": "bot",
+  "bot_family": "Googlebot",
+  "message_equals": "Unhandled promise rejection"
+}
+```
+
+Use server-side capture rules first for operational noise because they are visible, auditable, and enforced by ingestion/worker backstops. Use SDK-local filters for app-owned capture choices such as network breadcrumb filtering, final redaction, or tenant-specific suppression. The JS SDKs expose a synchronous `beforeSend(event) => event | null` hook for that local policy; return `null` only when the event should never leave the runtime.
 
 Current local SDK enforcement:
 

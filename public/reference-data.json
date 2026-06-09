@@ -1,6 +1,6 @@
 {
   "release": {
-    "coreVersion": "1.1.1"
+    "coreVersion": "1.3.0"
   },
   "apiEntries": [
     {
@@ -1585,7 +1585,7 @@
     },
     {
       "commandPath": "capture-policy set",
-      "usage": "debugbundle capture-policy set --project <id> [--preset <minimal|balanced|investigative>] [--override <key=value>] [--client-error-incidents <preset-default|none|recommended|custom>] [--client-error-statuses <400,401,...>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle capture-policy set --project <id> [--preset <minimal|balanced|investigative>] [--override <key=value>] [--client-error-incidents <preset-default|none|recommended|custom>] [--client-error-statuses <400,401,...>] [--client-error-path-rule <404=/path/*@GET,POST>] [--client-error-path-rules-json <json|null>] [--auth-file <path>] [--json]",
       "group": "capture-policy"
     },
     {

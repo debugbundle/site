@@ -51,7 +51,8 @@ The skill file defines a prioritized investigation workflow:
 3. **Inspect the bundle** — Read the debug bundle for full context (error, request, logs, environment)
 4. **Review reproduction** — Use the reproduction artifact to understand how to trigger the issue
 5. **Analyze for improvements** — Run `debugbundle analyze` for a deterministic change plan when local bundles are available
-6. **Apply, validate, and resolve** — Make the fix, run the project validation workflow, then resolve verified incidents
+6. **Evaluate repeated noise** — Use capture-rule suggestions or path-scoped client-error capture policy when bundle evidence shows recurring low-value incidents
+7. **Apply, validate, and resolve** — Make the fix, run the project validation workflow, then resolve verified incidents
 
 The generated skill now keeps the most important commands near the top:
 
@@ -70,6 +71,16 @@ It also points agents to the local evidence paths they need most often:
 `.debugbundle/local/events/`, `.debugbundle/local/state.json`,
 `.debugbundle/bundles/local/`, `.debugbundle/bundles/local/reproductions/`,
 and `.debugbundle/bundles/cloud/`.
+
+### Noise Management
+
+When the same low-value pattern keeps reopening, the generated skill tells agents
+to inspect incident evidence first and then evaluate a scoped noise-control path:
+
+- Run `debugbundle capture-rule suggest <incident-id> --json` before writing a manual rule
+- Prefer project capture rules for centralized operational noise control
+- Keep generic frontend suppression narrow with structured browser, opaque-event, or bot signals
+- Use capture-policy client-error path rules for known route-scoped `4xx` incidents instead of promoting all client errors
 
 ### Profile Validation
 
@@ -94,6 +105,34 @@ debugbundle validate --fix --json
 # Process any pending local events
 debugbundle process --preset balanced --json
 ```
+
+## Update the Generated Skill
+
+Run validation to check whether the generated skill and its references match the
+DebugBundle CLI version currently installed:
+
+```bash
+debugbundle validate
+```
+
+If validation reports stale generated guidance, refresh it safely:
+
+```bash
+debugbundle validate --fix
+```
+
+This updates `.agents/skills/debugbundle/SKILL.md`, generated references, schemas,
+and evals without overwriting `.debugbundle/profile.json`.
+
+To refresh against the latest published DebugBundle CLI templates, run:
+
+```bash
+npx @debugbundle/cli@latest validate --fix
+```
+
+There is no separate `debugbundle skill update` command today. `validate --fix`
+is the canonical update path because it keeps the whole managed scaffold in sync,
+not just the top-level skill file.
 
 ## AGENTS.md Integration
 

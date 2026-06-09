@@ -56,6 +56,27 @@ Calling `init()` automatically:
 | `maxBufferedEvents` | `number` | `500` | Max events in buffer before oldest are dropped. |
 | `requestTimeoutMs` | `number` (ms) | `5000` | HTTP transport timeout. |
 | `onDiagnostic` | `(diagnostic) => void` | — | Callback for SDK self-diagnostic events. |
+| `beforeSend` | `(event) => event \| null` | — | Synchronous final hook before buffering. Return `null` to drop locally. |
+
+Use `beforeSend` for app-owned local policy such as final redaction or tenant-specific suppression before an event leaves the page. The hook runs after the SDK builds the event and before project capture rules, sampling, suppression, and transport. Use project capture rules first for known operational noise because they are centralized, auditable, and enforced by ingestion/worker backstops. Use `networkFilter` for network breadcrumb/request capture choices.
+
+```ts
+debugbundle.init({
+  transportMode: "relay",
+  endpoint: "/debugbundle/browser",
+  service: "checkout-web",
+  environment: "production",
+  beforeSend(event) {
+    if (event.event_type === "frontend_exception" && event.payload.message === "Expected local-only error") {
+      return null;
+    }
+
+    return event;
+  },
+});
+```
+
+If the hook throws or returns an invalid event, the SDK keeps the original event and swallows the hook failure so the host page keeps running.
 
 ## Transport Resolution
 
@@ -84,6 +105,8 @@ Common causes:
 - The SDK was installed after a framework-level error boundary, so only the degraded global browser signal remained.
 
 For these captures, DebugBundle includes `payload.browser_event` on the `frontend_exception` event. Use `kind`, `file_name`, `line_number`, `column_number`, and `target.source_url` to inspect the browser's best available clue. When `opaque` is `true`, do not treat the SDK listener frame as the application source.
+
+Known operational patterns include CSP-blocked resources, cross-origin scripts without CORS plus `crossorigin`, browser extension/resource-policy failures, and third-party analytics tags that fail under bots or privacy controls. After confirming the pattern, prefer a server-side capture rule scoped by `browser_event_kind`, `browser_event_opaque`, `message_equals`, `services`, and `environments`.
 
 To improve fidelity:
 - Initialize the Browser SDK as early as possible, before application bundles run.
@@ -135,6 +158,8 @@ When `captureNetwork` is enabled, the SDK intercepts `fetch` and `XMLHttpRequest
 Rejected `fetch()` calls that never receive an HTTP response are captured as failed network breadcrumbs with `status_code: 0` plus `failure_kind` and `failure_reason` fields when available. This covers cases such as blocked domains, offline tabs, DNS failures, and CORS-level network errors without changing application behavior.
 
 Project capture rules can demote, sample, or drop known browser noise after you identify it from an incident. The Browser SDK applies active rules locally before upload when possible, so recurring third-party resource-load failures can become context-only or be discarded without opening new incidents.
+
+Unhandled promise rejections are captured through the global `unhandledrejection` hook. When the browser exposes a reason, the SDK includes a bounded `rejection_reason` summary so generic incidents such as `Unhandled promise rejection` can distinguish `Error`, string, object, null, and undefined reasons.
 
 ### Network Filtering
 
