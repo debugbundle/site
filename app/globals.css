@@ -46,6 +46,8 @@
   --site-code-text: oklch(0.205 0 0);
   --site-home-glow: rgba(90, 106, 133, 0.08);
   --site-home-card-shadow: 0 18px 40px -30px rgba(15, 23, 42, 0.18), 0 1px 0 rgba(255, 255, 255, 0.7);
+  --site-hero-pattern-line: color-mix(in oklab, var(--site-border-strong) 62%, var(--site-text-subtle) 38%);
+  --site-hero-grid-opacity: 0.1;
 }
 
 html.dark {
@@ -92,6 +94,8 @@ html.dark {
   --site-code-text: oklch(0.985 0 0);
   --site-home-glow: rgba(148, 163, 184, 0.10);
   --site-home-card-shadow: 0 18px 40px -30px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.04);
+  --site-hero-pattern-line: color-mix(in oklab, var(--site-border) 92%, transparent);
+  --site-hero-grid-opacity: 0.34;
 }
 
 /* Sidebar contrast tweak for dark mode */
@@ -118,6 +122,52 @@ body {
 
 .site-home-elevated {
   box-shadow: var(--site-home-card-shadow);
+}
+
+.hero-signal-field {
+  position: absolute;
+  left: 50%;
+  top: -10rem;
+  bottom: -11rem;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, #000 11%, #000 89%, transparent 100%),
+    linear-gradient(to bottom, #000 0%, #000 68%, transparent 100%);
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 11%, #000 89%, transparent 100%),
+    linear-gradient(to bottom, #000 0%, #000 68%, transparent 100%);
+  opacity: 0.98;
+}
+
+.hero-signal-field__grid {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-signal-field__grid {
+  inset: 7rem 0 0;
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent 27px,
+      var(--site-hero-pattern-line) 27px,
+      var(--site-hero-pattern-line) 28px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 27px,
+      var(--site-hero-pattern-line) 27px,
+      var(--site-hero-pattern-line) 28px
+    );
+  opacity: var(--site-hero-grid-opacity);
+  transform: perspective(1500px) rotateX(69deg) scale(1.32);
+  transform-origin: top center;
 }
 
 a {
@@ -207,4 +257,32 @@ figure.shiki > div[class*='backdrop-blur-lg'] :is(button[aria-label='Copy Text']
 figure.shiki > div[class*='backdrop-blur-lg'] :is(button[aria-label='Copy Text'], button[aria-label='Copied Text']):hover {
   background-color: transparent !important;
   border-color: transparent !important;
+}
+
+@media (max-width: 640px) {
+  .hero-signal-field {
+    top: -7rem;
+    bottom: -7rem;
+  }
+
+  .hero-signal-field__grid {
+    inset: 5.5rem 0 0;
+    background-image:
+      repeating-linear-gradient(
+        to right,
+        transparent 0,
+        transparent 23px,
+        var(--site-hero-pattern-line) 23px,
+        var(--site-hero-pattern-line) 24px
+      ),
+      repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 23px,
+        var(--site-hero-pattern-line) 23px,
+        var(--site-hero-pattern-line) 24px
+      );
+    opacity: calc(var(--site-hero-grid-opacity) - 0.08);
+    transform: perspective(940px) rotateX(71deg) scale(1.18);
+  }
 }

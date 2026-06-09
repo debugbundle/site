@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 
 import { SurfaceCard } from '@/components/content-blocks';
+import { HeroSignalField } from '@/components/hero-signal-field';
 import { JsonLdScript } from '@/components/json-ld';
 import { QuickInstallGuide } from '@/components/quick-install-guide';
 import { absoluteSiteUrl, createPageMetadata } from '@/seo';
@@ -140,38 +141,43 @@ export default function HomePage(): ReactElement {
     <div className="space-y-12 sm:space-y-16 lg:space-y-32">
       <JsonLdScript id="software-jsonld" data={softwareJsonLd} />
       {/* Hero */}
-      <section className="space-y-6 py-2 text-center sm:space-y-8 sm:py-4 lg:pt-10">
-        <div className="mx-auto max-w-4xl space-y-3">
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">
-            Production debugging <span className="whitespace-nowrap">for AI agents</span>
-          </p>
-          <h1 className="mx-auto max-w-[700px] text-4xl font-semibold tracking-tight text-[var(--site-text)] sm:text-5xl">
-            Turn production errors into agent-ready debug bundles
-          </h1>
-          <p className="mx-auto max-w-3xl text-base leading-7 text-[var(--site-text-muted)] sm:text-lg">
-            DebugBundle turns production incidents into deterministic debugging context, available through API, CLI, MCP, and the dashboard, so humans and AI agents can diagnose and resolve failures faster.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <Link
-            className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium ${buttonFocusClassName}`}
-            href="/docs/"
-            style={{ background: 'var(--site-accent)', color: 'var(--site-accent-foreground)' }}
-          >
-            <BookOpen className="size-4" aria-hidden="true" />
-            Read Docs
-          </Link>
-          <Link
-            className={`inline-flex items-center justify-center rounded-full border border-[var(--site-border)] px-5 py-3 text-sm font-medium ${buttonFocusClassName}`}
-            href="https://app.debugbundle.com"
-          >
-            Open App
-          </Link>
+      <section className="relative isolate overflow-visible py-2 text-center sm:py-4 lg:pt-10">
+        <HeroSignalField />
+        <div className="relative z-10 space-y-6 sm:space-y-8">
+          <div className="mx-auto max-w-4xl space-y-3">
+            <p className="text-sm font-medium uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">
+              Production debugging <span className="whitespace-nowrap">for AI agents</span>
+            </p>
+            <h1 className="mx-auto max-w-[700px] text-4xl font-semibold tracking-tight text-[var(--site-text)] sm:text-5xl">
+              Turn production errors into agent-ready debug bundles
+            </h1>
+            <p className="mx-auto max-w-3xl text-base leading-7 text-[var(--site-text-muted)] sm:text-lg">
+              DebugBundle turns production incidents into deterministic debugging context, available through API, CLI, MCP, and the dashboard, so humans and AI agents can diagnose and resolve failures faster.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Link
+              className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium ${buttonFocusClassName}`}
+              href="/docs/"
+              style={{ background: 'var(--site-accent)', color: 'var(--site-accent-foreground)' }}
+            >
+              <BookOpen className="size-4" aria-hidden="true" />
+              Read Docs
+            </Link>
+            <Link
+              className={`inline-flex items-center justify-center rounded-full border border-[var(--site-border)] px-5 py-3 text-sm font-medium ${buttonFocusClassName}`}
+              href="https://app.debugbundle.com"
+            >
+              Open App
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Quick installation guide */}
-      <QuickInstallGuide className="site-home-elevated" />
+      <div className="relative z-10">
+        <QuickInstallGuide className="site-home-elevated" />
+      </div>
 
       {/* Why DebugBundle */}
       <section className="space-y-6">
