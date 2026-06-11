@@ -999,6 +999,92 @@
         }
       }
     },
+    "/v1/account/delete/request-otp": {
+      "post": {
+        "operationId": "requestAccountDeletionOtp",
+        "summary": "Request an email OTP for account deletion",
+        "tags": [
+          "Account"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountDeleteRequestOtpBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deletion OTP requested.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid confirmation payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Browser session is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Deletion verification requests are rate limited.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Account deletion verification is unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/account": {
       "delete": {
         "operationId": "deleteAccount",
@@ -1073,7 +1159,17 @@
             }
           },
           "409": {
-            "description": "Other owner-scoped organizations still exist.",
+            "description": "Other owner-scoped organizations or projects still exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Deletion attempts are rate limited.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1237,6 +1333,15 @@
                 "high",
                 "critical"
               ]
+            }
+          },
+          {
+            "name": "first_seen_after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
             }
           },
           {
@@ -8497,16 +8602,36 @@
         ],
         "additionalProperties": false
       },
-      "AccountDeleteBody": {
+      "AccountDeleteRequestOtpBody": {
         "type": "object",
         "properties": {
-          "email": {
+          "confirmation_text": {
             "type": "string",
-            "format": "email"
+            "minLength": 1,
+            "maxLength": 64
           }
         },
         "required": [
-          "email"
+          "confirmation_text"
+        ],
+        "additionalProperties": false
+      },
+      "AccountDeleteBody": {
+        "type": "object",
+        "properties": {
+          "confirmation_text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "otp": {
+            "type": "string",
+            "pattern": "^\\d{6}$"
+          }
+        },
+        "required": [
+          "confirmation_text",
+          "otp"
         ],
         "additionalProperties": false
       },
@@ -13914,6 +14039,26 @@
                 "metrics": {
                   "type": "object",
                   "properties": {
+                    "open_incidents": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "default": 0
+                    },
+                    "regressed_incidents": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "default": 0
+                    },
+                    "opened_incidents_today": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "default": 0
+                    },
+                    "opened_incidents_month": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "default": 0
+                    },
                     "monthly_bundle_requests": {
                       "type": "integer",
                       "minimum": 0
@@ -14068,6 +14213,26 @@
               "metrics": {
                 "type": "object",
                 "properties": {
+                  "open_incidents": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                  },
+                  "regressed_incidents": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                  },
+                  "opened_incidents_today": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                  },
+                  "opened_incidents_month": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                  },
                   "monthly_bundle_requests": {
                     "type": "integer",
                     "minimum": 0
@@ -14217,6 +14382,22 @@
               "metrics": {
                 "type": "object",
                 "properties": {
+                  "open_incidents": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "regressed_incidents": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "opened_incidents_today": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "opened_incidents_month": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
                   "monthly_bundle_requests": {
                     "type": "integer",
                     "minimum": 0
@@ -14235,6 +14416,10 @@
                   }
                 },
                 "required": [
+                  "open_incidents",
+                  "regressed_incidents",
+                  "opened_incidents_today",
+                  "opened_incidents_month",
                   "monthly_bundle_requests",
                   "monthly_raw_ingested_events",
                   "retained_bundles",

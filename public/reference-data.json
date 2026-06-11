@@ -76,6 +76,18 @@
       ]
     },
     {
+      "method": "POST",
+      "path": "/v1/account/delete/request-otp",
+      "operationId": "requestAccountDeletionOtp",
+      "summary": "Request an email OTP for account deletion",
+      "tags": [
+        "Account"
+      ],
+      "auth": [
+        "Browser session"
+      ]
+    },
+    {
       "method": "GET",
       "path": "/v1/account/export",
       "operationId": "exportAccount",
@@ -1315,7 +1327,7 @@
     },
     {
       "commandPath": "incidents",
-      "usage": "debugbundle incidents [--source <local|cloud>] [--project-id <id>] [--environment <name>] [--service <name>] [--status <status>] [--severity <severity>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle incidents [--source <local|cloud>] [--project-id <id>] [--environment <name>] [--service <name>] [--status <status>] [--severity <severity>] [--first-seen-after <ISO8601>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
       "group": "incidents"
     },
     {
@@ -1851,6 +1863,7 @@
             "bearerToken",
             "cursor",
             "environment",
+            "firstSeenAfter",
             "limit",
             "projectId",
             "service",
@@ -2806,6 +2819,12 @@
   "errorReference": {
     "codes": [
       {
+        "code": "account_deletion_verification_unavailable",
+        "statusCodes": [
+          "503"
+        ]
+      },
+      {
         "code": "alert_not_found",
         "statusCodes": [
           "404"
@@ -2938,6 +2957,12 @@
         ]
       },
       {
+        "code": "invalid_otp",
+        "statusCodes": [
+          "400"
+        ]
+      },
+      {
         "code": "invalid_payload",
         "statusCodes": [
           "400"
@@ -3029,6 +3054,12 @@
       },
       {
         "code": "other_owned_organizations_exist",
+        "statusCodes": [
+          "409"
+        ]
+      },
+      {
+        "code": "other_owned_projects_exist",
         "statusCodes": [
           "409"
         ]
