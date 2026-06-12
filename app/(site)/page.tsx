@@ -1,27 +1,15 @@
 import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
-import {
-  Bot,
-  BellRing,
-  BookOpen,
-  Braces,
-  FileJson,
-  Lightbulb,
-  Radar,
-  RotateCcw,
-  ShieldCheck,
-  GitPullRequestArrow,
-  SquareTerminal,
-  Terminal,
-  Workflow,
-  Siren,
-} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { Bot, BellRing, BookOpen, Braces, FileJson, Lightbulb, Radar, RotateCcw, ShieldCheck, GitPullRequestArrow, SquareTerminal, Terminal, Workflow, Siren } from 'lucide-react';
 
+import { AgentAssistPromptDialog } from '@/components/agent-assist-prompt-dialog';
 import { SurfaceCard } from '@/components/content-blocks';
 import { HeroSignalField } from '@/components/hero-signal-field';
 import { JsonLdScript } from '@/components/json-ld';
 import { QuickInstallGuide } from '@/components/quick-install-guide';
+import type { AgentAssistPromptId } from '@/lib/agent-assist-prompts';
 import { absoluteSiteUrl, createPageMetadata } from '@/seo';
 
 const buttonFocusClassName =
@@ -33,6 +21,13 @@ export const metadata: Metadata = createPageMetadata({
     'DebugBundle captures incidents, assembles deterministic debugging context, and delivers structured bundles through API, CLI, and MCP.',
   path: '/',
 });
+
+type DebugBenefit = {
+  title: string;
+  detail: string;
+  icon: LucideIcon;
+  promptId?: AgentAssistPromptId;
+};
 
 export default function HomePage(): ReactElement {
   const workflowSteps = [
@@ -81,7 +76,7 @@ export default function HomePage(): ReactElement {
     },
   ];
 
-  const debugBenefits = [
+  const debugBenefits: DebugBenefit[] = [
     {
       title: 'Know when errors happen',
       detail:
@@ -105,6 +100,7 @@ export default function HomePage(): ReactElement {
       detail:
         'Create custom alerts for high-value routes, jobs, and services that may never surface in user-facing dashboards but still matter to the business.',
       icon: Siren,
+      promptId: 'critical-path-alerts',
     },
     {
       title: 'Incident to PR',
@@ -117,6 +113,7 @@ export default function HomePage(): ReactElement {
       detail:
         'Enable remote probes temporarily to expose deeper runtime details on a running service without deploying new debugging code.',
       icon: Radar,
+      promptId: 'remote-probes',
     },
   ];
 
@@ -199,7 +196,10 @@ export default function HomePage(): ReactElement {
               key={item.title}
               className="site-home-elevated rounded-lg border border-[var(--site-border)] bg-[var(--site-surface)] p-5"
             >
-              <item.icon className="size-8 text-[var(--site-accent)]" aria-hidden="true" />
+              <div className="flex items-start justify-between gap-4">
+                <item.icon className="size-8 text-[var(--site-accent)]" aria-hidden="true" />
+                {item.promptId ? <AgentAssistPromptDialog promptId={item.promptId} /> : null}
+              </div>
               <h3 className="mt-4 text-base font-semibold leading-6 text-[var(--site-text)]">
                 {item.title}
               </h3>

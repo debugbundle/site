@@ -1,6 +1,6 @@
 {
   "release": {
-    "coreVersion": "1.3.0"
+    "coreVersion": "1.4.0"
   },
   "apiEntries": [
     {
@@ -3050,6 +3050,12 @@
         "code": "no_active_subscription",
         "statusCodes": [
           "409"
+        ]
+      },
+      {
+        "code": "not_found",
+        "statusCodes": [
+          "404"
         ]
       },
       {

@@ -4,6 +4,10 @@ description: "Install the DebugBundle CLI, SDKs, browser relay, or self-hosted s
 icon: Wrench
 ---
 
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Starting from zero? Use [Quickstart](/docs/quickstart) first. This page is for installing individual DebugBundle components manually after you know which setup path you want.
+
 Install the CLI first, then add the SDK or ingestion path that matches your runtime.
 
 ## CLI
@@ -14,6 +18,10 @@ debugbundle --version
 ```
 
 The CLI runs setup, local processing, incident inspection, token management, cloud connection, and verification.
+
+<Callout type="info">
+  Installing the CLI is not the same as setting up a project. For first-time setup, run `debugbundle setup` and continue with the manual path in [Quickstart](/docs/quickstart).
+</Callout>
 
 ## SDKs
 

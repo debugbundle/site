@@ -66,7 +66,7 @@ async function renderHighlightedBlock(lang: string, code: string): Promise<React
 export async function QuickInstallGuide({ className }: QuickInstallGuideProps = {}): Promise<ReactElement> {
   const cliBlock = await renderHighlightedBlock(
     'bash',
-    ['npm install -g @debugbundle/cli', 'debugbundle --version'].join('\n'),
+    ['npm install -g @debugbundle/cli', 'debugbundle --version', ' ', 'debugbundle setup'].join('\n'),
   );
 
   const sdkGuideDefinitions: RuntimeGuideDefinition[] = [
@@ -431,8 +431,8 @@ export async function QuickInstallGuide({ className }: QuickInstallGuideProps = 
             Choose the agent path, or install the CLI and integration manually.
           </p>
         </div>
-        <Link className={sectionLinkClassName} href="/docs/installation/" style={{ outlineColor: 'var(--site-focus)' }}>
-          Full installation guide
+        <Link className={sectionLinkClassName} href="/docs/quickstart/" style={{ outlineColor: 'var(--site-focus)' }}>
+          Set up DebugBundle
           <ArrowRight className="size-4" aria-hidden="true" />
         </Link>
       </div>
@@ -455,7 +455,11 @@ export async function QuickInstallGuide({ className }: QuickInstallGuideProps = 
         </div>
         {cliBlock}
         <p className="text-sm leading-7 text-[var(--site-text-muted)]">
-          The CLI runs setup, local processing, incident inspection, token management, cloud connection, and verification.
+          Install the CLI, confirm it is available, then scaffold the project. Follow{' '}
+          <Link className={linkClassName} href="/docs/quickstart/">
+            Quickstart
+          </Link>{' '}
+          for the full setup flow.
         </p>
       </div>
 
