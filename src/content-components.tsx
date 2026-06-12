@@ -11,6 +11,7 @@ import {
   WorkflowDiagram,
   WorkflowStep,
 } from '@/components/content-blocks';
+import { normalizeSiteHref } from '@/seo';
 
 type MdxImageResult = ReturnType<(typeof defaultMdxComponents)['img']>;
 type TabsProps = ComponentProps<typeof FumadocsTabs>;
@@ -48,9 +49,16 @@ function Tab({ className, ...props }: TabProps): ReactElement {
 }
 
 export function createPageMdxComponents<C extends LoaderConfig>(source: LoaderOutput<C>, page: Page): PageMdxComponents {
+  const RelativeLink = createRelativeLink(source, page);
+
   return {
     ...defaultMdxComponents,
-    a: createRelativeLink(source, page),
+    a: ((props) => (
+      <RelativeLink
+        {...props}
+        href={typeof props.href === 'string' ? normalizeSiteHref(props.href) : props.href}
+      />
+    )) as PageMdxComponents['a'],
     img: MdxImage,
     Notice,
     SurfaceCard,

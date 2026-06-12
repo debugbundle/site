@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "path": "/llms.txt",
+      "headers": {
+        "X-Robots-Tag": "noindex, nofollow, noarchive"
+      }
+    },
+    {
+      "path": "/openapi.json",
+      "headers": {
+        "X-Robots-Tag": "noindex, nofollow, noarchive"
+      }
+    },
+    {
+      "path": "/schemas/*",
+      "headers": {
+        "X-Robots-Tag": "noindex, nofollow, noarchive"
+      }
+    },
+    {
+      "path": "/examples/*",
+      "headers": {
+        "X-Robots-Tag": "noindex, nofollow, noarchive"
+      }
+    },
+    {
+      "path": "/reference-data.json",
+      "headers": {
+        "X-Robots-Tag": "noindex, nofollow, noarchive"
+      }
+    },
+    {
+      "path": "/search-index.json",
+      "headers": {
+        "X-Robots-Tag": "noindex, nofollow, noarchive"
+      }
+    }
+  ]
+}

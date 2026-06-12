@@ -7,6 +7,7 @@
     "package.json",
     "pnpm-lock.yaml",
     "README.md",
+    "headers-manifest.json",
     "LICENSE",
     "SECURITY.md",
     "CHANGELOG.md",

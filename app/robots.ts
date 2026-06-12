@@ -6,10 +6,13 @@ const siteDomain = 'https://debugbundle.com';
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: {
-      userAgent: '*',
-      allow: '/',
-    },
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: ['/v1/', '/*.ndjson'],
+      },
+    ],
     sitemap: `${siteDomain}/sitemap.xml`,
     host: siteDomain,
   };

@@ -22,6 +22,29 @@ function ensureTrailingSlash(path: string): string {
   return path.endsWith('/') ? path : `${path}/`;
 }
 
+export function normalizeSiteHref(href: string): string {
+  if (
+    href.length === 0 ||
+    href.startsWith('#') ||
+    href.startsWith('mailto:') ||
+    href.startsWith('tel:') ||
+    /^[a-zA-Z][a-zA-Z\d+.-]*:/.test(href) ||
+    !href.startsWith('/') ||
+    href.startsWith('/v1/')
+  ) {
+    return href;
+  }
+
+  const hashIndex = href.indexOf('#');
+  const hash = hashIndex === -1 ? '' : href.slice(hashIndex);
+  const hrefWithoutHash = hashIndex === -1 ? href : href.slice(0, hashIndex);
+  const queryIndex = hrefWithoutHash.indexOf('?');
+  const query = queryIndex === -1 ? '' : hrefWithoutHash.slice(queryIndex);
+  const pathname = queryIndex === -1 ? hrefWithoutHash : hrefWithoutHash.slice(0, queryIndex);
+
+  return `${ensureTrailingSlash(pathname)}${query}${hash}`;
+}
+
 export function absoluteSiteUrl(path: string): string {
   return new URL(ensureTrailingSlash(path), siteConfig.domain).toString();
 }

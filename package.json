@@ -20,7 +20,8 @@
   "scripts": {
     "dev": "next dev",
     "generate:artifacts": "node --import tsx ./scripts/generate-public-artifacts.ts",
-    "build": "pnpm run generate:artifacts && next build && node ./scripts/sanitize-next-env.mjs",
+    "generate:headers-manifest": "node --import tsx ./scripts/generate-headers-manifest.ts",
+    "build": "pnpm run generate:artifacts && pnpm run generate:headers-manifest && next build && node ./scripts/sanitize-next-env.mjs",
     "start": "next start",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },

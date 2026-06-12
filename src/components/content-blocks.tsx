@@ -3,6 +3,8 @@ import Link from 'next/link';
 import type { LucideIcon } from 'lucide-react';
 import { ArrowRight } from 'lucide-react';
 
+import { normalizeSiteHref } from '@/seo';
+
 export function SectionTitle({
   eyebrow,
   title,
@@ -74,7 +76,7 @@ export function SurfaceCard({
 
   if (href) {
     return (
-      <Link className={surfaceClassName} href={href}>
+      <Link className={surfaceClassName} href={normalizeSiteHref(href)}>
         {content}
       </Link>
     );

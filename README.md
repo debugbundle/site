@@ -8,7 +8,9 @@ This directory is staged as the future root of [https://github.com/debugbundle/s
 
 The rendered docs consume vendored generated artifacts checked into `public/`, including OpenAPI output, reference data, `llms.txt`, and published schema/example JSON.
 
-Those vendored generated artifacts are refreshed from the core product repo before cutover. The standalone site repo only regenerates the local search index during `pnpm build`.
+Deploy-time crawler headers live in the repo-root `headers-manifest.json`. Static hosts should apply those header rules so machine-readable artifacts remain publicly fetchable while returning `X-Robots-Tag: noindex, nofollow, noarchive`.
+
+Those vendored generated artifacts are refreshed from the core product repo before cutover. The standalone site repo regenerates the local search index and the deploy-time headers manifest during `pnpm build`.
 
 ## Development
 
