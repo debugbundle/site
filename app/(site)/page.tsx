@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
 import type { LucideIcon } from 'lucide-react';
-import { Bot, BellRing, BookOpen, Braces, FileJson, Lightbulb, Radar, RotateCcw, ShieldCheck, GitPullRequestArrow, SquareTerminal, Terminal, Workflow, Siren } from 'lucide-react';
+import { Bot, BellRing, BookOpen, Braces, FileJson, HeartPulse, Lightbulb, Radar, RotateCcw, ShieldCheck, GitPullRequestArrow, SquareTerminal, Workflow, Siren } from 'lucide-react';
 
 import { AgentAssistPromptDialog } from '@/components/agent-assist-prompt-dialog';
 import { SurfaceCard } from '@/components/content-blocks';
@@ -103,10 +103,11 @@ export default function HomePage(): ReactElement {
       promptId: 'critical-path-alerts',
     },
     {
-      title: 'Incident to PR',
+      title: 'Hosted health checks',
       detail:
-        'Send bundles through webhooks, API, CLI, or MCP so an agent can inspect the incident, reason over the codebase, and open a proposed fix.',
-      icon: GitPullRequestArrow,
+        'Monitor public endpoints from DebugBundle infrastructure and open normal incidents when they stay unreachable.',
+      icon: HeartPulse,
+      promptId: 'availability-checks',
     },
     {
       title: 'Remote probes on demand',
@@ -114,6 +115,12 @@ export default function HomePage(): ReactElement {
         'Enable remote probes temporarily to expose deeper runtime details on a running service without deploying new debugging code.',
       icon: Radar,
       promptId: 'remote-probes',
+    },
+    {
+      title: 'Incident to PR',
+      detail:
+        'Send bundles through webhooks, API, CLI, or MCP so an agent can inspect the incident, reason over the codebase, and open a proposed fix.',
+      icon: GitPullRequestArrow,
     },
   ];
 

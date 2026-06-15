@@ -1,6 +1,6 @@
 {
   "release": {
-    "coreVersion": "1.4.0"
+    "coreVersion": "1.5.0"
   },
   "apiEntries": [
     {
@@ -667,6 +667,110 @@
       "summary": "Delete a project",
       "tags": [
         "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/availability-checks",
+      "operationId": "listAvailabilityChecks",
+      "summary": "List hosted health checks for a project",
+      "tags": [
+        "Health"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/projects/{id}/availability-checks",
+      "operationId": "createAvailabilityCheck",
+      "summary": "Create a hosted health check",
+      "tags": [
+        "Health"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/availability-checks/{checkId}",
+      "operationId": "getAvailabilityCheck",
+      "summary": "Get one hosted health check",
+      "tags": [
+        "Health"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/projects/{id}/availability-checks/{checkId}",
+      "operationId": "updateAvailabilityCheck",
+      "summary": "Update a hosted health check",
+      "tags": [
+        "Health"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/projects/{id}/availability-checks/{checkId}",
+      "operationId": "deleteAvailabilityCheck",
+      "summary": "Delete a hosted health check",
+      "tags": [
+        "Health"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/availability-checks/{checkId}/daily-rollups",
+      "operationId": "listAvailabilityCheckDailyRollups",
+      "summary": "List retained per-day health-check history",
+      "tags": [
+        "Health"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/availability-checks/{checkId}/results",
+      "operationId": "listAvailabilityCheckResults",
+      "summary": "List retained health-check execution results",
+      "tags": [
+        "Health"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/projects/{id}/availability-checks/test",
+      "operationId": "testAvailabilityCheck",
+      "summary": "Run a side-effect-free hosted health-check test",
+      "tags": [
+        "Health"
       ],
       "auth": [
         "Browser session",
@@ -1686,6 +1790,46 @@
       "group": "probe"
     },
     {
+      "commandPath": "health checks list",
+      "usage": "debugbundle health checks list --project-id <id> [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "health"
+    },
+    {
+      "commandPath": "health checks get",
+      "usage": "debugbundle health checks get <check-id> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "health"
+    },
+    {
+      "commandPath": "health checks create",
+      "usage": "debugbundle health checks create --project-id <id> --name <name> --url <url> --interval-seconds <n> [--method <GET|HEAD>] [--expected-status-min <code>] [--expected-status-max <code>] [--timeout-ms <n>] [--failure-threshold <n>] [--recovery-threshold <n>] [--environment <name>] [--service <name|null>] [--enabled <true|false>] [--auth-file <path>] [--json]",
+      "group": "health"
+    },
+    {
+      "commandPath": "health checks update",
+      "usage": "debugbundle health checks update <check-id> --project-id <id> [--name <name>] [--url <url>] [--method <GET|HEAD>] [--expected-status-min <code>] [--expected-status-max <code>] [--timeout-ms <n>] [--interval-seconds <n>] [--failure-threshold <n>] [--recovery-threshold <n>] [--environment <name>] [--service <name|null>] [--enabled <true|false>] [--auth-file <path>] [--json]",
+      "group": "health"
+    },
+    {
+      "commandPath": "health checks delete",
+      "usage": "debugbundle health checks delete <check-id> --project-id <id> [--auth-file <path>] [--json]",
+      "group": "health"
+    },
+    {
+      "commandPath": "health checks test",
+      "usage": "debugbundle health checks test --project-id <id> --url <url> [--method <GET|HEAD>] [--expected-status-min <code>] [--expected-status-max <code>] [--timeout-ms <n>] [--auth-file <path>] [--json]",
+      "group": "health"
+    },
+    {
+      "commandPath": "health checks results",
+      "usage": "debugbundle health checks results <check-id> --project-id <id> [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "health"
+    },
+    {
+      "commandPath": "health checks daily-rollups",
+      "usage": "debugbundle health checks daily-rollups <check-id> --project-id <id> [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "health"
+    },
+    {
       "commandPath": "project members list",
       "usage": "debugbundle project members list --project-id <id> [--auth-file <path>] [--json]",
       "group": "project"
@@ -2635,6 +2779,127 @@
             "projectId"
           ],
           "optionalArguments": []
+        }
+      ]
+    },
+    {
+      "group": "health_checks",
+      "label": "Health Checks",
+      "tools": [
+        {
+          "name": "create_health_check",
+          "description": "Create a hosted health check for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "intervalSeconds",
+            "name",
+            "projectId",
+            "url"
+          ],
+          "optionalArguments": [
+            "enabled",
+            "environment",
+            "expectedStatusMax",
+            "expectedStatusMin",
+            "failureThreshold",
+            "method",
+            "recoveryThreshold",
+            "serviceName",
+            "timeoutMs"
+          ]
+        },
+        {
+          "name": "delete_health_check",
+          "description": "Delete a hosted health check.",
+          "requiredArguments": [
+            "bearerToken",
+            "checkId",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "get_health_check",
+          "description": "Get one hosted health check by id.",
+          "requiredArguments": [
+            "bearerToken",
+            "checkId",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_health_check_daily_rollups",
+          "description": "List retained per-day history for one hosted health check.",
+          "requiredArguments": [
+            "bearerToken",
+            "checkId",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "limit"
+          ]
+        },
+        {
+          "name": "list_health_check_results",
+          "description": "List recent execution results for one hosted health check.",
+          "requiredArguments": [
+            "bearerToken",
+            "checkId",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "limit"
+          ]
+        },
+        {
+          "name": "list_health_checks",
+          "description": "List hosted health checks for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "limit"
+          ]
+        },
+        {
+          "name": "test_health_check",
+          "description": "Run a side-effect-free test for a hosted health-check target.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId",
+            "url"
+          ],
+          "optionalArguments": [
+            "expectedStatusMax",
+            "expectedStatusMin",
+            "method",
+            "timeoutMs"
+          ]
+        },
+        {
+          "name": "update_health_check",
+          "description": "Update a hosted health check.",
+          "requiredArguments": [
+            "bearerToken",
+            "checkId",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "enabled",
+            "environment",
+            "expectedStatusMax",
+            "expectedStatusMin",
+            "failureThreshold",
+            "intervalSeconds",
+            "method",
+            "name",
+            "recoveryThreshold",
+            "serviceName",
+            "timeoutMs",
+            "url"
+          ]
         }
       ]
     },

@@ -464,6 +464,114 @@ Delete a project and all associated data.
 
 ---
 
+## Health Checks
+
+### list_health_checks
+
+List hosted health checks for a project, including current plan limits.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project that owns the hosted health checks. |
+| `limit` | `number` | Optional maximum number of checks to return. |
+
+### get_health_check
+
+Get one hosted health check by id.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project that owns the check. |
+| `checkId` | `string` | **Required.** Health check ID. |
+
+### create_health_check
+
+Create a hosted health check for a public HTTP endpoint.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project that owns the check. |
+| `name` | `string` | **Required.** Human-readable check name. |
+| `url` | `string` | **Required.** External `http` or `https` URL. |
+| `intervalSeconds` | `number` | **Required.** Execution interval in seconds, subject to plan minimums. |
+| `method` | `string` | Optional `GET` or `HEAD`. Defaults to `GET`. |
+| `expectedStatusMin` | `number` | Optional lowest successful status. Defaults to `200`. |
+| `expectedStatusMax` | `number` | Optional highest successful status. Defaults to `399`. |
+| `timeoutMs` | `number` | Optional request timeout in milliseconds. |
+| `failureThreshold` | `number` | Optional consecutive failures required to open or regress an incident. |
+| `recoveryThreshold` | `number` | Optional consecutive successes required to recover. |
+| `environment` | `string` | Optional environment label. |
+| `serviceName` | `string \| null` | Optional service label; pass `null` to clear on update. |
+| `enabled` | `boolean` | Optional enabled state. Disabled checks remain visible but do not execute. |
+
+### update_health_check
+
+Update a hosted health check. Use this to change thresholds, status expectations,
+labels, or enabled state.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project that owns the check. |
+| `checkId` | `string` | **Required.** Health check ID. |
+| `name` | `string` | Optional new name. |
+| `url` | `string` | Optional new target URL. |
+| `intervalSeconds` | `number` | Optional execution interval in seconds. |
+| `method` | `string` | Optional `GET` or `HEAD`. |
+| `expectedStatusMin` | `number` | Optional lowest successful status. |
+| `expectedStatusMax` | `number` | Optional highest successful status. |
+| `timeoutMs` | `number` | Optional request timeout in milliseconds. |
+| `failureThreshold` | `number` | Optional consecutive failures required to open or regress an incident. |
+| `recoveryThreshold` | `number` | Optional consecutive successes required to recover. |
+| `environment` | `string` | Optional environment label. |
+| `serviceName` | `string \| null` | Optional service label; pass `null` to clear. |
+| `enabled` | `boolean` | Optional enabled state. |
+
+### delete_health_check
+
+Delete a hosted health check.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project that owns the check. |
+| `checkId` | `string` | **Required.** Health check ID. |
+
+### test_health_check
+
+Run a side-effect-free target test using the same validation and guarded request
+execution as saved checks. This does not create incidents, retained result rows, or
+rollups.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project used for authorization and plan context. |
+| `url` | `string` | **Required.** External `http` or `https` URL to test. |
+| `method` | `string` | Optional `GET` or `HEAD`. Defaults to `GET`. |
+| `expectedStatusMin` | `number` | Optional lowest successful status. |
+| `expectedStatusMax` | `number` | Optional highest successful status. |
+| `timeoutMs` | `number` | Optional request timeout in milliseconds. |
+
+### list_health_check_results
+
+List recent execution results for one hosted health check.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project that owns the check. |
+| `checkId` | `string` | **Required.** Health check ID. |
+| `limit` | `number` | Optional maximum number of results to return. |
+
+### list_health_check_daily_rollups
+
+List retained per-day status history for one hosted health check.
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `projectId` | `string` | **Required.** Project that owns the check. |
+| `checkId` | `string` | **Required.** Health check ID. |
+| `limit` | `number` | Optional maximum number of rollups to return. |
+
+---
+
 ## Probes
 
 ### activate_probe

@@ -37,6 +37,9 @@
       "name": "Projects"
     },
     {
+      "name": "Health"
+    },
+    {
       "name": "Slack"
     },
     {
@@ -3666,6 +3669,728 @@
           },
           "404": {
             "description": "Project was not found or projects are unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/availability-checks": {
+      "get": {
+        "operationId": "listAvailabilityChecks",
+        "summary": "List hosted health checks for a project",
+        "tags": [
+          "Health"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hosted health checks plus project plan limits.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityCheckListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id or query parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project was not found or availability checks are unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createAvailabilityCheck",
+        "summary": "Create a hosted health check",
+        "tags": [
+          "Health"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilityCheckCreateBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Hosted health check created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityCheckMutationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id, payload, or blocked target.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner or admin project access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project was not found or availability checks are unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Tier count or minimum-interval limit was reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/availability-checks/{checkId}": {
+      "get": {
+        "operationId": "getAvailabilityCheck",
+        "summary": "Get one hosted health check",
+        "tags": [
+          "Health"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "checkId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hosted health check detail plus project plan limits.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityCheckResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id or check id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Health check was not found or availability checks are unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateAvailabilityCheck",
+        "summary": "Update a hosted health check",
+        "tags": [
+          "Health"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "checkId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilityCheckUpdateBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Hosted health check updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityCheckMutationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id, check id, payload, or blocked target.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner or admin project access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Health check was not found or availability checks are unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Minimum-interval limit was reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteAvailabilityCheck",
+        "summary": "Delete a hosted health check",
+        "tags": [
+          "Health"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "checkId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hosted health check deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityCheckDeleteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id or check id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner or admin project access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Health check was not found or availability checks are unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/availability-checks/{checkId}/results": {
+      "get": {
+        "operationId": "listAvailabilityCheckResults",
+        "summary": "List retained health-check execution results",
+        "tags": [
+          "Health"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "checkId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recent retained execution results.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityCheckResultsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id, check id, or query parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Health check was not found or availability checks are unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/availability-checks/{checkId}/daily-rollups": {
+      "get": {
+        "operationId": "listAvailabilityCheckDailyRollups",
+        "summary": "List retained per-day health-check history",
+        "tags": [
+          "Health"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "checkId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Retained daily health history.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityCheckDailyRollupsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id, check id, or query parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Health check was not found or availability checks are unavailable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/projects/{id}/availability-checks/test": {
+      "post": {
+        "operationId": "testAvailabilityCheck",
+        "summary": "Run a side-effect-free hosted health-check test",
+        "tags": [
+          "Health"
+        ],
+        "security": [
+          {
+            "browserSession": []
+          },
+          {
+            "memberBearerToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AvailabilityCheckTestBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Side-effect-free health-check test result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityCheckTestResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid project id, payload, or blocked target.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Owner or admin project access is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Project was not found or availability checks are unavailable.",
             "content": {
               "application/json": {
                 "schema": {
@@ -14541,6 +15266,1275 @@
         },
         "required": [
           "project"
+        ],
+        "additionalProperties": false
+      },
+      "AvailabilityCheckListResponse": {
+        "type": "object",
+        "properties": {
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "check_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "project_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "method": {
+                  "type": "string",
+                  "enum": [
+                    "GET",
+                    "HEAD"
+                  ]
+                },
+                "expected_status_min": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 599
+                },
+                "expected_status_max": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 599
+                },
+                "timeout_ms": {
+                  "type": "integer",
+                  "minimum": 500,
+                  "maximum": 5000
+                },
+                "interval_seconds": {
+                  "type": "integer",
+                  "minimum": 30
+                },
+                "failure_threshold": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "recovery_threshold": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "environment": {
+                  "type": "string"
+                },
+                "service_name": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "passing",
+                    "failing",
+                    "paused"
+                  ]
+                },
+                "paused_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "organization_plan": {
+                  "type": "string",
+                  "enum": [
+                    "free",
+                    "solo",
+                    "team"
+                  ]
+                },
+                "consecutive_failures": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "consecutive_successes": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "linked_incident_id": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "last_checked_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "next_check_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "last_result_status": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "success",
+                        "http_status_mismatch",
+                        "timeout",
+                        "dns_error",
+                        "tls_error",
+                        "connection_error",
+                        "redirect_blocked",
+                        "security_blocked",
+                        "internal_error"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "last_result_http_status": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "last_result_error_kind": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "last_result_error_message": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "last_result_duration_ms": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "check_id",
+                "project_id",
+                "name",
+                "url",
+                "method",
+                "expected_status_min",
+                "expected_status_max",
+                "timeout_ms",
+                "interval_seconds",
+                "failure_threshold",
+                "recovery_threshold",
+                "environment",
+                "service_name",
+                "enabled",
+                "status",
+                "paused_reason",
+                "organization_plan",
+                "consecutive_failures",
+                "consecutive_successes",
+                "linked_incident_id",
+                "last_checked_at",
+                "next_check_at",
+                "last_result_status",
+                "last_result_http_status",
+                "last_result_error_kind",
+                "last_result_error_message",
+                "last_result_duration_ms",
+                "created_at",
+                "updated_at"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "limits": {
+            "type": "object",
+            "properties": {
+              "max_checks_per_project": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "min_interval_seconds": {
+                "type": "integer",
+                "exclusiveMinimum": true,
+                "minimum": 0
+              }
+            },
+            "required": [
+              "max_checks_per_project",
+              "min_interval_seconds"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "checks",
+          "limits"
+        ],
+        "additionalProperties": false
+      },
+      "AvailabilityCheckCreateBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "GET",
+              "HEAD"
+            ],
+            "default": "GET"
+          },
+          "expected_status_min": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599,
+            "default": 200
+          },
+          "expected_status_max": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599,
+            "default": 399
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 5000,
+            "default": 5000
+          },
+          "interval_seconds": {
+            "type": "integer",
+            "minimum": 30,
+            "maximum": 86400
+          },
+          "failure_threshold": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 3
+          },
+          "recovery_threshold": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 2
+          },
+          "environment": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "service_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "url",
+          "interval_seconds"
+        ],
+        "additionalProperties": false
+      },
+      "AvailabilityCheckMutationResponse": {
+        "type": "object",
+        "properties": {
+          "check": {
+            "type": "object",
+            "properties": {
+              "check_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "project_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "GET",
+                  "HEAD"
+                ]
+              },
+              "expected_status_min": {
+                "type": "integer",
+                "minimum": 100,
+                "maximum": 599
+              },
+              "expected_status_max": {
+                "type": "integer",
+                "minimum": 100,
+                "maximum": 599
+              },
+              "timeout_ms": {
+                "type": "integer",
+                "minimum": 500,
+                "maximum": 5000
+              },
+              "interval_seconds": {
+                "type": "integer",
+                "minimum": 30
+              },
+              "failure_threshold": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "recovery_threshold": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "environment": {
+                "type": "string"
+              },
+              "service_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "unknown",
+                  "passing",
+                  "failing",
+                  "paused"
+                ]
+              },
+              "paused_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "organization_plan": {
+                "type": "string",
+                "enum": [
+                  "free",
+                  "solo",
+                  "team"
+                ]
+              },
+              "consecutive_failures": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "consecutive_successes": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "linked_incident_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "last_checked_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "next_check_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "last_result_status": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "success",
+                      "http_status_mismatch",
+                      "timeout",
+                      "dns_error",
+                      "tls_error",
+                      "connection_error",
+                      "redirect_blocked",
+                      "security_blocked",
+                      "internal_error"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "last_result_http_status": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "last_result_error_kind": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "last_result_error_message": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "last_result_duration_ms": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "check_id",
+              "project_id",
+              "name",
+              "url",
+              "method",
+              "expected_status_min",
+              "expected_status_max",
+              "timeout_ms",
+              "interval_seconds",
+              "failure_threshold",
+              "recovery_threshold",
+              "environment",
+              "service_name",
+              "enabled",
+              "status",
+              "paused_reason",
+              "organization_plan",
+              "consecutive_failures",
+              "consecutive_successes",
+              "linked_incident_id",
+              "last_checked_at",
+              "next_check_at",
+              "last_result_status",
+              "last_result_http_status",
+              "last_result_error_kind",
+              "last_result_error_message",
+              "last_result_duration_ms",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "check"
+        ],
+        "additionalProperties": false
+      },
+      "AvailabilityCheckResponse": {
+        "type": "object",
+        "properties": {
+          "check": {
+            "type": "object",
+            "properties": {
+              "check_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "project_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "name": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "GET",
+                  "HEAD"
+                ]
+              },
+              "expected_status_min": {
+                "type": "integer",
+                "minimum": 100,
+                "maximum": 599
+              },
+              "expected_status_max": {
+                "type": "integer",
+                "minimum": 100,
+                "maximum": 599
+              },
+              "timeout_ms": {
+                "type": "integer",
+                "minimum": 500,
+                "maximum": 5000
+              },
+              "interval_seconds": {
+                "type": "integer",
+                "minimum": 30
+              },
+              "failure_threshold": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "recovery_threshold": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10
+              },
+              "environment": {
+                "type": "string"
+              },
+              "service_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "unknown",
+                  "passing",
+                  "failing",
+                  "paused"
+                ]
+              },
+              "paused_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "organization_plan": {
+                "type": "string",
+                "enum": [
+                  "free",
+                  "solo",
+                  "team"
+                ]
+              },
+              "consecutive_failures": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "consecutive_successes": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "linked_incident_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "last_checked_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "next_check_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "last_result_status": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "success",
+                      "http_status_mismatch",
+                      "timeout",
+                      "dns_error",
+                      "tls_error",
+                      "connection_error",
+                      "redirect_blocked",
+                      "security_blocked",
+                      "internal_error"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "last_result_http_status": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "last_result_error_kind": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "last_result_error_message": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "last_result_duration_ms": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "check_id",
+              "project_id",
+              "name",
+              "url",
+              "method",
+              "expected_status_min",
+              "expected_status_max",
+              "timeout_ms",
+              "interval_seconds",
+              "failure_threshold",
+              "recovery_threshold",
+              "environment",
+              "service_name",
+              "enabled",
+              "status",
+              "paused_reason",
+              "organization_plan",
+              "consecutive_failures",
+              "consecutive_successes",
+              "linked_incident_id",
+              "last_checked_at",
+              "next_check_at",
+              "last_result_status",
+              "last_result_http_status",
+              "last_result_error_kind",
+              "last_result_error_message",
+              "last_result_duration_ms",
+              "created_at",
+              "updated_at"
+            ],
+            "additionalProperties": false
+          },
+          "limits": {
+            "type": "object",
+            "properties": {
+              "max_checks_per_project": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "min_interval_seconds": {
+                "type": "integer",
+                "exclusiveMinimum": true,
+                "minimum": 0
+              }
+            },
+            "required": [
+              "max_checks_per_project",
+              "min_interval_seconds"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "check",
+          "limits"
+        ],
+        "additionalProperties": false
+      },
+      "AvailabilityCheckUpdateBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "GET",
+              "HEAD"
+            ],
+            "default": "GET"
+          },
+          "expected_status_min": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599,
+            "default": 200
+          },
+          "expected_status_max": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599,
+            "default": 399
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 5000,
+            "default": 5000
+          },
+          "interval_seconds": {
+            "type": "integer",
+            "minimum": 30,
+            "maximum": 86400
+          },
+          "failure_threshold": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 3
+          },
+          "recovery_threshold": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 2
+          },
+          "environment": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "service_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AvailabilityCheckDeleteResponse": {
+        "type": "object",
+        "properties": {
+          "deleted": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "deleted"
+        ],
+        "additionalProperties": false
+      },
+      "AvailabilityCheckResultsResponse": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "result_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "check_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "project_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "started_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "completed_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "duration_ms": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "success",
+                    "http_status_mismatch",
+                    "timeout",
+                    "dns_error",
+                    "tls_error",
+                    "connection_error",
+                    "redirect_blocked",
+                    "security_blocked",
+                    "internal_error"
+                  ]
+                },
+                "http_status": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "error_kind": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "error_message": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "redirect_count": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "checked_url_host": {
+                  "type": "string"
+                },
+                "final_url": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "result_id",
+                "check_id",
+                "project_id",
+                "started_at",
+                "completed_at",
+                "duration_ms",
+                "status",
+                "http_status",
+                "error_kind",
+                "error_message",
+                "redirect_count",
+                "checked_url_host",
+                "final_url"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "results"
+        ],
+        "additionalProperties": false
+      },
+      "AvailabilityCheckDailyRollupsResponse": {
+        "type": "object",
+        "properties": {
+          "rollups": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "check_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "project_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "day": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "operational",
+                    "degraded",
+                    "down",
+                    "paused"
+                  ]
+                },
+                "total_checks": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "successful_checks": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "failed_checks": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "degraded_checks": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "avg_duration_ms": {
+                  "anyOf": [
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "first_checked_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "last_checked_at": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "downtime_seconds": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "incident_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              },
+              "required": [
+                "check_id",
+                "project_id",
+                "day",
+                "state",
+                "total_checks",
+                "successful_checks",
+                "failed_checks",
+                "degraded_checks",
+                "avg_duration_ms",
+                "first_checked_at",
+                "last_checked_at",
+                "downtime_seconds",
+                "incident_ids"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "rollups"
+        ],
+        "additionalProperties": false
+      },
+      "AvailabilityCheckTestBody": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "GET",
+              "HEAD"
+            ],
+            "default": "GET"
+          },
+          "expected_status_min": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599,
+            "default": 200
+          },
+          "expected_status_max": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599,
+            "default": 399
+          },
+          "timeout_ms": {
+            "type": "integer",
+            "minimum": 500,
+            "maximum": 5000,
+            "default": 5000
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "additionalProperties": false
+      },
+      "AvailabilityCheckTestResponse": {
+        "type": "object",
+        "properties": {
+          "normalized_url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "result": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "success",
+                  "http_status_mismatch",
+                  "timeout",
+                  "dns_error",
+                  "tls_error",
+                  "connection_error",
+                  "redirect_blocked",
+                  "security_blocked",
+                  "internal_error"
+                ]
+              },
+              "http_status": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "duration_ms": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "error_kind": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "error_message": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "checked_url_host": {
+                "type": "string"
+              },
+              "checked_url_path": {
+                "type": "string"
+              },
+              "checked_url_query": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "final_url": {
+                "type": "string",
+                "format": "uri"
+              },
+              "redirect_count": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "status",
+              "http_status",
+              "duration_ms",
+              "error_kind",
+              "error_message",
+              "checked_url_host",
+              "checked_url_path",
+              "checked_url_query",
+              "final_url",
+              "redirect_count"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "normalized_url",
+          "result"
         ],
         "additionalProperties": false
       },

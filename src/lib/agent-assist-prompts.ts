@@ -1,4 +1,4 @@
-export type AgentAssistPromptId = 'critical-path-alerts' | 'remote-probes';
+export type AgentAssistPromptId = 'critical-path-alerts' | 'availability-checks' | 'remote-probes';
 
 type AgentAssistPromptDefinition = {
   title: string;
@@ -29,6 +29,24 @@ const agentAssistPromptDefinitions: Record<AgentAssistPromptId, AgentAssistPromp
       'If safe, implement the smallest useful capture or alert changes, preserve runtime behavior, and verify with one representative intentional failure plus the command or UI path to inspect the resulting incident or alert.',
     ].join('\n'),
   },
+  'availability-checks': {
+    title: 'Hosted health checks',
+    teaser:
+      'Use an agent to choose the safest public endpoints to monitor and wire availability failures into the normal incident workflow.',
+    dialogDescription:
+      'Use this after cloud setup works. The prompt asks an agent to inspect the app, recommend public health-check targets, verify them safely, and configure checks through API, CLI, or MCP.',
+    docsHref: '/docs/availability-checks',
+    docsLabel: 'Open Availability Checks docs',
+    prompt: [
+      'Review this repository and prepare a safe hosted availability-check setup for the production-facing services.',
+      'Read the relevant DebugBundle docs first: https://debugbundle.com/docs/availability-checks, and https://debugbundle.com/docs/alerts.',
+      'Identify the public endpoints that best represent user-visible availability, such as /health, /ready, a lightweight landing page, or a status endpoint. Avoid private hosts, localhost, metadata service addresses, internal-only URLs, endpoints with credentials in the URL, and endpoints that mutate state.',
+      'For each recommended check, propose name, URL, method, expected status range, timeout, interval, failure threshold, recovery threshold, environment, and service label. Respect plan limits.',
+      'Use a side-effect-free test first through `debugbundle health checks test` or MCP `test_health_check`. Do not create a saved check until the target and status expectations are clear.',
+      'Explain how availability incidents will flow through normal DebugBundle incidents, bundles, alerts, webhooks, CLI, MCP, and dashboard views. If alerting is needed, recommend a small high-signal alert rule rather than noisy broad paging.',
+      'If safe and authorized, configure the smallest useful set of checks, then list checks and recent results to verify the setup. Leave disabled or paused checks visible and explain what must change before they execute.',
+    ].join('\n'),
+  },
   'remote-probes': {
     title: 'Remote probes on demand',
     teaser:
@@ -50,7 +68,7 @@ const agentAssistPromptDefinitions: Record<AgentAssistPromptId, AgentAssistPromp
   },
 };
 
-export const agentAssistPromptIds: AgentAssistPromptId[] = ['critical-path-alerts', 'remote-probes'];
+export const agentAssistPromptIds: AgentAssistPromptId[] = ['critical-path-alerts', 'availability-checks', 'remote-probes'];
 
 export function getAgentAssistPrompt(id: AgentAssistPromptId): AgentAssistPromptDefinition {
   return agentAssistPromptDefinitions[id];

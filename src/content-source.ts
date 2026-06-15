@@ -14,6 +14,7 @@ import * as docsAgentWorkflowsRecipesPage from '../content/docs/agent-workflows/
 import * as docsBillingPage from '../content/docs/billing.mdx';
 import * as docsCapturePolicy from '../content/docs/capture-policy.mdx';
 import * as docsAlertsPage from '../content/docs/alerts.mdx';
+import * as docsAvailabilityChecksPage from '../content/docs/availability-checks.mdx';
 import * as docsBundlesIndexPage from '../content/docs/bundles/index.mdx';
 import * as docsBundlesImprovementBundlesPage from '../content/docs/bundles/improvement-bundles.mdx';
 import * as docsBundlesSchemaPage from '../content/docs/bundles/schema.mdx';
@@ -126,6 +127,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
       'capture-policy',
       'self-hosting',
       '---Advanced Features---',
+      'availability-checks',
       'probes',
       '[GitBranch][GitHub Automation](/docs/agent-workflows/automation-recipes)',
       '---Security---',
@@ -208,6 +210,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './installation.mdx': docsInstallationPage,
   './quickstart.mdx': docsQuickstartPage,
   './alerts.mdx': docsAlertsPage,
+  './availability-checks.mdx': docsAvailabilityChecksPage,
   './billing.mdx': docsBillingPage,
   './changelog.mdx': docsChangelogPage,
   './llms-txt.mdx': docsLlmsTxtPage,

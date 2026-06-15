@@ -1,0 +1,175 @@
+---
+title: Availability Checks
+description: Monitor public HTTP endpoints from DebugBundle infrastructure and open normal incidents when they fail.
+icon: HeartPulse
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Availability checks are hosted `GET` or `HEAD` requests that DebugBundle runs
+against public HTTP endpoints. They are useful for answering a different question
+than SDK capture: is this external endpoint reachable from outside the service?
+
+When a check fails repeatedly, DebugBundle opens or regresses one normal incident
+for that check. The incident then flows through the same bundle generation, alert,
+webhook, dashboard, CLI, and MCP paths as application errors.
+
+<Callout type="info">
+  In the web app, availability checks live under the project **Health** tab. The
+  API, CLI, MCP, contracts, and docs use the more precise term availability checks
+  or hosted health checks.
+</Callout>
+
+## When To Use Availability Checks
+
+- Monitor public `/health`, `/ready`, status, or landing endpoints from outside your app.
+- Open a DebugBundle incident when an endpoint stays unreachable past a configured threshold.
+- Give agents one place to inspect endpoint status, retained results, incidents, bundles, alerts, and webhook evidence.
+- Keep external uptime signal separate from SDK-captured exceptions, logs, and request failures.
+
+Availability checks do not replace SDK capture. SDKs explain failures from inside
+the application. Availability checks detect when the outside world cannot reach a
+configured public endpoint.
+
+## How Availability Checks Work
+
+<WorkflowDiagram>
+  <WorkflowStep title="Configure">
+    Create a project-scoped hosted health check with URL, method, interval, timeout, thresholds, environment, and optional service label.
+  </WorkflowStep>
+  <WorkflowStep title="Execute">
+    DebugBundle workers claim due checks and run guarded external HTTP requests.
+  </WorkflowStep>
+  <WorkflowStep title="Record">
+    Each execution stores a recent raw result and contributes to per-day rollups.
+  </WorkflowStep>
+  <WorkflowStep title="Incident">
+    Consecutive failures open or regress one linked availability incident.
+  </WorkflowStep>
+  <WorkflowStep title="Recover">
+    Consecutive successes mark the check passing and auto-resolve the linked incident.
+  </WorkflowStep>
+</WorkflowDiagram>
+
+1. **Configure** — Owners or admins create a check from the Health tab, API, CLI, or MCP.
+2. **Validate** — DebugBundle validates the target and blocks unsafe outbound requests.
+3. **Execute** — The hosted worker sends `GET` or `HEAD` requests on the configured interval.
+4. **Record** — Recent execution results and daily rollups are retained for status history.
+5. **Incident** — When consecutive failures reach `failure_threshold`, DebugBundle opens or regresses one linked incident.
+6. **Recover** — When consecutive successes reach `recovery_threshold`, DebugBundle auto-resolves the linked incident.
+
+## Configuration
+
+| Field | Description | Default |
+|-------|-------------|---------|
+| `name` | Human-readable check name | Required |
+| `url` | External `http` or `https` target | Required |
+| `method` | HTTP method | `GET` |
+| `expected_status_min` | Lowest status treated as success | `200` |
+| `expected_status_max` | Highest status treated as success | `399` |
+| `timeout_ms` | Request timeout, between `500` and `5000` ms | `5000` |
+| `interval_seconds` | Execution interval, subject to plan minimums | Required |
+| `failure_threshold` | Consecutive failures needed to open or regress an incident | `3` |
+| `recovery_threshold` | Consecutive successes needed to recover | `2` |
+| `environment` | Project-scoped environment label | Project default behavior |
+| `service_name` | Optional service label for filtering and incident context | `null` |
+| `enabled` | Whether the saved check executes | `true` |
+
+Disabled checks stay saved and visible, but they do not execute until re-enabled.
+
+## Safety Rules
+
+Availability checks are hosted outbound requests, so DebugBundle applies SSRF guardrails
+before each request and redirect:
+
+- Only external `http` and `https` URLs are allowed.
+- Only ports `80` and `443` are allowed.
+- Embedded credentials, localhost, private hostnames, private and reserved IP ranges, metadata service addresses, and unsafe redirects are blocked.
+- Retained evidence, audit logs, synthetic events, and bundle context must not store raw query values or URL fragments from checked targets.
+
+Run `test` before saving a new target when you want to verify behavior without side
+effects.
+
+## Side-Effect-Free Tests
+
+The one-off test path runs the same target validation and request guardrails as saved
+checks, but it does not create incidents, write retained history rows, or advance
+check counters.
+
+```bash
+debugbundle health checks test \
+  --project-id proj_01HXYZ... \
+  --url https://app.example.com/health \
+  --method GET \
+  --json
+```
+
+Use test results to confirm status-code expectations, timeout behavior, and target
+reachability before creating or updating a saved check.
+
+## Tier Limits
+
+| Plan | Checks Per Project | Minimum Interval |
+|------|--------------------|------------------|
+| Free | 1 | 300 seconds |
+| Solo | 5 | 60 seconds |
+| Team | 25 | 30 seconds |
+
+If a project downgrades below its saved check count or interval allowance, existing
+checks remain readable. Checks that exceed the current plan's count or interval limits
+show a paused state and stop executing until the project becomes eligible again.
+
+## Retention
+
+DebugBundle keeps raw availability-check execution results and per-day rollups for
+at least 30 days. Retained rollups are designed to support a future project status
+history surface without requiring a schema redesign.
+
+## Managing Availability Checks
+
+| Interface | Reference |
+|-----------|-----------|
+| **Web app** | Project Health tab |
+| **API** | [API endpoint reference](/docs/v1/reference/api-endpoints) |
+| **CLI** | [CLI Cloud Workflow](/docs/cli/cloud-workflow#health-check-management) |
+| **MCP** | [MCP Tools](/docs/mcp/tools#health-checks) |
+
+Useful CLI commands:
+
+```bash
+debugbundle health checks list --project-id proj_01HXYZ... --json
+debugbundle health checks create --project-id proj_01HXYZ... --name "Primary app" --url https://app.example.com/health --interval-seconds 60 --json
+debugbundle health checks results <check-id> --project-id proj_01HXYZ... --json
+debugbundle health checks daily-rollups <check-id> --project-id proj_01HXYZ... --json
+```
+
+Useful MCP tools:
+
+| Tool | Use |
+|------|-----|
+| `list_health_checks` | Review saved checks and current plan limits |
+| `get_health_check` | Inspect one check |
+| `test_health_check` | Verify a target without creating history or incidents |
+| `create_health_check` | Create a saved check |
+| `update_health_check` | Change configuration or enable/disable execution |
+| `delete_health_check` | Remove a saved check |
+| `list_health_check_results` | Inspect recent raw executions |
+| `list_health_check_daily_rollups` | Inspect retained per-day history |
+
+## Agent Workflow
+
+When an agent investigates reachability, uptime, or endpoint-health issues, use this
+order:
+
+1. List checks for the affected project and confirm plan limits.
+2. Inspect recent results and daily rollups for the target check.
+3. Run a side-effect-free `test_health_check` or `debugbundle health checks test` when validating a target change.
+4. If the check opened an incident, fetch the normal DebugBundle incident context, bundle, and reproduction evidence.
+5. Resolve the incident only after the endpoint has recovered or the intentional verification incident has served its purpose.
+
+## Next Steps
+
+- [MCP Workflows](/docs/mcp/workflows#availability-check-investigation) — Agent pattern for endpoint health investigations
+- [Alerts](/docs/alerts) — Notify teams when availability incidents open or regress
+- [Webhooks](/docs/webhooks) — Deliver signed lifecycle events to automation
+- [Pricing](/docs/pricing) — Plan limits for hosted health checks

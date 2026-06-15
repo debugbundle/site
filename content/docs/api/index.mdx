@@ -1,6 +1,6 @@
 ---
 title: "API"
-description: "RESTful API for event ingestion, incident retrieval, webhook management, token management, and more. Authenticated via project tokens, member tokens, or browser sessions."
+description: "RESTful API for event ingestion, incident retrieval, hosted health checks, webhook management, token management, and more. Authenticated via project tokens, member tokens, or browser sessions."
 icon: Plug
 ---
 
@@ -168,6 +168,22 @@ Management endpoints (incidents, webhooks, tokens) are not rate-limited in the c
 | `POST` | `/v1/alerts` | Member token | Create alert rule |
 | `PATCH` | `/v1/alerts/:id` | Member token | Update alert rule |
 | `DELETE` | `/v1/alerts/:id` | Member token | Delete alert rule |
+
+### Availability Checks
+
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/v1/projects/:id/availability-checks` | Browser session or member token | List hosted health checks and plan limits |
+| `POST` | `/v1/projects/:id/availability-checks` | Browser session or member token (owner/admin) | Create a hosted health check |
+| `GET` | `/v1/projects/:id/availability-checks/:checkId` | Browser session or member token | Get one hosted health check |
+| `PATCH` | `/v1/projects/:id/availability-checks/:checkId` | Browser session or member token (owner/admin) | Update a hosted health check |
+| `DELETE` | `/v1/projects/:id/availability-checks/:checkId` | Browser session or member token (owner/admin) | Delete a hosted health check |
+| `POST` | `/v1/projects/:id/availability-checks/test` | Browser session or member token (owner/admin) | Run a side-effect-free target test |
+| `GET` | `/v1/projects/:id/availability-checks/:checkId/results` | Browser session or member token | List recent raw execution results |
+| `GET` | `/v1/projects/:id/availability-checks/:checkId/daily-rollups` | Browser session or member token | List retained per-day status history |
+
+See [Availability Checks](/docs/availability-checks) for behavior, tier limits,
+SSRF guardrails, and CLI/MCP parity.
 
 ### Tokens
 

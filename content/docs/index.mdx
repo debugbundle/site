@@ -10,6 +10,7 @@ import {
   CircleAlert,
   FileCode,
   GitBranch,
+  HeartPulse,
   Lightbulb,
   Package,
   Rocket,
@@ -47,7 +48,7 @@ import {
     Setup, local processing, inspection, log ingestion, cloud connection, and automation output.
   </SurfaceCard>
   <SurfaceCard title="API" href="/docs/api" action="View API" icon={Braces}>
-    Ingestion, retrieval, webhooks, alerts, projects, probes, members, and billing endpoints.
+    Ingestion, retrieval, webhooks, alerts, availability checks, projects, probes, members, and billing endpoints.
   </SurfaceCard>
   <SurfaceCard title="Bundles & Incidents" href="/docs/bundles" action="Explore" icon={Package}>
     Failure bundles, improvement bundles, grouping, reproduction artifacts, and schema details.
@@ -56,10 +57,24 @@ import {
     Send signed lifecycle events and alert teams through email, Slack, Discord, or webhooks.
   </SurfaceCard>
   <SurfaceCard title="MCP" href="/docs/mcp" action="Connect agents" icon={Bot}>
-    Give AI coding agents tool access to incidents, bundles, probes, alerts, and project operations.
+    Give AI coding agents tool access to incidents, bundles, health checks, probes, alerts, and project operations.
   </SurfaceCard>
   <SurfaceCard title="Security" href="/docs/security" action="Review" icon={Shield}>
     Redaction, token scope separation, webhook signatures, retention, and privacy controls.
+  </SurfaceCard>
+</SurfaceGrid>
+
+## Advanced Features
+
+<SurfaceGrid>
+  <SurfaceCard title="Availability Checks" href="/docs/availability-checks" action="Monitor endpoints" icon={HeartPulse}>
+    Run hosted health checks against public endpoints and open normal DebugBundle incidents when they fail.
+  </SurfaceCard>
+  <SurfaceCard title="Probes" href="/docs/probes" action="Add runtime context" icon={Workflow}>
+    Request additional diagnostic data from SDKs without code changes or redeployment.
+  </SurfaceCard>
+  <SurfaceCard title="Capture Policy" href="/docs/capture-policy" action="Tune signal" icon={Wrench}>
+    Control which events become incidents, which remain context, and how repeated operational noise is handled.
   </SurfaceCard>
 </SurfaceGrid>
 

@@ -268,6 +268,51 @@ until the project returns to Solo or Team.
 
 These commands have equivalent [MCP tools](/docs/mcp/tools#probes): `activate_probe`, `list_active_probes`, `deactivate_probe`.
 
+## Health Check Management
+
+Create hosted availability checks for public endpoints that should open normal
+DebugBundle incidents when they stay unreachable:
+
+```bash
+# List saved checks and plan limits
+debugbundle health checks list --project-id proj_01HXYZ... --json
+
+# Test a target without creating incidents or retained history
+debugbundle health checks test \
+  --project-id proj_01HXYZ... \
+  --url https://app.example.com/health \
+  --method GET \
+  --json
+
+# Create a saved hosted health check
+debugbundle health checks create \
+  --project-id proj_01HXYZ... \
+  --name "Primary app" \
+  --url https://app.example.com/health \
+  --interval-seconds 60 \
+  --failure-threshold 3 \
+  --recovery-threshold 2 \
+  --environment production \
+  --service web \
+  --json
+```
+
+Use `health checks results <check-id>` for recent raw executions and
+`health checks daily-rollups <check-id>` for retained per-day status history.
+Disable a saved check with `health checks update <check-id> --enabled false`
+when you want the configuration to remain visible but stop executing.
+
+Free projects can keep 1 check at a minimum 300-second interval, Solo projects can
+keep 5 checks at a minimum 60-second interval, and Team projects can keep 25 checks
+at a minimum 30-second interval. After downgrade, saved checks remain readable, but
+checks beyond the current count or interval limits pause until the project becomes
+eligible again.
+
+These commands have equivalent [MCP tools](/docs/mcp/tools#health-checks):
+`list_health_checks`, `test_health_check`, `create_health_check`,
+`update_health_check`, `list_health_check_results`, and
+`list_health_check_daily_rollups`.
+
 ## Project Member Management
 
 Manage collaborator access for a specific project:
@@ -306,4 +351,5 @@ debugbundle project members remove --project-id proj_01HXYZ... usr_01HXYZ...
 - [Token Management](/docs/cli/tokens) — Create and manage project and member tokens
 - [Webhook Management](/docs/cli/webhooks) — Set up webhook notifications for incidents
 - [Alert Management](/docs/cli/alerts) — Configure alert channels for your team
+- [Availability Checks](/docs/availability-checks) — Monitor public endpoints from DebugBundle infrastructure
 - [API Overview](/docs/api) — Full API reference for cloud operations

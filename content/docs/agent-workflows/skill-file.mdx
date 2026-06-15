@@ -31,8 +31,9 @@ by `debugbundle validate --fix`.
 name: debugbundle
 description: >-
   Investigate runtime incidents, inspect debug bundles, generate reproductions,
-  and run improvement analysis using the DebugBundle CLI and local project scaffold.
-  Use when the user reports a bug, runtime failure, or asks about production incidents.
+  run improvement analysis, and inspect hosted availability checks using the
+  DebugBundle CLI and local project scaffold. Use when the user reports a bug,
+  runtime failure, production incident, endpoint downtime, or health-check issue.
 metadata:
   author: debugbundle
   version: "1.0"
@@ -52,7 +53,8 @@ The skill file defines a prioritized investigation workflow:
 4. **Review reproduction** — Use the reproduction artifact to understand how to trigger the issue
 5. **Analyze for improvements** — Run `debugbundle analyze` for a deterministic change plan when local bundles are available
 6. **Evaluate repeated noise** — Use capture-rule suggestions or path-scoped client-error capture policy when bundle evidence shows recurring low-value incidents
-7. **Apply, validate, and resolve** — Make the fix, run the project validation workflow, then resolve verified incidents
+7. **Inspect availability checks** — For downtime or endpoint reachability reports, list hosted health checks, inspect recent results/rollups, and use side-effect-free tests before changing monitoring
+8. **Apply, validate, and resolve** — Make the fix, run the project validation workflow, then resolve verified incidents
 
 The generated skill now keeps the most important commands near the top:
 
@@ -81,6 +83,24 @@ to inspect incident evidence first and then evaluate a scoped noise-control path
 - Prefer project capture rules for centralized operational noise control
 - Keep generic frontend suppression narrow with structured browser, opaque-event, or bot signals
 - Use capture-policy client-error path rules for known route-scoped `4xx` incidents instead of promoting all client errors
+
+### Availability Checks
+
+For endpoint downtime, public reachability, or health-check setup requests, the generated
+skill tells agents to inspect hosted availability data before editing code or changing
+monitoring:
+
+```bash
+debugbundle health checks list --project-id <project-id> --json
+debugbundle health checks results <check-id> --project-id <project-id> --json
+debugbundle health checks daily-rollups <check-id> --project-id <project-id> --json
+debugbundle health checks test --project-id <project-id> --url https://app.example.com/health --json
+```
+
+Agents should prefer `health checks test` before creating or updating a saved check.
+The test path is side-effect-free: it does not open incidents, write retained history,
+or advance counters. Saved availability checks are hosted DebugBundle requests, not
+SDK events, and V1 supports only external `GET` and `HEAD` targets.
 
 ### Profile Validation
 
@@ -177,6 +197,10 @@ CLI capabilities:
 | `debugbundle reproduce` | `get_reproduction` |
 | `debugbundle analyze` | `analyze` |
 | `debugbundle doctor` | `doctor` |
+| `debugbundle health checks list` | `list_health_checks` |
+| `debugbundle health checks test` | `test_health_check` |
+| `debugbundle health checks results` | `list_health_check_results` |
+| `debugbundle health checks daily-rollups` | `list_health_check_daily_rollups` |
 
 ## Drift Validation
 
@@ -189,4 +213,5 @@ refreshes that file without overwriting `.debugbundle/profile.json`.
 
 - [GitHub Automation](/docs/agent-workflows/automation-recipes) — Repository dispatch and GitHub Actions follow-up
 - [Agent Workflows](/docs/agent-workflows) — Overview of agent-first approach
+- [Availability Checks](/docs/availability-checks) — Hosted health-check behavior for agents
 - [MCP Tools](/docs/mcp/tools) — Complete MCP tool catalog

@@ -92,6 +92,24 @@ Set up alert rules for a newly deployed service.
 3. create_alert         → Webhook alert for error_spike (to PagerDuty)
 ```
 
+## Availability Check Investigation
+
+Use this when a user reports downtime, endpoint reachability issues, or wants hosted
+health checks configured for a public service.
+
+```
+1. list_health_checks                 → Review saved checks and plan limits
+2. list_health_check_results          → Inspect recent raw executions
+3. list_health_check_daily_rollups    → Check retained daily status history
+4. test_health_check                  → Verify a target without creating incidents or history
+5. list_incidents / get_bundle        → Inspect the linked availability incident when failures crossed the threshold
+```
+
+Create or update saved checks only when the user explicitly wants monitoring
+configuration changed. Prefer `test_health_check` first, avoid private/internal
+targets, and remember that checks are hosted DebugBundle requests rather than SDK
+events from the customer's app.
+
 ## Incident Resolution
 
 After fixing a bug, close out the incident chain.
@@ -192,7 +210,7 @@ Triage → Probe-Driven Investigation → Analysis → Resolution
 Or when onboarding a new project:
 
 ```
-Setup Verification → Token Rotation → Webhook Setup → Alert Configuration
+Setup Verification → Token Rotation → Webhook Setup → Alert Configuration → Availability Check Investigation
 ```
 
 The MCP server is stateless: each tool call is independent. Agents can interleave tools
@@ -201,5 +219,6 @@ from different patterns freely.
 ## Next Steps
 
 - [MCP Tools Reference](/docs/mcp/tools) — Complete tool catalog
+- [Availability Checks](/docs/availability-checks) — Hosted health-check behavior and limits
 - [MCP Server](/docs/mcp) — Authentication and configuration
 - [CLI Cloud Workflow](/docs/cli/cloud-workflow) — CLI operations that complement MCP

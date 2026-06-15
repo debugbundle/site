@@ -49,6 +49,7 @@ Bundles, automation, and operations
 - Improvement bundles: https://debugbundle.com/docs/bundles/improvement-bundles/
 - Incidents: https://debugbundle.com/docs/incidents/
 - Reproduction artifacts: https://debugbundle.com/docs/incidents/reproduction/
+- Availability checks: https://debugbundle.com/docs/availability-checks/
 - Probes: https://debugbundle.com/docs/probes/
 - Webhooks: https://debugbundle.com/docs/webhooks/
 - Webhook events: https://debugbundle.com/docs/webhooks/events/

@@ -6,6 +6,10 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+### Added
+
+- Added public availability-check documentation plus pricing, CLI, API, MCP, and workflow reference updates for the hosted health-check release.
+
 ### Changed
 
 - Shifted machine-readable artifact crawl control from `robots.txt` to a deploy-time `headers-manifest.json` so `llms.txt`, OpenAPI, schemas, examples, and search/reference JSON stay fetchable while returning `X-Robots-Tag: noindex, nofollow, noarchive`.
