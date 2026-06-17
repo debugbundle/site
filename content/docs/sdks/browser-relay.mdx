@@ -350,7 +350,7 @@ If you do not want a local relay spool, set `durableWrite: false`. In ephemeral 
 
 ## Trace Correlation
 
-When using relay transport, the Browser SDK still injects `X-DebugBundle-Trace-Id` headers into all outgoing `fetch()` and `XMLHttpRequest` calls. Your backend SDK middleware reads this header and attaches the trace ID to server-side events, linking frontend breadcrumbs to backend exceptions in the same bundle.
+When using relay transport, the Browser SDK still injects `X-DebugBundle-Trace-Id` headers into same-origin `fetch()` and `XMLHttpRequest` calls, plus cross-origin first-party requests that match `tracePropagationTargets`. Your backend SDK middleware reads this header and attaches the trace ID to server-side events, linking frontend breadcrumbs to backend exceptions in the same bundle.
 
 Relay handlers preserve browser correlation fields (`request_id`, `trace_id`, `session_id`, and `user_id_hash`) when they are strings or `null`; they never regenerate or overwrite `correlation.trace_id`.
 

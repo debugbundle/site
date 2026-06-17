@@ -44,7 +44,8 @@ Calling `init()` automatically:
 | `redactFields` | `string[]` | `["password", "secret", "token", "authorization", "cookie", "ssn", "credit_card"]` | Field names to redact from captured data. |
 | `maxBreadcrumbs` | `number` | `10` | Maximum breadcrumbs retained in the ring buffer. |
 | `breadcrumbsOnErrorOnly` | `boolean` | `true` | When `true`, breadcrumbs attach only to error events instead of being shipped as standalone `frontend_breadcrumb` events. |
-| `captureNetwork` | `boolean` | `true` | Capture `fetch` and `XMLHttpRequest` calls as breadcrumbs; first-party 5xx responses also emit `request_event`. |
+| `captureNetwork` | `boolean` | `true` | Capture `fetch` and `XMLHttpRequest` calls as breadcrumbs; first-party promoted failures also emit `request_event`. |
+| `tracePropagationTargets` | `string[]` | same-origin only | Cross-origin first-party URL substrings allowed to receive `X-DebugBundle-Trace-Id`. |
 | `captureClicks` | `boolean` | `true` | Capture click events with CSS selector paths. |
 | `captureRouteChanges` | `boolean` | `true` | Capture `popstate` and `pushState`/`replaceState` route changes. |
 | `captureConsole` | `boolean` | `false` | Opt-in: capture `console.error` and `console.warn`. |
@@ -157,6 +158,8 @@ When `captureNetwork` is enabled, the SDK intercepts `fetch` and `XMLHttpRequest
 
 Rejected `fetch()` calls that never receive an HTTP response are captured as failed network breadcrumbs with `status_code: 0` plus `failure_kind` and `failure_reason` fields when available. This covers cases such as blocked domains, offline tabs, DNS failures, and CORS-level network errors without changing application behavior.
 
+The fetch wrapper preserves normal browser request semantics. It supports `string`, `URL`, and `Request` inputs, and preserves caller headers supplied as `Headers`, tuple arrays, or records. When the SDK adds `X-DebugBundle-Trace-Id`, it adds the trace header to the effective header set without dropping existing headers such as `Authorization`.
+
 Project capture rules can demote, sample, or drop known browser noise after you identify it from an incident. The Browser SDK applies active rules locally before upload when possible, so recurring third-party resource-load failures can become context-only or be discarded without opening new incidents.
 
 Unhandled promise rejections are captured through the global `unhandledrejection` hook. When the browser exposes a reason, the SDK includes a bounded `rejection_reason` summary so generic incidents such as `Unhandled promise rejection` can distinguish `Error`, string, object, null, and undefined reasons.
@@ -231,18 +234,23 @@ DebugBundle.resetSession();
 
 ## Trace Correlation
 
-The Browser SDK adds an `X-DebugBundle-Trace-Id` header to outgoing `fetch` requests. Your backend SDK reads this header to correlate frontend and backend events into a single incident timeline.
+The Browser SDK adds an `X-DebugBundle-Trace-Id` header to same-origin outgoing `fetch` and `XMLHttpRequest` requests. Your backend SDK reads this header to correlate frontend and backend events into a single incident timeline.
 
 ```typescript
-// Automatic — no setup needed if captureNetwork is enabled
+// Automatic for same-origin requests
 // The header is added to all fetch requests to same-origin URLs
 
-// To include cross-origin URLs:
-DebugBundle.init({
-  projectToken: 'tok_xxxx',
-  traceOrigins: ['https://api.example.com'],
+// To include cross-origin first-party APIs:
+debugbundle.init({
+  transportMode: 'relay',
+  endpoint: 'https://api.example.com/debugbundle/browser',
+  tracePropagationTargets: ['https://api.example.com'],
 });
 ```
+
+The relay `endpoint` controls where browser events are delivered. `tracePropagationTargets` controls which cross-origin application requests receive trace headers and can become first-party request-failure incident signals. Configure both for split frontend/backend apps when the API host differs from the web origin.
+
+Handled HTTP responses do not need to throw an exception to become request incidents. A failed response can emit a standalone `request_event` when it is first-party for trace propagation and matches the active capture preset, `immediate_client_error_statuses`, or an `immediate_client_error_path_rules` entry. Unpromoted `4xx` responses remain breadcrumbs/context and do not open incidents by themselves.
 
 ---
 
@@ -348,7 +356,7 @@ The Browser SDK is designed to be invisible to your application:
 
 - **Never throws** — All SDK code runs inside `try/catch`. Failures are swallowed silently.
 - **Never blocks rendering** — Event capture and flush are asynchronous.
-- **Never mutates user data** — Events are serialized from copies, never references.
+- **Preserves application requests** — Fetch wrapping must not drop caller headers or change authentication semantics.
 - **Minimal bundle size** — Tree-shakeable, no heavy dependencies.
 - **CSP-friendly** — No `eval()`, no inline scripts, no dynamic code generation.
 

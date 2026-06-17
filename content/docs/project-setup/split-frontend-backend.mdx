@@ -76,11 +76,14 @@ import debugbundle from '@debugbundle/sdk-browser';
 
 debugbundle.init({
   transportMode: 'relay',
-  endpoint: 'https://api.example.com/debugbundle/browser'
+  endpoint: 'https://api.example.com/debugbundle/browser',
+  tracePropagationTargets: ['https://api.example.com']
 });
 ```
 
 Use the API origin when the frontend and backend are on different hosts. Do not assume same-origin hosting when the browser app is on `www.example.com` and the backend relay is on `api.example.com`.
+
+The relay `endpoint` is where browser events are delivered. `tracePropagationTargets` is what allows cross-origin first-party API requests to receive `X-DebugBundle-Trace-Id` and become eligible for policy-driven request-failure promotion, such as configured `401` or `403` incident capture.
 
 <Callout type="warn">
   Do not set `projectToken` in the Browser SDK when using a relay. The relay adds credentials server-side.

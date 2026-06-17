@@ -6,15 +6,19 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
-### Added
-
-- Added public availability-check documentation plus pricing, CLI, API, MCP, and workflow reference updates for the hosted health-check release.
+## [1.2.1] - 2026-06-17
 
 ### Changed
 
-- Shifted machine-readable artifact crawl control from `robots.txt` to a deploy-time `headers-manifest.json` so `llms.txt`, OpenAPI, schemas, examples, and search/reference JSON stay fetchable while returning `X-Robots-Tag: noindex, nofollow, noarchive`.
+- Promoted the public-site dogfooding manifest to `@debugbundle/sdk-browser@1.3.0` after the published JS SDK release completed.
+- Clarified Browser SDK, browser-relay, and split frontend/backend docs so cross-origin first-party trace propagation, handled request-failure promotion, and fetch-header preservation match the shipped SDK behavior.
 
 ## [1.2.0] - 2026-06-08
+
+### Added
+
+- Added public availability-check documentation plus pricing, CLI, API, MCP, and workflow reference updates for the hosted health-check release.
+- Shifted machine-readable artifact crawl control from `robots.txt` to a deploy-time `headers-manifest.json` so `llms.txt`, OpenAPI, schemas, examples, and search/reference JSON stay fetchable while returning `X-Robots-Tag: noindex, nofollow, noarchive`.
 
 ### Changed
 
