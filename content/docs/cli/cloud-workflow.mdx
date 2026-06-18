@@ -159,7 +159,7 @@ Once connected, all incident commands work with both local and cloud data:
 debugbundle incidents
 ```
 
-By default, this shows incidents from **all sources** (local + cloud). Use `--source` to filter:
+By default, this shows active incidents from **all sources** (local + cloud). Active means open or regressed. Use `--source` to filter, or `--status all` to include resolved incidents:
 
 ```bash
 # Cloud incidents only

@@ -155,14 +155,14 @@ debugbundle verify cloud --project-id proj_01HXYZ... --json
 After connecting, you can view both local and cloud incidents together:
 
 ```bash
-# All incidents (both sources)
-debugbundle incidents list --source all
+# Active incidents (both sources)
+debugbundle incidents
 
 # Cloud only
-debugbundle incidents list --source cloud
+debugbundle incidents --source cloud
 
 # Local only
-debugbundle incidents list --source local
+debugbundle incidents --source local
 ```
 
 ## Security

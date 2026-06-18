@@ -13,6 +13,7 @@ type SiteConfig = {
   domain: string;
   appUrl: string;
   githubUrl: string;
+  xUrl: string;
   docsHome: string;
   blogHome: string;
   primaryNav: NavItem[];
@@ -27,6 +28,7 @@ export const siteConfig: SiteConfig = {
   domain: 'https://debugbundle.com',
   appUrl: 'https://app.debugbundle.com',
   githubUrl: 'https://github.com/debugbundle/debugbundle',
+  xUrl: 'https://x.com/debugbundle',
   docsHome: '/docs/',
   blogHome: '/blog/',
   primaryNav: [

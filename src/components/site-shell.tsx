@@ -1,7 +1,8 @@
- 'use client';
+'use client';
 
 import type { ReactElement, ReactNode } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 import { BrandLockup } from '@/components/brand-lockup';
 import { SiteHeader } from '@/components/site-header';
@@ -44,9 +45,29 @@ export function SiteShell({ children }: { children: ReactNode }): ReactElement {
           </div>
           <nav className="flex flex-wrap items-center gap-4">
             {siteConfig.footerNav.map((item) => (
-              <Link key={item.href} className={`transition hover:text-[var(--site-text)] ${focusLinkClassName}`} href={item.href}>
-                {item.label}
-              </Link>
+              item.label === 'Privacy' ? (
+                <span key={item.href} className="flex items-center gap-4">
+                  <a
+                    aria-label="DebugBundle on X"
+                    className={`transition hover:text-[var(--site-text)] ${focusLinkClassName}`}
+                    href={siteConfig.xUrl}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <Image alt="" aria-hidden="true" className="h-5 w-5" height={20} src="/images/icons/x.svg" width={20} />
+                  </a>
+                  <span aria-hidden="true" className="leading-none">
+                    &middot;
+                  </span>
+                  <Link className={`transition hover:text-[var(--site-text)] ${focusLinkClassName}`} href={item.href}>
+                    {item.label}
+                  </Link>
+                </span>
+              ) : (
+                <Link key={item.href} className={`transition hover:text-[var(--site-text)] ${focusLinkClassName}`} href={item.href}>
+                  {item.label}
+                </Link>
+              )
             ))}
           </nav>
         </div>

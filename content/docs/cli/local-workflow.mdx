@@ -119,7 +119,7 @@ Output:
 ```
 inc_a1b2c3 | high     | open     | TypeError: Cannot read property 'id' of undefined
 inc_d4e5f6 | medium   | open     | POST /api/charge → 500 (timeout)
-inc_g7h8i9 | low      | resolved | Warning: deprecated API version
+inc_g7h8i9 | high     | regressed | Checkout worker timeout
 ```
 
 ### Filtering
@@ -130,7 +130,8 @@ debugbundle incidents --source local
 debugbundle incidents --source cloud
 
 # By status and severity
-debugbundle incidents --status open --severity high
+debugbundle incidents --status active --severity high
+debugbundle incidents --status all
 
 # By environment and service
 debugbundle incidents --environment production --service api

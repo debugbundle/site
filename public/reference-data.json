@@ -1431,7 +1431,7 @@
     },
     {
       "commandPath": "incidents",
-      "usage": "debugbundle incidents [--source <local|cloud>] [--project-id <id>] [--environment <name>] [--service <name>] [--status <status>] [--severity <severity>] [--first-seen-after <ISO8601>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle incidents [--source <local|cloud>] [--project-id <id>] [--environment <name>] [--service <name>] [--status <active|open|resolved|regressed|all>] [--severity <severity>] [--first-seen-after <ISO8601>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
       "group": "incidents"
     },
     {
@@ -1556,12 +1556,12 @@
     },
     {
       "commandPath": "project create",
-      "usage": "debugbundle project create --name <name> --slug <slug> [--environment-default <env>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle project create --name <name> --slug <slug> [--environment-default <env>] [--color-tag <tag>] [--auth-file <path>] [--json]",
       "group": "project"
     },
     {
       "commandPath": "project update",
-      "usage": "debugbundle project update <project-id> [--name <name>] [--slug <slug>] [--environment-default <env>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle project update <project-id> [--name <name>] [--slug <slug>] [--environment-default <env>] [--color-tag <tag> | --clear-color-tag] [--auth-file <path>] [--json]",
       "group": "project"
     },
     {
@@ -2590,6 +2590,7 @@
             "slug"
           ],
           "optionalArguments": [
+            "colorTag",
             "environmentDefault"
           ]
         },
@@ -2620,6 +2621,7 @@
             "projectId"
           ],
           "optionalArguments": [
+            "colorTag",
             "environmentDefault",
             "name",
             "slug"

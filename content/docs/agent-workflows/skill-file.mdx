@@ -48,7 +48,7 @@ runtime failures, or production incidents should trigger DebugBundle workflows.
 The skill file defines a prioritized investigation workflow:
 
 1. **Verify setup** — Run `debugbundle doctor --json` to identify local-only versus connected mode
-2. **Check incidents first** — Query local or cloud open incidents before broad source exploration
+2. **Check incidents first** — Query local or cloud active incidents before broad source exploration
 3. **Inspect the bundle** — Read the debug bundle for full context (error, request, logs, environment)
 4. **Review reproduction** — Use the reproduction artifact to understand how to trigger the issue
 5. **Analyze for improvements** — Run `debugbundle analyze` for a deterministic change plan when local bundles are available
@@ -60,8 +60,8 @@ The generated skill now keeps the most important commands near the top:
 
 ```bash
 debugbundle doctor --json
-debugbundle incidents --source local --status open --json
-debugbundle incidents --source cloud --status open --json
+debugbundle incidents --source local --status active --json
+debugbundle incidents --source cloud --status active --json
 debugbundle inspect <incident-id> --source <local|cloud> --json
 debugbundle explain <incident-id> --source <local|cloud> --json
 debugbundle bundle <incident-id> --source <local|cloud> --json
@@ -165,7 +165,7 @@ The project's `AGENTS.md` file references the skill with a managed section:
 - Read `.agents/skills/debugbundle/SKILL.md` for the full debugging workflow.
 - Use `debugbundle inspect <incident-id>` or MCP `get_bundle` when a user reports an issue.
 - Run reproduction artifacts from `.debugbundle/bundles/local/reproductions/` before proposing a fix.
-- After a fix is verified, or after an intentional smoke or dogfood incident has served its purpose, resolve it with `debugbundle resolve <incident-id> [incident-id ...]` or MCP `resolve_incident` / `resolve_incidents` so open incidents remain actionable.
+- After a fix is verified, or after an intentional smoke or dogfood incident has served its purpose, resolve it with `debugbundle resolve <incident-id> [incident-id ...]` or MCP `resolve_incident` / `resolve_incidents` so the needs-attention queue remains actionable.
 - Use `debugbundle doctor` to validate local DebugBundle setup or connectivity issues.
 <!-- debugbundle:end -->
 ```

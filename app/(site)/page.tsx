@@ -105,7 +105,7 @@ export default function HomePage(): ReactElement {
     {
       title: 'Hosted health checks',
       detail:
-        'Monitor public endpoints from DebugBundle infrastructure and open normal incidents when they stay unreachable.',
+        'Know when your site or API is down. DebugBundle checks your public endpoints and opens an incident when they stay unreachable.',
       icon: HeartPulse,
       promptId: 'availability-checks',
     },

@@ -19,7 +19,7 @@ GET /v1/incidents
 | `project_id` | `uuid` | — | Filter by project |
 | `environment` | `string` | — | Filter by environment name |
 | `service` | `string` | — | Filter by service name |
-| `status` | `string` | — | `open`, `resolved`, or `regressed` |
+| `status` | `string` | — | `active`, `open`, `resolved`, or `regressed`. `active` means open or regressed. |
 | `severity` | `string` | — | `low`, `medium`, `high`, or `critical` |
 | `limit` | `integer` | `20` | Page size (1–100) |
 | `cursor` | `string` | — | Opaque cursor from previous response |
@@ -28,7 +28,7 @@ GET /v1/incidents
 
 ```bash
 curl -H "Authorization: Bearer dbundle_mem_xxx" \
-  "https://api.debugbundle.com/v1/incidents?project_id=proj_xxx&status=open&severity=high&limit=10"
+  "https://api.debugbundle.com/v1/incidents?project_id=proj_xxx&status=active&severity=high&limit=10"
 ```
 
 ### Response

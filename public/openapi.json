@@ -1318,6 +1318,7 @@
             "schema": {
               "type": "string",
               "enum": [
+                "active",
                 "open",
                 "resolved",
                 "regressed"
@@ -11641,6 +11642,7 @@
                 "project_name": {
                   "type": "string"
                 },
+                "project_color_tag": {},
                 "service_id": {
                   "type": [
                     "string",
@@ -11822,6 +11824,7 @@
                 "project_name": {
                   "type": "string"
                 },
+                "project_color_tag": {},
                 "service_id": {
                   "type": [
                     "string",
@@ -11977,6 +11980,7 @@
               "project_name": {
                 "type": "string"
               },
+              "project_color_tag": {},
               "service_id": {
                 "type": [
                   "string",
@@ -13934,6 +13938,7 @@
                 "project_name": {
                   "type": "string"
                 },
+                "project_color_tag": {},
                 "project_slug": {
                   "type": "string"
                 },
@@ -14112,6 +14117,7 @@
               "project_name": {
                 "type": "string"
               },
+              "project_color_tag": {},
               "project_slug": {
                 "type": "string"
               },
@@ -14753,6 +14759,7 @@
                 "environment_default": {
                   "type": "string"
                 },
+                "color_tag": {},
                 "organization_plan": {
                   "type": "string",
                   "enum": [
@@ -14770,6 +14777,11 @@
                       "default": 0
                     },
                     "regressed_incidents": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "default": 0
+                    },
+                    "attention_incidents_today": {
                       "type": "integer",
                       "minimum": 0,
                       "default": 0
@@ -14861,6 +14873,37 @@
             "maxLength": 50,
             "default": "production"
           },
+          "color_tag": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "red",
+                  "orange",
+                  "amber",
+                  "yellow",
+                  "lime",
+                  "green",
+                  "emerald",
+                  "teal",
+                  "cyan",
+                  "sky",
+                  "blue",
+                  "indigo",
+                  "violet",
+                  "purple",
+                  "fuchsia",
+                  "pink",
+                  "rose",
+                  "slate"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
           "weekly_report_timezone": {
             "type": "string",
             "minLength": 1,
@@ -14927,6 +14970,7 @@
               "environment_default": {
                 "type": "string"
               },
+              "color_tag": {},
               "organization_plan": {
                 "type": "string",
                 "enum": [
@@ -14944,6 +14988,11 @@
                     "default": 0
                   },
                   "regressed_incidents": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 0
+                  },
+                  "attention_incidents_today": {
                     "type": "integer",
                     "minimum": 0,
                     "default": 0
@@ -15032,6 +15081,36 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 50
+          },
+          "color_tag": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "red",
+                  "orange",
+                  "amber",
+                  "yellow",
+                  "lime",
+                  "green",
+                  "emerald",
+                  "teal",
+                  "cyan",
+                  "sky",
+                  "blue",
+                  "indigo",
+                  "violet",
+                  "purple",
+                  "fuchsia",
+                  "pink",
+                  "rose",
+                  "slate"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false
@@ -15090,6 +15169,7 @@
               "environment_default": {
                 "type": "string"
               },
+              "color_tag": {},
               "organization_plan": {
                 "type": "string",
                 "enum": [
@@ -15112,6 +15192,10 @@
                     "minimum": 0
                   },
                   "regressed_incidents": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "attention_incidents_today": {
                     "type": "integer",
                     "minimum": 0
                   },
@@ -15143,6 +15227,7 @@
                 "required": [
                   "open_incidents",
                   "regressed_incidents",
+                  "attention_incidents_today",
                   "opened_incidents_today",
                   "opened_incidents_month",
                   "monthly_bundle_requests",
@@ -15231,6 +15316,7 @@
               "environment_default": {
                 "type": "string"
               },
+              "color_tag": {},
               "organization_plan": {
                 "type": "string",
                 "enum": [
@@ -15382,6 +15468,21 @@
                     }
                   ]
                 },
+                "linked_incident_status": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "open",
+                        "resolved",
+                        "regressed"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
                 "last_checked_at": {
                   "anyOf": [
                     {
@@ -15487,6 +15588,7 @@
                 "consecutive_failures",
                 "consecutive_successes",
                 "linked_incident_id",
+                "linked_incident_status",
                 "last_checked_at",
                 "next_check_at",
                 "last_result_status",
@@ -15562,7 +15664,7 @@
             "type": "integer",
             "minimum": 500,
             "maximum": 5000,
-            "default": 5000
+            "default": 2500
           },
           "interval_seconds": {
             "type": "integer",
@@ -15721,6 +15823,21 @@
                   }
                 ]
               },
+              "linked_incident_status": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "resolved",
+                      "regressed"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "last_checked_at": {
                 "anyOf": [
                   {
@@ -15826,6 +15943,7 @@
               "consecutive_failures",
               "consecutive_successes",
               "linked_incident_id",
+              "linked_incident_status",
               "last_checked_at",
               "next_check_at",
               "last_result_status",
@@ -15955,6 +16073,21 @@
                   }
                 ]
               },
+              "linked_incident_status": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "resolved",
+                      "regressed"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "last_checked_at": {
                 "anyOf": [
                   {
@@ -16060,6 +16193,7 @@
               "consecutive_failures",
               "consecutive_successes",
               "linked_incident_id",
+              "linked_incident_status",
               "last_checked_at",
               "next_check_at",
               "last_result_status",
@@ -16134,7 +16268,7 @@
             "type": "integer",
             "minimum": 500,
             "maximum": 5000,
-            "default": 5000
+            "default": 2500
           },
           "interval_seconds": {
             "type": "integer",
@@ -16438,7 +16572,7 @@
             "type": "integer",
             "minimum": 500,
             "maximum": 5000,
-            "default": 5000
+            "default": 2500
           }
         },
         "required": [
