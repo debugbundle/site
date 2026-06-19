@@ -9520,13 +9520,11 @@
                           ]
                         }
                       },
-                      "required": [
-                        "request_id",
-                        "trace_id",
-                        "session_id",
-                        "user_id_hash"
-                      ],
                       "additionalProperties": false
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "payload": {
                       "type": "object",
@@ -9976,13 +9974,11 @@
                           ]
                         }
                       },
-                      "required": [
-                        "request_id",
-                        "trace_id",
-                        "session_id",
-                        "user_id_hash"
-                      ],
                       "additionalProperties": false
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "payload": {
                       "type": "object",
@@ -10169,13 +10165,11 @@
                           ]
                         }
                       },
-                      "required": [
-                        "request_id",
-                        "trace_id",
-                        "session_id",
-                        "user_id_hash"
-                      ],
                       "additionalProperties": false
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "payload": {
                       "type": "object",
@@ -10323,13 +10317,11 @@
                           ]
                         }
                       },
-                      "required": [
-                        "request_id",
-                        "trace_id",
-                        "session_id",
-                        "user_id_hash"
-                      ],
                       "additionalProperties": false
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "payload": {
                       "type": "object",
@@ -10489,13 +10481,11 @@
                           ]
                         }
                       },
-                      "required": [
-                        "request_id",
-                        "trace_id",
-                        "session_id",
-                        "user_id_hash"
-                      ],
                       "additionalProperties": false
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "payload": {
                       "type": "object",
@@ -11141,13 +11131,11 @@
                           ]
                         }
                       },
-                      "required": [
-                        "request_id",
-                        "trace_id",
-                        "session_id",
-                        "user_id_hash"
-                      ],
                       "additionalProperties": false
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "payload": {
                       "type": "object",
@@ -11305,13 +11293,11 @@
                           ]
                         }
                       },
-                      "required": [
-                        "request_id",
-                        "trace_id",
-                        "session_id",
-                        "user_id_hash"
-                      ],
                       "additionalProperties": false
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "payload": {
                       "type": "object",
@@ -11470,13 +11456,11 @@
                           ]
                         }
                       },
-                      "required": [
-                        "request_id",
-                        "trace_id",
-                        "session_id",
-                        "user_id_hash"
-                      ],
                       "additionalProperties": false
+                    },
+                    "context": {
+                      "type": "object",
+                      "additionalProperties": {}
                     },
                     "payload": {
                       "type": "object",

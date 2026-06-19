@@ -14,12 +14,12 @@ Spring Boot applications should use the starter:
 <dependency>
   <groupId>com.debugbundle</groupId>
   <artifactId>debugbundle-spring-boot-starter</artifactId>
-  <version>0.1.1</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 
 ```kotlin
-implementation("com.debugbundle:debugbundle-spring-boot-starter:0.1.1")
+implementation("com.debugbundle:debugbundle-spring-boot-starter:1.1.1")
 ```
 
 Plain Java applications can use the core SDK:
@@ -28,7 +28,7 @@ Plain Java applications can use the core SDK:
 <dependency>
   <groupId>com.debugbundle</groupId>
   <artifactId>debugbundle-java-core</artifactId>
-  <version>0.1.1</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@ Servlet WAR applications should install exactly one servlet adapter matching the
 <dependency>
   <groupId>com.debugbundle</groupId>
   <artifactId>debugbundle-java-servlet-jakarta</artifactId>
-  <version>0.1.1</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 
@@ -46,7 +46,7 @@ Servlet WAR applications should install exactly one servlet adapter matching the
 <dependency>
   <groupId>com.debugbundle</groupId>
   <artifactId>debugbundle-java-servlet-javax</artifactId>
-  <version>0.1.1</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 
@@ -56,7 +56,7 @@ JAX-RS applications can add the matching namespace adapter when they want resour
 <dependency>
   <groupId>com.debugbundle</groupId>
   <artifactId>debugbundle-java-jaxrs-jakarta</artifactId>
-  <version>0.1.1</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 
@@ -64,7 +64,7 @@ JAX-RS applications can add the matching namespace adapter when they want resour
 <dependency>
   <groupId>com.debugbundle</groupId>
   <artifactId>debugbundle-java-jaxrs-javax</artifactId>
-  <version>0.1.1</version>
+  <version>1.1.1</version>
 </dependency>
 ```
 
@@ -78,7 +78,7 @@ If you install more than one DebugBundle Java artifact, import the BOM so every 
     <dependency>
       <groupId>com.debugbundle</groupId>
       <artifactId>debugbundle-java-parent</artifactId>
-      <version>0.1.1</version>
+      <version>1.1.1</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>
@@ -88,7 +88,7 @@ If you install more than one DebugBundle Java artifact, import the BOM so every 
 
 ```kotlin
 dependencies {
-    implementation(platform("com.debugbundle:debugbundle-java-parent:0.1.1"))
+    implementation(platform("com.debugbundle:debugbundle-java-parent:1.1.1"))
     implementation("com.debugbundle:debugbundle-java-core")
     implementation("com.debugbundle:debugbundle-java-servlet-jakarta")
 }
@@ -215,7 +215,7 @@ The repository includes WildFly smoke fixtures for both namespace families that 
 The `debugbundle-java-agent` artifact is a startup bootstrap for early SDK initialization, uncaught-exception capture, and Java Util Logging / JBoss LogManager-compatible capture:
 
 ```sh
-JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/debugbundle/debugbundle-java-agent-0.1.1.jar=config=/opt/debugbundle/debugbundle.properties,capture-jul=true,capture-uncaught=true"
+JAVA_OPTS="$JAVA_OPTS -javaagent:/opt/debugbundle/debugbundle-java-agent-1.1.1.jar=config=/opt/debugbundle/debugbundle.properties,capture-jul=true,capture-uncaught=true"
 exec /opt/jboss/wildfly/bin/standalone.sh -b 0.0.0.0
 ```
 
