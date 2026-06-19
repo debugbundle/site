@@ -19518,6 +19518,26 @@
                 "requires_confirmation": {
                   "type": "boolean"
                 },
+                "created_rule_id": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null
+                },
+                "created_rule_enabled": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ],
+                  "default": null
+                },
                 "rule": {
                   "type": "object",
                   "properties": {
