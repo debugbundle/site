@@ -21,6 +21,8 @@ GET /v1/incidents
 | `service` | `string` | — | Filter by service name |
 | `status` | `string` | — | `active`, `open`, `resolved`, or `regressed`. `active` means open or regressed. |
 | `severity` | `string` | — | `low`, `medium`, `high`, or `critical` |
+| `first_seen_after` | `string` | — | Include incidents first seen at or after this ISO-8601 timestamp |
+| `attention_after` | `string` | — | Include incidents first seen at or after this ISO-8601 timestamp, or regressed at or after it |
 | `limit` | `integer` | `20` | Page size (1–100) |
 | `cursor` | `string` | — | Opaque cursor from previous response |
 

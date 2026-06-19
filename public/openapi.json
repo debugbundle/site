@@ -1349,6 +1349,15 @@
             }
           },
           {
+            "name": "attention_after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
             "name": "cursor",
             "in": "query",
             "required": false,

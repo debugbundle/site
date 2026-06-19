@@ -1,6 +1,6 @@
 {
   "release": {
-    "coreVersion": "1.5.3"
+    "coreVersion": "1.5.4"
   },
   "apiEntries": [
     {
@@ -1431,7 +1431,7 @@
     },
     {
       "commandPath": "incidents",
-      "usage": "debugbundle incidents [--source <local|cloud>] [--project-id <id>] [--environment <name>] [--service <name>] [--status <active|open|resolved|regressed|all>] [--severity <severity>] [--first-seen-after <ISO8601>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle incidents [--source <local|cloud>] [--project-id <id>] [--environment <name>] [--service <name>] [--status <active|open|resolved|regressed|all>] [--severity <severity>] [--first-seen-after <ISO8601>] [--attention-after <ISO8601>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
       "group": "incidents"
     },
     {
@@ -2004,6 +2004,7 @@
           "description": "List incidents from local storage, cloud storage, or the combined connected view.",
           "requiredArguments": [],
           "optionalArguments": [
+            "attentionAfter",
             "bearerToken",
             "cursor",
             "environment",

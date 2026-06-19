@@ -76,6 +76,8 @@ List incidents for the active project.
 | `service` | `string` | Filter by service name. |
 | `status` | `string` | Filter: `active`, `open`, `resolved`, `regressed`, or `all`. Default: `active`; `active` means open or regressed. |
 | `severity` | `string` | Filter by severity: `low`, `medium`, `high`, or `critical`. |
+| `firstSeenAfter` | `string` | Optional ISO-8601 lower bound for `first_seen_at`. |
+| `attentionAfter` | `string` | Optional ISO-8601 lower bound for incidents opened or regressed after this time. |
 | `cursor` | `string` | Optional pagination cursor. |
 | `limit` | `number` | Max results. Default: `20`. |
 
