@@ -13,6 +13,7 @@ import * as docsAgentWorkflowsSkillFilePage from '../content/docs/agent-workflow
 import * as docsAgentWorkflowsRecipesPage from '../content/docs/agent-workflows/automation-recipes.mdx';
 import * as docsBillingPage from '../content/docs/billing.mdx';
 import * as docsCapturePolicy from '../content/docs/capture-policy.mdx';
+import * as docsManagingNoisePage from '../content/docs/managing-noise.mdx';
 import * as docsAlertsPage from '../content/docs/alerts.mdx';
 import * as docsAvailabilityChecksPage from '../content/docs/availability-checks.mdx';
 import * as docsBundlesIndexPage from '../content/docs/bundles/index.mdx';
@@ -125,6 +126,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
       '[HardDrive][Local-Only Mode](/docs/project-setup/local-only)',
       '[Cloud][Connect to Cloud](/docs/project-setup/connect-to-cloud)',
       'capture-policy',
+      'managing-noise',
       'self-hosting',
       '---Advanced Features---',
       'availability-checks',
@@ -263,6 +265,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './mcp/tools.mdx': docsMcpToolsPage,
   './mcp/workflows.mdx': docsMcpWorkflowsPage,
   './capture-policy.mdx': docsCapturePolicy,
+  './managing-noise.mdx': docsManagingNoisePage,
   './project-setup/index.mdx': docsProjectSetupIndexPage,
   './project-setup/profile.mdx': docsProjectSetupProfilePage,
   './project-setup/local-only.mdx': docsProjectSetupLocalOnlyPage,

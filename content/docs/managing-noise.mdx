@@ -1,0 +1,112 @@
+---
+title: Managing Noise
+description: Reduce recurring low-value incidents with capture policy, capture rules, and agent skill guidance.
+icon: VolumeX
+---
+
+DebugBundle should surface actionable incidents, not turn every known operational pattern
+into permanent triage work. Noise management is the process of turning repeated,
+low-value incidents into scoped rules after you have confirmed the evidence.
+
+Use this guide when you see paths, browser events, bots, third-party resources, or
+expected client errors repeatedly opening incidents.
+
+## Noise Management Loop
+
+1. Inspect the incident bundle before suppressing anything.
+2. Decide whether the signal is a real product issue, expected application behavior, or operational noise.
+3. Use the narrowest control that matches the evidence.
+4. Re-check the incident list after new traffic to make sure useful incidents still open.
+5. Keep the rule auditable: name it clearly, scope it by service and environment, and add an expiry when the pattern may be temporary.
+
+Do not start by broadly dropping event types or all `4xx` responses. A broad rule can
+hide real regressions that happen to share the same status code or generic browser
+message.
+
+## Which Control to Use
+
+| Situation | Preferred control | Why |
+|---|---|---|
+| A route should not open incidents for every generic `404` | Capture-policy path rule or remove broad client-error promotion | Keeps important app paths explicit without promoting scanner traffic |
+| A known noisy incident has bundle evidence | Capture-rule suggestion from the incident | Starts from observed data and produces a narrower matcher |
+| Third-party script/resource failures repeat in browsers | Project capture rule scoped by browser/resource fields | Centralized and auditable across SDK instances |
+| Bot-only browser noise repeats | Project capture rule scoped by `client_kind` or `bot_family` | Avoids hiding the same behavior for human users |
+| A tenant-specific event must never leave the runtime | SDK `beforeSend` hook | Local app-owned policy before upload |
+| Temporary spike during an investigation | `sample` rule with an expiry | Preserves some evidence while reducing volume |
+
+## Start From an Incident
+
+Use the incident as evidence for the rule.
+
+```bash
+debugbundle inspect <incident-id> --source cloud --json
+debugbundle explain <incident-id> --source cloud --json
+debugbundle bundle <incident-id> --source cloud --json
+debugbundle capture-rule suggest <incident-id> --json
+```
+
+If a suggestion is safe, apply it from the suggestion instead of hand-writing a matcher:
+
+```bash
+debugbundle capture-rule create-from-suggestion <incident-id> \
+  --suggestion-id <suggestion-id> \
+  --name "Demote known analytics resource noise" \
+  --expires-at 2026-07-20T00:00:00Z
+```
+
+Use `demote` when the event is useful context but should not open, reopen, alert, or
+dispatch automation. Use `sample` when you still want representative events. Use
+`drop` only when future matching events have no retained value.
+
+## Manage Route Noise
+
+Generic `404` traffic is common on public applications. Avoid promoting every `404`
+unless you really want all missing paths to open incidents.
+
+Prefer a path-scoped client-error rule for routes where a `4xx` is meaningful:
+
+```bash
+debugbundle capture-policy set \
+  --project <project-id> \
+  --client-error-path-rule '404=/checkout/*@GET,POST'
+```
+
+This promotes `404` responses under `/checkout/*` without opening incidents for
+scanner paths, old assets, or unrelated missing routes.
+
+## Teach Agents the Same Workflow
+
+The generated `.agents/skills/debugbundle/SKILL.md` includes a Noise Management
+section. When an AI agent is investigating recurring low-value incidents, it should:
+
+- Inspect bundle evidence first.
+- Run `debugbundle capture-rule suggest <incident-id> --json`.
+- Prefer project capture rules for operational noise.
+- Keep browser suppression narrow with structured browser, bot, service, and environment evidence.
+- Use client-error path rules for known route-scoped `4xx` incidents.
+
+Keep the generated skill current with:
+
+```bash
+debugbundle validate --fix --json
+```
+
+For MCP-based agents, the same workflow is available through `suggest_capture_rules_from_incident`,
+`create_capture_rule_from_incident_suggestion`, `get_capture_policy`, and
+`update_capture_policy`.
+
+## What Already Stays Non-Incident
+
+Unpromoted `4xx` responses, including generic `404` traffic, remain request telemetry
+or context when captured. They do not open normal request incidents solely because
+they repeat.
+
+Common low-value external-probe `GET`/`404` paths are also excluded from hosted
+improvement lists unless you explicitly promote them through project policy.
+
+## Related Docs
+
+- [Capture Policy](/docs/capture-policy) — Presets, client-error incidents, and capture rules
+- [Agent Skill File](/docs/agent-workflows/skill-file) — How generated skills teach agents to use DebugBundle
+- [MCP Tools](/docs/mcp/tools) — Agent-facing capture policy and capture-rule tools
+- [Browser SDK](/docs/sdks/browser) — Browser-specific noise and `beforeSend` guidance

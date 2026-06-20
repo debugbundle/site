@@ -6,6 +6,16 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [1.2.4] - 2026-06-21
+
+### Added
+
+- Added a public managing-noise documentation page and linked it from the capture-policy and skill-file workflow docs so operational noise handling has a canonical public explanation.
+
+### Changed
+
+- Expanded the public terms page disclaimer language around incident-response failures and blackout-style outcomes so the hosted legal copy matches the current production risk posture.
+
 ## [1.2.1] - 2026-06-17
 
 ### Changed
