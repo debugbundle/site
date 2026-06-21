@@ -10,7 +10,9 @@ The rendered docs consume vendored generated artifacts checked into `public/`, i
 
 Deploy-time crawler headers live in the repo-root `headers-manifest.json`. Static hosts should apply those header rules so machine-readable artifacts remain publicly fetchable while returning `X-Robots-Tag: noindex, nofollow, noarchive`.
 
-Those vendored generated artifacts are refreshed from the core product repo before cutover. The standalone site repo regenerates the local search index and the deploy-time headers manifest during `pnpm build`.
+Deploy-time canonical redirects live in the repo-root `redirects-manifest.json`. Static hosts should apply those permanent redirect rules at the CDN/object level so slashless duplicates resolve to the sitemap and canonical-tag URLs.
+
+Those vendored generated artifacts are refreshed from the core product repo before cutover. The standalone site repo regenerates the local search index plus the deploy-time headers and redirects manifests during `pnpm build`.
 
 ## Development
 

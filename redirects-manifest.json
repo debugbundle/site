@@ -1,0 +1,580 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "source": "/pricing",
+      "destination": "/pricing/",
+      "statusCode": 308
+    },
+    {
+      "source": "/about",
+      "destination": "/about/",
+      "statusCode": 308
+    },
+    {
+      "source": "/contact",
+      "destination": "/contact/",
+      "statusCode": 308
+    },
+    {
+      "source": "/security",
+      "destination": "/security/",
+      "statusCode": 308
+    },
+    {
+      "source": "/changelog",
+      "destination": "/changelog/",
+      "statusCode": 308
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy/",
+      "statusCode": 308
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/agent-workflows",
+      "destination": "/docs/agent-workflows/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/alerts",
+      "destination": "/docs/alerts/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/availability-checks",
+      "destination": "/docs/availability-checks/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/billing",
+      "destination": "/docs/billing/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/capture-policy",
+      "destination": "/docs/capture-policy/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/changelog",
+      "destination": "/docs/changelog/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/core-concepts",
+      "destination": "/docs/core-concepts/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/faq",
+      "destination": "/docs/faq/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/how-it-works",
+      "destination": "/docs/how-it-works/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs",
+      "destination": "/docs/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/installation",
+      "destination": "/docs/installation/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/llms-txt",
+      "destination": "/docs/llms-txt/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/managing-noise",
+      "destination": "/docs/managing-noise/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/pricing",
+      "destination": "/docs/pricing/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/probes",
+      "destination": "/docs/probes/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/quickstart",
+      "destination": "/docs/quickstart/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/security",
+      "destination": "/docs/security/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/self-hosting",
+      "destination": "/docs/self-hosting/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/troubleshooting",
+      "destination": "/docs/troubleshooting/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/webhooks",
+      "destination": "/docs/webhooks/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/what-is-debugbundle",
+      "destination": "/docs/what-is-debugbundle/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/webhooks/events",
+      "destination": "/docs/webhooks/events/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/webhooks/verification",
+      "destination": "/docs/webhooks/verification/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/api",
+      "destination": "/docs/v1/api/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/cli",
+      "destination": "/docs/v1/cli/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/mcp",
+      "destination": "/docs/v1/mcp/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/overview",
+      "destination": "/docs/v1/overview/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/webhooks",
+      "destination": "/docs/v1/webhooks/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/security/redaction",
+      "destination": "/docs/security/redaction/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/security/tokens",
+      "destination": "/docs/security/tokens/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/android",
+      "destination": "/docs/sdks/android/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/browser-relay",
+      "destination": "/docs/sdks/browser-relay/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/browser",
+      "destination": "/docs/sdks/browser/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/dotnet",
+      "destination": "/docs/sdks/dotnet/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/go",
+      "destination": "/docs/sdks/go/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks",
+      "destination": "/docs/sdks/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/java",
+      "destination": "/docs/sdks/java/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/node",
+      "destination": "/docs/sdks/node/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/php",
+      "destination": "/docs/sdks/php/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/python",
+      "destination": "/docs/sdks/python/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/react-native",
+      "destination": "/docs/sdks/react-native/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/ruby",
+      "destination": "/docs/sdks/ruby/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/swift",
+      "destination": "/docs/sdks/swift/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/sdks/universal-interface",
+      "destination": "/docs/sdks/universal-interface/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/project-setup/connect-to-cloud",
+      "destination": "/docs/project-setup/connect-to-cloud/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/project-setup",
+      "destination": "/docs/project-setup/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/project-setup/local-only",
+      "destination": "/docs/project-setup/local-only/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/project-setup/profile",
+      "destination": "/docs/project-setup/profile/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/project-setup/split-frontend-backend",
+      "destination": "/docs/project-setup/split-frontend-backend/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/mcp",
+      "destination": "/docs/mcp/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/mcp/tools",
+      "destination": "/docs/mcp/tools/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/mcp/workflows",
+      "destination": "/docs/mcp/workflows/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/integrations/wordpress",
+      "destination": "/docs/integrations/wordpress/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/incidents",
+      "destination": "/docs/incidents/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/incidents/reproduction",
+      "destination": "/docs/incidents/reproduction/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/cli/alerts",
+      "destination": "/docs/cli/alerts/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/cli/cloud-workflow",
+      "destination": "/docs/cli/cloud-workflow/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/cli",
+      "destination": "/docs/cli/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/cli/local-workflow",
+      "destination": "/docs/cli/local-workflow/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/cli/log-ingestion",
+      "destination": "/docs/cli/log-ingestion/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/cli/setup",
+      "destination": "/docs/cli/setup/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/cli/tokens",
+      "destination": "/docs/cli/tokens/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/cli/webhooks",
+      "destination": "/docs/cli/webhooks/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/bundles/improvement-bundles",
+      "destination": "/docs/bundles/improvement-bundles/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/bundles",
+      "destination": "/docs/bundles/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/bundles/schema",
+      "destination": "/docs/bundles/schema/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/api/alerts",
+      "destination": "/docs/api/alerts/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/api/authentication",
+      "destination": "/docs/api/authentication/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/api/billing",
+      "destination": "/docs/api/billing/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/api/incidents",
+      "destination": "/docs/api/incidents/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/api",
+      "destination": "/docs/api/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/api/ingestion",
+      "destination": "/docs/api/ingestion/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/api/members",
+      "destination": "/docs/api/members/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/api/probes",
+      "destination": "/docs/api/probes/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/api/projects",
+      "destination": "/docs/api/projects/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/api/webhooks",
+      "destination": "/docs/api/webhooks/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/agent-workflows/automation-recipes",
+      "destination": "/docs/agent-workflows/automation-recipes/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/agent-workflows/skill-file",
+      "destination": "/docs/agent-workflows/skill-file/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/reference",
+      "destination": "/docs/v1/reference/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/reference/api-endpoints",
+      "destination": "/docs/v1/reference/api-endpoints/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/reference/bundle-schema",
+      "destination": "/docs/v1/reference/bundle-schema/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/reference/cli-commands",
+      "destination": "/docs/v1/reference/cli-commands/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/reference/error-codes",
+      "destination": "/docs/v1/reference/error-codes/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/reference/mcp-tools",
+      "destination": "/docs/v1/reference/mcp-tools/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/reference/profile-schema",
+      "destination": "/docs/v1/reference/profile-schema/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/v1/reference/webhook-events",
+      "destination": "/docs/v1/reference/webhook-events/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog",
+      "destination": "/blog/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/agent-first-debugging",
+      "destination": "/blog/agent-first-debugging/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/android-sdk-debug-bundles-for-crash-replay-anrs-offline-queues",
+      "destination": "/blog/android-sdk-debug-bundles-for-crash-replay-anrs-offline-queues/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/browser-sdk-debug-bundles-for-frontend-exceptions-and-5xx-requests",
+      "destination": "/blog/browser-sdk-debug-bundles-for-frontend-exceptions-and-5xx-requests/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/dotnet-sdk-debug-bundles-for-aspnetcore-workers-grpc-hangfire",
+      "destination": "/blog/dotnet-sdk-debug-bundles-for-aspnetcore-workers-grpc-hangfire/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/go-sdk-debug-bundles-for-net-http-gin-echo-slog-zap-zerolog",
+      "destination": "/blog/go-sdk-debug-bundles-for-net-http-gin-echo-slog-zap-zerolog/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/health-check-endpoints-availability-checks-uptime-monitoring",
+      "destination": "/blog/health-check-endpoints-availability-checks-uptime-monitoring/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/ios-sdk-debug-bundles-for-swiftui-uikit-urlsession-swiftlog",
+      "destination": "/blog/ios-sdk-debug-bundles-for-swiftui-uikit-urlsession-swiftlog/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/java-sdk-debug-bundles-for-spring-boot-servlet-jax-rs",
+      "destination": "/blog/java-sdk-debug-bundles-for-spring-boot-servlet-jax-rs/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/launching-debugbundle",
+      "destination": "/blog/launching-debugbundle/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/local-first-debugging-bundles-for-private-air-gapped-incident-work",
+      "destination": "/blog/local-first-debugging-bundles-for-private-air-gapped-incident-work/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/local-first-development",
+      "destination": "/blog/local-first-development/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/mcp-debugging-tool-for-ai-coding-agents",
+      "destination": "/blog/mcp-debugging-tool-for-ai-coding-agents/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/nodejs-sdk-debug-bundles-for-express-fastify-nextjs",
+      "destination": "/blog/nodejs-sdk-debug-bundles-for-express-fastify-nextjs/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/php-sdk-debug-bundles-for-laravel-symfony-and-wordpress-adjacent-apps",
+      "destination": "/blog/php-sdk-debug-bundles-for-laravel-symfony-and-wordpress-adjacent-apps/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/production-debugging-bundles-capture-policy-probes-redaction",
+      "destination": "/blog/production-debugging-bundles-capture-policy-probes-redaction/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/python-sdk-debug-bundles-for-django-flask-fastapi",
+      "destination": "/blog/python-sdk-debug-bundles-for-django-flask-fastapi/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/react-native-sdk-debug-bundles-for-mobile-ai-agent-debugging",
+      "destination": "/blog/react-native-sdk-debug-bundles-for-mobile-ai-agent-debugging/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/ruby-sdk-debug-bundles-for-rails-rack-sidekiq",
+      "destination": "/blog/ruby-sdk-debug-bundles-for-rails-rack-sidekiq/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/structured-incident-bundles-for-ai-agent-debugging-context",
+      "destination": "/blog/structured-incident-bundles-for-ai-agent-debugging-context/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/why-debugbundle",
+      "destination": "/blog/why-debugbundle/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/wordpress-debugging-bundles-with-the-debugbundle-plugin",
+      "destination": "/blog/wordpress-debugging-bundles-with-the-debugbundle-plugin/",
+      "statusCode": 308
+    }
+  ]
+}

@@ -8,6 +8,8 @@ import { createPageMdxComponents } from '@/content-components';
 import { readDocsPageData } from '@/content-page-data';
 import { docsSource } from '@/content-source';
 import { createPageMetadata } from '@/seo';
+import { canonicalSitePath } from '@/url-paths';
+import { getSiteRouteSeoOverride } from '@/site-route-policy';
 
 type DocsPageParams = {
   slug?: string[];
@@ -30,12 +32,16 @@ export async function generateMetadata({
   }
 
   const pageData = readDocsPageData(page);
+  const routePath = canonicalSitePath(page.url);
+  const seoOverride = getSiteRouteSeoOverride(routePath);
 
-  return createPageMetadata({
+  const metadata = createPageMetadata({
     title: pageData.title,
     description: pageData.description,
-    path: page.url,
+    path: seoOverride?.canonicalPath ?? routePath,
   });
+
+  return seoOverride?.robots ? { ...metadata, robots: seoOverride.robots } : metadata;
 }
 
 export default async function DocsContentPage({

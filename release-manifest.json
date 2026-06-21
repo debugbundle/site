@@ -8,6 +8,7 @@
     "pnpm-lock.yaml",
     "README.md",
     "headers-manifest.json",
+    "redirects-manifest.json",
     "LICENSE",
     "SECURITY.md",
     "CHANGELOG.md",

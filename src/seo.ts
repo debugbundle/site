@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { siteConfig } from '@/site-config';
+import { canonicalSitePath } from './url-paths';
 
 type PageMetadataOptions = {
   title: string;
@@ -9,18 +10,6 @@ type PageMetadataOptions = {
   openGraphType?: 'article' | 'website';
   publishedTime?: string;
 };
-
-function ensureTrailingSlash(path: string): string {
-  if (path === '' || path === '/') {
-    return '/';
-  }
-
-  if (path.split('/').pop()?.includes('.')) {
-    return path;
-  }
-
-  return path.endsWith('/') ? path : `${path}/`;
-}
 
 export function normalizeSiteHref(href: string): string {
   if (
@@ -42,11 +31,11 @@ export function normalizeSiteHref(href: string): string {
   const query = queryIndex === -1 ? '' : hrefWithoutHash.slice(queryIndex);
   const pathname = queryIndex === -1 ? hrefWithoutHash : hrefWithoutHash.slice(0, queryIndex);
 
-  return `${ensureTrailingSlash(pathname)}${query}${hash}`;
+  return `${canonicalSitePath(pathname)}${query}${hash}`;
 }
 
 export function absoluteSiteUrl(path: string): string {
-  return new URL(ensureTrailingSlash(path), siteConfig.domain).toString();
+  return new URL(canonicalSitePath(path), siteConfig.domain).toString();
 }
 
 export function createPageMetadata({

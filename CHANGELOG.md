@@ -6,6 +6,14 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+### Added
+
+- Added a generated `redirects-manifest.json` and build step for permanent slashless-to-trailing-slash redirects so static deploys can collapse duplicate docs, blog, and marketing URLs onto the canonical sitemap form.
+
+### Changed
+
+- Marked `/docs/installation/` as a supporting install catalog with `/docs/quickstart/` as the primary indexed onboarding page, and marked `/docs/v1/mcp/` as a supporting versioned summary with `/docs/mcp/` as the primary indexed MCP guide.
+
 ## [1.2.4] - 2026-06-21
 
 ### Added
