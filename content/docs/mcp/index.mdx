@@ -19,6 +19,30 @@ CLI, ensuring consistent behavior across all interfaces.
 
 Supported Node.js versions: 22.x through 26.x.
 
+## Official Registry
+
+Available on the official MCP Registry as `com.debugbundle/mcp`.
+
+- Registry listing: [com.debugbundle/mcp](https://registry.modelcontextprotocol.io/?q=com.debugbundle%2Fmcp)
+- API record: [`/v0.1/servers/com.debugbundle%2Fmcp/versions/latest`](https://registry.modelcontextprotocol.io/v0.1/servers/com.debugbundle%2Fmcp/versions/latest)
+
+## Install and Use
+
+Run the MCP server directly with npm:
+
+```bash
+npx @debugbundle/mcp
+```
+
+Or install it globally:
+
+```bash
+npm install -g @debugbundle/mcp
+debugbundle-mcp
+```
+
+The package ships MCP Registry metadata as `server.json` with server name `com.debugbundle/mcp`.
+
 ## Authentication
 
 The MCP server supports three authentication modes:
@@ -71,8 +95,6 @@ Use `DEBUGBUNDLE_API_URL` in the same environment block only for self-hosted or 
 }
 ```
 
-The npm package ships MCP Registry metadata as `server.json` with server name `com.debugbundle/mcp`.
-
 ## Configuration
 
 ### VS Code (GitHub Copilot)
@@ -109,7 +131,7 @@ Add to your Cursor MCP configuration:
 
 ### Generic MCP Client
 
-Any MCP-compatible client can connect using stdio transport:
+Any MCP-compatible client can connect over stdio with the published package:
 
 ```bash
 npx @debugbundle/mcp
