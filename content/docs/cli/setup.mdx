@@ -24,10 +24,14 @@ The setup command:
 3. Updates `.gitignore` to exclude local runtime data
 4. Scaffolds a relay route when a supported backend framework is detected
 
-The generated skill teaches agents the incident-first workflow, profile
-validation, browser relay verification, incident resolution hygiene, and when to
-evaluate repeated low-value incidents for capture-rule suggestions or
-path-scoped client-error capture policy.
+The generated skill teaches agents a runtime-evidence-gated workflow: check
+incidents first for qualifying runtime, production, health-check, notification,
+webhook, or captured-artifact issues, but inspect source and tests first for
+deterministic local UI, layout, copy, calculation, refactor, or test-only issues
+unless captured evidence is needed. It also covers profile validation, browser
+relay verification, incident resolution hygiene, and when to evaluate repeated
+low-value incidents for capture-rule suggestions or path-scoped client-error
+capture policy.
 
 For split frontend/backend repositories, use the canonical [Split Frontend & Backend](/docs/project-setup/split-frontend-backend) guide after setup. It covers relay ownership, backend-only token placement, cross-origin browser endpoint configuration, container workflow, and production deployment notes.
 
