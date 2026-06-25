@@ -36,7 +36,7 @@ These downstream listings are discovery surfaces. The official MCP Registry and 
 | Directory | Current State |
 | --- | --- |
 | [Glama](https://glama.ai/mcp/servers/sz3bl40umr) | Listed |
-| [PulseMCP](https://www.pulsemcp.com/servers/debugbundle) | Auto-listed as official from registry metadata |
+| [PulseMCP](https://www.pulsemcp.com/servers/debugbundle) | Auto-listed as official from registry metadata; manually browser-verified on 2026-06-25 |
 | [MCP.so](https://mcp.so/server/debugbundle/debugbundle) | Listed |
 | [Smithery MCP](https://smithery.ai/servers/debugbundle/debugbundle) | Release accepted, public indexing pending |
 | LobeHub MCP | Submitted as a request, not yet confirmed listed |
@@ -85,4 +85,6 @@ Project tokens are SDK write-only ingestion credentials. They are not valid for 
 
 DebugBundle does not currently publish a hosted Remote MCP connector. The supported public MCP path is the local stdio package.
 
-A hosted Remote MCP connector is a separate product slice because it requires hosted transport, member auth or OAuth, tenant authorization, rate limits, audit behavior, logging, readiness checks, and marketplace-specific connector documentation. Until that ships, remote-agent environments should run the stdio package in their managed runtime and pass a member token through that runtime's secret mechanism.
+A hosted Remote MCP connector is a separate product slice because it requires hosted transport, member auth or OAuth, tenant authorization, rate limits, audit behavior, logging, readiness checks, and marketplace-specific connector documentation. The low-overhead launch shape, if prioritized, is `https://mcp.debugbundle.com` with member-token auth first, hosted-safe tools only, and no database changes unless persistent connector grants or OAuth state require a migration.
+
+Until that ships, remote-agent environments should run the stdio package in their managed runtime and pass a member token through that runtime's secret mechanism.

@@ -1,0 +1,73 @@
+---
+title: Reducing Ingested Events
+description: How to lower raw ingested event volume without losing useful DebugBundle signal.
+icon: Funnel
+---
+
+Raw ingested events are the accepted events that count against your account's shared monthly event allowance. The billing breakdown shows which projects are contributing the most volume so you can tune the highest-impact capture paths first.
+
+Use this page when the billing allowance page shows high raw event volume, especially when the volume is coming from known noise rather than product failures.
+
+## Start With The Highest-Volume Project
+
+Open the raw ingested events breakdown from the billing page and sort by project volume. Tune one project at a time so you can see whether each change lowers accepted events without hiding real failures.
+
+For each high-volume project, check:
+
+- whether request telemetry is set broader than needed
+- whether verbose logs are being captured in production
+- whether browser resource errors are coming from third-party scripts
+- whether bot or scanner traffic is producing repeated low-value browser events
+- whether expected retries, health checks, or background jobs are producing redundant events
+
+## Use The Broadest Safe Product Control
+
+Prefer product-level controls before SDK-local code changes because they are visible, auditable, and consistent across API, CLI, MCP, and dashboard workflows.
+
+| Goal | Recommended control | Effect on event volume |
+| --- | --- | --- |
+| Lower general verbosity | Switch the project capture policy from `investigative` to `balanced` or `minimal` | Reduces which event categories are accepted |
+| Stop known noise entirely | Add a project capture rule with `drop` | Discards matching events before persistence when enforceable |
+| Keep a representative sample | Add a project capture rule with `sample` | Keeps only a deterministic fraction of matching events |
+| Keep context but stop incident churn | Add a project capture rule with `demote` | Prevents matching events from opening or reopening incidents, but kept events can still count as accepted volume |
+| Stop broad request telemetry | Set request capture to `failures_only` or narrower filters | Reduces accepted request events |
+| Stop standalone frontend noise | Keep breadcrumbs exception-only instead of standalone | Preserves context on exceptions without sending every breadcrumb independently |
+
+For exact preset and rule behavior, see [Capture Policy](/docs/capture-policy).
+
+## Common Reductions
+
+### Request Events
+
+Request capture is often the largest raw event source. In production, most projects should avoid `capture_request_events: "all"` unless they are actively investigating a live issue.
+
+Use `failures_only` for normal operation, then add path-scoped client-error incident rules for critical routes that should never return selected `4xx` responses.
+
+### Logs
+
+Production log capture should usually start at `warning` or `error`. If `info` logs are useful during an incident, use a temporary investigative window instead of leaving them enabled indefinitely.
+
+### Browser Resource Errors
+
+Third-party script failures, blocked analytics calls, stale extension errors, and bot-only browser noise can create high volume with little debugging value. Confirm the pattern from an incident or bundle, then use a narrow capture rule keyed by host, browser event kind, `first_party`, `client_kind`, or `bot_family`.
+
+### Remote Probes
+
+Remote probe activations are useful for short investigations. Keep activation TTLs short, deactivate probes after the incident, and avoid standalone probe capture for labels that fire on every request unless the investigation needs that level of detail.
+
+## When To Use SDK-Local Filters
+
+Use SDK-local filters for application-owned capture choices that the product cannot infer safely, such as tenant-specific suppression, final redaction, or browser network filtering before an event leaves the page.
+
+Use project capture rules first for operational noise that should be visible to the team. SDK-local drops are harder for another operator or agent to discover later.
+
+## Verify The Change
+
+After changing capture policy or rules:
+
+1. Wait for SDKs to fetch the updated configuration.
+2. Reproduce or observe the noisy path.
+3. Confirm the billing breakdown stops increasing at the previous rate.
+4. Confirm important incidents still open and have enough context.
+
+For incident-specific triage, see [Managing Noise](/docs/managing-noise). For ingestion semantics and quota behavior, see [API Ingestion](/docs/api/ingestion).

@@ -154,6 +154,16 @@ npx @debugbundle/mcp
 
 The server communicates over stdin/stdout using the MCP JSON-RPC protocol.
 
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| Node.js launch failure | Use Node.js 22.x through 26.x. If the client launches an older runtime, point the MCP command at a supported `node` or `npx` installation. |
+| Missing local auth | Run `debugbundle login` on the same machine, or set `DEBUGBUNDLE_MEMBER_TOKEN` in the MCP server environment for headless and managed clients. |
+| Invalid token | Use a member token that starts with `dbundle_mem_`. Project tokens are write-only SDK ingestion credentials and are not valid for MCP retrieval or management. |
+| Wrong API host | Omit `DEBUGBUNDLE_API_URL` for DebugBundle Cloud. Set it only for self-hosted, staging, or other non-default API hosts. |
+| Local repo not initialized | Run `debugbundle setup` in the repository before using local-only diagnostics, local bundle analysis, or generated project-skill workflows. Hosted incident and bundle retrieval can still work with member auth. |
+
 ## Tool Categories
 
 The MCP server provides approximately 95 tools organized into these categories:
