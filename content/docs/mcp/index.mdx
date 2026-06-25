@@ -25,6 +25,7 @@ Available on the official MCP Registry as `com.debugbundle/mcp`.
 
 - Registry listing: [com.debugbundle/mcp](https://registry.modelcontextprotocol.io/?q=com.debugbundle%2Fmcp)
 - API record: [`/v0.1/servers/com.debugbundle%2Fmcp/versions/latest`](https://registry.modelcontextprotocol.io/v0.1/servers/com.debugbundle%2Fmcp/versions/latest)
+- Distribution status and marketplace listings: [MCP Distribution](/docs/mcp/distribution)
 
 ## Install and Use
 
@@ -42,6 +43,20 @@ debugbundle-mcp
 ```
 
 The package ships MCP Registry metadata as `server.json` with server name `com.debugbundle/mcp`.
+
+DebugBundle does not currently publish a hosted Remote MCP connector. The supported public MCP path is the local stdio package.
+
+## Install Matrix
+
+| Environment | Recommended Path | Notes |
+| --- | --- | --- |
+| Generic local MCP client | `npx @debugbundle/mcp` | stdio transport |
+| Claude Desktop local MCP | local MCP server config | uses local machine auth/config |
+| Cursor | MCP config with `npx @debugbundle/mcp` | stdio transport |
+| VS Code / GitHub MCP Registry | `com.debugbundle/mcp` | official registry metadata |
+| OpenClaw / ClawHub | DebugBundle skill plus MCP config | use the published skill for workflow guidance |
+| CI/headless agents | `DEBUGBUNDLE_MEMBER_TOKEN` | never use a project token |
+| Self-hosted DebugBundle | `DEBUGBUNDLE_API_URL` plus member auth | points the server at your API base URL |
 
 ## Authentication
 
@@ -165,6 +180,7 @@ and [MCP Workflows](/docs/mcp/workflows) for practical agent workflow patterns.
 
 ## Next Steps
 
+- [MCP Distribution](/docs/mcp/distribution) — Official package, registry, marketplace, and skill channels
 - [MCP Tools Reference](/docs/mcp/tools) — Complete tool catalog
 - [MCP Workflows](/docs/mcp/workflows) — Agent workflow patterns
 - [CLI Cloud Workflow](/docs/cli/cloud-workflow) — CLI authentication (shared with MCP)

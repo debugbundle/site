@@ -298,6 +298,18 @@ debugbundle watch ./app.log --format debugbundle-ndjson
 
 Supported first-party parser formats include `debugbundle-ndjson`, `php-error`, and `apache-error`. See [Log Ingestion](/docs/cli/log-ingestion).
 
+## MCP
+
+Use the MCP package when an AI agent or MCP-compatible client needs DebugBundle incident and bundle tools.
+
+```bash
+npx @debugbundle/mcp
+```
+
+The official MCP Registry name is `com.debugbundle/mcp`. Local clients can reuse CLI auth state from `~/.debugbundle/auth.json`; headless or marketplace-managed clients should set `DEBUGBUNDLE_MEMBER_TOKEN` in the MCP server environment. Project tokens are SDK write-only ingestion credentials and must not be used for MCP retrieval or management.
+
+See [MCP Server](/docs/mcp), [MCP Distribution](/docs/mcp/distribution), and [MCP Tools Reference](/docs/mcp/tools).
+
 ## Self-Hosting
 
 ```bash

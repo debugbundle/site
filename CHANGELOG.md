@@ -9,10 +9,12 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 ### Added
 
 - Added a generated `redirects-manifest.json` and build step for permanent slashless-to-trailing-slash redirects so static deploys can collapse duplicate docs, blog, and marketing URLs onto the canonical sitemap form.
+- Added an MCP distribution page that lists official package, registry, marketplace, skill, auth-scope, and trust-channel guidance for managed agent installs.
 
 ### Changed
 
 - Marked `/docs/installation/` as a supporting install catalog with `/docs/quickstart/` as the primary indexed onboarding page, and marked `/docs/v1/mcp/` as a supporting versioned summary with `/docs/mcp/` as the primary indexed MCP guide.
+- Expanded MCP and installation docs with the local stdio install matrix, hosted Remote MCP status, and member-token guidance for headless or marketplace-managed clients.
 
 ## [1.2.4] - 2026-06-21
 

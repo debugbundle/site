@@ -282,6 +282,11 @@
       "statusCode": 308
     },
     {
+      "source": "/docs/mcp/distribution",
+      "destination": "/docs/mcp/distribution/",
+      "statusCode": 308
+    },
+    {
       "source": "/docs/mcp",
       "destination": "/docs/mcp/",
       "statusCode": 308

@@ -57,6 +57,7 @@ import * as docsIndexPage from '../content/docs/index.mdx';
 import * as docsInstallationPage from '../content/docs/installation.mdx';
 import * as docsLlmsTxtPage from '../content/docs/llms-txt.mdx';
 import * as docsMcpIndexPage from '../content/docs/mcp/index.mdx';
+import * as docsMcpDistributionPage from '../content/docs/mcp/distribution.mdx';
 import * as docsMcpToolsPage from '../content/docs/mcp/tools.mdx';
 import * as docsMcpWorkflowsPage from '../content/docs/mcp/workflows.mdx';
 import * as docsMcpPage from '../content/docs/v1/mcp.mdx';
@@ -171,7 +172,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   },
   './mcp/meta.json': {
     title: 'MCP',
-    pages: ['index', 'tools', 'workflows'],
+    pages: ['index', 'distribution', 'tools', 'workflows'],
   },
   './bundles/meta.json': {
     title: 'Bundles',
@@ -262,6 +263,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './troubleshooting.mdx': docsTroubleshootingPage,
   './what-is-debugbundle.mdx': docsWhatIsPage,
   './mcp/index.mdx': docsMcpIndexPage,
+  './mcp/distribution.mdx': docsMcpDistributionPage,
   './mcp/tools.mdx': docsMcpToolsPage,
   './mcp/workflows.mdx': docsMcpWorkflowsPage,
   './capture-policy.mdx': docsCapturePolicy,
