@@ -84,8 +84,26 @@ Each alert rule has a condition that determines when it fires.
 | `new_incident` | A new incident is created. | "Tell me about new errors." |
 | `incident_regressed` | A resolved incident reopened. | "Alert if a fix didn't hold." |
 | `error_spike` | Unusual increase in error occurrences. | "Warn if something is going off." |
-| `severity_threshold` | Incident severity meets or exceeds a threshold. | "Only page me for critical." |
+| `severity_threshold` | Incident severity meets or exceeds a threshold on selected lifecycle events. | "Only page me for high-severity opens or regressions." |
 | `regression_after_deploy` | Regression detected after a deployment. | "Did the deploy break something?" |
+
+## Severity Threshold Lifecycle
+
+`severity_threshold` rules can notify on new incidents, incident regressions, or both.
+The default is both, so a threshold rule with `severity_min: "medium"` matches medium,
+high, and critical incidents when they are first opened and when they later regress.
+
+Use `severity_lifecycle_scope` in the API, `--severity-lifecycle-scope` in the CLI,
+`severityLifecycleScope` in MCP, or the dashboard's "Notify on" field to choose:
+
+| Scope | Meaning |
+|-------|---------|
+| `new_incident` | Notify only when a matching incident is first created. |
+| `incident_regressed` | Notify only when a resolved matching incident regresses. |
+| `both` | Notify for matching new incidents and regressions. |
+
+Non-threshold alert conditions do not use this field because their condition already
+defines the lifecycle event.
 
 ## Severity Filter
 
@@ -111,7 +129,7 @@ rule only evaluates events from that service.
 
 ## Notification Cooldowns
 
-Alert rules can include `cooldown_seconds` to reduce repeated notifications for the same alert signal. The default is `0`, which preserves immediate delivery behavior. A positive value up to `604800` seconds (7 days) suppresses repeated notifications for the same computed notification key while leaving incident grouping unchanged.
+Alert rules can include `cooldown_seconds` to reduce repeated notifications for the same alert signal. The default is `0`, which preserves immediate delivery behavior. A positive value up to `604800` seconds (7 days) suppresses repeated notifications for the same computed notification key while leaving incident grouping unchanged. A one-day cooldown is not a daily reminder; it means the same matching notification key can send at most once per day.
 
 For low-information browser-native `window_error` signals, DebugBundle may use a broader notification key than the incident fingerprint so repeated opaque browser noise can be quieted without merging separate incidents.
 
@@ -139,6 +157,7 @@ Channel: Slack (#incidents)
 Channel: Slack (#incidents-critical)
   Condition: severity_threshold
   Severity: >= critical
+  Notify on: new incidents and regressions
 
 Channel: Email (oncall@company.com)
   Condition: incident_regressed

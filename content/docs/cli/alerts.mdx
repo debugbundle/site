@@ -28,7 +28,7 @@ Manual incident capture works with alerts. If your application calls `captureExc
 | `new_incident` | A new incident is created. |
 | `incident_regressed` | A previously resolved incident regressed. |
 | `error_spike` | An unusual spike in incident occurrences is detected. |
-| `severity_threshold` | An incident's severity meets or exceeds the configured minimum. |
+| `severity_threshold` | An incident's severity meets or exceeds the configured minimum on selected lifecycle events. |
 | `regression_after_deploy` | A regression is correlated to a deployment. |
 
 ## List Alerts
@@ -49,6 +49,7 @@ Output:
       "condition_type": "new_incident",
       "service_id": null,
       "severity_min": "high",
+      "severity_lifecycle_scope": null,
       "cooldown_seconds": 86400,
       "is_enabled": true,
       "config": {
@@ -98,6 +99,7 @@ debugbundle alert create \
   --channel discord \
   --condition severity_threshold \
   --severity-min critical \
+  --severity-lifecycle-scope both \
   --config-json '{"webhook_url": "https://discord.com/api/webhooks/..."}'
 ```
 
@@ -121,11 +123,16 @@ debugbundle alert create \
 | `--condition` | `string` | — | **Required.** Condition type: `new_incident`, `incident_regressed`, `error_spike`, `severity_threshold`, `regression_after_deploy`. |
 | `--service-id` | `string` | — | Scope alert to a specific service. |
 | `--severity-min` | `string` | — | Minimum severity to trigger: `low`, `medium`, `high`, `critical`. |
+| `--severity-lifecycle-scope` | `string` | `both` for `severity_threshold` | For severity-threshold rules only: `new_incident`, `incident_regressed`, or `both`. |
 | `--cooldown` | `number` | `0` | Notification cooldown in seconds. Use `0` to disable suppression; maximum is `604800` (7 days). |
 | `--config-json` | `string` | — | **Required.** Channel-specific configuration as JSON string. |
 | `--is-enabled` | `boolean` | `true` | Whether the alert is active. |
 | `--auth-file` | `string` | `~/.debugbundle/auth.json` | Path to auth state file. |
 | `--json` | `boolean` | `false` | Output as JSON. |
+
+For `severity_threshold`, `--severity-lifecycle-scope both` means the threshold can
+notify when a matching incident opens and when it later regresses. Non-threshold
+conditions ignore this field because their condition already defines the lifecycle event.
 
 `--severity-min high` does not match low-confidence opaque browser-native captures by
 default: opaque `window_error` infers `low`, and opaque `resource_error` infers
@@ -137,6 +144,7 @@ default: opaque `window_error` infers `low`, and opaque `resource_error` infers
 debugbundle alert update alt_01HABC... \
   --project-id proj_01HXYZ... \
   --severity-min critical \
+  --severity-lifecycle-scope incident_regressed \
   --cooldown 0 \
   --is-enabled true
 ```
@@ -150,6 +158,7 @@ Partial update — only the specified fields are changed.
 | `--condition` | `string` | Update condition type. |
 | `--service-id` | `string` | Update service scope (use `null` to clear). |
 | `--severity-min` | `string` | Update minimum severity (use `null` to clear). |
+| `--severity-lifecycle-scope` | `string` | Update severity-threshold lifecycle scope: `new_incident`, `incident_regressed`, or `both` (use `null` to reset to the default `both`). |
 | `--cooldown` | `number` | Update notification cooldown in seconds. Use `0` to disable suppression. |
 | `--config-json` | `string` | Update channel configuration (use `null` to clear). |
 | `--is-enabled` | `boolean` | Enable or disable the alert. |
@@ -178,7 +187,7 @@ Each email alert rule targets a single recipient. Create additional rules if mor
 
 ## Notification Cooldowns
 
-Alert rules can set a notification cooldown so repeated matches for the same notification key do not send immediately again. The CLI flag is `--cooldown <seconds>`, where `0` disables suppression and the maximum is `604800` seconds (7 days). Cooldowns suppress notifications only; they do not merge incidents or change incident grouping.
+Alert rules can set a notification cooldown so repeated matches for the same notification key do not send immediately again. The CLI flag is `--cooldown <seconds>`, where `0` disables suppression and the maximum is `604800` seconds (7 days). Cooldowns suppress notifications only; they do not merge incidents or change incident grouping. A one-day cooldown is not a daily reminder; it means the same matching notification key can send at most once per day.
 
 ### Slack
 

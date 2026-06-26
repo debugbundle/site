@@ -298,9 +298,14 @@ Create a new alert rule.
 | `channel` | `string` | **Required.** Alert channel: `email`, `slack`, `discord`, `webhook`. |
 | `conditionType` | `string` | **Required.** Trigger: `new_incident`, `incident_regressed`, `error_spike`, `severity_threshold`, `regression_after_deploy`. |
 | `severityMin` | `string` | Minimum severity filter. |
+| `severityLifecycleScope` | `string` | For `severity_threshold` only: `new_incident`, `incident_regressed`, or `both`. Defaults to `both`; non-threshold rules return `null`. |
 | `cooldownSeconds` | `number` | Optional notification cooldown in seconds. Defaults to `0`, accepts `0` to disable suppression, max `604800` (7 days). |
 | `config` | `object` | **Required.** Channel-specific configuration. |
 | `isEnabled` | `boolean` | Optional enabled state. Defaults to `true`. |
+
+For `conditionType: "severity_threshold"`, `severityLifecycleScope: "both"` notifies
+for matching new incidents and matching regressions. Non-threshold conditions ignore
+this field because their condition already defines the lifecycle event.
 
 `severityMin: "high"` does not match low-confidence opaque browser-native captures by
 default: opaque `window_error` infers `low`, and opaque `resource_error` infers
@@ -318,6 +323,7 @@ Update an existing alert rule.
 | `channel` | `string` | Updated channel type. |
 | `conditionType` | `string` | Updated trigger condition. |
 | `severityMin` | `string \| null` | Updated or cleared severity filter. |
+| `severityLifecycleScope` | `string \| null` | Updated severity-threshold lifecycle scope; use `null` to reset to the default `both`. |
 | `cooldownSeconds` | `number` | Updated notification cooldown in seconds. Use `0` to disable suppression. |
 | `isEnabled` | `boolean` | Enable or disable the alert. |
 | `config` | `object` | Updated channel configuration. |

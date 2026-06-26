@@ -1592,7 +1592,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "minLength": 1
+              "format": "uuid"
             }
           }
         ],
@@ -1662,7 +1662,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "minLength": 1
+              "format": "uuid"
             }
           }
         ],
@@ -1739,7 +1739,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "minLength": 1
+              "format": "uuid"
             }
           }
         ],
@@ -1816,7 +1816,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "minLength": 1
+              "format": "uuid"
             }
           }
         ],
@@ -1893,7 +1893,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "minLength": 1
+              "format": "uuid"
             }
           }
         ],
@@ -2474,7 +2474,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "minLength": 1
+              "format": "uuid"
             }
           },
           {
@@ -7439,7 +7439,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "minLength": 1
+              "format": "uuid"
             }
           }
         ],
@@ -7509,7 +7509,7 @@
             "required": true,
             "schema": {
               "type": "string",
-              "minLength": 1
+              "format": "uuid"
             }
           }
         ],
@@ -17377,6 +17377,22 @@
                     }
                   ]
                 },
+                "severity_lifecycle_scope": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "new_incident",
+                        "incident_regressed",
+                        "both"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null
+                },
                 "cooldown_seconds": {
                   "type": "integer",
                   "minimum": 0
@@ -17450,6 +17466,14 @@
                   "critical"
                 ]
               },
+              "severity_lifecycle_scope": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "both"
+                ]
+              },
               "cooldown_seconds": {
                 "type": "integer",
                 "minimum": 0,
@@ -17514,6 +17538,14 @@
                   "medium",
                   "high",
                   "critical"
+                ]
+              },
+              "severity_lifecycle_scope": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "both"
                 ]
               },
               "cooldown_seconds": {
@@ -17600,6 +17632,14 @@
                   "critical"
                 ]
               },
+              "severity_lifecycle_scope": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "both"
+                ]
+              },
               "cooldown_seconds": {
                 "type": "integer",
                 "minimum": 0,
@@ -17665,6 +17705,14 @@
                   "medium",
                   "high",
                   "critical"
+                ]
+              },
+              "severity_lifecycle_scope": {
+                "type": "string",
+                "enum": [
+                  "new_incident",
+                  "incident_regressed",
+                  "both"
                 ]
               },
               "cooldown_seconds": {
@@ -17762,6 +17810,22 @@
                   }
                 ]
               },
+              "severity_lifecycle_scope": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "new_incident",
+                      "incident_regressed",
+                      "both"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null
+              },
               "cooldown_seconds": {
                 "type": "integer",
                 "minimum": 0
@@ -17844,6 +17908,21 @@
                   }
                 ]
               },
+              "severity_lifecycle_scope": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "new_incident",
+                      "incident_regressed",
+                      "both"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "cooldown_seconds": {
                 "type": "integer",
                 "minimum": 0,
@@ -17915,6 +17994,21 @@
                       "medium",
                       "high",
                       "critical"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "severity_lifecycle_scope": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "new_incident",
+                      "incident_regressed",
+                      "both"
                     ]
                   },
                   {
@@ -18018,6 +18112,21 @@
                   }
                 ]
               },
+              "severity_lifecycle_scope": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "new_incident",
+                      "incident_regressed",
+                      "both"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "cooldown_seconds": {
                 "type": "integer",
                 "minimum": 0,
@@ -18097,6 +18206,21 @@
                   }
                 ]
               },
+              "severity_lifecycle_scope": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "new_incident",
+                      "incident_regressed",
+                      "both"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "cooldown_seconds": {
                 "type": "integer",
                 "minimum": 0,
@@ -18169,6 +18293,21 @@
                       "medium",
                       "high",
                       "critical"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "severity_lifecycle_scope": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "new_incident",
+                      "incident_regressed",
+                      "both"
                     ]
                   },
                   {

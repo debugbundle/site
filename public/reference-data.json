@@ -1606,12 +1606,12 @@
     },
     {
       "commandPath": "alert create",
-      "usage": "debugbundle alert create --project-id <id> --channel <channel> --condition <condition> [--service-id <id>] [--severity-min <level>] [--cooldown <seconds>] --config-json <json> [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle alert create --project-id <id> --channel <channel> --condition <condition> [--service-id <id>] [--severity-min <level>] [--severity-lifecycle-scope <new_incident|incident_regressed|both>] [--cooldown <seconds>] --config-json <json> [--is-enabled <true|false>] [--auth-file <path>] [--json]",
       "group": "alert"
     },
     {
       "commandPath": "alert update",
-      "usage": "debugbundle alert update <alert-id> --project-id <id> [--service-id <id|null>] [--channel <channel>] [--condition <condition>] [--severity-min <level|null>] [--cooldown <seconds>] [--config-json <json|null>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle alert update <alert-id> --project-id <id> [--service-id <id|null>] [--channel <channel>] [--condition <condition>] [--severity-min <level|null>] [--severity-lifecycle-scope <new_incident|incident_regressed|both|null>] [--cooldown <seconds>] [--config-json <json|null>] [--is-enabled <true|false>] [--auth-file <path>] [--json]",
       "group": "alert"
     },
     {
@@ -2522,7 +2522,7 @@
       "tools": [
         {
           "name": "create_alert",
-          "description": "Create an alert rule.",
+          "description": "Create an alert rule, including optional severity-threshold lifecycle scope.",
           "requiredArguments": [
             "bearerToken",
             "channel",
@@ -2534,6 +2534,7 @@
             "cooldownSeconds",
             "isEnabled",
             "serviceId",
+            "severityLifecycleScope",
             "severityMin"
           ]
         },
@@ -2560,7 +2561,7 @@
         },
         {
           "name": "update_alert",
-          "description": "Update an alert rule.",
+          "description": "Update an alert rule, including optional severity-threshold lifecycle scope.",
           "requiredArguments": [
             "alertId",
             "bearerToken",
@@ -2573,6 +2574,7 @@
             "cooldownSeconds",
             "isEnabled",
             "serviceId",
+            "severityLifecycleScope",
             "severityMin"
           ]
         }
