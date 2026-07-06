@@ -389,15 +389,19 @@ export async function QuickInstallGuide({ className }: QuickInstallGuideProps = 
       description: (
         <>
           <p>
-            Download the plugin ZIP from the{' '}
-            <a className={linkClassName} href="https://github.com/debugbundle/debugbundle-wordpress/releases">
-              debugbundle-wordpress releases page
+            Install DebugBundle from the{' '}
+            <a className={linkClassName} href="https://wordpress.org/plugins/debugbundle/">
+              WordPress.org plugin directory
             </a>
-            , then upload it in WordPress under <span className="font-medium">Plugins -&gt; Add New -&gt; Upload Plugin</span>.
+            {' '}in <span className="font-medium">Plugins -&gt; Add New</span>. Manual ZIP installs are available from the{' '}
+            <a className={linkClassName} href="https://github.com/debugbundle/debugbundle-wordpress/releases">
+              GitHub releases page
+            </a>
+            .
           </p>
           <div>
-            <a className={ctaButtonClassName} href="https://github.com/debugbundle/debugbundle-wordpress/releases" target="_blank">
-              Get WordPress plugin
+            <a className={ctaButtonClassName} href="https://wordpress.org/plugins/debugbundle/" target="_blank">
+              Open WordPress.org plugin
               <ArrowUpRight className="size-4" aria-hidden="true" />
             </a>
           </div>
