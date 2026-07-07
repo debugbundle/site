@@ -52,6 +52,7 @@ DebugBundle does not currently publish a hosted Remote MCP connector. The suppor
 | --- | --- | --- |
 | Generic local MCP client | `npx @debugbundle/mcp` | stdio transport |
 | Claude Desktop local MCP | local MCP server config | uses local machine auth/config |
+| Claude Code plugin | `/plugin marketplace add debugbundle/debugbundle` | bundled MCP config and DebugBundle skill |
 | Cursor | MCP config with `npx @debugbundle/mcp` | stdio transport |
 | VS Code / GitHub MCP Registry | `com.debugbundle/mcp` | official registry metadata |
 | OpenClaw / ClawHub | DebugBundle skill plus MCP config | use the published skill for workflow guidance |
@@ -111,6 +112,40 @@ Use `DEBUGBUNDLE_API_URL` in the same environment block only for self-hosted or 
 ```
 
 ## Configuration
+
+### Claude Desktop
+
+Open Claude Desktop Settings > Developer, edit the local MCP configuration, and add:
+
+```json
+{
+  "mcpServers": {
+    "debugbundle": {
+      "command": "npx",
+      "args": ["-y", "@debugbundle/mcp"]
+    }
+  }
+}
+```
+
+Restart Claude Desktop after saving. The local server can reuse `debugbundle login` auth state on the same machine. For managed/headless setups, set `DEBUGBUNDLE_MEMBER_TOKEN` in the MCP server environment. Set `DEBUGBUNDLE_API_URL` only for self-hosted or non-default API hosts.
+
+### Claude Code Plugin
+
+Claude Code can install DebugBundle from the first-party marketplace hosted in the DebugBundle repository:
+
+```text
+/plugin marketplace add debugbundle/debugbundle
+/plugin install debugbundle@debugbundle
+```
+
+The plugin bundles the local MCP server config and a DebugBundle workflow skill. If Claude Code does not connect the MCP server immediately after install, run:
+
+```text
+/reload-plugins
+```
+
+The plugin package is also prepared for Claude community marketplace review. Until Anthropic accepts it into `anthropics/claude-plugins-community`, install from the DebugBundle repository marketplace above rather than `@claude-community`.
 
 ### VS Code (GitHub Copilot)
 
