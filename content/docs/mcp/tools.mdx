@@ -151,6 +151,149 @@ Retrieve raw log entries associated with an incident.
 
 ---
 
+## AnalyticsBundle
+
+Analytics tools require member authentication. Project tokens are write-only SDK
+credentials and cannot call these tools. Metric/detail operations remain project-scoped;
+only opportunity and bundle lists may omit `projectId` for an accessible organization-wide
+inventory.
+
+Common metric options are `projectId`, `last`, `from`, `to`, `granularity`, `service`,
+`environment`, and `limit` where supported.
+
+### get_usage_summary
+
+Return sessions, page views, active/new/returning visitors, exits, conversions, and standard
+aggregate breakdowns for a project.
+
+### get_route_metrics
+
+Return aggregate route pageviews, unique sessions, entrances, exits, bounces, and
+incident-linked sessions.
+
+### get_device_breakdown
+
+Return device type, browser, OS, and language aggregates.
+
+### get_referrer_metrics
+
+Return referrer-domain and bounded UTM source/medium/campaign aggregates.
+
+### get_action_metrics
+
+Return semantic action, conversion, and fixed journey-marker aggregates.
+
+### list_funnel_metrics
+
+List funnel entered/completed/drop-off/conversion summaries for a project.
+
+### get_funnel_analysis
+
+| Parameter | Type | Description |
+|---|---|---|
+| `projectId` | `string` | **Required.** Project that owns the funnel evidence. |
+| `funnelKey` | `string` | **Required.** Funnel key to analyze. |
+
+Returns deterministic ordered step metrics in addition to the aggregate funnel summary.
+
+### get_journey_patterns
+
+Return aggregate route transitions, unique sessions, transition share, and bounded retained
+sample references.
+
+### list_analytics_journey_samples
+
+| Parameter | Type | Description |
+|---|---|---|
+| `projectId` | `string` | **Required.** Project scope. |
+| `service` / `environment` | `string` | Optional bounded scope. |
+| `tag` | `string` | Optional derived analysis tag. |
+| `cursor` / `limit` | `string` / `number` | Optional pagination. |
+
+### get_analytics_journey_sample
+
+| Parameter | Type | Description |
+|---|---|---|
+| `projectId` | `string` | **Required.** Project scope. |
+| `sampleId` | `string` | **Required.** Retained sample identifier. |
+
+Returns a redacted structured timeline, not a raw visit or video replay.
+
+### get_incident_impact
+
+| Parameter | Type | Description |
+|---|---|---|
+| `projectId` | `string` | **Required.** Project scope. |
+| `incidentId` | `string` | **Required.** Accessible incident to correlate. |
+
+Returns exact correlation-backed affected sessions, routes, funnels, segments, journey
+references, conversion availability, and current incident-impact bundle state.
+
+### list_analytics_opportunities
+
+`projectId` is optional. Omit it only for an accessible cross-project inventory. Optional
+filters include status, kind, service, environment, severity, bundle status, date bounds,
+cursor, and limit.
+
+### get_analytics_opportunity
+
+Requires `projectId` and `opportunityId`; returns one aggregate-only opportunity and its
+current generated-bundle state.
+
+### list_analytics_bundles
+
+`projectId` is optional for cross-project inventory. Optional filters include generation
+status, analysis kind, service, environment, date bounds, cursor, and limit.
+
+### generate_analytics_bundle
+
+| Parameter | Type | Description |
+|---|---|---|
+| `projectId` | `string` | **Required.** Project scope. |
+| `analysisKind` | `string` | **Required.** Bounded analysis kind. |
+| `last` or `from`/`to` | `string` | Bounded analysis window. |
+| `funnel`, `route`, `incidentId`, `deployId` | `string` | Optional kind-specific focus. |
+| `filters` | `object` | Optional safe service/environment scope. |
+
+Returns pending/failed state or a completed deterministic artifact. It does not generate one
+bundle per visit.
+
+### get_analytics_bundle
+
+Requires `projectId` and `bundleGenerationId`; returns the existing generation status or completed
+artifact without requesting another generation.
+
+### get_analytics_settings
+
+Requires `projectId`. Owners/admins receive `manage` access mode; members receive `preview`.
+
+### update_analytics_settings
+
+Requires owner/admin access plus `projectId` and an `update` object. Settings include enabled
+state, privacy, consent, capture toggles, sampling, retention, saved-funnel cap, and Team
+controlled custom dimensions.
+
+### list_saved_analytics_funnels
+
+List active definitions for `projectId`. Members may read definitions.
+
+### create_saved_analytics_funnel
+
+Requires owner/admin access, `projectId`, `funnelKey`, `displayName`, and 2-20 ordered unique
+`steps` containing `step_key` and `display_name`.
+
+### update_saved_analytics_funnel
+
+Requires owner/admin access, `projectId`, `funnelKey`, and at least one of `displayName` or
+ordered `steps`.
+
+### archive_saved_analytics_funnel
+
+Requires owner/admin access, `projectId`, and `funnelKey`. Archival removes the active
+definition but retains historical aggregate evidence.
+
+---
+
 ## Token Management
 
 ### list_project_tokens

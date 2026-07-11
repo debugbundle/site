@@ -1,0 +1,78 @@
+---
+title: Self-Hosted AnalyticsBundle
+description: Operate AnalyticsBundle migrations, aggregation, retention, and opportunity evaluation in a self-hosted DebugBundle deployment.
+icon: ServerCog
+---
+
+Self-hosted AnalyticsBundle uses the same capture, validation, aggregation, query, and web
+surfaces as hosted core. Self-host mode bypasses tier, allowance, and hosted rate-limit
+enforcement, but never bypasses authentication, consent, privacy, redaction, validation, or
+retention.
+
+## Upgrade Order
+
+AnalyticsBundle depends on additive production tables and migration-ledger entries. For an
+existing installation, run the `db-migrate` service before API and Worker containers consume
+the new schema:
+
+```bash
+docker compose up -d --force-recreate workspace-init db-migrate api worker web
+```
+
+`db-bootstrap` is for empty databases only. It is not an upgrade mechanism. API and worker
+readiness fail closed when required migration checksums or tables are missing.
+
+## Storage And Queues
+
+- PostgreSQL stores settings, idempotency ledgers, aggregate rollups, retained-sample indexes,
+  opportunities, and bundle-generation metadata.
+- S3-compatible storage holds short-lived raw analytics inputs, retained redacted journey
+  artifacts, and generated AnalyticsBundle artifacts.
+- Redis/BullMQ carries analytics aggregation and bundle-generation jobs.
+
+Analytics ingestion remains lightweight: validate, persist raw input, enqueue, and return.
+Aggregation and artifact generation run in the worker and are idempotent.
+
+## Retention Operations
+
+Configure `raw_retention_days`, `sample_retention_days`, and
+`aggregate_retention_months` per project. The shared cleanup job removes expired objects and
+metadata while preserving in-window aggregate rollups as the normal query source.
+
+Monitor object-storage growth and worker cleanup failures. Do not manually delete only
+Postgres metadata or only S3 objects; partial deletion can leave inaccessible artifacts or
+orphaned storage. Use the application retention lane.
+
+## Opportunity Evaluation
+
+Event-triggered evaluation runs while relevant aggregate rollups are updated. The worker
+also performs an idle aggregate-only scan so opportunities can be found after thresholds or
+definitions change:
+
+```text
+ANALYTICS_OPPORTUNITY_EVALUATION_INTERVAL_MS=21600000
+```
+
+The default is six hours. The scan uses a distributed lease, bounded cursor batches, and
+aggregate rollups only; it does not scan raw analytics objects.
+
+## Operational Verification
+
+1. Confirm `db-migrate` completed successfully.
+2. Confirm API and Worker `/ready` checks are healthy.
+3. Enable analytics for a test project.
+4. Send a browser analytics event through relay or direct ingestion.
+5. Query `debugbundle analytics summary --project <id> --last 7d --json`.
+6. Confirm cleanup logs and S3 lifecycle behavior match project retention settings.
+
+## Backup And Restore
+
+Back up PostgreSQL and the S3-compatible bucket together. Restore matching snapshots so
+artifact metadata and object keys remain coherent. Redis queues are operational state;
+idempotency ledgers make accepted analytics jobs safely re-runnable after recovery.
+
+## Next Steps
+
+- [Self-Hosting](/docs/self-hosting) - Full stack setup and health checks.
+- [Privacy and retention](/docs/analytics/privacy) - Project retention semantics.
+- [AnalyticsBundle CLI](/docs/cli/analytics) - Verify aggregate reads after deployment.

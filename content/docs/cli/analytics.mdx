@@ -1,0 +1,118 @@
+---
+title: AnalyticsBundle CLI
+description: Query aggregate product analytics, inspect journeys and opportunities, generate AnalyticsBundles, and manage project analytics settings.
+icon: ChartNoAxesCombined
+---
+
+Analytics commands require connected member authentication. Project tokens are SDK
+write-only credentials and cannot read or manage analytics. Add `--json` for stable
+machine-readable output.
+
+## Aggregate Metrics
+
+```bash
+debugbundle analytics summary --project <id> --last 7d
+debugbundle analytics routes --project <id> --last 30d
+debugbundle analytics devices --project <id> --last 30d
+debugbundle analytics referrers --project <id> --last 30d
+debugbundle analytics actions --project <id> --last 7d
+debugbundle analytics funnels --project <id> --last 30d
+debugbundle analytics funnel signup --project <id> --last 30d
+debugbundle analytics journeys --project <id> --last 7d
+debugbundle analytics incident-impact <incident-id> --project <id>
+```
+
+Metric commands accept bounded time, granularity, service, environment, and limit options
+where supported. Prefer `--json` for agents instead of parsing human tables.
+
+## Retained Journey Samples
+
+```bash
+debugbundle analytics journey-samples list \
+  --project <id> --service web --environment production --limit 20
+
+debugbundle analytics journey-samples get <sample-id> --project <id> --json
+```
+
+Samples are short-lived redacted timelines. They are not raw sessions or video replay.
+
+## Opportunities
+
+```bash
+debugbundle analytics opportunities --project <id> --status open
+debugbundle analytics opportunities --all-projects --severity high --json
+debugbundle analytics opportunity get <opportunity-id> --project <id> --json
+```
+
+`--all-projects` is explicit for CLI inventory reads. It returns only projects accessible to
+the authenticated member and is supported for opportunity and bundle lists, not detail or
+metrics commands.
+
+## Generate And Read AnalyticsBundles
+
+```bash
+debugbundle analytics bundle create \
+  --project <id> --kind funnel_dropoff --funnel signup --last 30d --json
+
+debugbundle analytics bundle list --project <id> --status completed
+debugbundle analytics bundle list --all-projects --status failed
+debugbundle analytics bundle get <generation-id> --project <id> --json
+```
+
+Generation is asynchronous. Create/get output can report pending, failed, or a completed
+artifact. Supported analysis kinds are validated by the CLI and API. Context options such
+as `--funnel`, `--route`, `--incident-id`, and `--deploy-id` must match the selected kind.
+
+## Saved Funnels
+
+```bash
+debugbundle analytics saved-funnels list --project <id>
+
+debugbundle analytics saved-funnels create \
+  --project <id> --key signup --name "Signup" \
+  --steps-json '[{"step_key":"landing","display_name":"Landing"},{"step_key":"complete","display_name":"Complete"}]'
+
+debugbundle analytics saved-funnels update signup \
+  --project <id> --name "Account signup" --steps-json '<json>'
+
+debugbundle analytics saved-funnels archive signup --project <id>
+```
+
+Members can list definitions. Create, update, and archive require owner/admin access. Step
+keys are unique and ordered; each definition contains 2-20 steps. Archive is soft and does
+not delete historical aggregate metrics.
+
+## Project Settings
+
+```bash
+debugbundle analytics settings get --project <id> --json
+
+debugbundle analytics settings set --project <id> \
+  --enabled true \
+  --privacy-mode strict \
+  --consent-required true \
+  --journey-sample-rate 0.1 \
+  --raw-retention-days 7 \
+  --sample-retention-days 30 \
+  --aggregate-retention-months 24
+```
+
+Owners/admins can update settings. Members receive preview-only settings. Team projects can
+add `--max-custom-dimensions` and `--approved-custom-dimensions`; use only approved,
+low-cardinality, non-sensitive keys.
+
+## Common Errors
+
+| Error | Meaning |
+|---|---|
+| `analytics_disabled` | Project analytics is not enabled. |
+| `analytics_metrics_not_available` | No readable aggregate data exists for the requested scope. |
+| `analytics_quota_exceeded` | The analytics-specific allowance is exhausted. |
+| `upgrade_required` | The current hosted tier does not include the requested capability. |
+| `forbidden` | The member can read but cannot perform the management mutation. |
+
+## Next Steps
+
+- [AnalyticsBundle](/docs/analytics) - Product and evidence model.
+- [AnalyticsBundle API](/docs/api/analytics) - HTTP integration.
+- [MCP Tools](/docs/mcp/tools) - Agent-native equivalents.

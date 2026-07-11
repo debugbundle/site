@@ -43,6 +43,11 @@ Interfaces
 - API overview: https://debugbundle.com/docs/api/
 - MCP overview: https://debugbundle.com/docs/mcp/
 - MCP tools: https://debugbundle.com/docs/mcp/tools/
+- AnalyticsBundle: https://debugbundle.com/docs/analytics/
+- AnalyticsBundle privacy: https://debugbundle.com/docs/analytics/privacy/
+- Self-hosted AnalyticsBundle: https://debugbundle.com/docs/analytics/self-hosting/
+- AnalyticsBundle CLI: https://debugbundle.com/docs/cli/analytics/
+- AnalyticsBundle API: https://debugbundle.com/docs/api/analytics/
 
 Bundles, automation, and operations
 - Bundles: https://debugbundle.com/docs/bundles/

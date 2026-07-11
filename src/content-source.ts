@@ -17,6 +17,9 @@ import * as docsManagingNoisePage from '../content/docs/managing-noise.mdx';
 import * as docsReducingIngestedEventsPage from '../content/docs/reducing-ingested-events.mdx';
 import * as docsAlertsPage from '../content/docs/alerts.mdx';
 import * as docsAvailabilityChecksPage from '../content/docs/availability-checks.mdx';
+import * as docsAnalyticsIndexPage from '../content/docs/analytics/index.mdx';
+import * as docsAnalyticsPrivacyPage from '../content/docs/analytics/privacy.mdx';
+import * as docsAnalyticsSelfHostingPage from '../content/docs/analytics/self-hosting.mdx';
 import * as docsBundlesIndexPage from '../content/docs/bundles/index.mdx';
 import * as docsBundlesImprovementBundlesPage from '../content/docs/bundles/improvement-bundles.mdx';
 import * as docsBundlesSchemaPage from '../content/docs/bundles/schema.mdx';
@@ -31,6 +34,7 @@ import * as docsProbesPage from '../content/docs/probes.mdx';
 import * as docsWebhooksEventsPage from '../content/docs/webhooks/events.mdx';
 import * as docsWebhooksVerificationPage from '../content/docs/webhooks/verification.mdx';
 import * as docsApiAlertsPage from '../content/docs/api/alerts.mdx';
+import * as docsApiAnalyticsPage from '../content/docs/api/analytics.mdx';
 import * as docsApiBillingPage from '../content/docs/api/billing.mdx';
 import * as docsApiAuthPage from '../content/docs/api/authentication.mdx';
 import * as docsApiIncidentsPage from '../content/docs/api/incidents.mdx';
@@ -42,6 +46,7 @@ import * as docsApiProjectsPage from '../content/docs/api/projects.mdx';
 import * as docsApiWebhooksPage from '../content/docs/api/webhooks.mdx';
 import * as docsApiPage from '../content/docs/v1/api.mdx';
 import * as docsCliAlertsPage from '../content/docs/cli/alerts.mdx';
+import * as docsCliAnalyticsPage from '../content/docs/cli/analytics.mdx';
 import * as docsCliCloudWorkflowPage from '../content/docs/cli/cloud-workflow.mdx';
 import * as docsCliIndexPage from '../content/docs/cli/index.mdx';
 import * as docsCliLocalWorkflowPage from '../content/docs/cli/local-workflow.mdx';
@@ -117,6 +122,8 @@ const docsCollection = await create.docs('docs', 'content/docs', {
       'bundles/schema',
       'incidents',
       'incidents/reproduction',
+      '---AnalyticsBundle---',
+      'analytics',
       '---Webhooks & Alerts---',
       '[Webhook][Webhooks](/docs/webhooks)',
       '[Zap][Webhook Events](/docs/webhooks/events)',
@@ -166,11 +173,15 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   },
   './cli/meta.json': {
     title: 'CLI',
-    pages: ['index', 'setup', 'local-workflow', 'cloud-workflow', 'log-ingestion', 'tokens', 'webhooks', 'alerts'],
+    pages: ['index', 'setup', 'local-workflow', 'cloud-workflow', 'log-ingestion', 'tokens', 'webhooks', 'alerts', 'analytics'],
   },
   './api/meta.json': {
     title: 'API',
-    pages: ['index', 'authentication', 'incidents', 'ingestion', 'webhooks', 'alerts', 'projects', 'members', 'probes', 'billing'],
+    pages: ['index', 'authentication', 'incidents', 'ingestion', 'webhooks', 'alerts', 'projects', 'members', 'probes', 'billing', 'analytics'],
+  },
+  './analytics/meta.json': {
+    title: 'AnalyticsBundle',
+    pages: ['index', 'privacy', 'self-hosting'],
   },
   './mcp/meta.json': {
     title: 'MCP',
@@ -216,6 +227,9 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './quickstart.mdx': docsQuickstartPage,
   './alerts.mdx': docsAlertsPage,
   './availability-checks.mdx': docsAvailabilityChecksPage,
+  './analytics/index.mdx': docsAnalyticsIndexPage,
+  './analytics/privacy.mdx': docsAnalyticsPrivacyPage,
+  './analytics/self-hosting.mdx': docsAnalyticsSelfHostingPage,
   './billing.mdx': docsBillingPage,
   './changelog.mdx': docsChangelogPage,
   './llms-txt.mdx': docsLlmsTxtPage,
@@ -231,6 +245,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './webhooks/events.mdx': docsWebhooksEventsPage,
   './webhooks/verification.mdx': docsWebhooksVerificationPage,
   './api/alerts.mdx': docsApiAlertsPage,
+  './api/analytics.mdx': docsApiAnalyticsPage,
   './api/billing.mdx': docsApiBillingPage,
   './api/authentication.mdx': docsApiAuthPage,
   './api/incidents.mdx': docsApiIncidentsPage,
@@ -242,6 +257,7 @@ const docsCollection = await create.docs('docs', 'content/docs', {
   './api/webhooks.mdx': docsApiWebhooksPage,
   './cli/index.mdx': docsCliIndexPage,
   './cli/alerts.mdx': docsCliAlertsPage,
+  './cli/analytics.mdx': docsCliAnalyticsPage,
   './cli/cloud-workflow.mdx': docsCliCloudWorkflowPage,
   './cli/local-workflow.mdx': docsCliLocalWorkflowPage,
   './cli/log-ingestion.mdx': docsCliLogIngestionPage,
