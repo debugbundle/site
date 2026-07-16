@@ -31,6 +31,42 @@ The most common workflow: an agent investigates a failing test or user-reported 
 > cURL command that reproduces the error. Finally, `analyze` produces a root cause
 > hypothesis pointing to a missing environment variable.
 
+## Product Analytics Review
+
+Use this workflow when a user asks how many people use a product, where a journey
+breaks down, which routes or devices are affected, or whether an observed incident
+changed product behavior.
+
+```
+1. get_usage_summary                      → Establish visits, active users, and trend context
+2. get_route_metrics / get_action_metrics → Identify where users go and what they do
+3. get_funnel_analysis                    → Measure conversion and step-level drop-off
+4. get_journey_patterns                   → Compare common navigation paths and friction signals
+5. list_analytics_journey_samples         → Inspect bounded redacted sequences only when aggregates need evidence
+6. list_analytics_opportunities           → Review deterministic product-improvement signals
+7. generate_analytics_bundle              → Preserve one bounded analysis question when a durable artifact is useful
+```
+
+Start with direct aggregate reads. They answer most usage questions without creating
+another retained artifact. Journey samples are structured, redacted event sequences,
+not video replay. Generated analytics bundles are for durable, bounded analysis, not one bundle per visit.
+
+Read `get_analytics_settings` and `list_saved_analytics_funnels` before changing
+configuration. Calls to `update_analytics_settings`, `create_saved_analytics_funnel`,
+`update_saved_analytics_funnel`, `archive_saved_analytics_funnel`, and
+`generate_analytics_bundle` are mutations: explain the effect and proceed only when
+the user explicitly asks. Analytics reads and management require member authentication;
+project tokens remain write-only ingestion credentials.
+
+**Example conversation:**
+
+> **User:** "Where do mobile visitors abandon signup, and did last week's checkout incident affect conversion?"
+>
+> The agent calls `get_usage_summary` and `get_device_breakdown`, narrows the result with
+> `get_funnel_analysis`, and calls `get_incident_impact` for the incident window. It inspects
+> a small set of journey samples only if the aggregate drop-off needs supporting evidence.
+> It generates an analytics bundle only if the user wants the bounded review retained and shared.
+
 ## Setup Verification
 
 When starting work on a project, verify that DebugBundle is configured correctly.
@@ -210,7 +246,7 @@ Triage → Probe-Driven Investigation → Analysis → Resolution
 Or when onboarding a new project:
 
 ```
-Setup Verification → Token Rotation → Webhook Setup → Alert Configuration → Availability Check Investigation
+Setup Verification → Token Rotation → Product Analytics Review → Webhook Setup → Alert Configuration → Availability Check Investigation
 ```
 
 The MCP server is stateless: each tool call is independent. Agents can interleave tools
@@ -219,6 +255,7 @@ from different patterns freely.
 ## Next Steps
 
 - [MCP Tools Reference](/docs/mcp/tools) — Complete tool catalog
+- [AnalyticsBundle](/docs/analytics) — Product analytics model, privacy, retention, and evidence lifecycle
 - [Availability Checks](/docs/availability-checks) — Hosted health-check behavior and limits
 - [MCP Server](/docs/mcp) — Authentication and configuration
 - [CLI Cloud Workflow](/docs/cli/cloud-workflow) — CLI operations that complement MCP

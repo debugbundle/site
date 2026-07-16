@@ -22,13 +22,20 @@ docker compose up -d --force-recreate workspace-init db-migrate api worker web
 `db-bootstrap` is for empty databases only. It is not an upgrade mechanism. API and worker
 readiness fail closed when required migration checksums or tables are missing.
 
+## Required Hash Secret
+
+Set `ANALYTICS_HASH_SECRET` to a long random value on both API and Worker services. It signs
+deletion-safe account analytics identifiers, so keep it stable across restarts, backups,
+restores, and deployments. Rotating it without a deliberate migration plan breaks identifier
+and deduplication continuity. It is not the incident-impact correlation hash.
+
 ## Storage And Queues
 
 - PostgreSQL stores settings, idempotency ledgers, aggregate rollups, retained-sample indexes,
   opportunities, and bundle-generation metadata.
 - S3-compatible storage holds short-lived raw analytics inputs, retained redacted journey
   artifacts, and generated AnalyticsBundle artifacts.
-- Redis/BullMQ carries analytics aggregation and bundle-generation jobs.
+- Redis-backed queues carry analytics aggregation and bundle-generation jobs.
 
 Analytics ingestion remains lightweight: validate, persist raw input, enqueue, and return.
 Aggregation and artifact generation run in the worker and are idempotent.

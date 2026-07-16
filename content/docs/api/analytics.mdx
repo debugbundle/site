@@ -69,7 +69,8 @@ curl -X PATCH https://api.debugbundle.com/v1/projects/<id>/analytics-settings \
 ```
 
 The response includes `access_mode` (`manage` or `preview`), `analytics_available`, and the
-effective settings. Custom dimensions require Team and cannot exceed the project/tier cap.
+effective settings. Controlled custom dimensions cannot exceed the fixed project/tier cap:
+1 on Free, 3 on Solo, 8 on Team, or 20 on self-host.
 
 Browser Session mutations use the session CSRF token. Bearer member-token calls do not use
 browser CSRF headers.

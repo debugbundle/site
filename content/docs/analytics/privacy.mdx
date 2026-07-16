@@ -9,11 +9,32 @@ analytics, and analytics failures never disable existing incident capture.
 
 ## Privacy Modes
 
-| Mode | Identity behavior |
-|---|---|
-| `strict` | Session-only analytics. No durable returning-visitor identifier. |
-| `standard` | In direct browser mode, stores a project-scoped first-party anonymous value locally and emits only its SHA-256-derived hash. The value is removed when consent is withdrawn or remote settings force strict mode. |
-| `custom` | Uses explicit customer-owned consent or identity configuration while retaining schema, redaction, and custom-dimension limits. |
+<table>
+  <colgroup>
+    <col style={{ width: '8rem' }} />
+    <col />
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Mode</th>
+      <th>Identity behavior</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>strict</code></td>
+      <td>Session-only analytics. No durable returning-visitor identifier.</td>
+    </tr>
+    <tr>
+      <td><code>standard</code></td>
+      <td>In direct browser mode, stores a project-scoped first-party anonymous value locally and emits only its SHA-256-derived hash. The value is removed when consent is withdrawn or remote settings force strict mode.</td>
+    </tr>
+    <tr>
+      <td><code>custom</code></td>
+      <td>Uses explicit customer-owned consent or identity configuration while retaining schema, redaction, and custom-dimension limits.</td>
+    </tr>
+  </tbody>
+</table>
 
 Relay mode remains credential-free and session-only until an authenticated project-scope
 bootstrap exists. A project token is never an analytics identity.
@@ -47,8 +68,10 @@ emits fixed marker keys without target-derived data.
 
 ## Controlled Custom Dimensions
 
-Team projects may approve a bounded set of low-cardinality keys. Unapproved keys are
-dropped. Values pass analytics schema validation and redaction before storage.
+Projects may approve a bounded set of low-cardinality keys. Hosted limits are 1 on Free,
+3 on Solo, and 8 on Team; self-host supports up to 20. Additional capacity units do not
+increase these fixed limits. Unapproved keys are dropped. Values pass analytics schema
+validation and redaction before storage.
 
 Good dimensions describe stable analysis segments such as `account_type`, `release_channel`,
 or `experiment_variant`. Do not use custom dimensions for email addresses, account IDs,

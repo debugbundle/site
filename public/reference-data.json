@@ -178,6 +178,32 @@
       ]
     },
     {
+      "method": "POST",
+      "path": "/v1/analytics/bundles",
+      "operationId": "generateAnalyticsBundle",
+      "summary": "Request generation of a project analytics bundle",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/bundles/{id}",
+      "operationId": "getAnalyticsBundle",
+      "summary": "Get a generated analytics bundle or its generation state",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
       "method": "GET",
       "path": "/v1/analytics/devices",
       "operationId": "getAnalyticsDevices",
@@ -218,9 +244,48 @@
     },
     {
       "method": "GET",
+      "path": "/v1/analytics/incidents/{id}/impact",
+      "operationId": "getAnalyticsIncidentImpact",
+      "summary": "Get aggregate analytics impact for an incident",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
       "path": "/v1/analytics/journey-patterns",
       "operationId": "getAnalyticsJourneyPatterns",
       "summary": "Get aggregate AnalyticsBundle journey transition patterns for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/journey-samples",
+      "operationId": "listAnalyticsJourneySamples",
+      "summary": "List retained redacted analytics journey samples for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/journey-samples/{id}",
+      "operationId": "getAnalyticsJourneySample",
+      "summary": "Get a retained redacted analytics journey sample",
       "tags": [
         "Analytics"
       ],
@@ -1727,7 +1792,7 @@
     },
     {
       "commandPath": "analytics settings set",
-      "usage": "debugbundle analytics settings set --project <id> [--enabled <true|false>] [--privacy-mode <strict|standard|custom>] [--consent-required <true|false>] [--capture-page-views <true|false>] [--capture-route-changes <true|false>] [--capture-actions <true|false>] [--capture-friction-signals <true|false>] [--journey-sample-rate <0-1>] [--raw-retention-days <n>] [--sample-retention-days <n>] [--aggregate-retention-months <n>] [--max-saved-funnels <n>] [--max-custom-dimensions <n>] [--approved-custom-dimensions <key[,key]> | --approved-custom-dimensions-json <json>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle analytics settings set --project <id> [--enabled <true|false>] [--privacy-mode <strict|standard|custom>] [--consent-required <true|false>] [--capture-page-views <true|false>] [--capture-route-changes <true|false>] [--capture-actions <true|false>] [--capture-friction-signals <true|false>] [--journey-sample-rate <0-1>] [--raw-retention-days <n>] [--sample-retention-days <n>] [--hourly-retention-days <n>] [--aggregate-retention-months <n>] [--max-saved-funnels <n>] [--max-custom-dimensions <n>] [--approved-custom-dimensions <key[,key]> | --approved-custom-dimensions-json <json>] [--auth-file <path>] [--json]",
       "group": "analytics"
     },
     {
@@ -1822,7 +1887,7 @@
     },
     {
       "commandPath": "analytics bundle create",
-      "usage": "debugbundle analytics bundle create --project <id> --kind <kind> [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--funnel <key>] [--route <path>] [--incident-id <id>] [--deploy-id <id>] [--filters-json <json>] [--auth-file <path>] [--json]",
+      "usage": "debugbundle analytics bundle create --project <id> --kind <kind> [--opportunity-id <id>] [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--funnel <key>] [--route <path>] [--incident-id <id>] [--deploy-id <id>] [--filters-json <json>] [--auth-file <path>] [--json]",
       "group": "analytics"
     },
     {
@@ -3047,6 +3112,7 @@
             "funnel",
             "incidentId",
             "last",
+            "opportunityId",
             "route",
             "to"
           ]
@@ -3059,13 +3125,25 @@
             "projectId"
           ],
           "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
             "environment",
             "from",
             "granularity",
+            "language",
             "last",
             "limit",
+            "os",
+            "referrer",
+            "route",
             "service",
-            "to"
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
           ]
         },
         {
@@ -3106,13 +3184,25 @@
             "projectId"
           ],
           "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
             "environment",
             "from",
             "granularity",
+            "language",
             "last",
             "limit",
+            "os",
+            "referrer",
+            "route",
             "service",
-            "to"
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
           ]
         },
         {
@@ -3124,13 +3214,25 @@
             "projectId"
           ],
           "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
             "environment",
             "from",
             "granularity",
+            "language",
             "last",
             "limit",
+            "os",
+            "referrer",
+            "route",
             "service",
-            "to"
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
           ]
         },
         {
@@ -3142,13 +3244,25 @@
             "projectId"
           ],
           "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
             "environment",
             "from",
             "granularity",
+            "language",
             "last",
             "limit",
+            "os",
+            "referrer",
+            "route",
             "service",
-            "to"
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
           ]
         },
         {
@@ -3159,13 +3273,25 @@
             "projectId"
           ],
           "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
             "environment",
             "from",
             "granularity",
+            "language",
             "last",
             "limit",
+            "os",
+            "referrer",
+            "route",
             "service",
-            "to"
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
           ]
         },
         {
@@ -3176,13 +3302,25 @@
             "projectId"
           ],
           "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
             "environment",
             "from",
             "granularity",
+            "language",
             "last",
             "limit",
+            "os",
+            "referrer",
+            "route",
             "service",
-            "to"
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
           ]
         },
         {
@@ -3193,13 +3331,25 @@
             "projectId"
           ],
           "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
             "environment",
             "from",
             "granularity",
+            "language",
             "last",
             "limit",
+            "os",
+            "referrer",
+            "route",
             "service",
-            "to"
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
           ]
         },
         {
@@ -3210,13 +3360,25 @@
             "projectId"
           ],
           "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
             "environment",
             "from",
             "granularity",
+            "language",
             "last",
             "limit",
+            "os",
+            "referrer",
+            "route",
             "service",
-            "to"
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
           ]
         },
         {
@@ -3280,13 +3442,25 @@
             "projectId"
           ],
           "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
             "environment",
             "from",
             "granularity",
+            "language",
             "last",
             "limit",
+            "os",
+            "referrer",
+            "route",
             "service",
-            "to"
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
           ]
         }
       ]

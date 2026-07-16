@@ -6,9 +6,9 @@ icon: FileCode
 
 The DebugBundle skill file at `.agents/skills/debugbundle/SKILL.md` follows the
 [agentskills.io](https://agentskills.io) specification. It teaches AI coding agents
-how to investigate incidents, inspect bundles, generate reproductions, and run
-improvement analysis — without requiring the agent to discover these capabilities
-from scratch.
+how to investigate incidents, inspect bundles, generate reproductions, review product
+analytics, and run improvement analysis — without requiring the agent to discover
+these capabilities from scratch.
 
 ## File Location
 
@@ -31,17 +31,19 @@ by `debugbundle validate --fix`.
 name: debugbundle
 description: >-
   Investigate runtime incidents, inspect debug bundles, generate reproductions,
-  run improvement analysis, and inspect hosted availability checks using the
-  DebugBundle CLI and local project scaffold. Use when the user reports a bug,
-  runtime failure, production incident, endpoint downtime, or health-check issue.
+  run improvement analysis, review product analytics, and inspect hosted availability
+  checks using the DebugBundle CLI and local project scaffold. Use when the user
+  reports a runtime failure, production incident, product-usage question, endpoint
+  downtime, or health-check issue.
 metadata:
   author: debugbundle
   version: "1.0"
 ---
 ```
 
-The frontmatter tells agents when to activate the skill — any mention of bugs,
-runtime failures, or production incidents should trigger DebugBundle workflows.
+The frontmatter tells agents when to activate the skill. Runtime failures trigger the
+incident workflow, while questions about visits, routes, devices, actions, funnels,
+journeys, friction, or analytics opportunities trigger the product analytics workflow.
 
 ### Core Workflow
 
@@ -54,7 +56,8 @@ The skill file defines a prioritized investigation workflow:
 5. **Analyze for improvements** — Run `debugbundle analyze` for a deterministic change plan when local bundles are available
 6. **Evaluate repeated noise** — Use capture-rule suggestions or path-scoped client-error capture policy when bundle evidence shows recurring low-value incidents
 7. **Inspect availability checks** — For downtime or endpoint reachability reports, list hosted health checks, inspect recent results/rollups, and use side-effect-free tests before changing monitoring
-8. **Apply, validate, and resolve** — Make the fix, run the project validation workflow, then resolve verified incidents
+8. **Review product analytics** — Start with direct aggregate reads, narrow to funnels or structured journey evidence, and generate a durable analytics bundle only for a bounded question
+9. **Apply, validate, and resolve** — Make the fix, run the project validation workflow, then resolve verified incidents
 
 The generated skill now keeps the most important commands near the top:
 
@@ -101,6 +104,30 @@ Agents should prefer `health checks test` before creating or updating a saved ch
 The test path is side-effect-free: it does not open incidents, write retained history,
 or advance counters. Saved availability checks are hosted DebugBundle requests, not
 SDK events, and V1 supports only external `GET` and `HEAD` targets.
+
+### Product Analytics
+
+For product-usage questions, the generated skill starts with direct aggregate reads:
+
+```bash
+debugbundle analytics summary --project <project-id> --last 7d --json
+debugbundle analytics routes --project <project-id> --last 30d --json
+debugbundle analytics actions --project <project-id> --last 7d --json
+debugbundle analytics funnel <funnel-key> --project <project-id> --last 30d --json
+debugbundle analytics journeys --project <project-id> --last 7d --json
+```
+
+The equivalent MCP workflow begins with `get_usage_summary` and narrows through route,
+device, referrer, action, funnel, and journey-pattern reads. Agents inspect bounded,
+redacted journey samples only when aggregate evidence is insufficient. They generate
+an analytics bundle only for a focused question that needs a durable artifact; the
+product does not create one bundle per visit.
+
+The skill also distinguishes reads from mutations. Agents read analytics settings and
+saved funnel definitions before proposing changes. Settings updates, saved-funnel
+create/update/archive operations, and bundle generation require explicit user intent
+and the appropriate member role. Project tokens are ingestion-only, and analytics
+workflows preserve consent, redaction, retention, and approved custom-dimension limits.
 
 ### Profile Validation
 
@@ -197,6 +224,14 @@ CLI capabilities:
 | `debugbundle reproduce` | `get_reproduction` |
 | `debugbundle analyze` | `analyze` |
 | `debugbundle doctor` | `doctor` |
+| `debugbundle analytics summary` | `get_usage_summary` |
+| `debugbundle analytics funnel` | `get_funnel_analysis` |
+| `debugbundle analytics journeys` | `get_journey_patterns` |
+| `debugbundle analytics journey-samples list` | `list_analytics_journey_samples` |
+| `debugbundle analytics opportunities` | `list_analytics_opportunities` |
+| `debugbundle analytics bundle create` | `generate_analytics_bundle` |
+| `debugbundle analytics settings get` | `get_analytics_settings` |
+| `debugbundle analytics saved-funnels list` | `list_saved_analytics_funnels` |
 | `debugbundle health checks list` | `list_health_checks` |
 | `debugbundle health checks test` | `test_health_check` |
 | `debugbundle health checks results` | `list_health_check_results` |
@@ -213,6 +248,8 @@ refreshes that file without overwriting `.debugbundle/profile.json`.
 
 - [GitHub Automation](/docs/agent-workflows/automation-recipes) — Repository dispatch and GitHub Actions follow-up
 - [Agent Workflows](/docs/agent-workflows) — Overview of agent-first approach
+- [AnalyticsBundle](/docs/analytics) — Aggregate-first product analytics, privacy, and evidence lifecycle
+- [AnalyticsBundle CLI](/docs/cli/analytics) — Analytics metrics, journeys, funnels, settings, and bundles
 - [Availability Checks](/docs/availability-checks) — Hosted health-check behavior for agents
 - [Managing Noise](/docs/managing-noise) — How agents should reduce recurring low-value incidents
 - [MCP Tools](/docs/mcp/tools) — Complete MCP tool catalog

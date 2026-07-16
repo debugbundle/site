@@ -22,6 +22,13 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/) conventio
 
 ### Added
 
+- Added the production-ready AnalyticsBundle product lane: opt-in browser capture, direct and
+  relay ingestion, aggregate usage and journey metrics, saved funnels, retained structured
+  journeys, deterministic opportunities, generated analytics bundles, web product surfaces,
+  and matching API, CLI, and MCP interfaces.
+- Added a bounded Free analytics preview and fixed tier capabilities for saved funnels,
+  controlled custom dimensions, and hourly retention, while paid monthly analytics usage
+  allowances scale with purchased capacity units.
 - Added the complete AnalyticsBundle public documentation set: product model, browser
   capture, privacy and retention, self-host operations, CLI/API workflows, MCP tools, and
   agent-discovery links.
@@ -32,7 +39,19 @@ This changelog follows [Keep a Changelog](https://keepachangelog.com/) conventio
 
 ### Changed
 
+- Extended maintained server SDK relays to accept strict credential-free analytics envelopes
+  and attach project credentials only during authenticated upstream forwarding.
+- Added bounded analytics worker scheduling, independent retention windows, deterministic
+  failed-generation retry, and complete opportunity-to-bundle incident and deploy linkage.
+- Simplified AnalyticsBundle documentation navigation into one flat section and reconciled
+  self-host analytics queue and migration guidance with the shipped runtime.
 - Expanded MCP and installation docs with the local stdio install matrix, hosted Remote MCP status, and member-token guidance for headless or marketplace-managed clients.
+
+### Fixed
+
+- Hardened analytics aggregation, funnel accounting, privacy/config races, browser transport
+  isolation, partial quota recovery, journey and bundle idempotency, inventory pagination,
+  and filter parity across API, CLI, MCP, and web.
 
 ## [1.5.3] - 2026-06-19
 

@@ -18,7 +18,7 @@ const tiers = [
     name: 'Free',
     price: '$0',
     period: 'forever',
-    description: 'Get started with debugging at no cost.',
+    description: 'Get started at no cost.',
     footnote: '* Free forever, no credit card required',
     cta: 'Get Started',
     ctaHref: 'https://app.debugbundle.com/signup',
@@ -31,6 +31,13 @@ const tiers = [
       '50 retained bundles',
       '25 alert deliveries /month',
       '100 lifecycle webhook deliveries /month',
+      'Product analytics preview',
+      '5,000 analytics events /month',
+      '1,000 analytics sessions /month',
+      '100 retained journey samples /month',
+      '3 generated analytics bundles /month',
+      '1 saved funnel',
+      '1 custom dimension',
       '7-day bundle retention',
       '7-day raw event retention',
       'Webhooks',
@@ -65,6 +72,13 @@ const tiers = [
       '450 retained bundles',
       '225 alert deliveries /month',
       '750 lifecycle webhook deliveries /month',
+      'Product analytics',
+      '150,000 analytics events /month',
+      '30,000 analytics sessions /month',
+      '3,000 retained journey samples /month',
+      '75 generated analytics bundles /month',
+      '10 saved funnels',
+      '3 custom dimensions',
       '30-day bundle retention',
       '14-day raw event retention',
       'Webhooks',
@@ -99,6 +113,13 @@ const tiers = [
       '6,000 retained bundles',
       '4,500 alert deliveries /month',
       '15,000 lifecycle webhook deliveries /month',
+      'Product analytics',
+      '3,750,000 analytics events /month',
+      '750,000 analytics sessions /month',
+      '150,000 retained journey samples /month',
+      '1,500 generated analytics bundles /month',
+      '50 saved funnels',
+      '8 custom dimensions',
       '90-day bundle retention',
       '30-day raw event retention',
       'Webhooks',
@@ -120,7 +141,7 @@ const tiers = [
 const faqs = [
   {
     q: 'Can I use DebugBundle without paying?',
-    a: 'Yes. The Free tier gives you local-first debugging without DebugBundle Cloud, unlimited projects, and get-started hosted capacity.',
+    a: 'Yes. Free includes local-first debugging, unlimited projects, and bounded hosted capacity for incidents, alerts, webhooks, and product analytics.',
   },
   {
     q: 'Can I still get improvement analysis on the Free tier?',
@@ -146,6 +167,10 @@ const extraCapacityUnits = [
       '+150 retained bundles',
       '+75 alert deliveries /month',
       '+250 lifecycle webhook deliveries /month',
+      '+50,000 analytics events /month',
+      '+10,000 analytics sessions /month',
+      '+1,000 retained journey samples /month',
+      '+25 generated analytics bundles /month',
     ],
   },
   {
@@ -157,6 +182,10 @@ const extraCapacityUnits = [
       '+400 retained bundles',
       '+300 alert deliveries /month',
       '+1,000 lifecycle webhook deliveries /month',
+      '+250,000 analytics events /month',
+      '+50,000 analytics sessions /month',
+      '+10,000 retained journey samples /month',
+      '+100 generated analytics bundles /month',
     ],
   },
 ];
@@ -214,10 +243,10 @@ export default function PricingPage(): ReactElement {
             </Link>
 
             <ul className="mt-6 flex-1 space-y-2 text-sm text-[var(--site-text-muted)]">
-              {tier.features.map((f) => (
-                <li key={f} className="flex items-start gap-2">
+              {tier.features.map((feature) => (
+                <li key={feature} className="flex items-start gap-2">
                   <span className="mt-0.5 text-[var(--site-success)]">✓</span>
-                  <span>{f}</span>
+                  <span>{feature}</span>
                 </li>
               ))}
               {tier.excluded.map((f) => (
@@ -239,9 +268,10 @@ export default function PricingPage(): ReactElement {
         <h2 className="text-xl font-semibold text-[var(--site-text)]">Extra capacity units</h2>
         <p className="max-w-3xl text-sm leading-7 text-[var(--site-text-muted)]">
           Paid plans include a base number of capacity units. Add more at any time to expand shared allowance
-          capacity after paid conversion. Each extra unit adds more shared allowance for your plan.
+          capacity after paid conversion. Each extra unit adds the listed debugging, delivery, and analytics
+          allowances for your plan. Saved funnels and custom dimensions remain fixed by tier.
         </p>
-        <div className="grid max-w-2xl gap-4 md:grid-cols-2">
+        <div className="grid max-w-4xl gap-4 md:grid-cols-2">
           {extraCapacityUnits.map((unit) => (
             <div
               key={unit.name}
@@ -264,8 +294,10 @@ export default function PricingPage(): ReactElement {
 
       {/* Shared allowance explanation */}
       <Notice title="How shared allowances work">
-        Each included or purchased capacity unit contributes the same allowance bucket to your account.
-        Allowances are shared across all your projects, not isolated per project.
+        On paid plans, each included or purchased capacity unit contributes the same allowance bucket to your
+        account. Debugging and analytics allowances are shared across all your projects, not isolated per project.
+        The Free analytics preview is fixed. Saved funnels, custom dimensions, retention windows, and feature
+        availability do not multiply with capacity.
       </Notice>
 
       {/* FAQ-style trust section */}
