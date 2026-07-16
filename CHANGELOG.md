@@ -6,6 +6,8 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [1.2.5] - 2026-07-16
+
 ### Added
 
 - Added the complete AnalyticsBundle documentation surface for aggregate metrics, browser
