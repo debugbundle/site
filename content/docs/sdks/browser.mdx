@@ -79,6 +79,69 @@ debugbundle.init({
 
 If the hook throws or returns an invalid event, the SDK keeps the original event and swallows the hook failure so the host page keeps running.
 
+## Opt-In AnalyticsBundle Capture
+
+Product analytics is separate from debug capture and disabled by default. Enable it in the
+browser config and in Project Settings. If either side disables analytics, analytics calls
+become safe no-ops while exceptions and debug breadcrumbs continue normally.
+
+```typescript
+DebugBundle.init({
+  transportMode: 'relay',
+  endpoint: '/debugbundle/browser',
+  service: 'checkout-web',
+  environment: 'production',
+  analytics: {
+    enabled: true,
+    privacyMode: 'strict',
+    consentRequired: true,
+    trackPageViews: true,
+    trackRouteChanges: true,
+    trackSessions: true,
+    trackReferrers: true,
+    trackActions: false,
+    trackFrictionSignals: true,
+    sampleRate: 1,
+  },
+});
+
+DebugBundle.analytics.setConsent(true);
+DebugBundle.analytics.track('checkout.step_viewed', { step: 'payment' });
+DebugBundle.analytics.funnel('checkout', 'payment_submitted');
+DebugBundle.analytics.convert('subscription_started');
+DebugBundle.analytics.marker('checkout.validation_failed');
+```
+
+Configuration fields use the `analytics.*` namespace:
+
+| Option | Default | Description |
+|---|---|---|
+| `analytics.enabled` | `false` | Local opt-in. Remote settings cannot turn this on. |
+| `analytics.privacyMode` | `strict` | `strict`, `standard`, or explicitly configured `custom` identity behavior. |
+| `analytics.consentRequired` | `false` | Wait for `analytics.setConsent(true)` before capture. |
+| `analytics.trackPageViews` | `true` | Capture initial privacy-safe page views. |
+| `analytics.trackRouteChanges` | `true` | Capture safe SPA routes and previous-route transitions. |
+| `analytics.trackSessions` | `true` | Emit session start and bounded unload-time summary signals. |
+| `analytics.trackReferrers` | `true` | Capture referrer domain and bounded UTM fields. |
+| `analytics.trackActions` | `false` | Opt into fixed structural actions such as `click.button`; semantic `track()` is preferred. |
+| `analytics.trackFrictionSignals` | `true` | Emit fixed repeated-click, dead-click, and backtrack markers without target data. |
+| `analytics.sampleRate` | `1` | Independent analytics event sampling rate from 0 to 1. |
+
+`analytics.pageView`, `analytics.track`, `analytics.funnel`, `analytics.convert`, and
+`analytics.marker` emit `analytics_event` envelopes through the existing browser transport.
+They never create incidents directly. Custom dimensions are accepted only when the key is
+approved for the project, low-cardinality, and non-sensitive.
+
+Direct browser mode explicitly requests restrictive project analytics settings from
+`/v1/sdk/config`. The server may disable capture types, require consent, or force strict
+privacy, but cannot enable a local opt-out. Relay mode remains credential-free; ingestion
+still applies project settings and validation server-side.
+
+Analytics does not capture form values, raw click text, selectors, DOM snapshots,
+screenshots, video, precise coordinates, full query strings, or raw identity. See
+[AnalyticsBundle Privacy & Retention](/docs/analytics/privacy) for identity and expiry
+details.
+
 ## Transport Resolution
 
 The Browser SDK supports explicit relay and direct modes. Same-origin relay paths such as `/debugbundle/browser` are inferred as relay for compatibility. For split frontend/backend deployments, set `transportMode: 'relay'` and point `endpoint` at the backend relay URL, for example `https://api.example.com/debugbundle/browser`. Relay mode never sends `Authorization` or `projectToken` from the browser.

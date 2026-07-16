@@ -327,6 +327,11 @@
       "statusCode": 308
     },
     {
+      "source": "/docs/cli/analytics",
+      "destination": "/docs/cli/analytics/",
+      "statusCode": 308
+    },
+    {
       "source": "/docs/cli/cloud-workflow",
       "destination": "/docs/cli/cloud-workflow/",
       "statusCode": 308
@@ -382,6 +387,11 @@
       "statusCode": 308
     },
     {
+      "source": "/docs/api/analytics",
+      "destination": "/docs/api/analytics/",
+      "statusCode": 308
+    },
+    {
       "source": "/docs/api/authentication",
       "destination": "/docs/api/authentication/",
       "statusCode": 308
@@ -424,6 +434,21 @@
     {
       "source": "/docs/api/webhooks",
       "destination": "/docs/api/webhooks/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/analytics",
+      "destination": "/docs/analytics/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/analytics/privacy",
+      "destination": "/docs/analytics/privacy/",
+      "statusCode": 308
+    },
+    {
+      "source": "/docs/analytics/self-hosting",
+      "destination": "/docs/analytics/self-hosting/",
       "statusCode": 308
     },
     {

@@ -1,0 +1,115 @@
+---
+title: AnalyticsBundle Privacy & Retention
+description: Configure AnalyticsBundle consent, identity, custom dimensions, redacted journey evidence, and bounded retention.
+icon: ShieldCheck
+---
+
+AnalyticsBundle is disabled by default. Enabling debug/error capture does not enable product
+analytics, and analytics failures never disable existing incident capture.
+
+## Privacy Modes
+
+<table>
+  <colgroup>
+    <col style={{ width: '8rem' }} />
+    <col />
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Mode</th>
+      <th>Identity behavior</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>strict</code></td>
+      <td>Session-only analytics. No durable returning-visitor identifier.</td>
+    </tr>
+    <tr>
+      <td><code>standard</code></td>
+      <td>In direct browser mode, stores a project-scoped first-party anonymous value locally and emits only its SHA-256-derived hash. The value is removed when consent is withdrawn or remote settings force strict mode.</td>
+    </tr>
+    <tr>
+      <td><code>custom</code></td>
+      <td>Uses explicit customer-owned consent or identity configuration while retaining schema, redaction, and custom-dimension limits.</td>
+    </tr>
+  </tbody>
+</table>
+
+Relay mode remains credential-free and session-only until an authenticated project-scope
+bootstrap exists. A project token is never an analytics identity.
+
+## Consent And Remote Restrictions
+
+When `consent_required` is enabled, the browser SDK emits no analytics until
+`analytics.setConsent(true)` is called. Calling `analytics.setConsent(false)` stops future
+analytics capture and clears the locally stored standard-mode anonymous identifier.
+
+Direct-mode SDKs explicitly request a bounded analytics block from `/v1/sdk/config`. Remote
+settings may disable analytics, require consent, force strict privacy, or disable selected
+capture types. Remote settings can only make a local opt-in more restrictive; they cannot
+enable locally disabled analytics.
+
+## Data That Is Never Analytics Input
+
+Analytics capture must not include:
+
+- form values or input contents
+- raw click text, selectors, element IDs, or DOM snapshots
+- screenshots, video, or precise click coordinates
+- full URLs with query strings or fragments
+- raw IP addresses or precise location
+- names, emails, phone numbers, addresses, or raw user IDs
+- tokens, cookies, authorization values, payment data, or customer secrets
+
+Structural action capture uses a fixed allowlist such as `click.button`, `click.link`, and
+`click.tab`. Friction detection keeps target identity and timing only in browser memory and
+emits fixed marker keys without target-derived data.
+
+## Controlled Custom Dimensions
+
+Projects may approve a bounded set of low-cardinality keys. Hosted limits are 1 on Free,
+3 on Solo, and 8 on Team; self-host supports up to 20. Additional capacity units do not
+increase these fixed limits. Unapproved keys are dropped. Values pass analytics schema
+validation and redaction before storage.
+
+Good dimensions describe stable analysis segments such as `account_type`, `release_channel`,
+or `experiment_variant`. Do not use custom dimensions for email addresses, account IDs,
+order IDs, free-form text, or other high-cardinality identity.
+
+## Retention Windows
+
+| Setting | Range | Data affected |
+|---|---:|---|
+| `raw_retention_days` | 1-30 days | Short-lived raw analytics input objects and ingestion-ledger entries |
+| `sample_retention_days` | 1-365 days | Retained redacted journey samples and artifacts |
+| `aggregate_retention_months` | 1-120 months | Aggregate rollups and AnalyticsBundle generation metadata/artifacts |
+
+The worker cleanup lane enforces each project setting. Aggregate rollups are the normal
+query model; there is no raw analytics event-search interface. Long-term product metrics do
+not require keeping a per-visit timeline.
+
+## Redacted Journey Evidence
+
+Retained journeys are bounded structured timelines, not session-replay videos. Public reads
+exclude raw session and visitor identifiers, storage keys, trace/event IDs, arbitrary object
+fields, target text, and DOM data. Generated bundles select at most a bounded number of
+representative journeys using deterministic aggregate reach/count ranking and stable ties.
+
+Incident impact applies an additional correlation boundary. DebugBundle persists only
+project-scoped hashes and bounded scope metadata for reconciliation. Public responses do
+not reveal those internal hashes.
+
+## Debug Capture Remains Independent
+
+Debug capture remains independent when analytics is disabled, unavailable, missing consent,
+sampled out, quota-blocked, expired, or internally failing. Analytics events do not receive
+debug `event_class` values and cannot create, reopen, regress, alert, webhook, or dispatch
+incident automation by themselves.
+
+## Next Steps
+
+- [AnalyticsBundle](/docs/analytics) - Product model and workflows.
+- [Browser SDK](/docs/sdks/browser) - Consent and capture configuration.
+- [Redaction](/docs/security/redaction) - DebugBundle-wide redaction behavior.
+- [Self-hosted AnalyticsBundle](/docs/analytics/self-hosting) - Retention operations.

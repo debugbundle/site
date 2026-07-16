@@ -1,0 +1,137 @@
+---
+title: AnalyticsBundle API
+description: Read aggregate analytics, manage saved funnels and settings, inspect opportunities, and generate AnalyticsBundles through the REST API.
+icon: ChartNoAxesCombined
+---
+
+Analytics read and management routes require a Browser Session or Member Token. Project
+tokens cannot read analytics; they may only submit `analytics_event` envelopes through the
+write-only ingestion path.
+
+```bash
+curl https://api.debugbundle.com/v1/analytics/summary?project_id=<id>&last=7d \
+  -H "Authorization: Bearer dbundle_mem_..."
+```
+
+## Routes
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET` | `/v1/projects/{id}/analytics-settings` | Read availability, access mode, and project settings |
+| `PATCH` | `/v1/projects/{id}/analytics-settings` | Update settings as owner/admin |
+| `GET` | `/v1/projects/{id}/analytics/saved-funnels` | List active saved funnel definitions |
+| `POST` | `/v1/projects/{id}/analytics/saved-funnels` | Create/reactivate a definition as owner/admin |
+| `PATCH` | `/v1/projects/{id}/analytics/saved-funnels/{funnelKey}` | Update name or ordered steps |
+| `DELETE` | `/v1/projects/{id}/analytics/saved-funnels/{funnelKey}` | Soft-archive a definition |
+| `GET` | `/v1/analytics/summary` | Sessions, visitors, pageviews, exits, and conversions |
+| `GET` | `/v1/analytics/routes` | Route usage and incident-linked sessions |
+| `GET` | `/v1/analytics/devices` | Device/browser/OS/language segments |
+| `GET` | `/v1/analytics/referrers` | Referrer and UTM segments |
+| `GET` | `/v1/analytics/actions` | Actions, conversions, and markers |
+| `GET` | `/v1/analytics/funnels` | Funnel conversion summaries |
+| `GET` | `/v1/analytics/funnels/{key}` | Step-level funnel analysis |
+| `GET` | `/v1/analytics/journey-patterns` | Aggregate route transitions and sample references |
+| `GET` | `/v1/analytics/journey-samples` | List retained redacted sample metadata |
+| `GET` | `/v1/analytics/journey-samples/{id}` | Read one retained redacted timeline |
+| `GET` | `/v1/analytics/incidents/{id}/impact` | Correlation-backed aggregate incident impact |
+| `GET` | `/v1/analytics/opportunities` | List stored opportunities |
+| `GET` | `/v1/analytics/opportunities/{id}` | Read one opportunity |
+| `GET` | `/v1/analytics/bundles` | List generation records |
+| `POST` | `/v1/analytics/bundles` | Request deterministic bundle generation |
+| `GET` | `/v1/analytics/bundles/{id}` | Read pending/failed status or completed artifact |
+
+## Metric Query Scope
+
+Metric routes require `project_id`. Common optional parameters include `from`, `to`, `last`,
+`granularity`, `service`, `environment`, and `limit`. Server schemas reject unsupported or
+unbounded values.
+
+Only opportunity and bundle list routes support organization inventory reads without
+`project_id`. Omission returns accessible projects in the authenticated member's
+organization with stable cursor pagination. Detail, generation, settings, samples, and
+metrics remain project-scoped.
+
+## Update Settings
+
+```bash
+curl -X PATCH https://api.debugbundle.com/v1/projects/<id>/analytics-settings \
+  -H "Authorization: Bearer dbundle_mem_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "enabled": true,
+    "privacy_mode": "strict",
+    "consent_required": true,
+    "journey_sample_rate": 0.1,
+    "raw_retention_days": 7,
+    "sample_retention_days": 30,
+    "aggregate_retention_months": 24
+  }'
+```
+
+The response includes `access_mode` (`manage` or `preview`), `analytics_available`, and the
+effective settings. Controlled custom dimensions cannot exceed the fixed project/tier cap:
+1 on Free, 3 on Solo, 8 on Team, or 20 on self-host.
+
+Browser Session mutations use the session CSRF token. Bearer member-token calls do not use
+browser CSRF headers.
+
+## Create A Saved Funnel
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/projects/<id>/analytics/saved-funnels \
+  -H "Authorization: Bearer dbundle_mem_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "funnel_key": "signup",
+    "display_name": "Signup",
+    "steps": [
+      {"step_key": "landing", "display_name": "Landing"},
+      {"step_key": "complete", "display_name": "Complete"}
+    ]
+  }'
+```
+
+Keys start with a letter and use letters, numbers, dots, colons, underscores, or hyphens.
+Definitions require 2-20 unique ordered steps. The API returns `409` when the key is active
+or the active-definition limit is reached.
+
+## Generate An AnalyticsBundle
+
+```bash
+curl -X POST https://api.debugbundle.com/v1/analytics/bundles \
+  -H "Authorization: Bearer dbundle_mem_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_id": "<id>",
+    "analysis_kind": "funnel_dropoff",
+    "last": "30d",
+    "funnel": "signup",
+    "filters": {"service": "web", "environment": "production"}
+  }'
+```
+
+Generation is asynchronous and idempotently reserved from a deterministic input
+fingerprint. The response is either a completed artifact or explicit pending/failed state.
+The additive `X-DebugBundle-Generation-Id` response header identifies the
+generation record when available.
+
+## Error Semantics
+
+| Status | Example error | Meaning |
+|---:|---|---|
+| `400` | `invalid_payload` | Body or query failed schema validation. |
+| `401` | `invalid_member_token` | Authentication failed. |
+| `403` | `forbidden` | The member lacks management access. |
+| `403` | `upgrade_required` | Hosted tier does not include the capability. |
+| `404` | `analytics_metrics_not_available` | Scope has no readable analytics result. |
+| `409` | `analytics_saved_funnel_limit_reached` | Active saved-funnel cap was reached. |
+| `429` | `analytics_quota_exceeded` | Analytics-specific allowance was exhausted; inspect `Retry-After`. |
+
+Analytics quota errors do not consume or reject otherwise-valid debug events in a mixed
+ingestion batch unless the shared request-level ingestion limit is exceeded.
+
+## Next Steps
+
+- [Generated API reference](/docs/v1/reference/api-endpoints) - OpenAPI-derived schemas.
+- [AnalyticsBundle CLI](/docs/cli/analytics) - Human and agent command workflows.
+- [Privacy and retention](/docs/analytics/privacy) - Data boundaries.

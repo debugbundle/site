@@ -1,9 +1,44 @@
 ---
-title: "Automation patterns"
-description: "Connect DebugBundle GitHub automation to repository_dispatch workflows, fetch full bundle context in GitHub Actions, and hand off to repository-owned automation."
+title: "Agent Workflows"
+description: "Review product analytics, investigate runtime evidence, and connect DebugBundle automation to repository-owned agent workflows."
 ---
 
 import { Callout } from 'fumadocs-ui/components/callout';
+
+## Product Analytics Review
+
+Agents can answer usage and journey questions through the same member-authenticated
+surface as humans. The efficient path is to use direct aggregate reads first, narrow
+to funnels or bounded journey samples only when needed, and generate an analytics
+bundle only when a specific analysis should be retained and shared.
+
+<SurfaceGrid>
+  <SurfaceCard title="Start with aggregate evidence">
+    Read visits, active users, routes, devices, referrers, semantic actions, and funnel conversion without generating a bundle.
+  </SurfaceCard>
+  <SurfaceCard title="Explain journey friction">
+    Compare funnel drop-off and journey patterns, then inspect a small redacted structured sample only when aggregates need supporting evidence.
+  </SurfaceCard>
+  <SurfaceCard title="Preserve bounded analysis">
+    Generate an analytics bundle for a focused question that humans or agents need to revisit, not for every visit.
+  </SurfaceCard>
+</SurfaceGrid>
+
+A typical review uses `get_usage_summary`, `get_route_metrics`, `get_action_metrics`,
+`get_funnel_analysis`, and `get_journey_patterns`. Agents can correlate a runtime
+failure with `get_incident_impact`, review deterministic opportunities, and retrieve
+existing analytics bundles before asking to generate another one.
+
+Analytics settings, saved-funnel changes, and bundle generation are explicit mutations.
+Agents should read current settings and definitions first, explain the intended change,
+and proceed only when the user asks. Project tokens remain ingestion-only; analytics
+reads and management use member authentication and preserve consent, redaction,
+retention, and approved custom-dimension limits.
+
+See [AnalyticsBundle](/docs/analytics), [AnalyticsBundle CLI](/docs/cli/analytics),
+and [MCP Workflows](/docs/mcp/workflows) for the complete flow.
+
+## GitHub Automation
 
 <Callout type="info">
   GitHub automation is available on Solo and Team plans.

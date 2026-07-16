@@ -153,6 +153,214 @@
     },
     {
       "method": "GET",
+      "path": "/v1/analytics/actions",
+      "operationId": "getAnalyticsActions",
+      "summary": "Get aggregate AnalyticsBundle action and conversion metrics for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/bundles",
+      "operationId": "listAnalyticsBundles",
+      "summary": "List AnalyticsBundle generations for a project or across the caller organization",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/analytics/bundles",
+      "operationId": "generateAnalyticsBundle",
+      "summary": "Request generation of a project analytics bundle",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/bundles/{id}",
+      "operationId": "getAnalyticsBundle",
+      "summary": "Get a generated analytics bundle or its generation state",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/devices",
+      "operationId": "getAnalyticsDevices",
+      "summary": "Get aggregate AnalyticsBundle device metrics for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/funnels",
+      "operationId": "listAnalyticsFunnels",
+      "summary": "List aggregate AnalyticsBundle funnel conversion summaries for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/funnels/{key}",
+      "operationId": "getAnalyticsFunnel",
+      "summary": "Get aggregate AnalyticsBundle funnel conversion and dropoff metrics for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/incidents/{id}/impact",
+      "operationId": "getAnalyticsIncidentImpact",
+      "summary": "Get aggregate analytics impact for an incident",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/journey-patterns",
+      "operationId": "getAnalyticsJourneyPatterns",
+      "summary": "Get aggregate AnalyticsBundle journey transition patterns for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/journey-samples",
+      "operationId": "listAnalyticsJourneySamples",
+      "summary": "List retained redacted analytics journey samples for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/journey-samples/{id}",
+      "operationId": "getAnalyticsJourneySample",
+      "summary": "Get a retained redacted analytics journey sample",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/opportunities",
+      "operationId": "listAnalyticsOpportunities",
+      "summary": "List AnalyticsBundle opportunities for a project or across the caller organization",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/opportunities/{id}",
+      "operationId": "getAnalyticsOpportunity",
+      "summary": "Get an AnalyticsBundle opportunity for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/referrers",
+      "operationId": "getAnalyticsReferrers",
+      "summary": "Get aggregate AnalyticsBundle referrer and UTM metrics for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/routes",
+      "operationId": "getAnalyticsRoutes",
+      "summary": "Get aggregate AnalyticsBundle route metrics for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/analytics/summary",
+      "operationId": "getAnalyticsSummary",
+      "summary": "Get aggregate AnalyticsBundle usage summary metrics for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
       "path": "/v1/auth/github/callback",
       "operationId": "completeGithubLogin",
       "summary": "Complete GitHub OAuth",
@@ -667,6 +875,84 @@
       "summary": "Delete a project",
       "tags": [
         "Projects"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/analytics-settings",
+      "operationId": "getAnalyticsSettings",
+      "summary": "Get AnalyticsBundle settings for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/projects/{id}/analytics-settings",
+      "operationId": "updateAnalyticsSettings",
+      "summary": "Update AnalyticsBundle settings for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/v1/projects/{id}/analytics/saved-funnels",
+      "operationId": "listSavedAnalyticsFunnels",
+      "summary": "List active saved analytics funnels for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/v1/projects/{id}/analytics/saved-funnels",
+      "operationId": "createSavedAnalyticsFunnel",
+      "summary": "Create a saved analytics funnel for a project",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/projects/{id}/analytics/saved-funnels/{funnelKey}",
+      "operationId": "updateSavedAnalyticsFunnel",
+      "summary": "Update a saved analytics funnel",
+      "tags": [
+        "Analytics"
+      ],
+      "auth": [
+        "Browser session",
+        "Member bearer token"
+      ]
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/projects/{id}/analytics/saved-funnels/{funnelKey}",
+      "operationId": "archiveSavedAnalyticsFunnel",
+      "summary": "Archive a saved analytics funnel",
+      "tags": [
+        "Analytics"
       ],
       "auth": [
         "Browser session",
@@ -1498,6 +1784,116 @@
       "commandPath": "billing capacity cancel-reduction",
       "usage": "debugbundle billing capacity cancel-reduction [--auth-file <path>] [--json]",
       "group": "billing"
+    },
+    {
+      "commandPath": "analytics settings get",
+      "usage": "debugbundle analytics settings get --project <id> [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics settings set",
+      "usage": "debugbundle analytics settings set --project <id> [--enabled <true|false>] [--privacy-mode <strict|standard|custom>] [--consent-required <true|false>] [--capture-page-views <true|false>] [--capture-route-changes <true|false>] [--capture-actions <true|false>] [--capture-friction-signals <true|false>] [--journey-sample-rate <0-1>] [--raw-retention-days <n>] [--sample-retention-days <n>] [--hourly-retention-days <n>] [--aggregate-retention-months <n>] [--max-saved-funnels <n>] [--max-custom-dimensions <n>] [--approved-custom-dimensions <key[,key]> | --approved-custom-dimensions-json <json>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics saved-funnels list",
+      "usage": "debugbundle analytics saved-funnels list --project <id> [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics saved-funnels create",
+      "usage": "debugbundle analytics saved-funnels create --project <id> --key <key> --name <name> --steps-json <json> [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics saved-funnels update",
+      "usage": "debugbundle analytics saved-funnels update <key> --project <id> [--name <name>] [--steps-json <json>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics saved-funnels archive",
+      "usage": "debugbundle analytics saved-funnels archive <key> --project <id> [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics summary",
+      "usage": "debugbundle analytics summary --project <id> [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--granularity <hour|day>] [--service <name>] [--environment <name>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics routes",
+      "usage": "debugbundle analytics routes --project <id> [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--granularity <hour|day>] [--service <name>] [--environment <name>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics journeys",
+      "usage": "debugbundle analytics journeys --project <id> [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--granularity <hour|day>] [--service <name>] [--environment <name>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics journey-samples list",
+      "usage": "debugbundle analytics journey-samples list --project <id> [--service <name>] [--environment <name>] [--tag <tag>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics journey-samples get",
+      "usage": "debugbundle analytics journey-samples get <sample-id> --project <id> [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics devices",
+      "usage": "debugbundle analytics devices --project <id> [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--granularity <hour|day>] [--service <name>] [--environment <name>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics referrers",
+      "usage": "debugbundle analytics referrers --project <id> [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--granularity <hour|day>] [--service <name>] [--environment <name>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics actions",
+      "usage": "debugbundle analytics actions --project <id> [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--granularity <hour|day>] [--service <name>] [--environment <name>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics funnels",
+      "usage": "debugbundle analytics funnels --project <id> [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--granularity <hour|day>] [--service <name>] [--environment <name>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics incident-impact",
+      "usage": "debugbundle analytics incident-impact <incident-id> --project <id> [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--granularity <hour|day>] [--service <name>] [--environment <name>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics funnel",
+      "usage": "debugbundle analytics funnel <funnel-key> --project <id> [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--granularity <hour|day>] [--service <name>] [--environment <name>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics opportunities (--project",
+      "usage": "debugbundle analytics opportunities (--project <id> | --all-projects) [--status <open|resolved|snoozed|all>] [--kind <kind>] [--service <name>] [--environment <name>] [--severity <low|medium|high>] [--bundle-status <not_requested|pending|running|completed|failed>] [--from <ISO8601>] [--to <ISO8601>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics opportunity get",
+      "usage": "debugbundle analytics opportunity get <opportunity-id> --project <id> [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics bundle list (--project",
+      "usage": "debugbundle analytics bundle list (--project <id> | --all-projects) [--status <all|pending|running|completed|failed>] [--kind <kind>] [--service <name>] [--environment <name>] [--from <ISO8601>] [--to <ISO8601>] [--cursor <cursor>] [--limit <n>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics bundle create",
+      "usage": "debugbundle analytics bundle create --project <id> --kind <kind> [--opportunity-id <id>] [--from <ISO8601>] [--to <ISO8601>] [--last <duration>] [--funnel <key>] [--route <path>] [--incident-id <id>] [--deploy-id <id>] [--filters-json <json>] [--auth-file <path>] [--json]",
+      "group": "analytics"
+    },
+    {
+      "commandPath": "analytics bundle get",
+      "usage": "debugbundle analytics bundle get <bundle-generation-id> --project <id> [--auth-file <path>] [--json]",
+      "group": "analytics"
     },
     {
       "commandPath": "github status",
@@ -2698,6 +3094,440 @@
       ]
     },
     {
+      "group": "analytics_metrics",
+      "label": "Analytics Metrics",
+      "tools": [
+        {
+          "name": "generate_analytics_bundle",
+          "description": "Request an AnalyticsBundle generation for a project analysis window and focus.",
+          "requiredArguments": [
+            "analysisKind",
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "deployId",
+            "filters",
+            "from",
+            "funnel",
+            "incidentId",
+            "last",
+            "opportunityId",
+            "route",
+            "to"
+          ]
+        },
+        {
+          "name": "get_action_metrics",
+          "description": "Get aggregate AnalyticsBundle action, marker, and conversion metrics.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
+            "environment",
+            "from",
+            "granularity",
+            "language",
+            "last",
+            "limit",
+            "os",
+            "referrer",
+            "route",
+            "service",
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
+          ]
+        },
+        {
+          "name": "get_analytics_bundle",
+          "description": "Get a generated AnalyticsBundle artifact or its pending/failed generation state.",
+          "requiredArguments": [
+            "bearerToken",
+            "bundleGenerationId",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "get_analytics_journey_sample",
+          "description": "Get one retained redacted AnalyticsBundle journey sample artifact for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId",
+            "sampleId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "get_analytics_opportunity",
+          "description": "Get an AnalyticsBundle opportunity for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "opportunityId",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "get_device_breakdown",
+          "description": "Get aggregate AnalyticsBundle device, browser, OS, and language breakdowns.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
+            "environment",
+            "from",
+            "granularity",
+            "language",
+            "last",
+            "limit",
+            "os",
+            "referrer",
+            "route",
+            "service",
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
+          ]
+        },
+        {
+          "name": "get_funnel_analysis",
+          "description": "Get aggregate AnalyticsBundle funnel conversion and dropoff analysis.",
+          "requiredArguments": [
+            "bearerToken",
+            "funnelKey",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
+            "environment",
+            "from",
+            "granularity",
+            "language",
+            "last",
+            "limit",
+            "os",
+            "referrer",
+            "route",
+            "service",
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
+          ]
+        },
+        {
+          "name": "get_incident_impact",
+          "description": "Get aggregate AnalyticsBundle impact metrics for one incident, including linked routes, funnels, segments, journeys, and bundle state.",
+          "requiredArguments": [
+            "bearerToken",
+            "incidentId",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
+            "environment",
+            "from",
+            "granularity",
+            "language",
+            "last",
+            "limit",
+            "os",
+            "referrer",
+            "route",
+            "service",
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
+          ]
+        },
+        {
+          "name": "get_journey_patterns",
+          "description": "Get aggregate AnalyticsBundle journey transition patterns for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
+            "environment",
+            "from",
+            "granularity",
+            "language",
+            "last",
+            "limit",
+            "os",
+            "referrer",
+            "route",
+            "service",
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
+          ]
+        },
+        {
+          "name": "get_referrer_metrics",
+          "description": "Get aggregate AnalyticsBundle referrer and UTM metrics.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
+            "environment",
+            "from",
+            "granularity",
+            "language",
+            "last",
+            "limit",
+            "os",
+            "referrer",
+            "route",
+            "service",
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
+          ]
+        },
+        {
+          "name": "get_route_metrics",
+          "description": "Get aggregate AnalyticsBundle route metrics for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
+            "environment",
+            "from",
+            "granularity",
+            "language",
+            "last",
+            "limit",
+            "os",
+            "referrer",
+            "route",
+            "service",
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
+          ]
+        },
+        {
+          "name": "get_usage_summary",
+          "description": "Get aggregate AnalyticsBundle usage summary metrics for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
+            "environment",
+            "from",
+            "granularity",
+            "language",
+            "last",
+            "limit",
+            "os",
+            "referrer",
+            "route",
+            "service",
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
+          ]
+        },
+        {
+          "name": "list_analytics_bundles",
+          "description": "List AnalyticsBundle generation records for a project, or across accessible projects when projectId is omitted.",
+          "requiredArguments": [
+            "bearerToken"
+          ],
+          "optionalArguments": [
+            "cursor",
+            "environment",
+            "from",
+            "kind",
+            "limit",
+            "projectId",
+            "service",
+            "status",
+            "to"
+          ]
+        },
+        {
+          "name": "list_analytics_journey_samples",
+          "description": "List retained redacted AnalyticsBundle journey sample metadata for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "cursor",
+            "environment",
+            "limit",
+            "service",
+            "tag"
+          ]
+        },
+        {
+          "name": "list_analytics_opportunities",
+          "description": "List AnalyticsBundle opportunities for a project, or across accessible projects when projectId is omitted.",
+          "requiredArguments": [
+            "bearerToken"
+          ],
+          "optionalArguments": [
+            "bundleStatus",
+            "cursor",
+            "environment",
+            "from",
+            "kind",
+            "limit",
+            "projectId",
+            "service",
+            "severity",
+            "status",
+            "to"
+          ]
+        },
+        {
+          "name": "list_funnel_metrics",
+          "description": "List aggregate AnalyticsBundle funnel conversion summaries for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": [
+            "authState",
+            "browser",
+            "country",
+            "customDimensions",
+            "deviceType",
+            "environment",
+            "from",
+            "granularity",
+            "language",
+            "last",
+            "limit",
+            "os",
+            "referrer",
+            "route",
+            "service",
+            "to",
+            "utmCampaign",
+            "utmMedium",
+            "utmSource"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "analytics_settings",
+      "label": "Analytics Settings",
+      "tools": [
+        {
+          "name": "get_analytics_settings",
+          "description": "Get AnalyticsBundle settings for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "update_analytics_settings",
+          "description": "Update AnalyticsBundle settings for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId",
+            "update"
+          ],
+          "optionalArguments": []
+        }
+      ]
+    },
+    {
+      "group": "analytics_saved_funnels",
+      "label": "Analytics Saved Funnels",
+      "tools": [
+        {
+          "name": "archive_saved_analytics_funnel",
+          "description": "Archive a saved AnalyticsBundle funnel definition for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "funnelKey",
+            "projectId"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "create_saved_analytics_funnel",
+          "description": "Create a reusable AnalyticsBundle funnel definition for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "displayName",
+            "funnelKey",
+            "projectId",
+            "steps"
+          ],
+          "optionalArguments": []
+        },
+        {
+          "name": "list_saved_analytics_funnels",
+          "description": "List active saved AnalyticsBundle funnel definitions for a project.",
+          "requiredArguments": [
+            "bearerToken",
+            "projectId"
+          ],
+          "optionalArguments": []
+        }
+      ]
+    },
+    {
       "group": "capture_policy",
       "label": "Capture Policy",
       "tools": [
@@ -3098,6 +3928,12 @@
         "code": "alert_not_found",
         "statusCodes": [
           "404"
+        ]
+      },
+      {
+        "code": "analytics_disabled",
+        "statusCodes": [
+          "403"
         ]
       },
       {

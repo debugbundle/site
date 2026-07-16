@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactElement } from 'react';
 import Link from 'next/link';
 import type { LucideIcon } from 'lucide-react';
-import { Bot, BellRing, BookOpen, Braces, FileJson, HeartPulse, Lightbulb, Radar, RotateCcw, ShieldCheck, GitPullRequestArrow, SquareTerminal, Workflow, Siren } from 'lucide-react';
+import { Bot, BellRing, BookOpen, Braces, ChartNoAxesCombined, FileJson, HeartPulse, Lightbulb, Radar, RotateCcw, ShieldCheck, GitPullRequestArrow, SquareTerminal, Workflow, Siren } from 'lucide-react';
 
 import { AgentAssistPromptDialog } from '@/components/agent-assist-prompt-dialog';
 import { SurfaceCard } from '@/components/content-blocks';
@@ -94,6 +94,13 @@ export default function HomePage(): ReactElement {
       detail:
         'Promote repeated warnings, slow paths, and recurring request patterns into improvement opportunities before they grow into failures.',
       icon: Lightbulb,
+    },
+    {
+      title: 'Understand product usage',
+      detail:
+        'Use privacy-safe routes, semantic actions, funnels, conversions, and friction signals to see where product journeys work or break down.',
+      icon: ChartNoAxesCombined,
+      promptId: 'product-analytics-workflow',
     },
     {
       title: 'Alert on critical paths',
@@ -249,7 +256,7 @@ export default function HomePage(): ReactElement {
             </div>
           ))}
         </div>
-        <div className="site-home-elevated mx-auto max-w-[1000px] overflow-hidden rounded-[1rem]">
+        <div className="site-home-elevated mx-auto w-full max-w-[900px] overflow-hidden rounded-[1rem]">
           <img
             src="/images/how-it-works-light.jpg"
             alt="DebugBundle workflow overview in light mode"

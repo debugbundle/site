@@ -1,0 +1,118 @@
+---
+title: AnalyticsBundle
+description: Understand product usage, funnels, journeys, friction, and incident impact through aggregate-first evidence for humans and agents.
+icon: ChartNoAxesCombined
+---
+
+AnalyticsBundle is DebugBundle's product-usage analysis lane. It answers how a product is
+used, where people struggle, and what should improve, while the existing Debug Bundle
+continues to answer what failed and how to fix it.
+
+Analytics is browser-first, opt-in, and aggregate-first. DebugBundle does not create one
+AnalyticsBundle per visit. Short-lived events update aggregate rollups, and generated
+AnalyticsBundles are created only for a bounded analysis question.
+
+## What You Can Learn
+
+- sessions, active visitors, new and returning visitors, page views, exits, and conversions
+- route usage, entrances, exits, bounces, and incident-linked sessions
+- device type, browser, OS, language, referrer, and bounded UTM segments
+- semantic actions, conversions, and fixed privacy-safe friction markers
+- saved funnel conversion and step-level drop-off
+- aggregate route transitions and retained redacted journey examples
+- incident impact across affected sessions, routes, funnels, and segments
+- detected analytics opportunities and deterministic improvement recommendations
+
+Every capability is available through the same domain behavior in API, CLI, MCP, and web.
+Agents can ask for aggregate metrics directly without waiting for a generated artifact.
+
+## Where You Use It
+
+- The workspace Analytics view provides cross-project **Opportunities** and **Bundles**
+  inventories for the projects you can access.
+- Each project Analytics tab keeps **Overview**, **Routes**, **Funnels**, **Audiences**,
+  **Journeys**, **Opportunities**, and **Bundles** together without adding more project tabs.
+- Project Settings controls analytics enablement, privacy, consent, sampling, retention,
+  approved custom dimensions, and reusable saved funnels.
+
+The web dashboard calls the same project-authorized domain behavior as API, CLI, and MCP.
+Use the dashboard for interactive review and the other interfaces for automation or direct
+agent analysis.
+
+## Metrics Versus AnalyticsBundles
+
+Use direct metrics for factual questions such as:
+
+- How many active visitors did this project have in the last seven days?
+- Which device types use this route?
+- Where does the signup funnel lose the most sessions?
+- How many affected sessions were linked to this incident?
+
+Generate an AnalyticsBundle when the question needs a durable, explainable analysis artifact.
+A bundle combines a bounded window of aggregate metrics, segments, patterns, related
+incidents or deploys, representative redacted journeys, and recommendations. Generation
+states are explicit: `pending`, `running`, `completed`, or `failed`.
+
+## Capture Model
+
+The browser SDK can capture these semantic signals after analytics is enabled locally and
+for the project:
+
+| Signal | Purpose |
+|---|---|
+| session start/summary | Visits, duration, bounce, exit, and active-user aggregates |
+| page view and route change | Route usage and journey transitions |
+| semantic action | Feature and workflow usage |
+| funnel step | Ordered conversion and drop-off analysis |
+| conversion | Named product outcomes |
+| journey marker | Fixed or explicit bounded friction context |
+
+Debug events and analytics events use separate envelopes and processing lanes. Shared safe
+browser helpers may normalize a route, session, device, or action signal, but analytics
+consent, sampling, limits, retention, or failures never suppress debug capture.
+
+## Saved Funnels
+
+A saved funnel is an optional reusable project definition with a stable key, display name,
+and 2-20 ordered steps. It is not a visit and not a generated bundle. Funnel events may be
+captured before a definition exists; saving a definition makes recurring analysis clearer
+for humans and agents.
+
+Members can inspect active definitions. Owners and admins can create, reorder, update, and
+soft-archive definitions through Project Settings, API, CLI, or MCP. Archiving removes the
+active definition without deleting retained aggregate evidence or generated artifacts.
+Hosted active-definition limits are fixed by tier: Free supports 1, Solo supports 10, and
+Team supports 50. Free also includes a bounded monthly preview of 5,000 analytics events,
+1,000 sessions, 100 retained journey samples, and 3 generated analytics bundles.
+On paid tiers, purchased capacity units increase monthly analytics processing
+allowances, but do not multiply saved-funnel or custom-dimension limits. Self-host
+supports up to 100 active definitions. Hosted custom-dimension limits are fixed at 1 on
+Free, 3 on Solo, and 8 on Team; self-host supports up to 20.
+
+## Journey Evidence
+
+Normal reads use aggregate transition counts. A sampled journey is a short-lived,
+structured timeline used only as representative evidence. It contains normalized routes,
+semantic signals, bounded dimensions, and derived tags. It does not contain video, DOM
+snapshots, raw click text, form values, or raw identity.
+
+Incident-impact journeys require an exact internal project-scoped affected-session match in
+addition to the requested service, environment, transition, and time window. A sample that
+is merely nearby is not shown as incident evidence.
+
+## Getting Started
+
+1. Open Project Settings and enable Product analytics, or update analytics settings through
+   an authenticated management interface.
+2. Configure the browser SDK with `analytics.enabled: true` and the required consent flow.
+3. Emit semantic actions, funnel steps, and conversions for important workflows.
+4. Review the project Analytics tab or query metrics through CLI/API/MCP.
+5. Generate an AnalyticsBundle only when a durable analysis artifact adds value.
+
+## Next Steps
+
+- [Browser SDK](/docs/sdks/browser) - Configure capture and semantic analytics calls.
+- [Privacy and retention](/docs/analytics/privacy) - Understand identity, consent, and expiry.
+- [AnalyticsBundle CLI](/docs/cli/analytics) - Query metrics and manage definitions.
+- [AnalyticsBundle API](/docs/api/analytics) - Integrate project-authorized reads.
+- [Self-hosted AnalyticsBundle](/docs/analytics/self-hosting) - Deploy migrations and cleanup safely.

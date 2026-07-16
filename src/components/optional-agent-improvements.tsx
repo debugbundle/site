@@ -8,11 +8,11 @@ export function OptionalAgentImprovements(): ReactElement {
     <section className="not-prose mt-10 space-y-5">
       <div className="max-w-3xl space-y-2">
         <h2 className="text-2xl font-semibold tracking-tight text-[var(--site-text)]">
-          Optional Agent-Assisted Improvements
+          Optional Agent-Assisted Workflows
         </h2>
         <p className="text-base leading-7 text-[var(--site-text-muted)]">
           These are not required for your first DebugBundle incident. Use them once capture is working and you want an
-          agent to improve signal quality or live-debugging coverage.
+          agent to improve signal quality, availability coverage, live debugging, or product-usage analysis.
         </p>
       </div>
 

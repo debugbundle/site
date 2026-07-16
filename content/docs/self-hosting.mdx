@@ -10,7 +10,8 @@ clean and behavior predictable.
 
 ## Architecture
 
-The self-hosted stack consists of six core services plus two one-shot bootstrap helpers:
+The self-hosted stack consists of six core services plus three one-shot setup and migration
+helpers:
 
 | Service | Runtime | Purpose |
 |---------|---------|---------|
@@ -21,7 +22,9 @@ The self-hosted stack consists of six core services plus two one-shot bootstrap 
 | **Redis** | `redis:7` | Job queue, caching |
 | **LocalStack** | `localstack/localstack` | S3-compatible object storage (raw events, bundles) |
 
-`workspace-init` runs once per `docker compose up` to install the monorepo dependencies inside the checked-out repo before the long-running services start. `db-bootstrap` then bootstraps an empty database using the repository's authoritative schema before the API starts.
+`workspace-init` installs the monorepo dependencies inside the checked-out repo.
+`db-bootstrap` creates the authoritative schema only when the database is empty, and
+`db-migrate` applies ordered forward migrations before the API and worker start.
 
 ## Quick Start
 
@@ -75,9 +78,14 @@ make selfhost-smoke
 | `S3_BUCKET` | `debugbundle-raw-events` | Raw-event and bundle bucket bootstrapped inside LocalStack |
 | `LOCALSTACK_PORT` | `4567` | Host port for LocalStack |
 | `DEBUGBUNDLE_PROBE_TRIGGER_SECRET` | none | Required API secret for signed probe-trigger tokens |
+| `ANALYTICS_HASH_SECRET` | none | Required stable API/Worker secret for deletion-safe account analytics identifiers |
 | `AUTH_COOKIE_SECURE` | `false` | Set to `true` when terminating HTTPS in front of the stack |
 | `WORKER_HEALTH_PORT` | `3001` | Internal worker readiness port used by Compose health checks |
 | `CONTAINER_PREFIX` | `debugbundle-selfhost` | Container name prefix |
+
+Preserve `ANALYTICS_HASH_SECRET` across restarts, backups, restores, and deployments. Rotate
+it only with a deliberate migration plan because changing it breaks analytics identifier and
+deduplication continuity.
 
 ## Health Checks
 
@@ -93,10 +101,13 @@ Every service includes a health check so orchestration tools can verify readines
 The compose stack also bootstraps required runtime state automatically:
 
 - `workspace-init` installs the pnpm workspace before API, worker, or web starts
-- `db-bootstrap` applies the clean-slate schema before the API starts
+- `db-bootstrap` applies the clean-slate schema for empty databases only
+- `db-migrate` applies checksum-validated forward migrations before API or worker startup
 - LocalStack runs a ready-hook script that creates the configured `S3_BUCKET`
 
-Pre-production note: in-place upgrades from older pre-release database shapes are intentionally unsupported. If `db-bootstrap` reports a legacy or partial schema, recreate the database volume instead of attempting schema evolution.
+Do not use `db-bootstrap` as an upgrade path. Existing installations must retain their
+database volume and complete `db-migrate`; API and worker readiness fail closed when a
+required migration is missing or its checksum does not match.
 
 ## Startup Validation
 
@@ -212,11 +223,13 @@ PostgreSQL and Redis remain single-instance in the default topology.
 # Update the checked-out repo
 git pull
 
-# Re-run workspace bootstrap and recreate the app services
-docker compose up -d --force-recreate workspace-init api worker web
+# Run setup and ordered migrations before recreating the app services
+docker compose up -d --force-recreate workspace-init db-bootstrap db-migrate api worker web
 ```
 
-The API service runs database migrations on startup, so no separate migration command is required.
+Compose orders `db-bootstrap` and `db-migrate` ahead of API startup. `db-bootstrap` is a
+clean-database initializer and safely leaves an existing initialized schema to the migration
+service; schema upgrades are owned only by `db-migrate`.
 
 ## Next Steps
 

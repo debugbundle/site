@@ -8,6 +8,9 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ### Added
 
+- Added the complete AnalyticsBundle documentation surface for aggregate metrics, browser
+  capture, saved funnels, redacted journeys, opportunities, generated artifacts, privacy,
+  self-host operations, CLI/API/MCP usage, and agent discovery.
 - Added a generated `redirects-manifest.json` and build step for permanent slashless-to-trailing-slash redirects so static deploys can collapse duplicate docs, blog, and marketing URLs onto the canonical sitemap form.
 - Added an MCP distribution page that lists official package, registry, marketplace, skill, auth-scope, and trust-channel guidance for managed agent installs.
 

@@ -1,4 +1,8 @@
-export type AgentAssistPromptId = 'critical-path-alerts' | 'availability-checks' | 'remote-probes';
+export type AgentAssistPromptId =
+  | 'product-analytics-workflow'
+  | 'critical-path-alerts'
+  | 'availability-checks'
+  | 'remote-probes';
 
 type AgentAssistPromptDefinition = {
   title: string;
@@ -10,6 +14,29 @@ type AgentAssistPromptDefinition = {
 };
 
 const agentAssistPromptDefinitions: Record<AgentAssistPromptId, AgentAssistPromptDefinition> = {
+  'product-analytics-workflow': {
+    title: 'Product analytics workflow',
+    teaser:
+      'Use an agent to identify the routes, actions, funnel steps, and conversions that explain product usage without collecting raw interaction data.',
+    dialogDescription:
+      'Use this once browser capture and a hosted or self-hosted analytics backend are available. The prompt asks an agent to inspect the app, define a bounded measurement plan, preserve privacy and transport boundaries, and verify one useful journey end to end.',
+    docsHref: '/docs/analytics',
+    docsLabel: 'Open Analytics docs',
+    prompt: [
+      'Review this repository and set up a focused, privacy-safe DebugBundle product analytics workflow for the browser application.',
+      'Read the relevant DebugBundle docs first: https://debugbundle.com/docs/analytics, https://debugbundle.com/docs/sdks/browser, https://debugbundle.com/docs/analytics/privacy, https://debugbundle.com/docs/cli/analytics, and https://debugbundle.com/docs/quickstart.',
+      'Inspect the existing Browser SDK initialization, router, authentication/session state, consent or privacy controls, and the main user journeys before changing code. Confirm whether the app already uses direct browser ingestion, a backend relay, or a self-hosted endpoint.',
+      'Keep the current Browser SDK integration and preserve the existing direct or relay transport. Never expose a server credential in browser code. Direct mode may use only a dedicated public write-only project token with allowed browser origins; relay mode must remain credential-free in the browser.',
+      'Treat analytics as a separate opt-in from incident capture. Enable it locally with `analytics.enabled: true` and confirm the project analytics setting is enabled through an authorized dashboard, API, CLI, or MCP path. Remote settings may restrict local capture but must never silently opt the app in. Debug capture must keep working independently when analytics is disabled, consent-blocked, sampled out, quota-blocked, or unavailable.',
+      'Before implementation, propose a small measurement plan: normalized routes that matter, 3 to 7 stable semantic actions, one primary funnel with ordered steps, 1 to 3 meaningful conversions, and only the low-cardinality segments needed to compare outcomes. Explain what product question each signal answers and avoid collecting events without a decision-making purpose.',
+      'Use `analytics.track(...)` for semantic product actions, `analytics.funnel(...)` for completed funnel steps, and `analytics.convert(...)` for meaningful outcomes. Instrument state or success boundaries instead of every click, rely on automatic page and route capture where it already applies, and guard against duplicate SPA events or repeated conversion emission.',
+      'Use the app\'s existing consent state with `analytics.setConsent(true|false)` when consent is required; never assume or force consent. Start with strict privacy unless the product requirements and consent model justify another mode. Consent withdrawal must stop future analytics without disabling error and incident capture.',
+      'Do not capture form values, visible text, selectors, DOM snapshots, screenshots, raw query strings, precise location, secrets, emails, user or account IDs, order IDs, workspace IDs, or free-form user input. Use only approved, low-cardinality custom dimensions; prefer built-in auth state and stable enum-like values over arbitrary metadata.',
+      'Create or propose the matching saved funnel definition through an authorized management interface so the emitted funnel key and ordered step keys exactly match the reusable analysis definition. Do not create one analytics bundle per visit; normal usage should update aggregates and generated analytics bundles should answer bounded analysis questions.',
+      'If safe and authorized, implement the smallest useful setup and verify one representative browser journey through route capture, a semantic action, funnel steps, and a conversion. Then inspect the resulting summary, actions, funnel metrics, and journey evidence through the dashboard, CLI, API, or MCP after background processing completes. Also verify that missing consent or disabled analytics produces no analytics events while a representative debug event still follows the existing incident path.',
+      'Finish with the measurement plan, files changed, project-side settings or saved-funnel steps that still require an owner, verification performed, expected processing delay, and the exact places where a human or agent can inspect the resulting metrics and analytics bundles.',
+    ].join('\n'),
+  },
   'critical-path-alerts': {
     title: 'Alert on critical paths',
     teaser:
@@ -68,7 +95,12 @@ const agentAssistPromptDefinitions: Record<AgentAssistPromptId, AgentAssistPromp
   },
 };
 
-export const agentAssistPromptIds: AgentAssistPromptId[] = ['critical-path-alerts', 'availability-checks', 'remote-probes'];
+export const agentAssistPromptIds: AgentAssistPromptId[] = [
+  'product-analytics-workflow',
+  'critical-path-alerts',
+  'availability-checks',
+  'remote-probes',
+];
 
 export function getAgentAssistPrompt(id: AgentAssistPromptId): AgentAssistPromptDefinition {
   return agentAssistPromptDefinitions[id];
