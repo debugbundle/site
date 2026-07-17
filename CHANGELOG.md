@@ -6,6 +6,12 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [1.2.7] - 2026-07-17
+
+### Changed
+
+- Promoted the dogfooding dependency to the canonical AnalyticsBundle browser SDK minor release, `@debugbundle/sdk-browser@1.5.0`.
+
 ## [1.2.6] - 2026-07-17
 
 ### Changed
