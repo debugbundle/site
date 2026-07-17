@@ -24,7 +24,7 @@ type SiteConfig = {
 
 export const siteConfig: SiteConfig = {
   title: 'DebugBundle',
-  description: 'Production debugging for AI agents.',
+  description: 'Production error reporting for coding agents.',
   domain: 'https://debugbundle.com',
   appUrl: 'https://app.debugbundle.com',
   githubUrl: 'https://github.com/debugbundle/debugbundle',

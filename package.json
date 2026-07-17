@@ -24,7 +24,7 @@
     "generate:redirects-manifest": "node --import tsx ./scripts/generate-redirects-manifest.ts",
     "build": "pnpm run generate:artifacts && pnpm run generate:headers-manifest && pnpm run generate:redirects-manifest && next build && node ./scripts/sanitize-next-env.mjs",
     "start": "next start",
-    "test": "node --import tsx --test ./src/public-route-manifest.test.ts",
+    "test": "node --import tsx --test ./src/public-route-manifest.test.ts ./src/homepage-copy.test.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {

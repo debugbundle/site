@@ -16,9 +16,9 @@ const buttonFocusClassName =
   'focus-visible:rounded-full focus-visible:[outline-color:var(--site-focus)] focus-visible:[outline-style:solid] focus-visible:[outline-width:2px] focus-visible:[outline-offset:2px]';
 
 export const metadata: Metadata = createPageMetadata({
-  title: 'Production debugging for AI agents',
+  title: 'Production error reporting for coding agents',
   description:
-    'DebugBundle captures incidents, assembles deterministic debugging context, and delivers structured bundles through API, CLI, and MCP.',
+    'DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard so humans and AI agents can find and fix the underlying bugs.',
   path: '/',
 });
 
@@ -139,7 +139,7 @@ export default function HomePage(): ReactElement {
     operatingSystem: 'Cross-platform',
     url: absoluteSiteUrl('/'),
     description:
-      'AI-agent-first runtime debugging platform. Captures production failures, packages them into structured debug bundles, and delivers them through API, CLI, and MCP.',
+      'DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard so humans and AI agents can find and fix the underlying bugs.',
     offers: {
       '@type': 'AggregateOffer',
       lowPrice: '0',
@@ -157,13 +157,13 @@ export default function HomePage(): ReactElement {
         <div className="relative z-10 space-y-6 sm:space-y-8">
           <div className="mx-auto max-w-4xl space-y-3">
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-[var(--site-text-subtle)]">
-              Production debugging <span className="whitespace-nowrap">for AI agents</span>
+              Detect, investigate, and resolve failures faster
             </p>
             <h1 className="mx-auto max-w-[700px] text-4xl font-semibold tracking-tight text-[var(--site-text)] sm:text-5xl">
               Turn production errors into agent-ready debug bundles
             </h1>
             <p className="mx-auto max-w-3xl text-base leading-7 text-[var(--site-text-muted)] sm:text-lg">
-              DebugBundle turns production incidents into deterministic debugging context, available through API, CLI, MCP, and the dashboard, so humans and AI agents can diagnose and resolve failures faster.
+              DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard so humans and AI agents can find and fix the underlying bugs.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3">
