@@ -6,6 +6,12 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [1.2.6] - 2026-07-17
+
+### Changed
+
+- Clarified the homepage and metadata positioning around production error reporting, incident grouping, and agent-ready debugging context, with a focused copy-consistency regression test.
+
 ## [1.2.5] - 2026-07-16
 
 ### Added
