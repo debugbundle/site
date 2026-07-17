@@ -6,6 +6,8 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [1.2.5] - 2026-07-16
+
 ### Added
 
 - Added the complete AnalyticsBundle documentation surface for aggregate metrics, browser
@@ -16,6 +18,7 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ### Changed
 
+- Promoted the site dogfooding dependency to `@debugbundle/sdk-browser@1.4.1` for the AnalyticsBundle release.
 - Refreshed alert docs, OpenAPI, CLI usage, and MCP reference data for severity-threshold lifecycle scope across new-incident, regression-only, and both-event notification behavior.
 - Marked `/docs/installation/` as a supporting install catalog with `/docs/quickstart/` as the primary indexed onboarding page, and marked `/docs/v1/mcp/` as a supporting versioned summary with `/docs/mcp/` as the primary indexed MCP guide.
 - Expanded MCP and installation docs with the local stdio install matrix, hosted Remote MCP status, and member-token guidance for headless or marketplace-managed clients.
