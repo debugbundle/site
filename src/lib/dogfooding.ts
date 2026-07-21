@@ -1,4 +1,8 @@
-import { createDebugBundleBrowserSdk, type DebugBundleBrowserInitConfig, type DebugBundleBrowserSdk } from "@debugbundle/sdk-browser";
+import {
+  createDebugBundleBrowserSdk,
+  type DebugBundleBrowserInitConfig,
+  type DebugBundleBrowserSdk
+} from "@debugbundle/sdk-browser";
 
 const defaultHostedApiBaseUrl = "https://api.debugbundle.com";
 
@@ -11,6 +15,7 @@ export interface SiteDogfoodingEnv {
   NEXT_PUBLIC_DEBUGBUNDLE_DOGFOOD_ENVIRONMENT?: string;
   NEXT_PUBLIC_DEBUGBUNDLE_DOGFOOD_EXPOSE_TRIGGERS?: string;
   NEXT_PUBLIC_DEBUGBUNDLE_DOGFOOD_CAPTURE_CONSOLE?: string;
+  NEXT_PUBLIC_DEBUGBUNDLE_DOGFOOD_ANALYTICS_ENABLED?: string;
 }
 
 export interface SiteDogfoodingConfig {
@@ -128,13 +133,35 @@ export function initializeSiteDogfooding(
       return null;
     }
 
+    const analyticsEnabled =
+      parseBooleanFlag(
+        env.NEXT_PUBLIC_DEBUGBUNDLE_DOGFOOD_ANALYTICS_ENABLED,
+        "NEXT_PUBLIC_DEBUGBUNDLE_DOGFOOD_ANALYTICS_ENABLED"
+      ) ?? false;
+
     sdk.init({
       projectToken: config.projectToken,
       endpoint: config.endpoint,
       environment: config.environment,
       service: config.service,
       captureConsole: config.captureConsole,
-      breadcrumbsOnErrorOnly: false
+      breadcrumbsOnErrorOnly: false,
+      ...(analyticsEnabled
+        ? {
+            analytics: {
+              enabled: true,
+              privacyMode: "standard",
+              consentRequired: false,
+              trackPageViews: true,
+              trackRouteChanges: true,
+              trackSessions: true,
+              trackReferrers: true,
+              trackActions: false,
+              trackFrictionSignals: true,
+              sampleRate: 1
+            }
+          }
+        : {})
     } satisfies DebugBundleBrowserInitConfig);
 
     if (config.exposeTriggers) {

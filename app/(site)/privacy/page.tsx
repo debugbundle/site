@@ -17,7 +17,7 @@ export default function PrivacyPage(): ReactElement {
       <SectionTitle
         eyebrow="Legal"
         title="Privacy Policy"
-        description="Last updated: 24 March 2026. This policy describes how DebugBundle collects, uses, and protects information."
+        description="Last updated: 21 July 2026. This policy describes how DebugBundle collects, uses, and protects information."
       />
 
       <div className="max-w-3xl space-y-6 text-sm leading-7 text-[var(--site-text-muted)]">
@@ -35,6 +35,16 @@ export default function PrivacyPage(): ReactElement {
         <section className="space-y-2">
           <h2 className="text-base font-semibold text-[var(--site-text)]">How we use your data</h2>
           <p>Event data is used solely to provide DebugBundle services: incident grouping, bundle generation, alerting, and retrieval. We do not sell event data or use it for advertising.</p>
+        </section>
+
+        <section className="space-y-2">
+          <h2 className="text-base font-semibold text-[var(--site-text)]">First-party product telemetry</h2>
+          <p>
+            We use DebugBundle&apos;s own AnalyticsBundle feature on debugbundle.com and app.debugbundle.com to understand aggregate page usage, route journeys, coarse device and referrer categories, session behavior, and fixed friction signals. This data is processed by DebugBundle and is not sent to an advertising or third-party analytics provider.
+          </p>
+          <p>
+            Standard mode uses a project-scoped opaque browser value and a separate derived hash for returning-visitor counts. App routes are stored as templates rather than project or incident identifiers. We do not include email addresses, names, account IDs, form values, raw click text, raw query strings, screenshots, DOM snapshots, precise location, raw IP addresses, secrets, or payment data in this telemetry.
+          </p>
         </section>
 
         <section className="space-y-2">
