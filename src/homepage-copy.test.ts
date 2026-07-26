@@ -9,7 +9,7 @@ const homepageSource = await readFile(
 const siteConfigSource = await readFile(new URL('./site-config.ts', import.meta.url), 'utf8');
 
 test('homepage uses the approved production-error positioning consistently', () => {
-  const title = 'Production error reporting for coding agents';
+  const title = 'Production error reporting for AI agents';
   const eyebrow = 'Detect, investigate, and resolve failures faster';
   const heading = 'Turn production errors into agent-ready debug bundles';
   const description =

@@ -16,7 +16,7 @@ const buttonFocusClassName =
   'focus-visible:rounded-full focus-visible:[outline-color:var(--site-focus)] focus-visible:[outline-style:solid] focus-visible:[outline-width:2px] focus-visible:[outline-offset:2px]';
 
 export const metadata: Metadata = createPageMetadata({
-  title: 'Production error reporting for coding agents',
+  title: 'Production error reporting for AI agents',
   description:
     'DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard so humans and AI agents can find and fix the underlying bugs.',
   path: '/',
