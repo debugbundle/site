@@ -6,6 +6,13 @@ The format is based on Keep a Changelog and this project follows Semantic Versio
 
 ## [Unreleased]
 
+## [1.2.8] - 2026-07-29
+
+### Changed
+
+- Published the reconciled SDK production-safety documentation and generated API/reference artifacts for the core `1.7.1` release train.
+- Promoted public-site dogfooding to the published `@debugbundle/sdk-browser@1.6.0` package.
+
 ## [1.2.7] - 2026-07-17
 
 ### Changed

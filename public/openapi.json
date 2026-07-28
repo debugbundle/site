@@ -13649,66 +13649,361 @@
                           "additionalProperties": {}
                         },
                         "payload": {
-                          "type": "object",
-                          "properties": {
-                            "method": {
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "path": {
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "query": {
+                          "anyOf": [
+                            {
                               "type": "object",
-                              "additionalProperties": {}
-                            },
-                            "headers": {
-                              "type": "object",
-                              "additionalProperties": {}
-                            },
-                            "body": {
-                              "anyOf": [
-                                {},
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "response_status": {
-                              "type": "integer",
-                              "minimum": 0
-                            },
-                            "duration_ms": {
-                              "type": "number",
-                              "minimum": 0
-                            },
-                            "route_template": {
-                              "anyOf": [
-                                {
+                              "properties": {
+                                "method": {
                                   "type": "string",
                                   "minLength": 1
                                 },
-                                {
-                                  "type": "null"
-                                }
-                              ]
+                                "path": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "query": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                },
+                                "headers": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                },
+                                "body": {
+                                  "anyOf": [
+                                    {},
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "response_status": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                },
+                                "duration_ms": {
+                                  "type": "number",
+                                  "minimum": 0
+                                },
+                                "route_template": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "response_headers": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                },
+                                "response_body": {}
+                              },
+                              "required": [
+                                "method",
+                                "path",
+                                "query",
+                                "headers",
+                                "response_status",
+                                "duration_ms"
+                              ],
+                              "additionalProperties": false
                             },
-                            "response_headers": {
+                            {
                               "type": "object",
-                              "additionalProperties": {}
-                            },
-                            "response_body": {}
-                          },
-                          "required": [
-                            "method",
-                            "path",
-                            "query",
-                            "headers",
-                            "response_status",
-                            "duration_ms"
-                          ],
-                          "additionalProperties": false
+                              "properties": {
+                                "method": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "path": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "query": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                },
+                                "headers": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                },
+                                "body": {
+                                  "anyOf": [
+                                    {},
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "response_status": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                },
+                                "duration_ms": {
+                                  "type": "number",
+                                  "minimum": 0
+                                },
+                                "route_template": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "response_headers": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                },
+                                "response_body": {},
+                                "device": {
+                                  "type": "object",
+                                  "properties": {
+                                    "user_agent": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "os": {
+                                      "type": "object",
+                                      "properties": {
+                                        "name": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "version": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "name",
+                                        "version"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "device_type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "desktop",
+                                        "mobile",
+                                        "tablet",
+                                        "unknown"
+                                      ]
+                                    },
+                                    "screen": {
+                                      "type": "object",
+                                      "properties": {
+                                        "width": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        "height": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        }
+                                      },
+                                      "required": [
+                                        "width",
+                                        "height"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "viewport": {
+                                      "type": "object",
+                                      "properties": {
+                                        "width": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        "height": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        }
+                                      },
+                                      "required": [
+                                        "width",
+                                        "height"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "device_pixel_ratio": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "exclusiveMinimum": true,
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "touch_capable": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    },
+                                    "language": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "connection_type": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "color_scheme_preference": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string",
+                                          "enum": [
+                                            "light",
+                                            "dark",
+                                            "no-preference"
+                                          ]
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "app_version": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "build_number": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "release_channel": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "api_level": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "manufacturer": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "model": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "timezone": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "battery_level": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "battery_charging": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    },
+                                    "free_disk_bytes": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "free_memory_bytes": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "jailbroken": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "user_agent",
+                                    "os",
+                                    "device_type",
+                                    "screen",
+                                    "viewport",
+                                    "device_pixel_ratio",
+                                    "touch_capable",
+                                    "language",
+                                    "connection_type",
+                                    "color_scheme_preference"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "method",
+                                "path",
+                                "query",
+                                "headers",
+                                "response_status",
+                                "duration_ms",
+                                "device"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
                         }
                       },
                       "required": [
@@ -13840,27 +14135,283 @@
                           "additionalProperties": {}
                         },
                         "payload": {
-                          "type": "object",
-                          "properties": {
-                            "level": {
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "message": {
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "attributes": {
+                          "anyOf": [
+                            {
                               "type": "object",
-                              "additionalProperties": {}
+                              "properties": {
+                                "level": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "message": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "attributes": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                }
+                              },
+                              "required": [
+                                "level",
+                                "message",
+                                "attributes"
+                              ],
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "level": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "message": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "attributes": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                },
+                                "device": {
+                                  "type": "object",
+                                  "properties": {
+                                    "user_agent": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "os": {
+                                      "type": "object",
+                                      "properties": {
+                                        "name": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "version": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "name",
+                                        "version"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "device_type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "desktop",
+                                        "mobile",
+                                        "tablet",
+                                        "unknown"
+                                      ]
+                                    },
+                                    "screen": {
+                                      "type": "object",
+                                      "properties": {
+                                        "width": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        "height": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        }
+                                      },
+                                      "required": [
+                                        "width",
+                                        "height"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "viewport": {
+                                      "type": "object",
+                                      "properties": {
+                                        "width": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        "height": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        }
+                                      },
+                                      "required": [
+                                        "width",
+                                        "height"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "device_pixel_ratio": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "exclusiveMinimum": true,
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "touch_capable": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    },
+                                    "language": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "connection_type": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "color_scheme_preference": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string",
+                                          "enum": [
+                                            "light",
+                                            "dark",
+                                            "no-preference"
+                                          ]
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "app_version": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "build_number": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "release_channel": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "api_level": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "manufacturer": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "model": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "timezone": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "battery_level": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "battery_charging": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    },
+                                    "free_disk_bytes": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "free_memory_bytes": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "jailbroken": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "user_agent",
+                                    "os",
+                                    "device_type",
+                                    "screen",
+                                    "viewport",
+                                    "device_pixel_ratio",
+                                    "touch_capable",
+                                    "language",
+                                    "connection_type",
+                                    "color_scheme_preference"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "level",
+                                "message",
+                                "attributes",
+                                "device"
+                              ],
+                              "additionalProperties": false
                             }
-                          },
-                          "required": [
-                            "level",
-                            "message",
-                            "attributes"
-                          ],
-                          "additionalProperties": false
+                          ]
                         }
                       },
                       "required": [
@@ -13992,39 +14543,301 @@
                           "additionalProperties": {}
                         },
                         "payload": {
-                          "type": "object",
-                          "properties": {
-                            "breadcrumb_type": {
-                              "type": "string",
-                              "enum": [
-                                "route_change",
-                                "click",
-                                "form_submit",
-                                "console_log",
-                                "network_request"
-                              ]
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "breadcrumb_type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "route_change",
+                                    "click",
+                                    "form_submit",
+                                    "console_log",
+                                    "network_request"
+                                  ]
+                                },
+                                "route": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "data": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                }
+                              },
+                              "required": [
+                                "breadcrumb_type",
+                                "data"
+                              ],
+                              "additionalProperties": false
                             },
-                            "route": {
-                              "anyOf": [
-                                {
+                            {
+                              "type": "object",
+                              "properties": {
+                                "breadcrumb_type": {
                                   "type": "string",
                                   "minLength": 1
                                 },
-                                {
-                                  "type": "null"
+                                "route": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "data": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                },
+                                "device": {
+                                  "type": "object",
+                                  "properties": {
+                                    "user_agent": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "os": {
+                                      "type": "object",
+                                      "properties": {
+                                        "name": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "version": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "name",
+                                        "version"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "device_type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "desktop",
+                                        "mobile",
+                                        "tablet",
+                                        "unknown"
+                                      ]
+                                    },
+                                    "screen": {
+                                      "type": "object",
+                                      "properties": {
+                                        "width": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        "height": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        }
+                                      },
+                                      "required": [
+                                        "width",
+                                        "height"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "viewport": {
+                                      "type": "object",
+                                      "properties": {
+                                        "width": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        "height": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        }
+                                      },
+                                      "required": [
+                                        "width",
+                                        "height"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "device_pixel_ratio": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "exclusiveMinimum": true,
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "touch_capable": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    },
+                                    "language": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "connection_type": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "color_scheme_preference": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string",
+                                          "enum": [
+                                            "light",
+                                            "dark",
+                                            "no-preference"
+                                          ]
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "app_version": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "build_number": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "release_channel": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "api_level": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "manufacturer": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "model": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "timezone": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "battery_level": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "battery_charging": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    },
+                                    "free_disk_bytes": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "free_memory_bytes": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "jailbroken": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "user_agent",
+                                    "os",
+                                    "device_type",
+                                    "screen",
+                                    "viewport",
+                                    "device_pixel_ratio",
+                                    "touch_capable",
+                                    "language",
+                                    "connection_type",
+                                    "color_scheme_preference"
+                                  ],
+                                  "additionalProperties": false
                                 }
-                              ]
-                            },
-                            "data": {
-                              "type": "object",
-                              "additionalProperties": {}
+                              },
+                              "required": [
+                                "breadcrumb_type",
+                                "data",
+                                "device"
+                              ],
+                              "additionalProperties": false
                             }
-                          },
-                          "required": [
-                            "breadcrumb_type",
-                            "data"
-                          ],
-                          "additionalProperties": false
+                          ]
                         }
                       },
                       "required": [
@@ -14202,183 +15015,453 @@
                             "breadcrumbs": {
                               "type": "array",
                               "items": {
-                                "type": "object",
-                                "properties": {
-                                  "breadcrumb_type": {
-                                    "type": "string",
-                                    "enum": [
-                                      "route_change",
-                                      "click",
-                                      "form_submit",
-                                      "console_log",
-                                      "network_request"
-                                    ]
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "breadcrumb_type": {
+                                        "type": "string",
+                                        "enum": [
+                                          "route_change",
+                                          "click",
+                                          "form_submit",
+                                          "console_log",
+                                          "network_request"
+                                        ]
+                                      },
+                                      "route": {
+                                        "anyOf": [
+                                          {
+                                            "type": "string",
+                                            "minLength": 1
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "data": {
+                                        "type": "object",
+                                        "additionalProperties": {}
+                                      },
+                                      "ts": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                      }
+                                    },
+                                    "required": [
+                                      "breadcrumb_type",
+                                      "data",
+                                      "ts"
+                                    ],
+                                    "additionalProperties": false
                                   },
-                                  "route": {
-                                    "anyOf": [
-                                      {
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "breadcrumb_type": {
                                         "type": "string",
                                         "minLength": 1
                                       },
-                                      {
-                                        "type": "null"
+                                      "route": {
+                                        "anyOf": [
+                                          {
+                                            "type": "string",
+                                            "minLength": 1
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      },
+                                      "data": {
+                                        "type": "object",
+                                        "additionalProperties": {}
+                                      },
+                                      "ts": {
+                                        "type": "string",
+                                        "format": "date-time"
                                       }
-                                    ]
-                                  },
-                                  "data": {
-                                    "type": "object",
-                                    "additionalProperties": {}
-                                  },
-                                  "ts": {
-                                    "type": "string",
-                                    "format": "date-time"
+                                    },
+                                    "required": [
+                                      "breadcrumb_type",
+                                      "data",
+                                      "ts"
+                                    ],
+                                    "additionalProperties": false
                                   }
-                                },
-                                "required": [
-                                  "breadcrumb_type",
-                                  "data",
-                                  "ts"
-                                ],
-                                "additionalProperties": false
+                                ]
                               }
                             },
                             "device": {
                               "anyOf": [
                                 {
-                                  "type": "object",
-                                  "properties": {
-                                    "user_agent": {
-                                      "type": [
-                                        "string",
-                                        "null"
-                                      ]
-                                    },
-                                    "os": {
+                                  "anyOf": [
+                                    {
                                       "type": "object",
                                       "properties": {
-                                        "name": {
+                                        "user_agent": {
                                           "type": [
                                             "string",
                                             "null"
                                           ]
                                         },
-                                        "version": {
-                                          "type": [
-                                            "string",
-                                            "null"
-                                          ]
-                                        }
-                                      },
-                                      "required": [
-                                        "name",
-                                        "version"
-                                      ],
-                                      "additionalProperties": false
-                                    },
-                                    "device_type": {
-                                      "type": "string",
-                                      "enum": [
-                                        "desktop",
-                                        "mobile",
-                                        "tablet",
-                                        "unknown"
-                                      ]
-                                    },
-                                    "screen": {
-                                      "type": "object",
-                                      "properties": {
-                                        "width": {
-                                          "type": "integer",
-                                          "minimum": 0
+                                        "os": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": [
+                                                "string",
+                                                "null"
+                                              ]
+                                            },
+                                            "version": {
+                                              "type": [
+                                                "string",
+                                                "null"
+                                              ]
+                                            }
+                                          },
+                                          "required": [
+                                            "name",
+                                            "version"
+                                          ],
+                                          "additionalProperties": false
                                         },
-                                        "height": {
-                                          "type": "integer",
-                                          "minimum": 0
-                                        }
-                                      },
-                                      "required": [
-                                        "width",
-                                        "height"
-                                      ],
-                                      "additionalProperties": false
-                                    },
-                                    "viewport": {
-                                      "type": "object",
-                                      "properties": {
-                                        "width": {
-                                          "type": "integer",
-                                          "minimum": 0
-                                        },
-                                        "height": {
-                                          "type": "integer",
-                                          "minimum": 0
-                                        }
-                                      },
-                                      "required": [
-                                        "width",
-                                        "height"
-                                      ],
-                                      "additionalProperties": false
-                                    },
-                                    "device_pixel_ratio": {
-                                      "anyOf": [
-                                        {
-                                          "type": "number",
-                                          "exclusiveMinimum": true,
-                                          "minimum": 0
-                                        },
-                                        {
-                                          "type": "null"
-                                        }
-                                      ]
-                                    },
-                                    "touch_capable": {
-                                      "type": [
-                                        "boolean",
-                                        "null"
-                                      ]
-                                    },
-                                    "language": {
-                                      "type": [
-                                        "string",
-                                        "null"
-                                      ]
-                                    },
-                                    "connection_type": {
-                                      "type": [
-                                        "string",
-                                        "null"
-                                      ]
-                                    },
-                                    "color_scheme_preference": {
-                                      "anyOf": [
-                                        {
+                                        "device_type": {
                                           "type": "string",
                                           "enum": [
-                                            "light",
-                                            "dark",
-                                            "no-preference"
+                                            "desktop",
+                                            "mobile",
+                                            "tablet",
+                                            "unknown"
                                           ]
                                         },
-                                        {
-                                          "type": "null"
+                                        "screen": {
+                                          "type": "object",
+                                          "properties": {
+                                            "width": {
+                                              "type": "integer",
+                                              "minimum": 0
+                                            },
+                                            "height": {
+                                              "type": "integer",
+                                              "minimum": 0
+                                            }
+                                          },
+                                          "required": [
+                                            "width",
+                                            "height"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        "viewport": {
+                                          "type": "object",
+                                          "properties": {
+                                            "width": {
+                                              "type": "integer",
+                                              "minimum": 0
+                                            },
+                                            "height": {
+                                              "type": "integer",
+                                              "minimum": 0
+                                            }
+                                          },
+                                          "required": [
+                                            "width",
+                                            "height"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        "device_pixel_ratio": {
+                                          "anyOf": [
+                                            {
+                                              "type": "number",
+                                              "exclusiveMinimum": true,
+                                              "minimum": 0
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        },
+                                        "touch_capable": {
+                                          "type": [
+                                            "boolean",
+                                            "null"
+                                          ]
+                                        },
+                                        "language": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "connection_type": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "color_scheme_preference": {
+                                          "anyOf": [
+                                            {
+                                              "type": "string",
+                                              "enum": [
+                                                "light",
+                                                "dark",
+                                                "no-preference"
+                                              ]
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
                                         }
-                                      ]
+                                      },
+                                      "required": [
+                                        "user_agent",
+                                        "os",
+                                        "device_type",
+                                        "screen",
+                                        "viewport",
+                                        "device_pixel_ratio",
+                                        "touch_capable",
+                                        "language",
+                                        "connection_type",
+                                        "color_scheme_preference"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    {
+                                      "type": "object",
+                                      "properties": {
+                                        "user_agent": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "os": {
+                                          "type": "object",
+                                          "properties": {
+                                            "name": {
+                                              "type": [
+                                                "string",
+                                                "null"
+                                              ]
+                                            },
+                                            "version": {
+                                              "type": [
+                                                "string",
+                                                "null"
+                                              ]
+                                            }
+                                          },
+                                          "required": [
+                                            "name",
+                                            "version"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        "device_type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "desktop",
+                                            "mobile",
+                                            "tablet",
+                                            "unknown"
+                                          ]
+                                        },
+                                        "screen": {
+                                          "type": "object",
+                                          "properties": {
+                                            "width": {
+                                              "type": "integer",
+                                              "minimum": 0
+                                            },
+                                            "height": {
+                                              "type": "integer",
+                                              "minimum": 0
+                                            }
+                                          },
+                                          "required": [
+                                            "width",
+                                            "height"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        "viewport": {
+                                          "type": "object",
+                                          "properties": {
+                                            "width": {
+                                              "type": "integer",
+                                              "minimum": 0
+                                            },
+                                            "height": {
+                                              "type": "integer",
+                                              "minimum": 0
+                                            }
+                                          },
+                                          "required": [
+                                            "width",
+                                            "height"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        "device_pixel_ratio": {
+                                          "anyOf": [
+                                            {
+                                              "type": "number",
+                                              "exclusiveMinimum": true,
+                                              "minimum": 0
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        },
+                                        "touch_capable": {
+                                          "type": [
+                                            "boolean",
+                                            "null"
+                                          ]
+                                        },
+                                        "language": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "connection_type": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "color_scheme_preference": {
+                                          "anyOf": [
+                                            {
+                                              "type": "string",
+                                              "enum": [
+                                                "light",
+                                                "dark",
+                                                "no-preference"
+                                              ]
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        },
+                                        "app_version": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "build_number": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "release_channel": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "api_level": {
+                                          "anyOf": [
+                                            {
+                                              "type": "integer",
+                                              "minimum": 0
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        },
+                                        "manufacturer": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "model": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "timezone": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "battery_level": {
+                                          "anyOf": [
+                                            {
+                                              "type": "number",
+                                              "minimum": 0
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        },
+                                        "battery_charging": {
+                                          "type": [
+                                            "boolean",
+                                            "null"
+                                          ]
+                                        },
+                                        "free_disk_bytes": {
+                                          "anyOf": [
+                                            {
+                                              "type": "integer",
+                                              "minimum": 0
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        },
+                                        "free_memory_bytes": {
+                                          "anyOf": [
+                                            {
+                                              "type": "integer",
+                                              "minimum": 0
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        },
+                                        "jailbroken": {
+                                          "type": [
+                                            "boolean",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "user_agent",
+                                        "os",
+                                        "device_type",
+                                        "screen",
+                                        "viewport",
+                                        "device_pixel_ratio",
+                                        "touch_capable",
+                                        "language",
+                                        "connection_type",
+                                        "color_scheme_preference"
+                                      ],
+                                      "additionalProperties": false
                                     }
-                                  },
-                                  "required": [
-                                    "user_agent",
-                                    "os",
-                                    "device_type",
-                                    "screen",
-                                    "viewport",
-                                    "device_pixel_ratio",
-                                    "touch_capable",
-                                    "language",
-                                    "connection_type",
-                                    "color_scheme_preference"
-                                  ],
-                                  "additionalProperties": false
+                                  ]
                                 },
                                 {
                                   "type": "null"
@@ -14671,8 +15754,7 @@
                           "required": [
                             "name",
                             "message",
-                            "stack",
-                            "browser"
+                            "stack"
                           ],
                           "additionalProperties": false
                         }
@@ -14968,38 +16050,305 @@
                           "additionalProperties": {}
                         },
                         "payload": {
-                          "type": "object",
-                          "properties": {
-                            "fingerprint": {
-                              "type": "string",
-                              "minLength": 1
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "fingerprint": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "suppressed_count": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                },
+                                "window_seconds": {
+                                  "type": "integer",
+                                  "exclusiveMinimum": true,
+                                  "minimum": 0
+                                },
+                                "first_seen": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "last_seen": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              },
+                              "required": [
+                                "fingerprint",
+                                "suppressed_count",
+                                "window_seconds",
+                                "first_seen",
+                                "last_seen"
+                              ],
+                              "additionalProperties": false
                             },
-                            "suppressed_count": {
-                              "type": "integer",
-                              "minimum": 0
-                            },
-                            "window_seconds": {
-                              "type": "integer",
-                              "exclusiveMinimum": true,
-                              "minimum": 0
-                            },
-                            "first_seen": {
-                              "type": "string",
-                              "format": "date-time"
-                            },
-                            "last_seen": {
-                              "type": "string",
-                              "format": "date-time"
+                            {
+                              "type": "object",
+                              "properties": {
+                                "fingerprint": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "suppressed_count": {
+                                  "type": "integer",
+                                  "minimum": 0
+                                },
+                                "window_seconds": {
+                                  "type": "integer",
+                                  "exclusiveMinimum": true,
+                                  "minimum": 0
+                                },
+                                "first_seen": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "last_seen": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "device": {
+                                  "type": "object",
+                                  "properties": {
+                                    "user_agent": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "os": {
+                                      "type": "object",
+                                      "properties": {
+                                        "name": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "version": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "name",
+                                        "version"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "device_type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "desktop",
+                                        "mobile",
+                                        "tablet",
+                                        "unknown"
+                                      ]
+                                    },
+                                    "screen": {
+                                      "type": "object",
+                                      "properties": {
+                                        "width": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        "height": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        }
+                                      },
+                                      "required": [
+                                        "width",
+                                        "height"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "viewport": {
+                                      "type": "object",
+                                      "properties": {
+                                        "width": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        "height": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        }
+                                      },
+                                      "required": [
+                                        "width",
+                                        "height"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "device_pixel_ratio": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "exclusiveMinimum": true,
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "touch_capable": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    },
+                                    "language": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "connection_type": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "color_scheme_preference": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string",
+                                          "enum": [
+                                            "light",
+                                            "dark",
+                                            "no-preference"
+                                          ]
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "app_version": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "build_number": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "release_channel": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "api_level": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "manufacturer": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "model": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "timezone": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "battery_level": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "battery_charging": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    },
+                                    "free_disk_bytes": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "free_memory_bytes": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "jailbroken": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "user_agent",
+                                    "os",
+                                    "device_type",
+                                    "screen",
+                                    "viewport",
+                                    "device_pixel_ratio",
+                                    "touch_capable",
+                                    "language",
+                                    "connection_type",
+                                    "color_scheme_preference"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "fingerprint",
+                                "suppressed_count",
+                                "window_seconds",
+                                "first_seen",
+                                "last_seen",
+                                "device"
+                              ],
+                              "additionalProperties": false
                             }
-                          },
-                          "required": [
-                            "fingerprint",
-                            "suppressed_count",
-                            "window_seconds",
-                            "first_seen",
-                            "last_seen"
-                          ],
-                          "additionalProperties": false
+                          ]
                         }
                       },
                       "required": [
@@ -15131,39 +16480,307 @@
                           "additionalProperties": {}
                         },
                         "payload": {
-                          "type": "object",
-                          "properties": {
-                            "label": {
-                              "type": "string",
-                              "minLength": 1
-                            },
-                            "data": {
+                          "anyOf": [
+                            {
                               "type": "object",
-                              "additionalProperties": {}
-                            },
-                            "activation_id": {
-                              "anyOf": [
-                                {
+                              "properties": {
+                                "label": {
                                   "type": "string",
-                                  "format": "uuid"
+                                  "minLength": 1
                                 },
-                                {
-                                  "type": "null"
+                                "data": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                },
+                                "activation_id": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "format": "uuid"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "probe_label_pattern": {
+                                  "type": "string",
+                                  "minLength": 1
                                 }
-                              ]
+                              },
+                              "required": [
+                                "label",
+                                "data",
+                                "activation_id",
+                                "probe_label_pattern"
+                              ],
+                              "additionalProperties": false
                             },
-                            "probe_label_pattern": {
-                              "type": "string",
-                              "minLength": 1
+                            {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "data": {
+                                  "type": "object",
+                                  "additionalProperties": {}
+                                },
+                                "activation_id": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "format": "uuid"
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "probe_label_pattern": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "device": {
+                                  "type": "object",
+                                  "properties": {
+                                    "user_agent": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "os": {
+                                      "type": "object",
+                                      "properties": {
+                                        "name": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        },
+                                        "version": {
+                                          "type": [
+                                            "string",
+                                            "null"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "name",
+                                        "version"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "device_type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "desktop",
+                                        "mobile",
+                                        "tablet",
+                                        "unknown"
+                                      ]
+                                    },
+                                    "screen": {
+                                      "type": "object",
+                                      "properties": {
+                                        "width": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        "height": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        }
+                                      },
+                                      "required": [
+                                        "width",
+                                        "height"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "viewport": {
+                                      "type": "object",
+                                      "properties": {
+                                        "width": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        "height": {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        }
+                                      },
+                                      "required": [
+                                        "width",
+                                        "height"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "device_pixel_ratio": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "exclusiveMinimum": true,
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "touch_capable": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    },
+                                    "language": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "connection_type": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "color_scheme_preference": {
+                                      "anyOf": [
+                                        {
+                                          "type": "string",
+                                          "enum": [
+                                            "light",
+                                            "dark",
+                                            "no-preference"
+                                          ]
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "app_version": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "build_number": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "release_channel": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "api_level": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "manufacturer": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "model": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "timezone": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "battery_level": {
+                                      "anyOf": [
+                                        {
+                                          "type": "number",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "battery_charging": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    },
+                                    "free_disk_bytes": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "free_memory_bytes": {
+                                      "anyOf": [
+                                        {
+                                          "type": "integer",
+                                          "minimum": 0
+                                        },
+                                        {
+                                          "type": "null"
+                                        }
+                                      ]
+                                    },
+                                    "jailbroken": {
+                                      "type": [
+                                        "boolean",
+                                        "null"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "user_agent",
+                                    "os",
+                                    "device_type",
+                                    "screen",
+                                    "viewport",
+                                    "device_pixel_ratio",
+                                    "touch_capable",
+                                    "language",
+                                    "connection_type",
+                                    "color_scheme_preference"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "data",
+                                "activation_id",
+                                "probe_label_pattern",
+                                "device"
+                              ],
+                              "additionalProperties": false
                             }
-                          },
-                          "required": [
-                            "label",
-                            "data",
-                            "activation_id",
-                            "probe_label_pattern"
-                          ],
-                          "additionalProperties": false
+                          ]
                         }
                       },
                       "required": [
