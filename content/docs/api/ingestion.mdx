@@ -163,7 +163,7 @@ Projects can configure a capture policy that filters events at ingestion time:
 
 Events filtered by capture policy are counted as `rejected` in the response with reason `"capture_policy_rejected"`.
 
-Active project capture rules are also evaluated during ingestion. Matching `drop` rules return `"capture_rule_dropped"`, matching sampled-out `sample` rules return `"capture_rule_sampled_out"`, and matching `demote` rules are accepted as context signals so they cannot open or reopen incidents.
+Active project capture rules are also evaluated during ingestion. Matching `drop` rules return `"capture_rule_dropped"`, matching sampled-out `sample` rules return `"capture_rule_sampled_out"`, and matching `demote` rules are accepted as context signals so they cannot open or reopen incidents. Exact-fingerprint rules use the canonical server-derived fingerprint shared with worker grouping; client payloads cannot override it.
 
 Configure capture policy and capture rules via the API, CLI, MCP, or dashboard.
 

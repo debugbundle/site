@@ -140,6 +140,8 @@ Rules use structured matchers. The incident detail page and `debugbundle capture
 | `first_party` | Browser/resource/request events | `false` for third-party noise |
 | `fingerprint` | Existing incident fingerprints | `{ "version": "v1", "value": "..." }` |
 
+Exact-fingerprint rules are matched against the canonical fingerprint DebugBundle derives during ingestion with the same versioned normalization used for incident grouping. SDKs do not provide or control this evaluated fingerprint.
+
 ### Browser Noise Examples
 
 Demote generic opaque browser `Window error` noise after confirming it is not a real application exception:
