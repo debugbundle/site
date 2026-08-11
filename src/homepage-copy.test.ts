@@ -13,7 +13,7 @@ test('homepage uses the approved production-error positioning consistently', () 
   const eyebrow = 'Detect, investigate, and resolve failures faster';
   const heading = 'Turn production errors into agent-ready debug bundles';
   const description =
-    'DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard so humans and AI agents can find and fix the underlying bugs.';
+    'DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard.';
 
   assert.ok(homepageSource.includes(`title: '${title}'`));
   assert.ok(homepageSource.includes(eyebrow));

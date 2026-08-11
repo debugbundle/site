@@ -18,7 +18,7 @@ const buttonFocusClassName =
 export const metadata: Metadata = createPageMetadata({
   title: 'Production error reporting for AI agents',
   description:
-    'DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard so humans and AI agents can find and fix the underlying bugs.',
+    'DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard.',
   path: '/',
 });
 
@@ -139,7 +139,7 @@ export default function HomePage(): ReactElement {
     operatingSystem: 'Cross-platform',
     url: absoluteSiteUrl('/'),
     description:
-      'DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard so humans and AI agents can find and fix the underlying bugs.',
+      'DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard.',
     offers: {
       '@type': 'AggregateOffer',
       lowPrice: '0',
@@ -163,7 +163,7 @@ export default function HomePage(): ReactElement {
               Turn production errors into agent-ready debug bundles
             </h1>
             <p className="mx-auto max-w-3xl text-base leading-7 text-[var(--site-text-muted)] sm:text-lg">
-              DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard so humans and AI agents can find and fix the underlying bugs.
+              DebugBundle detects errors in production, groups related failures into incidents, and delivers agent-ready debugging context through API, CLI, MCP, and the dashboard.
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3">
