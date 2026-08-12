@@ -2,6 +2,7 @@ import { readdirSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { getBlogPaginationRoutes } from './blog-pagination';
 import { shouldIndexSiteRoute } from './site-route-policy';
 import { canonicalSitePath } from './url-paths';
 
@@ -92,13 +93,15 @@ export function getCanonicalSiteRoutes(): string[] {
   const siteRoot = dirname(dirname(fileURLToPath(import.meta.url)));
   const docsContentRoot = join(siteRoot, 'content', 'docs');
   const blogContentRoot = join(siteRoot, 'content', 'blog');
+  const blogPostRoutes = readMdxRoutePaths(blogContentRoot, '/blog');
 
   return uniqueCanonicalRoutes([
     ...staticSiteRoutes,
     ...readMdxRoutePaths(docsContentRoot, '/docs'),
     ...referenceRoutes,
     '/blog/',
-    ...readMdxRoutePaths(blogContentRoot, '/blog'),
+    ...getBlogPaginationRoutes(blogPostRoutes.length),
+    ...blogPostRoutes,
   ]);
 }
 

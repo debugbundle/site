@@ -1,0 +1,133 @@
+---
+title: "Product analytics for AI agents: funnels and incident impact"
+description: "See how AI agents use product analytics, funnels, journeys, opportunities, and incident impact to turn usage evidence into focused product work."
+date: "12 August 2026"
+---
+
+Most product analytics tools are designed around a person clicking through charts. That works for exploration, but it creates a weak handoff when the next analyst is an AI agent.
+
+An agent should not have to inspect screenshots, scrape dashboard labels, or guess which filters a human applied. It needs structured metrics, explicit scope, representative evidence, and a stable way to carry the analysis into the next task.
+
+That is what agent-native product analytics means in practice. The goal is not to let an agent make product decisions alone. The goal is to give it enough trustworthy context to narrow the problem before a person decides what to change.
+
+## Start with a product question, not a generated report
+
+Imagine that checkout completion fell this week. A useful investigation starts with direct questions:
+
+- Did fewer sessions enter checkout, or did more sessions leave during it?
+- Which funnel step changed?
+- Is the drop limited to a route, browser, device type, referrer, or release?
+- Did the change begin after a deploy?
+- Are affected sessions linked to a production incident?
+- Which journey pattern best represents the problem?
+
+DebugBundle exposes aggregate product analytics through the web app, REST API, CLI, and MCP. All four surfaces use the same project-authorized domain behavior, so an agent can ask for the same metrics a person sees without reverse-engineering a dashboard.
+
+For a quick CLI pass:
+
+```bash
+debugbundle analytics summary --project <id> --last 7d --json
+debugbundle analytics routes --project <id> --last 7d --json
+debugbundle analytics funnel checkout --project <id> --last 30d --json
+debugbundle analytics journeys --project <id> --last 7d --json
+```
+
+The MCP equivalents include `get_usage_summary`, `get_route_metrics`, `get_funnel_analysis`, and `get_journey_patterns`. Both interfaces return structured data that an agent can compare, filter, and cite in its reasoning.
+
+Direct metrics should be the first stop. Generating an artifact for every question would add delay and noise.
+
+## Saved funnels give the journey a shared vocabulary
+
+A funnel is most useful when product, engineering, and support agree on what its steps mean.
+
+For checkout, the shared definition might be:
+
+```txt
+cart_viewed -> checkout_started -> payment_submitted -> order_completed
+```
+
+DebugBundle saved funnels contain a stable key, a display name, and between 2 and 20 ordered steps. Owners and admins can create, reorder, update, or archive them through Project Settings, API, CLI, or MCP. Other project members can inspect the active definitions.
+
+Archiving is deliberately soft. It removes a definition from the active set without deleting historical aggregate evidence or generated AnalyticsBundles. That matters when a product flow changes: the old analysis should remain understandable even after the team adopts a new funnel.
+
+An agent can use the definition to report exactly where sessions entered, completed, or dropped out instead of inventing a path from unrelated page views.
+
+## Journey patterns explain how people move
+
+Funnels are ordered paths the team has chosen to measure. Real journeys are less tidy.
+
+Someone may move from pricing to signup, return to pricing, visit documentation, and then complete signup. Aggregate route transitions reveal those common paths without requiring a raw timeline for every person.
+
+When an aggregate pattern needs an example, DebugBundle can retain a bounded redacted journey sample. It is a structured timeline of safe routes, semantic actions, funnel steps, conversions, and friction markers—not video replay, screenshots, raw DOM, form values, or click text.
+
+An agent can use aggregate patterns to find the dominant behavior, then fetch a representative journey only when it helps explain that behavior. That ordering is important. It keeps analysis grounded in the whole population instead of overfitting to one memorable session.
+
+## Incident impact connects product behavior to production failures
+
+Traditional product analytics may show that conversion fell. Error monitoring may show that an exception spiked. The hard part is proving that the two signals affected the same sessions.
+
+DebugBundle incident-impact analytics uses project-scoped hashed session and trace correlation to connect incidents with aggregate route sessions. It can report affected sessions, routes, funnels, device or browser segments, journey patterns, and the current AnalyticsBundle state.
+
+The correlation boundary is strict. A journey is not presented as incident evidence merely because it used the same route or happened nearby in time. A representative incident-impact journey must match the internal affected-session subject, service, environment, route transition, and analysis window.
+
+When a safe conversion baseline does not exist, the response says the conversion delta is unavailable. It does not manufacture a number from loosely related aggregate rows.
+
+That honesty is useful for agents. “We do not have enough correlated evidence” is a better conclusion than a confident story built from coincidence.
+
+## Analytics opportunities turn patterns into reviewable work
+
+An agent can query metrics on demand, but some changes are worth surfacing proactively. DebugBundle evaluates aggregate evidence for a bounded set of analytics opportunities:
+
+- funnel drop-off,
+- route loops and fixed friction markers,
+- route-exit regression,
+- conversion regression after a deploy,
+- incidents reaching a material share of sessions.
+
+These are deterministic evaluators, not open-ended guesses. Each opportunity records its kind, status, severity, confidence, analysis window, aggregate evidence, and related incidents or deploys. Small samples are suppressed or marked with appropriately low confidence.
+
+Open opportunities can resolve when a complete evaluation window no longer detects the signal. A resolved opportunity can reopen when the pattern returns, while a snoozed opportunity stays snoozed. This gives agents and humans a stable work queue instead of a new alert for every aggregate update.
+
+The workspace Analytics view brings opportunities and generated bundles together across accessible projects. Inside a project, Overview, Routes, Funnels, Audiences, Journeys, Opportunities, and Bundles keep the investigation in one place. The browser interface remains helpful for exploration, but it is not the only path.
+
+## Generate an AnalyticsBundle when the analysis needs to travel
+
+Sometimes the investigation needs to survive beyond one query: a product review, engineering issue, release comparison, or agent handoff may need the evidence and scope captured together.
+
+That is when an AnalyticsBundle becomes useful.
+
+```bash
+debugbundle analytics bundle create \
+  --project <id> \
+  --kind funnel_dropoff \
+  --funnel checkout \
+  --last 30d \
+  --json
+```
+
+An AnalyticsBundle represents an analysis unit, not a visit. Supported questions include usage summary, route health, funnel drop-off, journey friction, feature usage, incident impact, deploy comparison, and conversion paths.
+
+The generated artifact can contain:
+
+- the exact analysis window and filters,
+- aggregate metrics and affected segments,
+- journey patterns and ranked redacted examples,
+- linked incidents and deploys,
+- confidence, severity, and recommendations,
+- an input fingerprint for repeatable generation.
+
+Equivalent requests reuse the same deterministic generation. A failed request can be retried without creating a duplicate artifact or consuming another durable quota claim.
+
+This makes the bundle a practical handoff. An agent can attach it to an issue, compare it with source changes, or pass it to another workflow without asking the next reader to recreate the dashboard state.
+
+## Let the agent narrow the field
+
+The best product decisions still need context that analytics cannot supply on its own: customer conversations, business priorities, design intent, accessibility review, and the cost of changing a workflow.
+
+An agent can do valuable preparation before that discussion. It can identify the step that changed, compare segments, verify whether an incident reached the same sessions, retrieve a representative journey, and preserve the evidence in an AnalyticsBundle.
+
+That leaves the human with a sharper question: not “why did conversion fall?” but “why are mobile sessions leaving after `payment_submitted`, especially after this deploy, and is the linked validation incident the cause?”
+
+That is a much better place to begin product work.
+
+Read the [AnalyticsBundle overview](/docs/analytics/), [AnalyticsBundle CLI guide](/docs/cli/analytics/), and [MCP analytics tools](/docs/mcp/tools/#analyticsbundle). For the capture and retention model behind the evidence, see [Privacy-first product analytics without session replay](/blog/privacy-first-product-analytics-without-session-replay/).

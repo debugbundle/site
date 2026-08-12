@@ -507,6 +507,16 @@
       "statusCode": 308
     },
     {
+      "source": "/blog/page/2",
+      "destination": "/blog/page/2/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/page/3",
+      "destination": "/blog/page/3/",
+      "statusCode": 308
+    },
+    {
       "source": "/blog/agent-first-debugging",
       "destination": "/blog/agent-first-debugging/",
       "statusCode": 308
@@ -574,6 +584,16 @@
     {
       "source": "/blog/php-sdk-debug-bundles-for-laravel-symfony-and-wordpress-adjacent-apps",
       "destination": "/blog/php-sdk-debug-bundles-for-laravel-symfony-and-wordpress-adjacent-apps/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/privacy-first-product-analytics-without-session-replay",
+      "destination": "/blog/privacy-first-product-analytics-without-session-replay/",
+      "statusCode": 308
+    },
+    {
+      "source": "/blog/product-analytics-for-ai-agents-funnels-journeys-incident-impact",
+      "destination": "/blog/product-analytics-for-ai-agents-funnels-journeys-incident-impact/",
       "statusCode": 308
     },
     {
